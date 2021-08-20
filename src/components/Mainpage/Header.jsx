@@ -3,7 +3,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import BarChartIcon from "@material-ui/icons/BarChart";
 
-function Header() {
+function Header(props) {
   return (
     <div className="flex items-center justify-between bg-black text-white pt-2 pb-2 pr-4 pl-4">
       {/* ------------------------ */}

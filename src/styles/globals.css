@@ -3,3 +3,6 @@
 @tailwind utilities;
 
 
+.footer_1{
+    flex-basis: 50%;
+}

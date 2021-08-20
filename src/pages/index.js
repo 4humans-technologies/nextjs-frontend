@@ -2,9 +2,11 @@ import { Counter } from '../features/counter/Counter'
 
 import Head from "next/head";
 import Consent from "../components/Consent";
-import Header from "../components/Header";
-import SecondHeader from "../components/SecondHeader";
-import Sidebar from "../components/Sidebar";
+import Header from "../components/Mainpage/Header";
+import SecondHeader from "../components/Mainpage/SecondHeader";
+import Sidebar from "../components/Mainpage/Sidebar";
+import Boxgroup from "../components/Mainpage/Boxgroup";
+// import Mainbox from "../components/Mainbox";
 
 export default function Home() {
   return (
@@ -17,7 +19,10 @@ export default function Home() {
       {/* <Consent /> */}
       <Header />
       <SecondHeader />
-      <Sidebar />
+      <div className="flex">
+        <Sidebar />
+        <Boxgroup />
+      </div>
     </div>
   );
 }
