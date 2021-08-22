@@ -32,7 +32,7 @@ function Livescreen() {
         <img src="brandikaran.jpg" alt="" />
       </div>
 
-      <div className=" ml-4 mt-4 bg-gray-400 md:w-7/12 Md:h-3/6 relative">
+      <div className=" ml-4 mt-4 bg-gray-400 md:w-7/12 Md:h-3/6 overflow-y-scroll relative ">
         <div className="flex bg-gray-700 justify-between text-white md:py-4 md:px-4 text-center content-center">
           <div
             className="flex text-center content-center"
@@ -71,7 +71,9 @@ function Livescreen() {
 
           {/* ------------------------------------------------------------------------------------- */}
         </div>
-        <div>{state.val}</div>
+        <div className="absolute overflow-y-scroll h-5/6 bottom-4 w-full">
+          <div className="bottom-12 relative w-full ">{state.val}</div>
+        </div>
 
         <div className="flex py-2 bg-red-400 text-white place-items-center absolute bottom-1 w-full">
           <FlareIcon className="ml-4" />

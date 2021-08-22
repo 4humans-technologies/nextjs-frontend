@@ -27,6 +27,54 @@ function Publicchat() {
       age: 21,
       message: "I am The Hero",
     },
+    {
+      id: 5,
+      name: "Ravi shankar",
+      age: 22,
+      message: "I am Ravi",
+    },
+    {
+      id: 6,
+      name: "Ravi ji",
+      age: 23,
+      message: "我是Ravi",
+    },
+    {
+      id: 7,
+      name: "Ravi",
+      age: 24,
+      message: "我是Ravi",
+    },
+    {
+      id: 8,
+      name: "Ravi",
+      age: 25,
+      message: "我是Ravi",
+    },
+    {
+      id: 9,
+      name: "Ravi",
+      age: 26,
+      message: "我是Ravi",
+    },
+    {
+      id: 10,
+      name: "Ravi",
+      age: 27,
+      message: "我是Ravi",
+    },
+    {
+      id: 11,
+      name: "Ravi",
+      age: 28,
+      message: "我是Ravi ----",
+    },
+    {
+      id: 12,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
   ];
 
   return (
