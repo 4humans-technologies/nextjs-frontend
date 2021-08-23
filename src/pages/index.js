@@ -24,11 +24,11 @@ export default function Home() {
       </Head>
       {/* <Consent /> */}
       <Header toggleSidebar={toggler} />
-      <SecondHeader />
+      {/* <SecondHeader />
       <div className="flex">
         <Sidebar sidebarState={showSidebar} />
         <Boxgroup />
-      </div>
+      </div> */}
     </div>
   );
 }
