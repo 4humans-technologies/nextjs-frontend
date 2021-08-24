@@ -27,13 +27,13 @@ const reducer = (state = initState, action) => {
 function Livescreen() {
   const [state, dispatch] = useReducer(reducer, initState);
   return (
-    <div className="flex flex-1">
+    <div className="sm:flex sm:flex-1 w-full">
       <div className="bg-gray-400 md:ml-2 mt-4">
         <img src="brandikaran.jpg" alt="" />
       </div>
 
-      <div className=" ml-4 mt-4 bg-gray-400 md:w-7/12 Md:h-3/6 overflow-y-scroll relative ">
-        <div className="flex bg-gray-700 justify-between text-white md:py-4 md:px-4 text-center content-center">
+      <div className=" sm:ml-4 sm:mt-4 mt-2 bg-gray-400 sm:w-7/12 sm:h-[40rem] h-[30rem]  relative w-screen">
+        <div className="flex bg-gray-700 justify-between text-white sm:py-4 sm:px-4 text-center content-center">
           <div
             className="flex text-center content-center"
             onClick={() => dispatch({ type: "PUBLIC" })}
@@ -71,18 +71,23 @@ function Livescreen() {
 
           {/* ------------------------------------------------------------------------------------- */}
         </div>
-        <div className="absolute overflow-y-scroll h-5/6 bottom-4 w-full">
+        <div className="absolute overflow-y-scroll h-[90%]  bottom-4 w-full">
           <div className="bottom-12 relative w-full ">{state.val}</div>
         </div>
 
         <div className="flex py-2 bg-red-400 text-white place-items-center absolute bottom-1 w-full">
-          <FlareIcon className="ml-4" />
+          <div className="sm:inline-block hidden sm:ml-4">
+            <FlareIcon />
+          </div>
+
           <input
-            className="flex flex-1 rounded-full py-3 px-6 bg-yellow-200 border-0 md:mx-4"
+            className="flex flex-1 mx-2 rounded-full py-3 px-6 bg-yellow-200 border-0 md:mx-4 outline-none"
             placeholder="Public Chat  ....."
           />
-          <AccountCircleIcon />
-          <div className="rounded-full py-3 px-6 bg-yellow-200 md:mx-4">
+          <div className="hidden sm:inline-block sm:ml-4">
+            <AccountCircleIcon />
+          </div>
+          <div className="rounded-full sm:py-3 py-2 px-0 sm:px-4 bg-yellow-200 sm:mx-4 mx-2">
             Send Message
           </div>
         </div>

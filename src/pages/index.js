@@ -9,11 +9,13 @@ import Sidebar from "../components/Mainpage/Sidebar";
 import Boxgroup from "../components/Mainpage/Boxgroup";
 import { useState } from "react";
 // import Mainbox from "../components/Mainbox";
+import { useSidebarUpdate, useSidebarStatus } from "../app/Sidebarcontext";
 
 export default function Home() {
-  const [showSidebar, setShowSidebar] = useState(true);
+  // const [showSidebar, setShowSidebar] = useState(true);
 
-  const toggler = () => setShowSidebar(!showSidebar);
+  const sidebarStatus = useSidebarStatus();
+  // const toggler = () => setShowSidebar(!showSidebar);
 
   return (
     // <div className={styles.container}>
@@ -23,12 +25,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* <Consent /> */}
-      <Header toggleSidebar={toggler} />
-      {/* <SecondHeader />
+      <Header />
+      {/* <Header toggleSidebar={toggler} /> */}
+      <SecondHeader />
       <div className="flex">
-        <Sidebar sidebarState={showSidebar} />
+        {sidebarStatus && <Sidebar />}
+        {/* <Sidebar sidebarState={showSidebar} /> */}
         <Boxgroup />
-      </div> */}
+      </div>
     </div>
   );
 }

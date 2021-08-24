@@ -12,7 +12,7 @@ function Headermodel() {
         <div className="ml-2 mr-2">Feed</div>
         <div class="rounded-full  px-6 bg-gray-200 flex"> Neeraj Rai</div>
       </div>
-      <div className="flex text-white mr-2">
+      <div className="sm:flex text-white mr-2  hidden">
         <div className="flex items-center">
           <p>Next Model</p>
           <ChevronRightIcon className=" mr-2" />

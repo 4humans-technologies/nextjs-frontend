@@ -3,11 +3,16 @@
 @tailwind utilities;
 
 
+*{
+    margin: 0;
+    padding: 0;
+}
+
 .footer_1{
     flex-basis: 50%;
 }
 
-.mainmodel_profileimage{
+/* .mainmodel_profileimage{
     top: -40%;
-}
+} */
 

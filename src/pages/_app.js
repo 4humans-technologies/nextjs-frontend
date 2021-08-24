@@ -1,13 +1,18 @@
 import { Provider } from 'react-redux'
-import { store } from '../app/store'
-import Consent from "../components/Consent";
+import { ContextProvider } from "../app/Context";
+import { SidebarContextProvider } from "../app/Sidebarcontext";
+import { store } from "../app/store";
 import "../styles/globals.css";
 
 const MyApp = ({ Component, pageProps }) => {
   return (
     <Provider store={store}>
-      <Component {...pageProps} />
-      {/* <Consent /> */}
+      <SidebarContextProvider>
+        <ContextProvider>
+          <Component {...pageProps} />
+          {/* <Consent /> */}
+        </ContextProvider>
+      </SidebarContextProvider>
     </Provider>
   );
 };

@@ -3,8 +3,10 @@ import HomeIcon from "@material-ui/icons/Home";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import HistoryIcon from "@material-ui/icons/History";
+import { useSidebarStatus } from "../../app/Sidebarcontext";
 
 function Sidebar(props) {
+  const sidebarStatus = useSidebarStatus();
   const showStyle = {
     transform: "translateX(0px)",
   };
@@ -13,8 +15,8 @@ function Sidebar(props) {
   };
   return (
     <div
-      className="bg-gray-800 md:w-40 min-h-screen flex flex-col transition-transform"
-      style={props.sidebarState ? showStyle : hideStyle}
+      className="bg-gray-800 md:w-40 min-h-screen flex flex-col transition-transform absolute  z-10 "
+      style={sidebarStatus ? showStyle : hideStyle}
     >
       <div className="flex text-white pt-4 pb-2 pr-2 pl-2">
         <HomeIcon className="mr-2" />
