@@ -9,7 +9,8 @@ function Mainmodal({ children, modalStatus, closeModal }) {
       <Modal
         isOpen={modalStatus}
         onRequestClose={closeModal}
-        className = "tw-fixed tw-w-screen tw-h-full tw-bg-opacity-40 tw-bg-purple-500 tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-z-10" >
+        className="fixed w-screen h-full bg-opacity-40 bg-purple-500 cursor-pointer flex items-center justify-center z-10"
+      >
         {children}
       </Modal>
     </div>

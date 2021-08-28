@@ -10,20 +10,18 @@ function Login({ modalStatus, closeModal }) {
     <Modal
       isOpen={modalStatus}
       onRequestClose={closeModal}
-      className="fixed w-screen h-full bg-opacity-40 bg-gray-700 cursor-pointer flex items-center justify-center z-10"
-    >
-      <div className="bg-black text-white sm:p-8 p-4 rounded-l-lg rounded-r-lg ">
-        <CloseIcon className="ml-0 p-0 text-white" onClick={closeModal} />
-        <div className="text-center">
-          <h1 className="text-white my-4">Login</h1>
+      className = "tw-fixed tw-w-screen tw-h-full tw-bg-opacity-40 tw-bg-gray-700 tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-z-10" >
+      <div className = "tw-bg-black tw-text-white sm:tw-p-8 tw-p-4 tw-rounded-l-lg tw-rounded-r-lg" >
+        <CloseIcon className = "tw-ml-0 tw-p-0 tw-text-white" onClick={closeModal} />
+        <div className = "tw-text-center" >
+          <h1 className = "tw-text-white tw-my-4" >Login</h1>
         </div>
         <form>
           <label>
             Username:
             <input
               type="text"
-              className="rounded-full py-3 px-6 ml-3 outline-none text-black"
-            />
+              className = "tw-rounded-full tw-py-3 tw-px-6 tw-ml-3 tw-outline-none tw-text-black" />
           </label>
           <br />
           <br />
@@ -31,12 +29,11 @@ function Login({ modalStatus, closeModal }) {
             Password:
             <input
               type="password"
-              className="rounded-full py-3 px-6 ml-4 outline-none text-black"
-            />
+              className = "tw-rounded-full tw-py-3 tw-px-6 tw-ml-4 tw-outline-none tw-text-black" />
           </label>
           <br />
-          <div className="text-center mt-4">
-            <button className="bg-green-500 rounded-full py-2 px-8">
+          <div className = "tw-text-center tw-mt-4" >
+            <button className = "tw-bg-green-500 tw-rounded-full tw-py-2 tw-px-8" >
               Login
             </button>
           </div>

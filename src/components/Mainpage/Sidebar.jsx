@@ -15,50 +15,49 @@ function Sidebar(props) {
   };
   return (
     <div
-      className="bg-gray-800 md:w-40 min-h-screen flex flex-col transition-transform absolute  z-10 "
-      style={sidebarStatus ? showStyle : hideStyle}
+      className = "tw-bg-gray-800 md:tw-w-40 tw-min-h-screen tw-flex tw-flex-col tw-transition-transform tw-absolute tw-z-10" style={sidebarStatus ? showStyle : hideStyle}
     >
-      <div className="flex text-white pt-4 pb-2 pr-2 pl-2">
-        <HomeIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <HomeIcon className = "tw-mr-2" />
         <p>Home</p>
       </div>
-      <div className="flex text-white  pt-4 pb-2 pr-2 pl-2">
-        <FavoriteIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <FavoriteIcon className = "tw-mr-2" />
         <p>Favorites</p>
       </div>
-      <div className="flex text-white  pt-4 pb-2 pr-2 pl-2">
-        <ThumbUpAltIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <ThumbUpAltIcon className = "tw-mr-2" />
         <p>History</p>
       </div>
-      <div className="flex text-white  pt-4 pb-2 pr-2 pl-2">
-        <HistoryIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <HistoryIcon className = "tw-mr-2" />
         <p>Settings</p>
       </div>
-      <div className="flex text-white  pt-4 pb-2 pr-2 pl-2">
-        <HomeIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <HomeIcon className = "tw-mr-2" />
         <p>Home</p>
       </div>
 
-      <hr className="bg-white" />
+      <hr className = "tw-bg-white" />
 
-      <div className="flex text-white pt-4 pb-2 pr-2 pl-2">
-        <HomeIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <HomeIcon className = "tw-mr-2" />
         <p>Home_2</p>
       </div>
-      <div className="flex text-white  pt-4 pb-2 pr-2 pl-2">
-        <FavoriteIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <FavoriteIcon className = "tw-mr-2" />
         <p>Favorites_2</p>
       </div>
-      <div className="flex text-white  pt-4 pb-2 pr-2 pl-2">
-        <ThumbUpAltIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <ThumbUpAltIcon className = "tw-mr-2" />
         <p>History_3</p>
       </div>
-      <div className="flex text-white  pt-4 pb-2 pr-2 pl-2">
-        <HistoryIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <HistoryIcon className = "tw-mr-2" />
         <p>Settings_4</p>
       </div>
-      <div className="flex text-white  pt-4 pb-2 pr-2 pl-2">
-        <HomeIcon className="mr-2" />
+      <div className = "tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2" >
+        <HomeIcon className = "tw-mr-2" />
         <p>Home</p>
       </div>
     </div>

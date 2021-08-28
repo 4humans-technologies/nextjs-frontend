@@ -1,6 +1,6 @@
 import React from "react";
 
-function LivePeople() {
+function Publicchat() {
   const data = [
     {
       id: 1,
@@ -73,29 +73,22 @@ function LivePeople() {
       id: 12,
       name: "Ravi shankar singh",
       age: 29,
-      message: "我是Ravi======================",
-    },
-    {
-      id: 13,
-      name: "Ravi",
-      age: 30,
-      message: "我是Ravi ji",
+      message: "我是Ravi",
     },
   ];
+
   return (
     <div>
-      <div>
-        {data.map((item, index) => {
-          return (
-            <div key={index} className = "tw-flex tw-bg-gray-300 tw-py-4 tw-px-2 tw-my-4" >
-              <div className = "md:tw-mx-4" >{item.name}:-</div>
-              {item.age}
-            </div>
-          );
-        })}
-      </div>
+      {data.map((item, index) => {
+        return (
+          <div key={index} className="flex bg-gray-300 py-4 px-2 my-4">
+            <div className="md:mx-4">{item.name}:-</div>
+            {item.message}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-export default LivePeople;
+export default Publicchat;

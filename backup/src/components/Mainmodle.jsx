@@ -33,68 +33,68 @@ function Mainmodle() {
       <Header />
       <SecondHeader />
       {sidebarStatus && <Sidebar />}
-      <Image src={data[0].photo} className = "tw-w-screen" />
+      <Image src={data[0].photo} className="w-screen" />
 
-      <div className = "tw-bg-gray-600 tw-w-full sm:tw-h-36 tw-h-28 tw-relative tw-shadow-lg" >
+      <div className="bg-gray-600 w-full sm:h-36 h-28 relative shadow-lg">
         <div class="rounded-full h-32 w-32 flex items-center justify-center bg-green-700 absolute top-[-50%] shadow-lg">
           {/* <Image src={data.image} /> */}
         </div>
-        <h2 className = "tw-text-white tw-shadow-lg sm:tw-mt-10 sm:tw-ml-32 tw-mt-12 tw-ml-28 tw-absolute tw-text-2xl" >
+        <h2 className="text-white shadow-lg sm:mt-10 sm:ml-32 mt-12 ml-28  absolute text-2xl">
           Neeraj Rai
         </h2>
       </div>
 
-      <div className = "tw-flex tw-min-w-full md:tw-px-4 sm:tw-flex-row tw-flex-col" >
-        <div className = "tw-bg-red-500 tw-text-white sm:tw-min-w-[50%] tw-min-w-full" >
+      <div className="flex min-w-full md:px-4 sm:flex-row flex-col">
+        <div className="bg-red-500 text-white  sm:min-w-[50%] min-w-full ">
           <h2>Profile</h2>
-          <div className = "tw-flex tw-text-white tw-bg-gray-500 tw-flex-col tw-min-h-full" >
+          <div className="flex text-white bg-gray-500 flex-col min-h-full">
             {data.map((item, index) => (
-              <div key={index} className = "sm:tw-ml-4" >
+              <div key={index} className="sm:ml-4">
                 <div>
-                  <span className = "tw-font-bold tw-mr-4" >Name :</span> {item.Name}
+                  <span className="font-bold mr-4">Name :</span> {item.Name}
                 </div>
                 <div>
                   {" "}
-                  <span className = "tw-font-bold tw-mr-8" >Age :</span> {item.Age}
+                  <span className="font-bold mr-8">Age :</span> {item.Age}
                 </div>
                 <div>
                   {" "}
-                  <span className = "tw-font-bold tw-mr-2" >Nation :</span> {item.nation}
+                  <span className="font-bold mr-2">Nation :</span> {item.nation}
                 </div>
                 <div>
                   {" "}
-                  <span className = "tw-font-bold tw-mr-2">Intrest :tw-</span>{"" }
+                  <span className="font-bold mr-2">Intrest :</span>{" "}
                   {item.interest}
                 </div>
                 <div>
                   {" "}
-                  <span className = "tw-font-bold tw-mr-4" >Place :</span> {item.from}
+                  <span className="font-bold mr-4">Place :</span> {item.from}
                 </div>
                 <div>
                   {" "}
-                  <span className = "tw-font-bold tw-mr-1" >Height :</span> {item.Height}
+                  <span className="font-bold mr-1">Height :</span> {item.Height}
                 </div>
                 <div>
                   {" "}
-                  <span className = "tw-font-bold" >Culture :</span> {item.Subculture}
+                  <span className="font-bold">Culture :</span> {item.Subculture}
                 </div>
                 <div>
                   {" "}
-                  <span className = "tw-font-bold tw-mr-6" >Eyes :</span>
+                  <span className="font-bold mr-6">Eyes :</span>
                   {item.eyes}
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div className = "tw-bg-green-600 sm:tw-min-w-[50%] tw-min-w-full" >
+        <div className="bg-green-600  sm:min-w-[50%] min-w-full">
           <h2>Photo</h2>
-          <div className = "tw-flex" >
-            <Image src={neeraj} className = "tw-w-40 tw-h-40" />
-            <Image src={neeraj} className = "tw-w-40 tw-h-40" />
-            <Image src={neeraj} className = "tw-w-40 tw-h-40" />
-            <Image src={neeraj} className = "tw-w-40 tw-h-40" />
-            <Image src={neeraj} className = "tw-w-40 tw-h-40" />
+          <div className="flex">
+            <Image src={neeraj} className="w-40 h-40" />
+            <Image src={neeraj} className="w-40 h-40" />
+            <Image src={neeraj} className="w-40 h-40" />
+            <Image src={neeraj} className="w-40 h-40" />
+            <Image src={neeraj} className="w-40 h-40" />
           </div>
         </div>
       </div>

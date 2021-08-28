@@ -4,8 +4,8 @@ import Mainbox from "./Mainbox";
 function Boxgroup() {
   return (
     <div>
-      <h1 className = "tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold" >Top Free Live Webcams</h1>
-      <div className = "tw-flex tw-pt-4 tw-flex-wrap" >
+      <h1 className="text-xl ml-6 mt-4 font-bold">Top Free Live Webcams</h1>
+      <div className="flex pt-4 flex-wrap ">
         <Mainbox />
         <Mainbox />
         <Mainbox />
@@ -21,8 +21,8 @@ function Boxgroup() {
       </div>
 
       {/* Next ------ */}
-      <h1 className = "tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold" >South Indian Live Webcams</h1>
-      <div className = "tw-flex tw-pt-4 tw-flex-wrap" >
+      <h1 className="text-xl ml-6 mt-4 font-bold">South Indian Live Webcams</h1>
+      <div className="flex pt-4 flex-wrap ">
         <Mainbox />
         <Mainbox />
         <Mainbox />
@@ -36,9 +36,9 @@ function Boxgroup() {
         <Mainbox />
         <Mainbox />
       </div>
-      <hr className = "tw-bg-black tw-p-1" />
-      <div className = "tw-text-center" >
-        <p className = "tw-break-words tw-max-w-md tw-text-black tw-text-center tw-inline-flex tw-mt-4" >
+      <hr className="bg-black p-1" />
+      <div className="text-center">
+        <p className=" break-words max-w-md  text-black text-center inline-flex mt-4">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium
           expedita ipsa vel similique hic magni, possimus suscipit
           necessitatibus rerum soluta fugit voluptatum illum, nemo laboriosam

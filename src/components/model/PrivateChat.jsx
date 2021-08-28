@@ -88,8 +88,8 @@ function PrivateChat() {
       <div>
         {data.map((item, index) => {
           return (
-            <div key={index} className="flex bg-gray-300 py-4 px-2 my-4">
-              <div className="md:mx-4">{item.name}:-</div>
+            <div key={index} className = "tw-flex tw-bg-gray-300 tw-py-4 tw-px-2 tw-my-4" >
+              <div className = "md:tw-mx-4" >{item.name}:-</div>
               {item.message}
             </div>
           );

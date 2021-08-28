@@ -8,11 +8,11 @@
     padding: 0;
 }
 
-.tw-footer_1{
+.footer_1{
     flex-basis: 50%;
 }
 
-.tw-spinner{
+.spinner{
     border-top: 16px solid blue;
     border-right: 16px solid green;
     border-bottom: 16px solid red;

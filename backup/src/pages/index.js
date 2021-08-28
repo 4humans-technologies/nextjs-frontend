@@ -15,7 +15,7 @@ export default function Home() {
   const sidebarStatus = useSidebarStatus();
 
   return (
-    <div className = "tw-min-h-screen" >
+    <div className=" min-h-screen">
       <Head>
         <title>Redux Toolkit</title>
         <link rel="icon" href="/favicon.ico" />
@@ -23,12 +23,12 @@ export default function Home() {
       {/* <Consent /> */}
       <Header />
       <SecondHeader />
-      <div className = "tw-flex" >
+      <div className="flex">
         {sidebarStatus && <Sidebar />}
         <Boxgroup />
       </div>
       {/* Spinner tester  */}
-      <div className = "tw-spinner tw-animate-spin" ></div>
+      <div className="spinner animate-spin"></div>
       {/* spinner tester */}
     </div>
   );
