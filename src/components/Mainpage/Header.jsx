@@ -6,9 +6,17 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 import { useWidth } from "../../app/Context";
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext";
+import Login from "./Login";
+import Signup from "./Signup";
 
 function Header(props) {
   const [menu, setMenu] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
+  const closeFunction = () => {
+    console.log("close");
+    setModalIsOpen(!modalIsOpen);
+  };
 
   const screenWidth = useWidth();
   const sidebarStatus = useSidebarStatus();
@@ -19,7 +27,6 @@ function Header(props) {
       {/* ------------------------ */}
       <div onClick={sidebarUpdate}>
         <MenuIcon />
-        {/* <MenuIcon onClick={props.toggleSidebar} /> */}
       </div>
       {/* ------------------------ */}
       <div className="md:flex md:items-center hidden sm:inline-block ">
@@ -41,7 +48,7 @@ function Header(props) {
         <div className="rounded-full py-3 px-6 bg-blue-600 flex">
           <SearchIcon className="mr-2" />
           <input
-            className="rounded-full bg-blue-600 border-transparent"
+            className="rounded-full bg-blue-600 border-transparent outline-none px-2"
             type="text"
             placeholder="Search Neeraj location"
           />
@@ -52,11 +59,16 @@ function Header(props) {
         [
           menu === true ? (
             <div className="  items-center sm:flex-row  flex-col sm:static absolute sm:top-0 top-12 right-1 sm:bg-black bg-gray-600  shadow-lg ">
-              <div className="rounded-full md:py-3 py-1 px-2 md:px-6 bg-green-500 sm:mr-2 m-2 md:m-0 ">
+              <div
+                className="rounded-full md:py-3 py-1 px-2 md:px-6 bg-green-500 sm:mr-2 m-2 md:m-0 "
+                onClick={() => setSignupOpen(!signupOpen)}
+              >
                 Create account
-                {/* <p>{screenWidth}</p> */}
               </div>
-              <div className="rounded-full sm:py-3 py-1 px-2 sm:px-6 bg-blue-600 m-2 md:m-0">
+              <div
+                className="rounded-full sm:py-3 py-1 px-2 sm:px-6 bg-blue-600 m-2 md:m-0"
+                onClick={() => setModalIsOpen(!modalIsOpen)}
+              >
                 Login
               </div>
             </div>
@@ -66,31 +78,37 @@ function Header(props) {
         ]
       ) : (
         <div className=" sm:flex items-center sm:flex-row  flex-col sm:static absolute sm:top-0 top-12 right-1 sm:bg-black bg-gray-600  shadow-lg ">
-          <div className="rounded-full md:py-3 py-1 px-2 md:px-6 bg-green-500 sm:mr-2 m-2 md:m-0 ">
+          <div
+            className="rounded-full md:py-3 py-1 px-2 md:px-6 bg-green-500 sm:mr-2 m-2  "
+            onClick={() => setSignupOpen(!signupOpen)}
+          >
             Create account
-            {/* <p>{innerWidth}</p> */}
-            <p>{screenWidth}</p>
-            <p></p>
           </div>
-          <div className="rounded-full sm:py-3 py-1 px-2 sm:px-6 bg-blue-600 m-2 md:m-0">
+          <div
+            className="rounded-full sm:py-3 py-1 px-2 sm:px-6 bg-blue-600 m-2 "
+            onClick={() => setModalIsOpen(!modalIsOpen)}
+          >
             Login
           </div>
         </div>
       )}
 
       {/* ------------experiment------------ */}
-      {/* <div className=" sm:flex items-center sm:flex-row  flex-col sm:static absolute sm:top-0 top-12 right-1 sm:bg-black bg-gray-600  shadow-lg ">
-        <div className="rounded-full md:py-3 py-1 px-2 md:px-6 bg-green-500 sm:mr-2 m-2 md:m-0 ">
-          Create account
-        </div>
-        <div className="rounded-full sm:py-3 py-1 px-2 sm:px-6 bg-blue-600 m-2 md:m-0">
-          Login
-        </div>
-      </div> */}
+
       {/* --------------------------------------------------------------*/}
       <div className="sm:hidden" onClick={() => setMenu(!menu)}>
         <MoreVertIcon />
       </div>
+
+      {modalIsOpen && (
+        <Login modalStatus={modalIsOpen} closeModal={closeFunction} />
+      )}
+      {signupOpen && (
+        <Signup
+          modalStatus={signupOpen}
+          closeModal={() => setSignupOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -12,13 +12,9 @@ import { useState } from "react";
 import { useSidebarUpdate, useSidebarStatus } from "../app/Sidebarcontext";
 
 export default function Home() {
-  // const [showSidebar, setShowSidebar] = useState(true);
-
   const sidebarStatus = useSidebarStatus();
-  // const toggler = () => setShowSidebar(!showSidebar);
 
   return (
-    // <div className={styles.container}>
     <div className=" min-h-screen">
       <Head>
         <title>Redux Toolkit</title>
@@ -26,13 +22,14 @@ export default function Home() {
       </Head>
       {/* <Consent /> */}
       <Header />
-      {/* <Header toggleSidebar={toggler} /> */}
       <SecondHeader />
       <div className="flex">
         {sidebarStatus && <Sidebar />}
-        {/* <Sidebar sidebarState={showSidebar} /> */}
         <Boxgroup />
       </div>
+      {/* Spinner tester  */}
+      <div className="spinner animate-spin"></div>
+      {/* spinner tester */}
     </div>
   );
 }
