@@ -1,10 +1,10 @@
 import React from "react";
-import Modellive from "../../components/model/Modellive";
+import Live from "../../components/model/Live";
 
 function live() {
   return (
     <div>
-      <Modellive />
+      <Live />
     </div>
   );
 }
