@@ -3,8 +3,8 @@ import Mainbox from "./Mainbox";
 
 function Boxgroup() {
   return (
-    <div>
-      <h1 className = "tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold" >Top Free Live Webcams</h1>
+    <div className='tw-bg-dark-black '>
+      <h1 className = "tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold tw-text-white" >Top Free Live Webcams</h1>
       <div className = "tw-flex tw-pt-4 tw-flex-wrap" >
         <Mainbox />
         <Mainbox />
@@ -21,7 +21,7 @@ function Boxgroup() {
       </div>
 
       {/* Next ------ */}
-      <h1 className = "tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold" >South Indian Live Webcams</h1>
+      <h1 className = "tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold tw-text-white" >South Indian Live Webcams</h1>
       <div className = "tw-flex tw-pt-4 tw-flex-wrap" >
         <Mainbox />
         <Mainbox />

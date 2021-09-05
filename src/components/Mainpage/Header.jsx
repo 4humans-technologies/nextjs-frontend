@@ -23,7 +23,7 @@ function Header(props) {
   const sidebarUpdate = useSidebarUpdate();
 
   return (
-    <div className="tw-flex tw-items-center tw-justify-between tw-bg-black tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full">
+    <div className="tw-flex tw-items-center tw-justify-between tw-bg-first-color   tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans">
       {/* ------------------------ */}
       <div onClick={sidebarUpdate}>
         <MenuIcon />
@@ -32,7 +32,7 @@ function Header(props) {
       <div className="md:tw-flex md:tw-items-center tw-hidden sm:tw-inline-block">
         {/* circle tailwind css */}
         <div className="tw-flex tw-items-center">
-          <div className="tw-rounded-full tw-bg-green-700 tw-h-4 tw-w-4 tw-flex tw-items-center tw-justify-center"></div>
+          <div className="tw-rounded-full tw-bg-green-color tw-h-4 tw-w-4 tw-flex tw-items-center tw-justify-center"></div>
           <p className="tw-pl-2 tw-pr-2">4555</p>
           <p>LIVE </p>
         </div>
@@ -45,10 +45,10 @@ function Header(props) {
 
       {/* ------------------------ */}
       <div className="tw-hidden sm:tw-inline-block">
-        <div className="tw-rounded-full tw-py-3 tw-px-6 tw-bg-blue-600 tw-flex">
+        <div className="tw-rounded-full tw-py-3 tw-px-6 tw-bg-dark-black tw-flex">
           <SearchIcon className="tw-mr-2" />
           <input
-            className="tw-rounded-full tw-bg-blue-600 tw-border-transparent tw-outline-none tw-px-2"
+            className="tw-rounded-full tw-bg-dark-black tw-border-transparent tw-outline-none tw-px-2"
             type="text"
             placeholder="Search Neeraj location"
           />
@@ -58,34 +58,34 @@ function Header(props) {
       {screenWidth < 600 ? (
         [
           menu === true ? (
-            <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-black tw-bg-gray-600 tw-shadow-lg">
+            <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-colortw-shadow-lg">
               <div
-                className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-green-500 sm:tw-mr-2 tw-m-2 md:tw-m-0"
+                className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-dark-black sm:tw-mr-2 tw-m-2 md:tw-m-0"
                 onClick={() => setSignupOpen(!signupOpen)}
               >
                 Create account
               </div>
               <div
-                className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-blue-600 tw-m-2 md:tw-m-0"
+                className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-m-2 md:tw-m-0 tw-bg-white-color tw-text-text-black"
                 onClick={() => setModalIsOpen(!modalIsOpen)}
               >
                 Login
               </div>
             </div>
           ) : (
-            <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-black tw-bg-gray-600 tw-shadow-lg"></div>
+            <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg"></div>
           ),
         ]
       ) : (
-        <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-black tw-bg-gray-600 tw-shadow-lg">
+        <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg">
           <div
-            className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-green-500 sm:tw-mr-2 tw-m-2"
+            className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2"
             onClick={() => setSignupOpen(!signupOpen)}
           >
             Create account
           </div>
           <div
-            className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-blue-600 tw-m-2"
+            className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black"
             onClick={() => setModalIsOpen(!modalIsOpen)}
           >
             Login

@@ -60,7 +60,7 @@ function Login({ modalStatus, closeModal }) {
     <Modal
       isOpen={modalStatus}
       onRequestClose={closeModal}
-      className="tw-fixed tw-w-screen tw-h-full tw-bg-opacity-40 tw-bg-gray-700 tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-z-10"
+      className="tw-fixed tw-w-screen tw-h-full tw-bg-opacity-40 tw-bg-gray-700 tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-z-10 tw-font-sans"
     >
       <div className="tw-bg-black tw-text-white sm:tw-p-8 tw-p-4 tw-rounded-l-lg tw-rounded-r-lg">
         <CloseIcon

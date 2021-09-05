@@ -34,7 +34,7 @@ function Live() {
     <div>
       <Header />
       <SecondHeader />
-      <div className="tw-flex ">
+      <div className="tw-flex tw-bg-dark-black">
         <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[40rem] tw-h-[30rem] sm:tw-ml-4 sm:tw-mt-4 tw-mt-2">
           <Image src={photo} height={500} />
           <div className=" tw-text-center tw-mt-2">
@@ -106,10 +106,10 @@ function Live() {
           </div>
         </div>
 
-        <div className="tw-bg-yellow-400 tw-flex-[2] sm:tw-h-[40rem] tw-h-[30rem] sm:tw-ml-4 sm:tw-mt-4 tw-mt-2 tw-relative">
+        <div className="tw-bg-second-color tw-flex-[2] sm:tw-h-[40rem] tw-h-[30rem] sm:tw-ml-4 sm:tw-mt-4 tw-mt-2 tw-relative">
           <div className="tw-flex ">
-            <PersonIcon className="tw-mr-2" />
-            <p>211</p>
+            <PersonIcon className="tw-mr-2 tw-text-white-color" />
+            <p className="tw-text-white-color">211</p>
           </div>
           <div className="tw-absolute tw-bottom-2 tw-overflow-y-scroll sm:tw-h-[38rem] tw-h-[30rem]">
             <LivePeople />

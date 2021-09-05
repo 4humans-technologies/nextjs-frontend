@@ -85,7 +85,7 @@ function PrivateChat() {
 
   return (
     <div>
-      <div>
+      <div className='tw-font-sans'>
         {data.map((item, index) => {
           return (
             <div key={index} className = "tw-flex tw-bg-gray-300 tw-py-4 tw-px-2 tw-my-4" >

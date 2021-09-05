@@ -16,7 +16,7 @@ const client = AgoraRTC.createClient(codeMode); //create agora client
 function Audio() {
   const appId = "ae3edf155f1a4e78a544d125c8f53137"; //replace with your app id
   const channel = "test"; //replace with your channel name
-  const uid = `${Math.floor(Math.random() * 100000)}`; //replace with your uniqu Id in the channel
+  const uid = `${Math.floor(Math.random() * 100000)}`; //replace with your unique Id in the channel
   const token =
     "006ae3edf155f1a4e78a544d125c8f53137IACO2G44ZH8TgZ+BjgnNABRw0H7D1VwqaKWa/m7eIFG60gx+f9gAAAAAEACUS06I/sAvYQEAAQD7wC9h"; //replace with your token
   const [localAudioTrack, setLocalAudioTrack] = useState(null);

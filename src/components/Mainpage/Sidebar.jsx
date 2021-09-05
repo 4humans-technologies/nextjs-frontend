@@ -15,7 +15,7 @@ function Sidebar(props) {
   };
   return (
     <div
-      className="tw-bg-gray-800 md:tw-w-40 tw-min-h-screen tw-flex tw-flex-col tw-transition-transform tw-absolute tw-z-10"
+      className="tw-bg-gray-800 md:tw-w-40 tw-min-h-screen tw-flex tw-flex-col tw-transition-transform tw-absolute tw-z-10 tw-font-sans"
       style={sidebarStatus ? showStyle : hideStyle}
     >
       <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
