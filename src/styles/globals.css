@@ -24,3 +24,20 @@
     height: 120px;
 }
 
+.parent_transition{
+ 
+}
+
+.child_transition{
+    background-color: gray;
+    width: 100%;
+    opacity: 0;
+    height: 10%;
+    transition: all 0.5s;
+}
+
+.parent_transition:hover .child_transition{
+    height: 100%;
+    opacity: 0.8;
+    bottom: 0;
+}

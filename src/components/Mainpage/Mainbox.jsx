@@ -14,11 +14,9 @@ function Mainbox() {
   };
   return (
     <div className="tw-ml-2 tw-p-2">
-      <div className="tw-relative">
+      <div className="tw-relative tw-font-sans parent_transition">
         <img src={data.photo} alt="Mainbox" className="tw-h-40 tw-w-40" />
-        <p className="tw-h-40 tw-w-40 tw-absolute tw-bottom-0 tw-bg-gray-500 tw-opacity-0 hover:tw-opacity-80 tw-font-sans">
-          {data.Description}
-        </p>
+        <p className=" tw-absolute tw-z-10 tw-bottom-0 child_transition ">{data.Description}</p>
       </div>
     </div>
   );

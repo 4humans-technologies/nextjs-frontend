@@ -60,7 +60,7 @@ function Header(props) {
           menu === true ? (
             <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-colortw-shadow-lg">
               <div
-                className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-dark-black sm:tw-mr-2 tw-m-2 md:tw-m-0"
+                className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-dark-black sm:tw-mr-2 tw-m-2 md:tw-m-0  "
                 onClick={() => setSignupOpen(!signupOpen)}
               >
                 Create account

@@ -2,6 +2,9 @@ module.exports = {
   mode: "jit",
   purge: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: false, // or 'media' or 'class'
+  variants: {
+        transitionProperty: ["responsive", "motion-safe", "motion-reduce"],
+    },
   theme: {
     extend: {
       colors: {
@@ -16,7 +19,8 @@ module.exports = {
       },
       fontFamily: {
         sans: ["PT sans", "sans-serif"],
-      }
+      },
+
     },
   },
   variants: {
