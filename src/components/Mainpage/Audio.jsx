@@ -18,7 +18,7 @@ function Audio() {
   const channel = "test"; //replace with your channel name
   const uid = `${Math.floor(Math.random() * 100000)}`; //replace with your unique Id in the channel
   const token =
-    "006ae3edf155f1a4e78a544d125c8f53137IACO2G44ZH8TgZ+BjgnNABRw0H7D1VwqaKWa/m7eIFG60gx+f9gAAAAAEACUS06I/sAvYQEAAQD7wC9h"; //replace with your token
+    "006ae3edf155f1a4e78a544d125c8f53137IABolZbLgmQGu8s7MIJlbynNYdgITg8ot97ryQmcQ+LqqAx+f9gAAAAAEABSSZ5el3Q3YQEAAQCWdDdh"; //replace with your token
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [joinState, setJoinState] = useState(false);
   const [remoteUsers, setRemoteUsers] = useState([]);

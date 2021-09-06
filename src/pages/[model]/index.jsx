@@ -5,6 +5,7 @@ import Headermodel from "../../components/model/Headermodel";
 import Livescreen from "../../components/model/Livescreen";
 import { useSidebarUpdate, useSidebarStatus } from "../../app/Sidebarcontext";
 import Sidebar from "../../components/Mainpage/Sidebar";
+import Profile from "../../components/model/profile";
 
 function index() {
   const sidebarStatus = useSidebarStatus();
@@ -14,7 +15,7 @@ function index() {
       <Headermodel />
       {sidebarStatus && <Sidebar />}
       <Livescreen />
-      {/* <h2>Model</h2> */}
+      <Profile />
       <Footer />
     </div>
   );
