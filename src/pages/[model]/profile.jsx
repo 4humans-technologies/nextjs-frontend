@@ -9,7 +9,7 @@ function mainprofile() {
     <div>
       <div>
         <p>rss</p>
-        <Profile />
+        {/* <Profile /> */}
       </div>
     </div>
   );

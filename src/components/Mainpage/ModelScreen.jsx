@@ -7,7 +7,7 @@ import useAgora from "./useAgora";
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IACImpgh8cu67QJ3fA3E5SGIX4w11GxpVzDkIqvOXxe6O2LMzZAAAAAAEABSSZ5eWH44YQEAAQBXfjhh";
+  "006ae3edf155f1a4e78a544d125c8f53137IADBw4GaWDRomlcKbvQ0sOIu0yHLjAK2lMmOCh48/aj6Q2LMzZAAAAAAEAC7qLCmA9g5YQEAAQAB2Dlh";
 const channel = "test-channel";
 let client;
 const role = "host";
