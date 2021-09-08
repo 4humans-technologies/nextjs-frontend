@@ -12,6 +12,9 @@ import FlareIcon from "@material-ui/icons/Flare";
 import Publicchat from "./PublicChat";
 import PrivateChat from "./PrivateChat";
 import LivePeople from "./LivePeople";
+import AgoraRTC from "agora-rtc-sdk-ng";
+import useAgora from "../../hooks/useAgora";
+import VideoPlayer from "../UI/VideoPlayer";
 
 const initState = { val: <Publicchat /> };
 
@@ -28,18 +31,70 @@ const reducer = (state = initState, action) => {
   }
 };
 
+const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
+const token =
+  "006ae3edf155f1a4e78a544d125c8f53137IACImpgh8cu67QJ3fA3E5SGIX4w11GxpVzDkIqvOXxe6O2LMzZAAAAAAEABSSZ5eWH44YQEAAQBXfjhh";
+const channel = "test-channel";
+let client;
+const role = "host";
+const callType = "videoCall";
+const createClient = (role) => {
+  const clientOptions = { codec: "h264", mode: "live" };
+  client = AgoraRTC.createClient(clientOptions);
+  client.setClientRole("host");
+};
+createClient();
+
 function Live() {
   const [state, dispatch] = useReducer(reducer, initState);
+
+  const {
+    localAudioTrack,
+    localVideoTrack,
+    joinState,
+    leave,
+    join,
+    remoteUsers,
+  } = useAgora(client, appId, token, channel, role, null, callType);
+
   return (
     <div>
       <Header />
       <SecondHeader />
       <div className="tw-flex tw-bg-dark-black">
         <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[40rem] tw-h-[30rem] sm:tw-ml-4 sm:tw-mt-4 tw-mt-2">
-          <Image src={photo} height={500} />
-          <div className=" tw-text-center tw-mt-2">
-            <button className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300">
+          {/* <div id="player">
+            <Image src={photo} height={500} />
+          </div> */}
+          <VideoPlayer
+            videoTrack={localVideoTrack}
+            audioTrack={localAudioTrack}
+            uid={4534534}
+            playAudio={true}
+          />
+          <div className="tw-text-center tw-mt-2">
+            <button
+              onClick={join}
+              // disabled={!joinState}
+              className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300"
+            >
               Go Live
+            </button>
+            <button
+              onClick={leave}
+              // disabled={joinState}
+              className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300"
+            >
+              Leave
+            </button>
+            <button
+              onClick={leave}
+              disabled={joinState}
+              className={`${
+                joinState ? "tw-bg-green-500" : "tw-bg-red-500"
+              } tw-rounded-full tw-px-2 tw-py-1`}
+            >
+              {`${joinState ? "joined" : "disconnected"}`}
             </button>
           </div>
         </div>

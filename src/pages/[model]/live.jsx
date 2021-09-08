@@ -1,10 +1,15 @@
 import React from "react";
-import Live from "../../components/model/Live";
+import dynamic from "next/dynamic";
+
+const DynamicComponent = dynamic(
+  () => import("../../components/model/Live"),
+  { ssr: false }
+)
 
 function live() {
   return (
     <div>
-      <Live />
+      <DynamicComponent />
     </div>
   );
 }

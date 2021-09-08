@@ -3,7 +3,9 @@ import { createContext, useContext, useState, useEffect } from "react";
 const initialState = {
   rootUserId: null,
   relatedUserId: null,
-  user: {},
+  user: {
+    userType:"viewer"
+  },
   token: null,
   isLoggedIn: false,
   isError: false,

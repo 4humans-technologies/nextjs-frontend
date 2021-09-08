@@ -6,13 +6,7 @@ import { Fragment } from "react";
 
 const codeMode = { codec: "vp8", mode: "rtc" };
 const client = AgoraRTC.createClient(codeMode); //create agora client
-// const joinChannel = async () => {
-//   let uid = await client.join(appId, channel, token); //create new Uid for the channel
-//   await client.join(appId, channel, token, uid);
-// };
-// const leaveChannel = async () => {
-//   await client.leave();
-// };
+
 function Audio() {
   const appId = "ae3edf155f1a4e78a544d125c8f53137"; //replace with your app id
   const channel = "test"; //replace with your channel name
