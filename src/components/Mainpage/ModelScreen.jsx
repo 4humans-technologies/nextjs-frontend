@@ -7,7 +7,7 @@ import useAgora from "./useAgora";
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IADBw4GaWDRomlcKbvQ0sOIu0yHLjAK2lMmOCh48/aj6Q2LMzZAAAAAAEAC7qLCmA9g5YQEAAQAB2Dlh";
+  "006ae3edf155f1a4e78a544d125c8f53137IAAbuUyA4TY/KsKRDkbUQ5CpDJypO95JWaQhg30xxP9ek2LMzZAAAAAAEAC7qLCmdAM6YQEAAQByAzph";
 const channel = "test-channel";
 let client;
 const role = "host";
@@ -21,6 +21,7 @@ createClient();
 
 function Videocall() {
   console.log("client >>>", client);
+
   const {
     localAudioTrack,
     localVideoTrack,
@@ -28,7 +29,7 @@ function Videocall() {
     leave,
     join,
     remoteUsers,
-  } = useAgora(client, appId, token, channel, role, null, callType);
+  } = useAgora(client, appId, token, channel, role, "re7e78", callType);
 
   return (
     <div>

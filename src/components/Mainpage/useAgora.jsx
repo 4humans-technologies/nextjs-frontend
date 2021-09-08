@@ -41,12 +41,12 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
         facingMode: "user",
         encoderConfig: { height: 720, width: 720, frameRate: 23 },
       });
-      await client.join(appId, channel, token || null, uid);
+      await client.join(appId, channel, token, uid);
       await client.publish(track);
       return setJoinState(true);
     }
     // if client
-    await client.join(appId, channel, token || null, uid);
+    await client.join(appId, channel, token, uid);
     return setJoinState(true)
 
   }

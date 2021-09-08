@@ -33,7 +33,7 @@ const reducer = (state = initState, action) => {
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IACImpgh8cu67QJ3fA3E5SGIX4w11GxpVzDkIqvOXxe6O2LMzZAAAAAAEABSSZ5eWH44YQEAAQBXfjhh";
+  "006ae3edf155f1a4e78a544d125c8f53137IAAbuUyA4TY/KsKRDkbUQ5CpDJypO95JWaQhg30xxP9ek2LMzZAAAAAAEAC7qLCmdAM6YQEAAQByAzph";
 const channel = "test-channel";
 let client;
 const role = "host";

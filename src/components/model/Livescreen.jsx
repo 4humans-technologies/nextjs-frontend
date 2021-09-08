@@ -33,7 +33,7 @@ function Livescreen() {
   const [state, dispatch] = useReducer(reducer, initState);
   return (
     <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
-      <div className="tw-bg-dark-black md:tw-ml-2 tw-mt-4 sm:tw-w-7/12">
+      <div className="tw-bg-dark-black md:tw-ml-2 tw-mt-4 sm:tw-w-7/12 sm:tw-h-[40rem] tw-h-[30rem]">
         {/* <img src="brandikaran.jpg" alt="" /> */}
         <DynamicComponent />
       </div>

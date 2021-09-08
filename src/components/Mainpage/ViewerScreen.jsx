@@ -41,8 +41,8 @@ function Videocall(props) {
   }, []);
 
   return (
-    <div>
-      <div className="tw-flex ">
+    <div className="tw-h-[100vh]">
+      <div className="tw-flex">
         <Button variant="primary" onClick={join}>
           Join
         </Button>
@@ -57,14 +57,7 @@ function Videocall(props) {
       )}
 
       
-      <MediaPlayer
-        local={
-          <VideoPlayer
-            videoTrack={localVideoTrack}
-            audioTrack={localAudioTrack}
-          />
-        }
-      >
+    
         {remoteUsers.length > 0 &&
           remoteUsers.map((user) => {
             return (
@@ -75,9 +68,6 @@ function Videocall(props) {
               />
             );
           })}
-      </MediaPlayer>
-      )
-
     </div>
   );
 }
