@@ -67,10 +67,11 @@ function Live() {
             <Image src={photo} height={500} />
           </div> */}
           <VideoPlayer
+          
             videoTrack={localVideoTrack}
             audioTrack={localAudioTrack}
             uid={4534534}
-            playAudio={true}
+            playAudio={false}
           />
           <div className="tw-text-center tw-mt-2">
             <button

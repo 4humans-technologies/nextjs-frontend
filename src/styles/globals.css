@@ -1,43 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-*{
-    margin: 0;
-    padding: 0;
+* {
+  margin: 0;
+  padding: 0;
 }
 
-.tw-footer_1{
-    flex-basis: 50%;
+.tw-footer_1 {
+  flex-basis: 50%;
 }
 
-.tw-spinner{
-    border-top: 16px solid blue;
-    border-right: 16px solid green;
-    border-bottom: 16px solid red;
-    border-left: 16px solid pink;
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
+.tw-spinner {
+  border-top: 16px solid blue;
+  border-right: 16px solid green;
+  border-bottom: 16px solid red;
+  border-left: 16px solid pink;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
 }
 
-.parent_transition{
- 
+.parent_transition {
 }
 
-.child_transition{
-    background-color: gray;
-    width: 100%;
-    opacity: 0;
-    height: 10%;
-    transition: all 0.5s;
+.child_transition {
+  background-color: gray;
+  width: 100%;
+  opacity: 0;
+  height: 10%;
+  transition: all 0.5s;
 }
 
-.parent_transition:hover .child_transition{
-    height: 100%;
-    opacity: 0.8;
-    bottom: 0;
+.parent_transition:hover .child_transition {
+  height: 100%;
+  opacity: 0.8;
+  bottom: 0;
+}
+
+.video-player {
+  height: calc(100% - 60px);
 }

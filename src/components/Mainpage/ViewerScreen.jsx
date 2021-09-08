@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 import MediaPlayer from "../UI/MediaPlayer";
 import VideoPlayer from "../UI/VideoPlayer";
 import useAgora from "./useAgora";
+import {useRouter} from "next/router";
 
 let client;
 const createClient = (role) => {
@@ -15,12 +16,13 @@ createClient();
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IACImpgh8cu67QJ3fA3E5SGIX4w11GxpVzDkIqvOXxe6O2LMzZAAAAAAEABSSZ5eWH44YQEAAQBXfjhh";
+  "006ae3edf155f1a4e78a544d125c8f53137IADBw4GaWDRomlcKbvQ0sOIu0yHLjAK2lMmOCh48/aj6Q2LMzZAAAAAAEAC7qLCmA9g5YQEAAQAB2Dlh";
 const channel = "test-channel";
-const host = "host";
+const host = "audience";
 const videoCall = "videoCall";
 
 function Videocall(props) {
+  const router = useRouter()
   const {
     localAudioTrack,
     localVideoTrack,
@@ -30,6 +32,13 @@ function Videocall(props) {
     remoteUsers,
   } = useAgora(client, appId, token, channel, props.role, null, props.callType);
 
+  console.log("props >>", router.streaming);
+  useEffect(() => {
+    if (!router.streaming) {
+      console.log("Joining ......");
+      join();
+    }
+  }, []);
 
   return (
     <div>
@@ -41,8 +50,13 @@ function Videocall(props) {
           Leave
         </Button>
       </div>
-      {joinState ? <p>Connected</p> : <p>Disconnected</p>}
+      {joinState ? (
+        <p className="tw-text-white">Connected</p>
+      ) : (
+        <p className="tw-text-white">Disconnected</p>
+      )}
 
+      
       <MediaPlayer
         local={
           <VideoPlayer
@@ -62,6 +76,8 @@ function Videocall(props) {
             );
           })}
       </MediaPlayer>
+      )
+
     </div>
   );
 }

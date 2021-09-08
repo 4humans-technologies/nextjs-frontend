@@ -47,6 +47,8 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     }
     // if client
     await client.join(appId, channel, token || null, uid);
+    return setJoinState(true)
+
   }
 
   async function leave() {

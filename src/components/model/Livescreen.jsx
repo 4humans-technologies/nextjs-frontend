@@ -8,6 +8,11 @@ import FlareIcon from "@material-ui/icons/Flare";
 import Publicchat from "./PublicChat";
 import PrivateChat from "./PrivateChat";
 import LivePeople from "./LivePeople";
+import dynamic from "next/dynamic";
+
+const DynamicComponent = dynamic(() => import("../Mainpage/ViewerScreen"), {
+  ssr: false,
+});
 
 const initState = { val: <Publicchat /> };
 
@@ -28,8 +33,9 @@ function Livescreen() {
   const [state, dispatch] = useReducer(reducer, initState);
   return (
     <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
-      <div className="tw-bg-dark-black md:tw-ml-2 tw-mt-4">
-        <img src="brandikaran.jpg" alt="" />
+      <div className="tw-bg-dark-black md:tw-ml-2 tw-mt-4 sm:tw-w-7/12">
+        {/* <img src="brandikaran.jpg" alt="" /> */}
+        <DynamicComponent />
       </div>
 
       <div className="sm:tw-ml-4 sm:tw-mt-4 tw-mt-2 tw-bg-gray-400 sm:tw-w-7/12 sm:tw-h-[40rem] tw-h-[30rem] tw-relative tw-w-screen">
