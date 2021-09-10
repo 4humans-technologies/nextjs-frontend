@@ -26,7 +26,7 @@ function Header(props) {
   const sidebarUpdate = useSidebarUpdate();
 
   return (
-    <div className="tw-flex tw-items-center tw-justify-between tw-bg-first-color   tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans">
+    <div className="tw-flex tw-items-center tw-justify-between tw-bg-first-color tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[101]">
       {/* ------------------------ */}
       <div className="tw-flex tw-text-center">
         <div onClick={sidebarUpdate} className='tw-self-center tw-mr-4'>

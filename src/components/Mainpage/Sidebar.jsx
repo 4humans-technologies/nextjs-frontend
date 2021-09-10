@@ -4,7 +4,7 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import HistoryIcon from "@material-ui/icons/History";
 import { useSidebarStatus } from "../../app/Sidebarcontext";
-import {Button } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 
 
 const data = [
@@ -34,16 +34,16 @@ function Sidebar(props) {
   const sidebarStatus = useSidebarStatus();
 
   const showStyle = {
-    transform: "translateX(0px)",
+    left: "0",
 
   };
   const hideStyle = {
-    transform: "translateX(-100%)",
-    
+    left: "-240px",
+
   };
   return (
     <div
-      className="tw-bg-gray-800 md:tw-w-40 tw-min-h-screen tw-flex tw-flex-col tw-absolute tw-z-10 tw-font-sans"
+      className="tw-bg-gray-800 tw-w-[240px] tw-min-h-screen tw-flex tw-flex-col tw-fixed tw-font-sans tw-transition-all tw-bottom-0 tw-top-20 tw-z-[101]"
       style={sidebarStatus ? showStyle : hideStyle}
     >
       <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
@@ -55,7 +55,7 @@ function Sidebar(props) {
         </Button>
       </div>
 
-      {data.map((item,index)=> {
+      {data.map((item, index) => {
         return (
           <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
             {/* <FavoriteIcon className="tw-mr-2" /> */}

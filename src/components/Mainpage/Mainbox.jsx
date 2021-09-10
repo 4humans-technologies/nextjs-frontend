@@ -13,16 +13,16 @@ const DynamicComponent = dynamic(() => import("./ViewerScreen"), {
 
 
 function Mainbox() {
-  const [stream,setStream]=useState(false)
+  const [stream, setStream] = useState(false)
   const data = {
     Name: "Mainbox",
     Description:
       "Mainbox is a simple, yet powerful, flexbox based grid system. ",
     Age: "22",
     nation: "China",
-    rating:5,
-    Group:12,
-    Private:16,
+    rating: 5,
+    Group: 12,
+    Private: 16,
     language: "Javascript,PHP,English",
     photo: "brandikaran.jpg",
   };
@@ -31,7 +31,7 @@ function Mainbox() {
 
     router.push("/ravi?streaming=true");
   };
-  let star=[]
+  let star = []
   for (let index = 0; index < data.rating; index++) {
     star.push(<StarIcon className="tw-text-yellow-300 " />);
 
@@ -45,8 +45,9 @@ function Mainbox() {
           alt="Mainbox"
           className="tw-h-[270px] tw-w-[370px]"
         />
-        <div className=" tw-absolute tw-z-[2]  child_transition tw-opacity-60">
-          <ul className="  tw-pl-4 tw-text-white tw-absolute tw-z-50 ">
+        <div className="before"></div>
+        <div className="tw-absolute tw-z-[2]  child_transition after">
+          <ul className="  tw-pl-4 tw-text-white tw-z-0" style={{ textShadow: "0 0 4px white" }}>
             <li className="tw-font-bold tw-py-1">{data.Name}</li>
             <li className="tw-py-1">
               {data.Age}Yrs <span className="tw-ml-2">{data.nation}</span>

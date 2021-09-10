@@ -20,11 +20,14 @@ export default function Home() {
         <title>Redux Toolkit</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <div className="tw-h-32">
+
+      </div>
       {/* <Consent /> */}
       <Header />
       <SecondHeader />
       <div className = "tw-flex" >
-        {sidebarStatus && <Sidebar />}
+        <Sidebar />
         <Boxgroup />
       </div>
       {/* Spinner tester  */}
