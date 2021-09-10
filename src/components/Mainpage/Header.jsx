@@ -3,6 +3,9 @@ import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ClearIcon from '@material-ui/icons/Clear';
+import Image from "next/image";
+import logo from '../../../public/logo.png'
 
 import { useWidth } from "../../app/Context";
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext";
@@ -25,15 +28,18 @@ function Header(props) {
   return (
     <div className="tw-flex tw-items-center tw-justify-between tw-bg-first-color   tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans">
       {/* ------------------------ */}
-      <div onClick={sidebarUpdate}>
-        <MenuIcon />
+      <div className="tw-flex tw-text-center">
+        <div onClick={sidebarUpdate} className='tw-self-center tw-mr-4'>
+          {sidebarStatus ? <ClearIcon /> : <MenuIcon />}
+        </div>
+        <Image src={logo} width={124} height={65} />
       </div>
       {/* ------------------------ */}
       <div className="md:tw-flex md:tw-items-center tw-hidden sm:tw-inline-block">
         {/* circle tailwind css */}
         <div className="tw-flex tw-items-center">
-          <div className="tw-rounded-full tw-bg-green-color tw-h-4 tw-w-4 tw-flex tw-items-center tw-justify-center"></div>
-          <p className="tw-pl-2 tw-pr-2">4555</p>
+          <div className="tw-rounded-full tw-bg-green-400 tw-h-2 tw-w-2 tw-flex tw-items-center tw-justify-center"></div>
+          <p className="tw-pl-1 tw-pr-2">4555</p>
           <p>LIVE </p>
         </div>
 

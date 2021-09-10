@@ -15,6 +15,16 @@ import LivePeople from "./LivePeople";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import useAgora from "../../hooks/useAgora";
 import VideoPlayer from "../UI/VideoPlayer";
+import { io } from "socket.io-client";
+
+// socket io connection 
+// /api/website/token-builder/create-stream-and-gen-token
+
+// const socket = io("http://localhost:8080");
+// const socketjoin=()=>{
+//   console.log('ram.................');
+// }
+
 
 const initState = { val: <Publicchat /> };
 
@@ -57,6 +67,8 @@ function Live() {
     remoteUsers,
   } = useAgora(client, appId, token, channel, role, null, callType);
 
+  // implimenting soket
+
   return (
     <div>
       <Header />
@@ -67,7 +79,6 @@ function Live() {
             <Image src={photo} height={500} />
           </div> */}
           <VideoPlayer
-          
             videoTrack={localVideoTrack}
             audioTrack={localAudioTrack}
             uid={4534534}
@@ -76,6 +87,7 @@ function Live() {
           <div className="tw-text-center tw-mt-2">
             <button
               onClick={join}
+              // onClick={socketjoin}
               // disabled={!joinState}
               className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300"
             >

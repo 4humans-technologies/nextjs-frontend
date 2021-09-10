@@ -27,19 +27,29 @@
 }
 
 .child_transition {
-  background-color: gray;
+  background-color:black;
   width: 100%;
   opacity: 0;
-  height: 10%;
+  height: 60%;
   transition: all 0.5s;
+  bottom: 0;
 }
 
 .parent_transition:hover .child_transition {
   height: 100%;
-  opacity: 0.8;
+  opacity: .6;
   bottom: 0;
+  filter: saturate(1);
+  z-index: 100;
 }
+
 
 .video-player {
   height: calc(100% - 60px);
+}
+#sidebar_item_name{
+  flex-basis: 60%;
+}
+.sidebar_item_number{
+  text-orientation: sideways;
 }
