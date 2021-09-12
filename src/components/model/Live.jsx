@@ -2,7 +2,7 @@ import Header from "../Mainpage/Header";
 import SecondHeader from "../Mainpage/SecondHeader";
 import photo from "../../../public/brandikaran.jpg";
 import Image from "next/image";
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect } from "react";
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import PersonIcon from "@material-ui/icons/Person";
@@ -13,18 +13,9 @@ import Publicchat from "./PublicChat";
 import PrivateChat from "./PrivateChat";
 import LivePeople from "./LivePeople";
 import AgoraRTC from "agora-rtc-sdk-ng";
-import useAgora from "../../hooks/useAgora";
+import useAgora from "../../hooks/useAgora"; //using agora from Hooks
 import VideoPlayer from "../UI/VideoPlayer";
 import { io } from "socket.io-client";
-
-// socket io connection 
-// /api/website/token-builder/create-stream-and-gen-token
-
-// const socket = io("http://localhost:8080");
-// const socketjoin=()=>{
-//   console.log('ram.................');
-// }
-
 
 const initState = { val: <Publicchat /> };
 
@@ -65,7 +56,12 @@ function Live() {
     leave,
     join,
     remoteUsers,
+    ready,
   } = useAgora(client, appId, token, channel, role, null, callType);
+
+  useEffect(() => {
+    ready();
+  }, []);
 
   // implimenting soket
 
@@ -75,9 +71,6 @@ function Live() {
       <SecondHeader />
       <div className="tw-flex tw-bg-dark-black">
         <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[40rem] tw-h-[30rem] sm:tw-ml-4 sm:tw-mt-4 tw-mt-2">
-          {/* <div id="player">
-            <Image src={photo} height={500} />
-          </div> */}
           <VideoPlayer
             videoTrack={localVideoTrack}
             audioTrack={localAudioTrack}
@@ -85,21 +78,25 @@ function Live() {
             playAudio={false}
           />
           <div className="tw-text-center tw-mt-2">
-            <button
-              onClick={join}
-              // onClick={socketjoin}
-              // disabled={!joinState}
-              className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300"
-            >
-              Go Live
-            </button>
-            <button
-              onClick={leave}
-              // disabled={joinState}
-              className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300"
-            >
-              Leave
-            </button>
+            {joinState ? (
+              <button
+                onClick={leave}
+                // onClick={socketjoin}
+                // disabled={!joinState}
+                className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300"
+              >
+                leave
+              </button>
+            ) : (
+              <button
+                onClick={join}
+                // disabled={joinState}
+                className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300"
+              >
+                Go live
+              </button>
+            )}
+
             <button
               onClick={leave}
               disabled={joinState}
@@ -130,25 +127,6 @@ function Live() {
               <QuestionAnswerIcon className="tw-mr-2" />
               <p>Private</p>
             </div>
-            {/* ------------------------------------------------------------------------------------- */}
-            {/* <div
-              className="tw-flex tw-text-center tw-content-center"
-              onClick={() => dispatch({ type: "PERSON" })}
-              style={{ cursor: "pointer" }}
-            >
-              <PersonIcon className="tw-mr-2" />
-              <p>211</p>
-            </div> */}
-
-            {/* ------------------------------------------------------------------------------------- */}
-            {/* <div
-              className="tw-flex tw-text-center tw-content-center"
-              style={{ cursor: "pointer" }}
-            >
-              <MoreVertIcon className="tw-mr-2" />
-            </div> */}
-
-            {/* ------------------------------------------------------------------------------------- */}
           </div>
           <div className="tw-absolute tw-overflow-y-scroll tw-h-[90%] tw-bottom-4 tw-w-full">
             <div className="tw-bottom-12 tw-relative tw-w-full">

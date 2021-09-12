@@ -49,6 +49,26 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     await client.join(appId, channel, token || null, uid);
   }
 
+  async function ready() {
+    console.log("join running..");
+
+    if (!client) {
+      return;
+    }
+    if (role === "host") {
+      let track = await createLocalTracks();
+
+      // console.log(appId, channel, token, uid);
+      return track;
+      // await client.join(appId, channel, token, uid);
+      // await client.publish(track);
+      // return setJoinState(true);
+    }
+    // if client
+    await client.join(appId, channel, token, uid);
+    return setJoinState(true);
+  }
+
   async function leave() {
     if (localAudioTrack) {
       localAudioTrack.stop();
@@ -112,6 +132,7 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     leave,
     join,
     remoteUsers,
+    ready,
   };
 }
 

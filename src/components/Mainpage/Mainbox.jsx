@@ -20,19 +20,6 @@ function Mainbox({
   Group,
   Private,
 }) {
-  const [stream, setStream] = useState(false);
-  const data = {
-    Name: "Mainbox",
-    Description:
-      "Mainbox is a simple, yet powerful, flexbox based grid system. ",
-    Age: "22",
-    nation: "China",
-    rating: 5,
-    Group: 12,
-    Private: 16,
-    language: "Javascript,PHP,English",
-    photo: "brandikaran.jpg",
-  };
   const watch = () => {
     console.log("pass dynamic ");
 
