@@ -27,28 +27,48 @@
 }
 
 .child_transition {
-  background-color:black;
+  background-color: black;
   width: 100%;
   opacity: 0;
   height: 60%;
   transition: all 0.5s;
   bottom: 0;
+  pointer-events: none;
 }
 
 .parent_transition:hover .child_transition {
   height: 100%;
-  opacity: 0.6;
+  opacity: 0.8;
   bottom: 0;
   filter: contrast(2.5);
+  pointer-events: all;
+}
+
+.child_transition_1{
+  width: 100%;
+  opacity: 0;
+  height: 60%;
+  transition: all 0.5s;
+  bottom: 0;
+  pointer-events: none;
+
+}
+
+.parent_transition:hover .child_transition_1 {
+  height: 100%;
+  opacity: 1;
+  bottom: 0;
+  filter: contrast(2.5);
+  pointer-events: all;
 }
 
 
 .video-player {
   height: calc(100% - 60px);
 }
-#sidebar_item_name{
+#sidebar_item_name {
   flex-basis: 60%;
 }
-.sidebar_item_number{
+.sidebar_item_number {
   text-orientation: sideways;
 }
