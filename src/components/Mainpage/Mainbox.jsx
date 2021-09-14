@@ -32,7 +32,7 @@ function Mainbox({
   return (
     <div className="tw-mx-3 tw-my-6 tw-font-sans" key={Math.random() * 100}>
       <div className="tw-relative tw-font-sans parent_transition">
-        <img src={Photo} alt="Dream Girl" className="tw-h-[38vh] tw-w-full" />
+        <Image src={Photo} width={270} height={370} alt="Dream Girl" />
         <div className="tw-absolute tw-z-[2]  child_transition after"></div>
         {/*  Real*/}
         <div className="tw-absolute tw-z-10  child_transition_1 after">

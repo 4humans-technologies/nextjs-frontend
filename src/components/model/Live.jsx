@@ -34,7 +34,7 @@ const reducer = (state = initState, action) => {
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IAAbuUyA4TY/KsKRDkbUQ5CpDJypO95JWaQhg30xxP9ek2LMzZAAAAAAEAC7qLCmdAM6YQEAAQByAzph";
+  "006ae3edf155f1a4e78a544d125c8f53137IACgpUpAHLaEUdVHcxV33NRzkW8/DWcL3gC8WdB5ijYvMGLMzZAAAAAAEAD+bihb8LVBYQEAAQDttUFh";
 const channel = "test-channel";
 let client;
 const role = "host";
@@ -75,7 +75,7 @@ function Live() {
             videoTrack={localVideoTrack}
             audioTrack={localAudioTrack}
             uid={4534534}
-            playAudio={false}
+            playAudio={true}
           />
           <div className="tw-text-center tw-mt-2">
             {joinState ? (

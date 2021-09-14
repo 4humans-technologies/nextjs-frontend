@@ -19,14 +19,6 @@ const ViewerUpdateContext = createContext({
 
 export const ViewerContextProvider = ({ children }) => {
   const [viewer, setViewer] = useState(initialState);
-  //   const [viewerUpdate, setViewerUpdate] = useState(null);
-  //   const [viewerUpdateCallback, setViewerUpdateCallback] = useState(null);
-
-  //   useEffect(() => {
-  //     if (viewerUpdateCallback) {
-  //       viewerUpdateCallback(viewerUpdate);
-  //     }
-  //   }, [viewerUpdate]);
 
   const updateViewer = (newViewer, cb) => {
     setViewer((prevValue) => ({ ...prevValue, ...newViewer })), cb();
@@ -37,9 +29,6 @@ export const ViewerContextProvider = ({ children }) => {
     <ViewerContext.Provider value={{ viewer, setViewer }}>
       <ViewerUpdateContext.Provider
         value={{
-          //   viewerUpdate,
-          //   setViewerUpdate,
-          //   setViewerUpdateCallback,
           updateViewer,
         }}
       >

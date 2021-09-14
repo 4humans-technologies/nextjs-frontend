@@ -43,7 +43,7 @@ function Sidebar(props) {
   };
   return (
     <div
-      className="tw-bg-gray-800 tw-w-[240px] tw-min-h-screen tw-flex tw-flex-col tw-fixed tw-font-sans tw-transition-all tw-bottom-0 tw-top-20 tw-z-[101]"
+      className="tw-bg-gray-800 tw-w-[240px] tw-min-h-screen tw-flex tw-flex-col tw-fixed tw-font-sans tw-transition-all tw-bottom-0 tw-top-32 tw-z-[110]"
       style={sidebarStatus ? showStyle : hideStyle}
     >
       <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
@@ -70,54 +70,6 @@ function Sidebar(props) {
           </div>
         );
       })}
-
-      {/* <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <Button variant="secondary" className='tw-w-full tw-text-black tw-font-bold'>Buy Now</Button>
-      </div>
-
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-       variant="secondary"
-        <p>Home</p>
-      </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <FavoriteIcon className="tw-mr-2" />
-        <p>Favorites</p>
-      </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <ThumbUpAltIcon className="tw-mr-2" />
-        <p>History</p>
-      </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <HistoryIcon className="tw-mr-2" />
-        <p>Settings</p>
-      </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <HomeIcon className="tw-mr-2" />
-        <p>Home</p>
-      </div>
-
-      <hr className="tw-bg-white" />
-
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <HomeIcon className="tw-mr-2" />
-        <p>Home_2</p>
-      </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <FavoriteIcon className="tw-mr-2" />
-        <p>Favorites_2</p>
-      </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <ThumbUpAltIcon className="tw-mr-2" />
-        <p>History_3</p>
-      </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <HistoryIcon className="tw-mr-2" />
-        <p>Settings_4</p>
-      </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">
-        <HomeIcon className="tw-mr-2" />
-        <p>Home</p>
-      </div> */}
     </div>
   );
 }

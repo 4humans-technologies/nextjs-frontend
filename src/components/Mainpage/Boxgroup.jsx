@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Mainbox from "./Mainbox";
-
+import Photo from "../../../public/brandikaran.jpg";
 const Data = [
   {
     Name: "Vikas Kumawat",
@@ -9,7 +9,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -20,7 +20,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -31,7 +31,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -42,7 +42,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -53,7 +53,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -64,7 +64,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -75,7 +75,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -86,7 +86,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -97,7 +97,7 @@ const Data = [
     Language: "Marwadi",
     Nation: "India",
     Rating: 5,
-    image: "brandikaran.jpg",
+    image: Photo,
     Group: 12,
     Private: 16,
   },
@@ -109,7 +109,7 @@ function Boxgroup() {
       <h1 className="tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold tw-text-white">
         TestWebcams
       </h1>
-      <div className="tw-flex tw-pt-4 tw-flex-wrap tw-justify-evenly">
+      <div className="tw-flex tw-pt-4 tw-flex-wrap ">
         {Data.map((item, index) => {
           return (
             <Mainbox
@@ -126,7 +126,14 @@ function Boxgroup() {
             />
           );
         })}
+        {/* show more wala button,then this will */}
       </div>
+      <button
+        onClick={() => setCount(count + 3)}
+        className="tw-bg-red-600 tw-py-1 tw-mb-4"
+      >
+        Hello button{" "}
+      </button>
     </div>
   );
 }

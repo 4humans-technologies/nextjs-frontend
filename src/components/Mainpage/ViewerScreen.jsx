@@ -16,13 +16,13 @@ createClient();
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IADBw4GaWDRomlcKbvQ0sOIu0yHLjAK2lMmOCh48/aj6Q2LMzZAAAAAAEAC7qLCmA9g5YQEAAQAB2Dlh";
+  "006ae3edf155f1a4e78a544d125c8f53137IACgpUpAHLaEUdVHcxV33NRzkW8/DWcL3gC8WdB5ijYvMGLMzZAAAAAAEAD+bihb8LVBYQEAAQDttUFh";
 const channel = "test-channel";
 const host = "audience";
 const videoCall = "videoCall";
 
 function Videocall(props) {
-  const router = useRouter()
+  const router = useRouter();
   const {
     localAudioTrack,
     localVideoTrack,
@@ -56,18 +56,17 @@ function Videocall(props) {
         <p className="tw-text-white">Disconnected</p>
       )}
 
-      
-    
-        {remoteUsers.length > 0 &&
-          remoteUsers.map((user) => {
-            return (
-              <VideoPlayer
-                key={user.uid}
-                videoTrack={user.videoTrack}
-                audioTrack={user.audioTrack}
-              />
-            );
-          })}
+      {remoteUsers.length > 0 &&
+        remoteUsers.map((user) => {
+          return (
+            <VideoPlayer
+              key={user.uid}
+              videoTrack={user.videoTrack}
+              audioTrack={user.audioTrack}
+              playAudio={true}
+            />
+          );
+        })}
     </div>
   );
 }
