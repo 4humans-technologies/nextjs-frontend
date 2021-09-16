@@ -8,7 +8,7 @@ function SecondHeader() {
   let screenWidth = useWidth();
   return (
     <div>
-      <div className="tw-flex tw-text-white tw-bg-second-color tw-pt-4 tw-pb-2 tw-text-lg tw-top-20 tw-left-0 tw-right-0 tw-fixed tw-z-[101] tw-justify-between">
+      <div className="tw-flex tw-text-white tw-bg-second-color tw-text-lg tw-top-20 tw-left-0 tw-right-0 tw-fixed tw-z-[101] tw-justify-between tw-items-center">
         {screenWidth < 600 ? (
           [
             search == true ? (
@@ -25,11 +25,11 @@ function SecondHeader() {
               </div>
             ) : (
               <div className="tw-flex tw-justify-between">
-                <div className="tw-flex tw-px-3">
-                  <div className="tw-ml-2 tw-mr-2">Girls</div>
-                  <div className="tw-ml-2 tw-mr-2">Couple</div>
-                  <div className="tw-ml-2 tw-mr-2">Guys</div>
-                  <div className="tw-ml-2 tw-mr-2">Trans</div>
+                <div className="tw-flex">
+                  <div className="tw-ml-2 tw-mr-2 hover:tw-bg-gray-800 py-3">Girls</div>
+                  <div className="tw-ml-2 tw-mr-2 hover:tw-bg-gray-800 py-3">Couple</div>
+                  <div className="tw-ml-2 tw-mr-2 hover:tw-bg-gray-800 py-3">Guys</div>
+                  <div className="tw-ml-2 tw-mr-2 hover:tw-bg-gray-800 py-3">Trans</div>
                 </div>
                 <div className="tw-flex tw-justify-self-end tw-ml-20">
                   <div className="tw-border-l-2 tw-w-full">
@@ -43,12 +43,12 @@ function SecondHeader() {
             ),
           ]
         ) : (
-          <div className="tw-flex tw-px-3">
-            <div className="tw-ml-2 tw-mr-2">Girls</div>
-            <div className="tw-ml-2 tw-mr-2">Couple</div>
-            <div className="tw-ml-2 tw-mr-2">Guys</div>
-            <div className="tw-ml-2 tw-mr-2">Trans</div>
-            <div className="tw-ml-2 tw-mr-2">{screenWidth}</div>
+          <div className="tw-flex tw-my-auto">
+            <div className="tw-px-4 hover:tw-bg-gray-800 py-3">Girls</div>
+            <div className="tw-px-4 hover:tw-bg-gray-800 py-3">Couple</div>
+            <div className="tw-px-4 hover:tw-bg-gray-800 py-3">Guys</div>
+            <div className="tw-px-4 hover:tw-bg-gray-800 py-3">Trans</div>
+            <div className="tw-px-4 hover:tw-bg-gray-800 py-3">{screenWidth}</div>
           </div>
         )}
 

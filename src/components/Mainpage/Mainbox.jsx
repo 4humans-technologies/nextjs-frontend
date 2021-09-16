@@ -30,20 +30,20 @@ function Mainbox({
     star.push(<StarIcon className="tw-text-yellow-300 " />);
   }
   return (
-    <div className="sm:tw-m-2 tw-m-0 tw-font-sans" key={Math.random() * 100}>
+    <div className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full" key={Math.random() * 100}>
       <div className="tw-relative tw-font-sans parent_transition tw-m-0">
         <Image
           src={Photo}
-          height={256}
-          width={352}
+          height={256*2}
+          width={352*2}
           alt="Dream Girl"
-          className="tw-object-cover"
+          className="tw-object-cover tw-max-h-full tw-max-w-full"
         />
         <div className="tw-absolute tw-z-[2]  child_transition after"></div>
         {/*  Real*/}
         <div className="tw-absolute tw-z-10  child_transition_1 after tw-top-0">
           <ul
-            className="  tw-pl-4 tw-text-white tw-z-10"
+            className="tw-pl-4 tw-text-white tw-z-10"
             // style={{ textShadow: "0 0 4px white" }}
           >
             <li className="tw-font-extrabold tw-text-xl tw-py-1">{Name}</li>
