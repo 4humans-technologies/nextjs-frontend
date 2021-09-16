@@ -25,33 +25,7 @@ function Profile() {
 
     return (
       <div>
-        {data.map((item) => (
-          <Tabs
-            defaultActiveKey="profile"
-            id="uncontrolled-tab-example"
-            className="mb-3"
-          >
-            <Tab eventKey="home" title="Home">
-              <h3>Home</h3>
-              <p>{item.name}</p>
-            </Tab>
-            <Tab eventKey="profile" title="Profile">
-              <h3>Profile</h3>
-              <p>{item.email}</p>
-              <p>{item.posts}</p>
-              <p>{item.followers}</p>
-            </Tab>
-            <Tab eventKey="contact" title="Contact">
-              <h3>Contact</h3>
-              <Image
-                src={item.image.profile}
-                width="40px"
-                height="40px"
-              ></Image>
-              <Image src={item.image.cover} width="40px" height="40px"></Image>
-            </Tab>
-          </Tabs>
-        ))}
+        
       </div>
     );
 }

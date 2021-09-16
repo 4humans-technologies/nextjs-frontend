@@ -118,11 +118,10 @@ const Data = [
 function Boxgroup() {
   return (
     <div className="tw-bg-dark-black tw-w-full tw-px-3">
-      <h1 className="tw-text-xl tw-mt-4 tw-font-bold tw-text-white">
-        TestWebcams
+      <h1 className="tw-text-xl tw-font-bold tw-text-white tw-mb-4 tw-mt-6">
+        Test Webcams
       </h1>
-      <div className="tw-mt-4 tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-4 tw-gap-3 tw-auto-rows-min tw-justify-items-center">
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1 md:"> */}
+      <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-4 tw-gap-x-3 tw-gap-y-2 tw-auto-rows-min tw-justify-items-center">
         {Data.map((item, index) => {
           return (
             <Mainbox

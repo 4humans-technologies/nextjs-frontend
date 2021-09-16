@@ -1,6 +1,4 @@
 import { Counter } from '../features/counter/Counter'
-
-
 import Head from "next/head";
 import Consent from "../components/Consent";
 import Header from "../components/Mainpage/Header";
