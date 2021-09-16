@@ -13,7 +13,7 @@ function index() {
     <div className="">
       <Header />
       <Headermodel />
-      {sidebarStatus && <Sidebar />}
+      <Sidebar/>
       <Livescreen />
       <Profile />
       <Footer />

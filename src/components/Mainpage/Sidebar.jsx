@@ -33,6 +33,7 @@ const data = [
 function Sidebar(props) {
   const sidebarStatus = useSidebarStatus();
 
+  const top = `${props.top}rem` || "32rem"
   const showStyle = {
     left: "0",
 
@@ -43,7 +44,7 @@ function Sidebar(props) {
   };
   return (
     <div
-      className="tw-bg-gray-800 tw-w-[240px] tw-min-h-screen tw-flex tw-flex-col tw-fixed tw-font-sans tw-transition-all tw-bottom-0 tw-top-32 tw-z-[110]"
+      className={`tw-bg-gray-800 tw-w-[240px] tw-min-h-screen tw-flex tw-flex-col tw-fixed tw-font-sans tw-transition-all tw-bottom-0 tw-top-32 tw-z-[110]`}
       style={sidebarStatus ? showStyle : hideStyle}
     >
       <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2">

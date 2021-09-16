@@ -26,7 +26,7 @@ function Header(props) {
   const sidebarUpdate = useSidebarUpdate();
 
   return (
-    <div className="tw-flex tw-items-center tw-justify-between tw-bg-first-color tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[101]">
+    <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[101]">
       {/* ------------------------ */}
       <div className="tw-flex tw-text-center">
         <div onClick={sidebarUpdate} className="tw-self-center tw-mr-4">
@@ -96,7 +96,7 @@ function Header(props) {
           ),
         ]
       ) : (
-        <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg">
+        <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
           <div
             className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2"
             onClick={() => setSignupOpen(!signupOpen)}

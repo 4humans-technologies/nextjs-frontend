@@ -4,30 +4,29 @@ import Image from 'next/image'
 
 
 function Profile() {
-  const data = [
-    {
-      name: "John Doe",
-      email: "berrt@gmail.com",
-      age: "25",
-      image: {
-        profile:
-          "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8aW5kaWF8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-        cover:
-          "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG9ncmFwaHl8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-      },
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quidem.",
-      posts: "10",
-      followers: "100",
-      following: "50",
-    },
-  ];
-
-    return (
-      <div>
-        
+  return (
+    <div className=" tw-bg-first-color">
+      <div className="">
+        <h2 className="tw-font-semibold tw-text-lg">
+          My Profile
+        </h2>
+        <div className="tw-grid tw-grid-cols-2">
+          <div className="tw-col-span-1">
+            <h4 className="">Name: { }</h4>
+            <h4 className="">Age: { }</h4>
+            <h4 className="">Tags: { }</h4>
+            <h4 className="">Categories: { }</h4>
+          </div>
+          <div className="tw-col-span-1">
+            <h4 className="">My Hobbies</h4>
+            <p className=""></p>
+            <h4 className="">Bio</h4>
+            <p className="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus esse reiciendis aperiam inventore eveniet voluptatum sit, molestias quidem cumque sint?</p>
+          </div>
+        </div>
       </div>
-    );
+    </div>
+  );
 }
 
 export default Profile

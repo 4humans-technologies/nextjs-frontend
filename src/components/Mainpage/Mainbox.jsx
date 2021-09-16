@@ -37,7 +37,9 @@ function Mainbox({
           height={256*2}
           width={352*2}
           alt="Dream Girl"
-          className="tw-object-cover tw-max-h-full tw-max-w-full"
+          objectFit="cover"
+          objectPosition="top left"
+          className="tw-max-h-full tw-max-w-full"
         />
         <div className="tw-absolute tw-z-[2]  child_transition after"></div>
         {/*  Real*/}

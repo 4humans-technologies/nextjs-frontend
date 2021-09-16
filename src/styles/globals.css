@@ -72,3 +72,6 @@
 .sidebar_item_number {
   text-orientation: sideways;
 }
+.footer-top-shadow{
+  box-shadow: 0px 5px 36px 0px black;
+}

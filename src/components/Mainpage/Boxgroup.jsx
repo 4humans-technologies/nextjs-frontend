@@ -117,7 +117,7 @@ const Data = [
 
 function Boxgroup() {
   return (
-    <div className="tw-bg-dark-black tw-w-full tw-px-3">
+    <div className="tw-bg-first-color tw-w-full tw-px-3">
       <h1 className="tw-text-xl tw-font-bold tw-text-white tw-mb-4 tw-mt-6">
         Test Webcams
       </h1>
