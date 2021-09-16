@@ -41,7 +41,7 @@ function Videocall(props) {
   }, []);
 
   return (
-    <div className="tw-h-[100vh]">
+    <div className="tw-h-[100vh] ">
       <div className="tw-flex">
         <Button variant="primary" onClick={join}>
           Join

@@ -53,38 +53,43 @@ function Login() {
     <div className="tw-bg-dark-black  tw-h-screen tw-w-screen tw-text-center">
       <h2 className="tw-text-white tw-pt-32 ">Model Login Form</h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="tw-flex tw-flex-col tw-bg-yellow-200 tw-absolute tw-top-1/4 sm:tw-left-[38%]   tw-shadow-xl tw-text-lg tw-font-sans"
-      >
-        <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
-          <label htmlFor="Username">Username</label>
-          <input
-            type="text"
-            name="Username"
-            id="Username"
-            value={username}
-            onChange={(e) => setuserName(e.target.value)}
-            className="tw-ml-2 tw-rounded-full tw-border-none tw-outline-none tw-pl-2"
-          />
-        </div>
+      <div className="tw-flex tw-flex-col tw-bg-black tw-absolute tw-top-1/4 sm:tw-left-[38%]  tw-shadow-xl tw-text-lg tw-font-sans tw-text-white  tw-rounded-l-lg tw-rounded-r-lg tw-px-8 tw-py-8">
+        <form onSubmit={handleSubmit} className="tw-text-center">
+          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+            <input
+              type="text"
+              name="Username"
+              id="Username"
+              placeholder="UserName"
+              value={username}
+              onChange={(e) => setuserName(e.target.value)}
+              className=" tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black"
+            />
+          </div>
 
-        <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
-          <label htmlFor="Password">Password</label>
-          <input
-            type="Password"
-            name="Password"
-            id="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="tw-ml-4 tw-rounded-full tw-border-none tw-outline-none tw-pl-2"
-          />
-        </div>
+          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+            <input
+              type="Password"
+              name="Password"
+              id="Password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className=" tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black"
+            />
+          </div>
 
-        <Button variant="success" className="tw-mt-4 tw-mx-8" type="submit">
-          Submit
-        </Button>
-      </form>
+          <Button
+            variant="success"
+            className="tw-mt-4 tw-rounded-full"
+            type="submit"
+          >
+            Submit
+          </Button>
+        </form>
+        <h1 className="tw-my-2">Register </h1>
+        <Button className="tw-rounded-full">Register</Button>
+      </div>
     </div>
   );
 }
