@@ -32,7 +32,9 @@ function Header(props) {
         <div onClick={sidebarUpdate} className="tw-self-center tw-mr-4">
           {sidebarStatus ? <ClearIcon /> : <MenuIcon />}
         </div>
-        <Image src={logo} width={124} height={65} />
+        <a href="/">
+          <Image src={logo} width={124} height={65} />
+        </a>
       </div>
       {/* ------------------------ */}
       <div className="md:tw-flex md:tw-items-center tw-hidden sm:tw-inline-block">

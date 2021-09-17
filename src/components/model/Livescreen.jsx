@@ -17,6 +17,7 @@ import VideocamIcon from "@material-ui/icons/Videocam";
 import CardGiftcardIcon from "@material-ui/icons/CardGiftcard";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import { Button } from "react-bootstrap";
+import useModalContext from "../../app/ModalContext";
 
 const DynamicComponent = dynamic(() => import("../Mainpage/ViewerScreen"), {
   ssr: false,
@@ -39,6 +40,7 @@ const reducer = (state = initState, action) => {
 
 function Livescreen() {
   const [state, dispatch] = useReducer(reducer, initState);
+  const ctx = useModalContext()
   return (
     <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
       <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-7/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
@@ -54,6 +56,7 @@ function Livescreen() {
               <Button
                 className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                 variant="success"
+                onClick={ctx.toggleModal}
               >
                 <PhoneInTalkIcon fontSize="small" />
                 <p className="tw-pl-1 tw-tracking-tight">Private Audio call</p>
@@ -61,6 +64,7 @@ function Livescreen() {
               <Button
                 className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                 variant="primary"
+                onClick={ctx.toggleModal}
               >
                 <VideocamIcon fontSize="small" />
                 <p className="tw-pl-1 tw-tracking-tight">Private video call</p>

@@ -5,8 +5,8 @@ import Image from "next/image"
 
 function Footer() {
   return (
-    <div className="tw-mt-6">
-      <div className="tw-grid tw-grid-cols-6 tw-auto-rows-auto tw-px-6 tw-py-6 tw-gap-x-3 tw-bg-first-color tw-tracking-wide">
+    <div className="tw-pt-10 tw-bg-dark-black">
+      <div className="tw-grid tw-grid-cols-6 tw-auto-rows-auto tw-px-6 tw-py-6 tw-gap-x-3 tw-tracking-wide">
         <div className="tw-col-span-2 flex tw-flex-col tw-items-center tw-justify-between">
           <div className="flex tw-items-center tw-justify-start tw-mb-10">
             <Image src={logo} width={134} height={68} objectFit="cover" />
@@ -57,7 +57,7 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div className="tw-bg-first-color tw-text-center tw-py-3">
+      <div className="tw-text-center tw-py-3">
         <div className="tw-border-t-[1px] tw-border-text-black tw-mx-auto tw-w-11/12"></div>
       </div>
       <div className="tw-bg-third-color tw-flex tw-items-center tw-justify-center tw-py-2 footer-top-shadow">

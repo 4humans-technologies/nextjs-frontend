@@ -7,10 +7,10 @@ function Profile() {
   return (
     <div className=" tw-bg-first-color">
       <div className="">
-        <h2 className="tw-font-semibold tw-text-lg">
+        <h2 className="tw-font-semibold tw-text-lg tw-text-text-black">
           My Profile
         </h2>
-        <div className="tw-grid tw-grid-cols-2">
+        <div className="tw-grid tw-grid-cols-2 tw-text-text-black tw-px-4">
           <div className="tw-col-span-1">
             <h4 className="">Name: { }</h4>
             <h4 className="">Age: { }</h4>
