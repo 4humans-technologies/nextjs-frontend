@@ -87,9 +87,17 @@ function LivePeople() {
       <div className='tw-font-sans'>
         {data.map((item, index) => {
           return (
-            <div key={index} className = "tw-flex tw-bg-gray-300 tw-py-4 tw-px-2 tw-my-4" >
-              <div className = "md:tw-mx-4" >{item.name}:-</div>
-              {item.age}
+            <div>
+              <div
+                key={index}
+                className="tw-flex tw-bg-second-color tw-py-1 tw-px-1  tw-font-sans"
+              >
+                <div className="md:tw-mx-2  tw-text-gray-500  tw-text-base">
+                  {item.name} :
+                </div>
+                <div className="tw-text-sm tw-text-white">{item.age}</div>
+              </div>
+              <hr />
             </div>
           );
         })}
