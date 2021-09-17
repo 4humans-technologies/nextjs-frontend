@@ -15,6 +15,7 @@ function index() {
       <SecondHeader />
       <Sidebar />
       <Livescreen />
+      <ModelProfile />
       <Footer />
     </div>
   );
