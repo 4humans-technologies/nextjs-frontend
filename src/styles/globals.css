@@ -1,9 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 * {
   margin: 0;
   padding: 0;
@@ -23,8 +21,7 @@
   height: 120px;
 }
 
-.parent_transition {
-}
+.parent_transition {}
 
 .child_transition {
   background-color: black;
@@ -44,14 +41,13 @@
   pointer-events: all;
 }
 
-.child_transition_1{
+.child_transition_1 {
   width: 100%;
   opacity: 0;
   height: 40%;
   transition: all 0.5s;
   bottom: 4px;
   pointer-events: none;
-
 }
 
 .parent_transition:hover .child_transition_1 {
@@ -62,16 +58,30 @@
   pointer-events: all;
 }
 
-
 .video-player {
   height: calc(100% - 60px);
 }
+
 #sidebar_item_name {
   flex-basis: 60%;
 }
+
 .sidebar_item_number {
   text-orientation: sideways;
 }
-.footer-top-shadow{
+
+.footer-top-shadow {
   box-shadow: 0px 5px 36px 0px black;
+}
+
+.red-gray-gradient {
+  background: rgb(253, 30, 71);
+  background: linear-gradient(180deg, rgba(253, 30, 71, 0.5970763305322129) 0%, rgba(20, 20, 21, 0.5130427170868348) 100%);
+}
+
+.video-call-icon-container {
+  box-shadow: 0px 0px 10px #FFFFFF;
+}
+.video-call-button {
+  box-shadow: 0px 0px 10px #FD1E47;
 }

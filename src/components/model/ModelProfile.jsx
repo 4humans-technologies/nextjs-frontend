@@ -3,7 +3,9 @@ import { useEffect } from 'react'
 import Neeraj from "../../../public/brandikaran.jpg"
 import Image from "next/image"
 import { PlayCircleFilled } from "@material-ui/icons"
-
+import useModalContext from '../../app/ModalContext'
+import CallDetailsPopUp from '../Call/CallDetailsPopUp'
+import Modal from "../Call/Modal"
 
 function ChipArea(props) {
     return (
@@ -36,6 +38,7 @@ function ModelProfile(props) {
      * ment for use in here only
      */
     const { name, age } = props.profileData
+    const ctx = useModalContext()
 
     const tags = props.profileData.tags.map(tag => (
         <ChipArea>
@@ -66,14 +69,14 @@ function ModelProfile(props) {
                             backgroundSize: "cover"
                         }}></div>
                         <div className="tw-mt-5">
-                            {props.dynamicFields.map(field => {
+                            {props.dynamicFields.map((field, index) => {
                                 let value;
                                 if (Array.isArray(field.value)) {
                                     value = field.value.join(" , ")
                                 } else {
                                     value = field.value
                                 }
-                                return (<ProfileRow title={`${field.title}:`} data={<p>{value}</p>} />)
+                                return (<ProfileRow title={`${field.title}:`} data={<p>{value}</p>} key={`${index}-profrow`} />)
                             })}
                         </div>
                     </div>
@@ -198,6 +201,11 @@ function ModelProfile(props) {
                     </div>
                 </div>
             </div>
+            {/* modal setup */}
+            <Modal>
+                <CallDetailsPopUp />
+            </Modal>
+            {/* <button onClick={ctx.toggleModal} className="tw-px-3 tw-py-2 tw-text-white-color">Close</button> */}
         </div>
     )
 }

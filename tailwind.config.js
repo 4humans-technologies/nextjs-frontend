@@ -16,6 +16,7 @@ module.exports = {
         "green-color": "#00B649", // #green color
         "text-black": "#747474",
         "dark-background": "000000", // #dark background
+        "dreamgirl-red":"#FD1E47"
       },
       fontFamily: {
         sans: ["PT sans", "sans-serif"],
