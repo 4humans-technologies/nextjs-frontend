@@ -3,94 +3,48 @@ import { useEffect } from "react";
 import dynamic from "next/dynamic";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { Fragment } from "react";
+import useAgora from "../../hooks/useAgora";
+import CallDetailsPopUp from "../Call/CallDetailsPopUp";
 
-const codeMode = { codec: "vp8", mode: "rtc" };
-const client = AgoraRTC.createClient(codeMode); //create agora client
+const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
+const token =
+  "006ae3edf155f1a4e78a544d125c8f53137IAA4ze43oWh0XrC7//IY2poJJEE1dBlIevpXopSrNbv77GLMzZAAAAAAEACI9+ReKB9GYQEAAQAnH0Zh";
+const channel = "test-channel";
+let client;
+const role = "host";
+const callType = "audioCall";
+const createClient = (role) => {
+  const clientOptions = { codec: "h264", mode: "live" };
+  client = AgoraRTC.createClient(clientOptions);
+  client.setClientRole("host");
+};
+createClient();
 
 function Audio() {
-  const appId = "ae3edf155f1a4e78a544d125c8f53137"; //replace with your app id
-  const channel = "test"; //replace with your channel name
-  const uid = `${Math.floor(Math.random() * 100000)}`; //replace with your unique Id in the channel
-  const token =
-    "006ae3edf155f1a4e78a544d125c8f53137IABolZbLgmQGu8s7MIJlbynNYdgITg8ot97ryQmcQ+LqqAx+f9gAAAAAEABSSZ5el3Q3YQEAAQCWdDdh"; //replace with your token
-  const [localAudioTrack, setLocalAudioTrack] = useState(null);
-  const [joinState, setJoinState] = useState(false);
-  const [remoteUsers, setRemoteUsers] = useState([]);
-  const [enable, setEnable] = useState(false);
-
-  const createLocalTracks = async () => {
-    const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack();
-    setLocalAudioTrack(microphoneTrack);
-    return microphoneTrack;
-  };
-
-  const join = async () => {
-    if (!client) {
-      return;
-    }
-    console.log("creating local Track");
-    const microphoneTrack = await createLocalTracks();
-    console.log("Joinig");
-    await client.join(appId, channel, token, uid);
-    console.log("publishing");
-    await client.publish(microphoneTrack);
-    setJoinState(true);
-  };
-
-  const leave = async () => {
-    if (!client) {
-      return;
-    }
-    if (localAudioTrack) {
-      localAudioTrack.stop();
-      await localAudioTrack.close();
-    }
-    await client.leave();
-    setJoinState(false);
-    setRemoteUsers([]);
-  };
+  const {
+    localAudioTrack,
+    localVideoTrack,
+    joinState,
+    leave,
+    join,
+    remoteUsers,
+    ready,
+  } = useAgora(client, appId, token, channel, role, null, callType);
 
   useEffect(() => {
-    if (!client) {
-      return;
-    }
-    setRemoteUsers(client.remoteUsers);
-
-    const handleUserPublished = async (user, mediaType) => {
-      await client.subscribe(user, mediaType);
-      setRemoteUsers((remote) => Array.from(client.remoteUsers));
-    };
-    const handleUserUnpublished = async (user, mediaType) => {
-      await client.unsubscribe(user, mediaType);
-      setRemoteUsers((remote) => Array.from(client.remoteUsers));
-    };
-    const handleUserJoined = async (user) => {
-      setRemoteUsers((remote) => Array.from(client.remoteUsers));
-    };
-    const handleUserLeft = async (user) => {
-      setRemoteUsers((remote) => Array.from(client.remoteUsers));
-    };
-
-    client.on("user-published", handleUserPublished);
-    client.on("user-unpublished", handleUserUnpublished);
-
-    client.on("user-joined", handleUserJoined);
-    client.on("user-left", handleUserLeft);
-
-    return () => {
-      client.off("user-published", handleUserPublished);
-      client.off("user-unpublished", handleUserUnpublished);
-
-      client.off("user-joined", handleUserJoined);
-      client.off("user-left", handleUserLeft);
-    };
-  }, [client]);
+    join();
+  }, []);
 
   return (
     <>
       <div>{joinState ? "connect" : "not connected"}</div>
       <div>
-        <div className="tw-flex tw-mt-4 ">
+        <div
+          className="tw-flex tw-mt-4 "
+          audioTrack={localAudioTrack}
+          uid={4534534}
+          playAudio={true}
+        >
           <button
             onClick={join}
             className="tw-rounded-full tw-bg-green-400 tw-px-2 tw-py-1 tw-mx-4"
@@ -103,7 +57,6 @@ function Audio() {
           >
             Leave
           </button>
-
           <button
             className="tw-rounded-full tw-bg-yellow-200 tw-px-2 tw-py-1"
             onClick={() => {

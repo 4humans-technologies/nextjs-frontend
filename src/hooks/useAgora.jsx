@@ -57,12 +57,7 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     }
     if (role === "host") {
       let track = await createLocalTracks();
-
-      // console.log(appId, channel, token, uid);
       return track;
-      // await client.join(appId, channel, token, uid);
-      // await client.publish(track);
-      // return setJoinState(true);
     }
     // if client
     await client.join(appId, channel, token, uid);

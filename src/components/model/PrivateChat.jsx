@@ -105,7 +105,9 @@ function PrivateChat() {
                   </div>
                   <div className="tw-text-sm">{item.message}</div>
                 </div>
-                <div className="tw-text-yellow-400 tw-pr-6">{item.id}</div>
+                <div className="tw-text-yellow-400 tw-pr-6">
+                  {item.id} Coins
+                </div>
               </div>
               <hr className="tw-bg-dark-black" />
             </div>
