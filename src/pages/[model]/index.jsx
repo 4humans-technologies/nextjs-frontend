@@ -6,16 +6,18 @@ import Livescreen from "../../components/model/Livescreen";
 import { useSidebarUpdate, useSidebarStatus } from "../../app/Sidebarcontext";
 import Sidebar from "../../components/Mainpage/Sidebar";
 import Profile from "../../components/model/profile";
+import SecondHeader from "../../components/Mainpage/SecondHeader";
 
 function index() {
   const sidebarStatus = useSidebarStatus();
   return (
     <div className="">
       <Header />
-      <Headermodel />
-      <Sidebar/>
+      {/* <Headermodel /> */}
+      <SecondHeader />
+      <Sidebar />
       <Livescreen />
-      <Profile />
+      {/* <Profile /> */}
       <Footer />
     </div>
   );
