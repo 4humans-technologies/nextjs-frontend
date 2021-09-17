@@ -3,8 +3,12 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import { Button } from "react-bootstrap";
 import MediaPlayer from "../UI/MediaPlayer";
 import VideoPlayer from "../UI/VideoPlayer";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 import useAgora from "./useAgora";
-import {useRouter} from "next/router";
+import { useRouter } from "next/router";
+import PhoneInTalkIcon from "@material-ui/icons/PhoneInTalk";
+import VideocamIcon from "@material-ui/icons/Videocam";
+import CardGiftcardIcon from "@material-ui/icons/CardGiftcard";
 
 let client;
 const createClient = (role) => {
@@ -41,7 +45,7 @@ function Videocall(props) {
   }, []);
 
   return (
-    <div className="tw-h-[100vh] ">
+    <div className="tw-h-[70vh]">
       <div className="tw-flex">
         <Button variant="primary" onClick={join}>
           Join
@@ -55,11 +59,11 @@ function Videocall(props) {
       ) : (
         <p className="tw-text-white">Disconnected</p>
       )}
-
       {remoteUsers.length > 0 &&
         remoteUsers.map((user) => {
           return (
             <VideoPlayer
+              className="w-[50vh]"
               key={user.uid}
               videoTrack={user.videoTrack}
               audioTrack={user.audioTrack}
