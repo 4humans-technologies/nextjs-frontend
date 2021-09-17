@@ -12,7 +12,7 @@ function SecondHeader() {
         {screenWidth < 600 ? (
           [
             search == true ? (
-              <div className=" tw-px-2 tw-bg-dark-black tw-flex tw-w-full tw-mx-2">
+              <div className=" tw-px-2 tw-bg-dark-black tw-flex tw-w-full tw-pr-2 tw-py-2">
                 <SearchIcon className="tw-outline-none " />
                 <input
                   className="tw-rounded-full tw-w-full tw-bg-dark-black tw-border-transparent tw-outline-none tw-px-1 tw-text-white second_search"
@@ -26,15 +26,23 @@ function SecondHeader() {
             ) : (
               <div className="tw-flex tw-justify-between">
                 <div className="tw-flex">
-                  <div className="tw-ml-2 tw-mr-2 hover:tw-bg-first-color tw-py-2">Girls</div>
-                  <div className="tw-ml-2 tw-mr-2 hover:tw-bg-first-color tw-py-2">Couple</div>
-                  <div className="tw-ml-2 tw-mr-2 hover:tw-bg-first-color tw-py-2">Guys</div>
-                  <div className="tw-ml-2 tw-mr-2 hover:tw-bg-first-color tw-py-2">Trans</div>
+                  <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                    Girls
+                  </div>
+                  <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                    Couple
+                  </div>
+                  <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                    Guys
+                  </div>
+                  <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                    Trans
+                  </div>
                 </div>
-                <div className="tw-flex tw-justify-self-end tw-ml-20">
-                  <div className="tw-border-l-2 tw-w-full">
+                <div className="tw-flex tw-justify-self-end tw-ml-20 ">
+                  <div className="tw-border-l-2 tw-w-full tw-self-center  ">
                     <SearchIcon
-                      className="tw-outline-none tw-ml-2  "
+                      className="tw-outline-none tw-ml-2 "
                       onClick={() => setSearch((prevState) => !prevState)}
                     />
                   </div>
@@ -45,10 +53,14 @@ function SecondHeader() {
         ) : (
           <div className="tw-flex tw-my-auto">
             <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">Girls</div>
-            <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">Couple</div>
+            <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">
+              Couple
+            </div>
             <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">Guys</div>
             <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">Trans</div>
-            <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">{screenWidth}</div>
+            <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">
+              {screenWidth}
+            </div>
           </div>
         )}
 
