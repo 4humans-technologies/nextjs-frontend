@@ -72,20 +72,20 @@ function Live() {
       <SecondHeader />
 
       <div className="sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28">
-        <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[36rem] sm:tw-ml-4 sm:tw-mt-4 tw-mt-2">
+        <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2">
           <VideoPlayer
             videoTrack={localVideoTrack}
             audioTrack={localAudioTrack}
             uid={4534534}
             playAudio={false}
           />
-          <div className="tw-text-center tw-mt-1 tw-flex tw-justify-items-center">
+          <div className="tw-text-center tw-mt-1 tw-flex tw-ml-[40%]">
             {joinState ? (
               <button
                 onClick={leave}
                 // onClick={socketjoin}
                 // disabled={!joinState}
-                className="tw-rounded-full sm:tw-px-2 tw-px-0 sm:tw-py-1 tw-py-0 tw-bg-yellow-300 tw-mx-2"
+                className="tw-rounded-full sm:tw-px-2 tw-px-0 sm:tw-py-1 tw-py-0 tw-bg-yellow-300 tw-mx-2 "
               >
                 leave
               </button>

@@ -41,10 +41,10 @@ function Livescreen() {
   const [state, dispatch] = useReducer(reducer, initState);
   return (
     <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
-      <div className="tw-bg-dark-black md:tw-ml-1 tw-mt-4 sm:tw-w-7/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
+      <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-7/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
         {/* <img src="brandikaran.jpg" alt="" /> */}
         <DynamicComponent />
-        <div className="tw-bg-transparent   sm:tw-w-[50%] tw-w-full tw-absolute tw-bottom-1 tw-mb-0 tw-self-center tw-py-3 tw-px-2 tw-rounded-r-md tw-rounded-l-md">
+        <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-1 tw-mb-0 tw-self-center tw-py-3 tw-px-2">
           <div className="tw-flex tw-justify-between tw-self-center tw-text-white">
             <div className="tw-flex tw-self-center">
               <FavoriteIcon className="tw-rounded-full tw-flex sm:tw-mr-2" />
@@ -77,7 +77,7 @@ function Livescreen() {
         </div>
       </div>
 
-      <div className="sm:tw-ml-4 sm:tw-mt-4 tw-mt-2 tw-bg-dark-black sm:tw-w-7/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+      <div className="sm:tw-mt-4 tw-mt-2 tw-bg-dark-black sm:tw-w-7/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
         <div className="tw-flex tw-bg-gray-700 tw-justify-between tw-text-white sm:tw-py-4 sm:tw-px-4 tw-text-center tw-content-center">
           <div
             className="tw-flex tw-text-center tw-content-center"
