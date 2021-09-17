@@ -49,7 +49,7 @@ function Livescreen() {
         <div className="tw-bg-transparent   sm:tw-w-[50%] tw-w-full tw-absolute tw-bottom-1 tw-mb-0 tw-self-center tw-py-3 tw-px-2 tw-rounded-r-md tw-rounded-l-md">
           <div className="tw-flex tw-justify-between tw-self-center tw-text-white">
             <div className="tw-flex tw-self-center">
-              <FavoriteIcon className="tw-rounded-full tw-flex tw-mr-2" />
+              <FavoriteIcon className="tw-rounded-full tw-flex sm:tw-mr-2" />
               <div className="pl-4">33.k</div>
             </div>
             <div className=" tw-flex tw-justify-between">
@@ -81,7 +81,7 @@ function Livescreen() {
         </div>
       </div>
 
-      <div className="sm:tw-ml-4 sm:tw-mt-4 tw-mt-2 tw-bg-gray-400 sm:tw-w-7/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+      <div className="sm:tw-ml-4 sm:tw-mt-4 tw-mt-2 tw-bg-dark-black sm:tw-w-7/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
         <div className="tw-flex tw-bg-gray-700 tw-justify-between tw-text-white sm:tw-py-4 sm:tw-px-4 tw-text-center tw-content-center">
           <div
             className="tw-flex tw-text-center tw-content-center"
@@ -121,17 +121,19 @@ function Livescreen() {
           {/* ------------------------------------------------------------------------------------- */}
         </div>
         <div className="tw-absolute tw-overflow-y-scroll tw-h-[90%] tw-bottom-4 tw-w-full">
-          <div className="tw-bottom-12 tw-relative tw-w-full">{state.val}</div>
+          <div className="tw-bottom-0 tw-relative tw-w-full">{state.val}</div>
         </div>
 
         <div className="tw-flex tw-py-2 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">
-          <input
-            className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-3 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
-            placeholder="Public Chat  ....."
-          ></input>
-          <EmojiEmotionsIcon />
-          <div className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-0 sm:tw-px-4 tw-bg-dark-black sm:tw-mx-4 tw-mx-2">
-            Send Message
+          <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full">
+            <input
+              className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-3 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
+              placeholder="Public Chat  ....."
+            ></input>
+            <EmojiEmotionsIcon />
+            <div className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-0 sm:tw-px-4 tw-bg-blue-500 sm:tw-mx-1 tw-mx-2">
+              Send Message
+            </div>
           </div>
         </div>
       </div>

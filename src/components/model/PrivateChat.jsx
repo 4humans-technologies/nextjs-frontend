@@ -81,16 +81,33 @@ function PrivateChat() {
       age: 30,
       message: "我是Ravi ji",
     },
+    {
+      id: 14,
+      name: "Ravi shankar",
+      age: 30,
+      message: "Nrj is Bro ",
+    },
   ];
 
   return (
     <div>
-      <div className='tw-font-sans'>
+      <div className="tw-font-sans">
         {data.map((item, index) => {
           return (
-            <div key={index} className = "tw-flex tw-bg-gray-300 tw-py-4 tw-px-2 tw-my-4" >
-              <div className = "md:tw-mx-4" >{item.name}:-</div>
-              {item.message}
+            <div>
+              <div
+                key={index}
+                className="tw-flex tw-bg-second-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans"
+              >
+                <div className="tw-flex">
+                  <div className="md:tw-mx-2 tw-font-bold tw-text-red-500 tw-text-base">
+                    {item.name} :
+                  </div>
+                  <div className="tw-text-sm">{item.message}</div>
+                </div>
+                <div className="tw-text-yellow-400 tw-pr-6">{item.id}</div>
+              </div>
+              <hr className="tw-bg-dark-black" />
             </div>
           );
         })}
