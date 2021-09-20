@@ -139,7 +139,7 @@ function CallDetailsPopUp(props) {
         </div>
         <button
           className="tw-text-white-color hover:tw-text-dreamgirl-red tw-absolute tw-top-0 tw-left-0"
-          onClick={ctx.toggleModal}
+          onClick={ctx.toggleCallModal}
         >
           <Cancel fontSize="large" />
         </button>

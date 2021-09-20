@@ -1,28 +1,51 @@
-import React, { useContext, createContext, useState } from "react"
+import React, { useContext, createContext, useState } from "react";
 
 const ModalContext = createContext({
-    modalIsOpen: false,
-    setModalIsOpen: () => { },
-    toggleModal: () => { },
-})
+  callDetailsOpen: false,
+  loginOpen: false,
+  registerOpen: false,
+  toggleCallModal: () => {},
+  toggleLoginModal: () => {},
+  toggleRegisterModal: () => {},
+});
 
 export function ModalContextProvider(props) {
-    const [modalIsOpen, setModalIsOpen] = useState(false)
-    const toggleModal = () => {
-        setModalIsOpen(prev => !prev)
-    }
+  const [callDetailsOpen, setCallDetailsOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
 
-    return (
-        <ModalContext.Provider value={{
-            modalIsOpen,
-            setModalIsOpen,
-            toggleModal
-        }}>
-            {props.children}
-        </ModalContext.Provider>
-    )
+  const toggleCallModal = () => {
+    setLoginOpen(false);
+    setRegisterOpen(false);
+    setCallDetailsOpen((prev) => !prev);
+  };
+  const toggleLoginModal = () => {
+    setLoginOpen((prev) => !prev);
+    setRegisterOpen(false);
+    setCallDetailsOpen(false);
+  };
+  const toggleRegisterModal = () => {
+    setLoginOpen(false);
+    setRegisterOpen((prev) => !prev);
+    setCallDetailsOpen(false);
+  };
+
+  return (
+    <ModalContext.Provider
+      value={{
+        callDetailsOpen,
+        loginOpen,
+        registerOpen,
+        toggleCallModal,
+        toggleLoginModal,
+        toggleRegisterModal,
+      }}
+    >
+      {props.children}
+    </ModalContext.Provider>
+  );
 }
 
 export default function useModalContext() {
-    return useContext(ModalContext)
+  return useContext(ModalContext);
 }

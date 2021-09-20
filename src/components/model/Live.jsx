@@ -14,6 +14,13 @@ import useAgora from "../../hooks/useAgora"; //using agora from Hooks
 import VideoPlayer from "../UI/VideoPlayer";
 import { io } from "socket.io-client";
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions";
+import dynamic from "next/dynamic";
+
+// import { useTokenContext } from "../../app/Tokencontext";
+// import { useUpdateContext } from "../../app/Tokencontext";
+
+import { useViewerContext } from "../../app/Viewercontext";
+import { useViewerUpdateContext } from "../../app/Viewercontext";
 
 const initState = { val: <Publicchat /> };
 
@@ -30,10 +37,11 @@ const reducer = (state = initState, action) => {
   }
 };
 
+// /api/website/token-builder/create-stream-and-gen-token
+
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
-const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IAA4ze43oWh0XrC7//IY2poJJEE1dBlIevpXopSrNbv77GLMzZAAAAAAEACI9+ReKB9GYQEAAQAnH0Zh";
-const channel = "test-channel";
+let token;
+let channel;
 let client;
 const role = "host";
 const callType = "videoCall";
@@ -45,6 +53,8 @@ const createClient = (role) => {
 createClient();
 
 function Live() {
+  const Ctx = useViewerContext();
+  const updateCtx = useViewerUpdateContext();
   const [state, dispatch] = useReducer(reducer, initState);
 
   const {
@@ -56,6 +66,33 @@ function Live() {
     remoteUsers,
     ready,
   } = useAgora(client, appId, token, channel, role, null, callType);
+
+  useEffect(() => {
+    // debugger;
+    fetch(
+      "http://localhost:8080/api/website/token-builder/create-stream-and-gen-token",
+      {
+        method: "POST",
+        cors: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+      }
+    )
+      .then((resp) => resp.json())
+      .then((data) => {
+        debugger;
+        updateCtx.updateViewer({
+          rtcToken: data.rtcToken,
+        });
+        token = data.rtcToken;
+        channel = data.modelId;
+        // join();
+        console.log(`${data.actionStatus}`);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   useEffect(() => {
     ready();
@@ -89,7 +126,7 @@ function Live() {
                 </button>
               ) : (
                 <button
-                  onClick={join}
+                  onClick={() => join(channel, token, channel)}
                   // disabled={joinState}
                   className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300 mx-2"
                 >

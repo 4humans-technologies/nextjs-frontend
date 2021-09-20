@@ -6,9 +6,7 @@ import VideoPlayer from "../UI/VideoPlayer";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import useAgora from "./useAgora";
 import { useRouter } from "next/router";
-import PhoneInTalkIcon from "@material-ui/icons/PhoneInTalk";
-import VideocamIcon from "@material-ui/icons/Videocam";
-import CardGiftcardIcon from "@material-ui/icons/CardGiftcard";
+import { useViewerContext } from "../../app/Viewercontext";
 
 let client;
 const createClient = (role) => {
@@ -19,13 +17,11 @@ const createClient = (role) => {
 createClient();
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
-const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IACgpUpAHLaEUdVHcxV33NRzkW8/DWcL3gC8WdB5ijYvMGLMzZAAAAAAEAD+bihb8LVBYQEAAQDttUFh";
-const channel = "test-channel";
-const host = "audience";
-const videoCall = "videoCall";
+let token;
+let channel;
 
 function Videocall(props) {
+  const ctx = useViewerContext();
   const router = useRouter();
   const {
     localAudioTrack,
@@ -38,9 +34,34 @@ function Videocall(props) {
 
   console.log("props >>", router.streaming);
   useEffect(() => {
+    if (ctx.isLoggedIn === true) {
+      fetch(
+        "http://localhost:8080/api/website/token-builder/authed-viewer-join-stream",
+        {
+          method: "POST",
+          cors: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+          body: {
+            viewerId: ctx.relatedUserId,
+            channel: "ff",
+            streamId: "ede",
+          },
+        }
+      )
+        .then((resp) => resp.json())
+        .then((data) => {
+          token = data.rtcToken;
+          channel = "s";
+        });
+    } else {
+      // un authenticated user
+    }
     if (!router.streaming) {
       console.log("Joining ......");
-      join();
+      join(tk, ch, ctx.relatedUserId);
     }
   }, []);
 
@@ -48,7 +69,7 @@ function Videocall(props) {
     <div className="sm:tw-h-[70vh] ">
       <div className="tw-flex">
         <Button variant="primary" onClick={join}>
-          Join
+          Join()
         </Button>
         <Button variant="danger" onClick={leave}>
           Leave

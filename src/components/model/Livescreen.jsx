@@ -56,7 +56,7 @@ function Livescreen() {
               <Button
                 className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                 variant="success"
-                onClick={ctx.toggleModal}
+                onClick={ctx.toggleCallModal}
               >
                 <PhoneInTalkIcon fontSize="small" />
                 <p className="tw-pl-1 tw-tracking-tight">Private Audio call</p>
@@ -64,7 +64,7 @@ function Livescreen() {
               <Button
                 className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                 variant="primary"
-                onClick={ctx.toggleModal}
+                onClick={ctx.toggleCallModal}
               >
                 <VideocamIcon fontSize="small" />
                 <p className="tw-pl-1 tw-tracking-tight">Private video call</p>

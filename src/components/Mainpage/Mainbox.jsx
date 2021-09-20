@@ -64,12 +64,13 @@ function Mainbox({
             </li>
           </ul>
           {/* <div className="tw-absolute tw-bottom-0 tw-w-full tw-align-middle tw-flex "> */}
-          <button
+          <a
             className="tw-bg-green-color tw-w-full tw-text-center tw-opacity-100 tw-text-white tw-bottom-0 tw-absolute"
             onClick={watch}
+            // href={`/${props.channelName}`}
           >
             watch Live
-          </button>
+          </a>
           {/* </div> */}
         </div>
         {/* ral code */}

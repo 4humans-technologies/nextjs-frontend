@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Modal from "react-modal";
 import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import { useRouter } from "next/router";
@@ -7,10 +6,11 @@ import {
   useViewerUpdateContext,
   useViewerContext,
 } from "../../app/Viewercontext";
+import useModalContext from "../../app/ModalContext";
 
-Modal.setAppElement("#__next");
+function Signup() {
+  const modalCtx = useModalContext();
 
-function Signup({ modalStatus, closeModal }) {
   const [email, setEmail] = useState(
     `ravi_4${Math.floor(Math.random() * 1000000)}@gm.co`
   );
@@ -63,65 +63,57 @@ function Signup({ modalStatus, closeModal }) {
   };
 
   return (
-    <div>
-      <Modal
-        isOpen={modalStatus}
-        onRequestClose={closeModal}
-        className="tw-fixed tw-w-screen tw-h-full tw-bg-opacity-40 tw-bg-gray-700 tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-z-10"
-      >
-        <div className="tw-bg-black tw-text-white sm:tw-p-8 tw-p-4 tw-rounded-l-lg tw-rounded-r-lg">
-          <CloseIcon
-            className="tw-ml-0 tw-p-0 tw-text-white"
-            onClick={closeModal}
+    <div className="tw-bg-black tw-text-white sm:tw-p-8 tw-p-4 tw-rounded-l-lg tw-rounded-r-lg">
+      <CloseIcon
+        className="tw-ml-0 tw-p-0 tw-text-white"
+        onClick={modalCtx.toggleModal}
+      />
+      <div className="tw-text-center">
+        <h1 className="tw-text-white tw-my-4">Registration </h1>
+      </div>
+      <form onSubmit={handleSubmit}>
+        {!ctx.rootUserId ? <p>no id</p> : <p>{ctx.rootUserId}</p>}
+        <label>
+          Username:
+          <input
+            type="text"
+            onChange={(e) => setUsername(e.target.value)}
+            value={username}
+            placeholder="Username"
+            className="tw-rounded-full tw-py-3 tw-px-6 tw-ml-3 tw-outline-none tw-text-black"
           />
-          <div className="tw-text-center">
-            <h1 className="tw-text-white tw-my-4">Registration </h1>
-          </div>
-          <form onSubmit={handleSubmit}>
-            {!ctx.rootUserId ? <p>no id</p> : <p>{ctx.rootUserId}</p>}
-            <label>
-              Username:
-              <input
-                type="text"
-                onChange={(e) => setUsername(e.target.value)}
-                value={username}
-                placeholder="Username"
-                className="tw-rounded-full tw-py-3 tw-px-6 tw-ml-3 tw-outline-none tw-text-black"
-              />
-            </label>
-            <br />
-            <br />
-            <label>
-              Password:
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="tw-rounded-full tw-py-3 tw-px-6 tw-ml-4 tw-outline-none tw-text-black"
-              />
-            </label>
-            <br />
-            <br />
-            <label>
-              Email:
-              <input
-                type="email"
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
-                placeholder="Email address"
-                className="tw-rounded-full tw-py-3 tw-px-6 tw-ml-10 tw-outline-none tw-text-black"
-              />
-            </label>
-            <br />
-            <div className="tw-text-center tw-mt-4">
-              <button className="tw-bg-green-500 tw-rounded-full tw-py-2 tw-px-8">
-                Register
-              </button>
-            </div>
-          </form>
+        </label>
+        <br />
+        <br />
+        <label>
+          Password:
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="tw-rounded-full tw-py-3 tw-px-6 tw-ml-4 tw-outline-none tw-text-black"
+          />
+        </label>
+        <br />
+        <br />
+        <label>
+          Email:
+          <input
+            type="email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            placeholder="Email address"
+            className="tw-rounded-full tw-py-3 tw-px-6 tw-ml-10 tw-outline-none tw-text-black"
+          />
+        </label>
+        <br />
+        <div className="tw-text-center tw-mt-4">
+          <button className="tw-bg-green-500 tw-rounded-full tw-py-2 tw-px-8">
+            Register
+          </button>
         </div>
-      </Modal>
+      </form>
     </div>
   );
 }

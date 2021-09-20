@@ -12,7 +12,7 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     if (role === "host") {
       if (callType === "audioCall") {
         const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack();
-        tracks.push(microphoneTrack)
+        tracks.push(microphoneTrack);
         setLocalAudioTrack(microphoneTrack);
       }
       if (callType === "videoCall") {
@@ -29,7 +29,7 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     return null;
   }
 
-  async function join() {
+  async function join(ch, tk, id) {
     console.log("join running..");
 
     if (!client) {
@@ -41,12 +41,13 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
         facingMode: "user",
         encoderConfig: { height: 720, width: 720, frameRate: 23 },
       });
-      await client.join(appId, channel, token || null, uid);
+      debugger;
+      await client.join(appId, ch, tk, id);
       await client.publish(track);
       return setJoinState(true);
     }
     // if client
-    await client.join(appId, channel, token || null, uid);
+    await client.join(appId, ch, tk, id);
   }
 
   async function ready() {
@@ -59,9 +60,6 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
       let track = await createLocalTracks();
       return track;
     }
-    // if client
-    await client.join(appId, channel, token, uid);
-    return setJoinState(true);
   }
 
   async function leave() {

@@ -4,9 +4,10 @@ const initialState = {
   rootUserId: null,
   relatedUserId: null,
   user: {
-    userType:"viewer"
+    userType: "UnAuthedViewer",
   },
-  token: null,
+  jwtToken: null,
+  rtcToken: "",
   isLoggedIn: false,
   isError: false,
   errorMessage: "",
@@ -20,10 +21,14 @@ const ViewerUpdateContext = createContext({
 export const ViewerContextProvider = ({ children }) => {
   const [viewer, setViewer] = useState(initialState);
 
-  const updateViewer = (newViewer, cb) => {
-    setViewer((prevValue) => ({ ...prevValue, ...newViewer })), cb();
+  const updateViewer = (newViewer) => {
+    setViewer((prevValue) => ({ ...prevValue, ...newViewer }));
     console.log("updateViewer.........", newViewer);
   };
+  // const updateViewer = (newViewer, cb) => {
+  //   setViewer((prevValue) => ({ ...prevValue, ...newViewer })), cb();
+  //   console.log("updateViewer.........", newViewer);
+  // };
 
   return (
     <ViewerContext.Provider value={{ viewer, setViewer }}>
