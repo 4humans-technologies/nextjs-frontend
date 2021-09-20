@@ -99,18 +99,15 @@ function Publicchat() {
     <div className="tw-font-sans">
       {data.map((item, index) => {
         return (
-          <div>
-            <div
-              key={index}
-              className="tw-flex tw-bg-second-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans"
-            >
+          <div key={index}>
+            <div className="tw-flex tw-bg-second-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans">
               <div className="tw-flex">
                 <div className="md:tw-mx-2 tw-font-bold tw-text-gray-400 tw-text-base">
                   {item.name} :
                 </div>
                 <div className="tw-text-sm">{item.message}</div>
               </div>
-              <div className="tw-text-yellow-400 tw-pr-6">{item.id}</div>
+              <div className="tw-text-yellow-400 tw-pr-6">{item.id} Coins</div>
             </div>
             <hr className="tw-bg-dark-black" />
           </div>

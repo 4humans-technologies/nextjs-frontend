@@ -3,10 +3,10 @@ import { ContextProvider } from "../app/Context";
 import { SidebarContextProvider } from "../app/Sidebarcontext";
 import { ViewerContextProvider } from "../app/Viewercontext";
 import { ModalContextProvider } from "../app/ModalContext"
+import { Tokencontext } from "../app/Tokencontext";
 import { store } from "../app/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/globals.css";
-
 
 const MyApp = ({ Component, pageProps }) => {
   return (
@@ -15,7 +15,9 @@ const MyApp = ({ Component, pageProps }) => {
         <SidebarContextProvider>
           <ContextProvider>
             <ModalContextProvider>
+              {/* <Tokencontext> */}
               <Component {...pageProps} />
+              {/* </Tokencontext> */}
             </ModalContextProvider>
             {/* <Consent /> */}
           </ContextProvider>

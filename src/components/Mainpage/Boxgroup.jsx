@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Mainbox from "./Mainbox";
 import Photo from "../../../public/pp.jpg";
 
-const Data = [
+const data = [
   {
     Name: "Vikas Kumawat",
     Age: 22,
@@ -115,14 +115,24 @@ const Data = [
   },
 ];
 
+
 function Boxgroup() {
+  const [streams, setStreams] = useState([]);
+  useEffect(() => {
+    // fetch("http://localhost:8080/api/website/compose-ui/get-streaming-models")
+    //   .then((res) => res.json)
+    //   .then((data) => {
+    //     setStreams(data.resultDoc);
+    //   });
+  }, []);
+
   return (
     <div className="tw-bg-first-color tw-w-full tw-px-3">
       <h1 className="tw-text-xl tw-font-bold tw-text-white tw-mb-4 tw-mt-6">
         Test Webcams
       </h1>
       <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-4 tw-gap-x-3 tw-gap-y-2 tw-auto-rows-min tw-justify-items-center">
-        {Data.map((item, index) => {
+        {data.map((item, index) => {
           return (
             <Mainbox
               key={index}
@@ -135,6 +145,8 @@ function Boxgroup() {
               Photo={item.image}
               Group={item.Group}
               Private={item.Private}
+              channel={"6145c2d5f2c22642743ea496"}
+              stream={"ds"}
             />
           );
         })}

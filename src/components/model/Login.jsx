@@ -34,14 +34,14 @@ function Login() {
       .then((data) => {
         if (data.actionStatus === "success") {
           console.log("Data", data);
-          localStorage.setItem("token", data.token);
+          localStorage.setItem("jwtToken", data.token);
           updatectx.updateViewer({
             rootUserId: data.userId,
             relatedUserId: data.relatedUserId,
             token: data.token,
             isLoggedIn: true,
             user: {
-              userType: data.user.userType,
+              userType: data.userType,
             },
           });
         }
