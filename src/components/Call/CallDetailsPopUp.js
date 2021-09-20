@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from "react-modal";
 import useModalContext from '../../app/ModalContext';
-import { VideoCall, Audiotrack, Favorite, Security, FastForward, Cancel } from "@material-ui/icons"
+import { VideoCall, Audiotrack, Favorite, Security, FlashOn, Cancel } from "@material-ui/icons"
 import Image from "next/image"
 import neeraj from "../../../public/brandikaran.jpg"
 
@@ -42,7 +42,7 @@ function CallDetailsPopUp(props) {
                             <div className="tw-rounded tw-p-2 tw-mt-2">
                                 <p className="tw-mt-1 tw-capitalize tw-flex tw-justify-center tw-items-center tw-text-white-color tw-text-xs">
                                     <span className="tw-pr-1">
-                                        <FastForward fontSize="small" />
+                                        <FlashOn fontSize="small" />
                                     </span>
                                     <span className="tw-pl-1">
                                         Ultra-low latency video calls
@@ -77,7 +77,7 @@ function CallDetailsPopUp(props) {
                             <div className="tw-rounded tw-p-2 tw-mt-2">
                                 <p className="tw-mt-1 tw-capitalize tw-flex tw-justify-center tw-items-center tw-text-white-color tw-text-xs">
                                     <span className="tw-pr-1">
-                                        <FastForward fontSize="small" />
+                                        <FlashOn fontSize="small" />
                                     </span>
                                     <span className="tw-pl-1">
                                         Ultra-low latency video calls
