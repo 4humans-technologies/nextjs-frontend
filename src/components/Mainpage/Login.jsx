@@ -36,7 +36,7 @@ function Login() {
       .then((data) => {
         if (data.actionStatus === "success") {
           console.log("data: ", data);
-          localStorage.setItem("token", data.token);
+          localStorage.setItem("jwtTokenViewer", data.token);
           updatectx.updateViewer(
             {
               rootUserId: data.userId,
@@ -56,15 +56,15 @@ function Login() {
       });
   };
   return (
-    <div className="tw-bg-black tw-text-white sm:tw-p-8 tw-p-4 tw-rounded-l-lg tw-rounded-r-lg tw-w-full md:tw-w-8/12 lg:tw-w-5/12">
+    <div className="tw-bg-black tw-text-white sm:tw-p-8 tw-p-4 tw-rounded-l-lg tw-rounded-r-lg tw-w-full ">
       <CloseIcon
         className="tw-ml-0 tw-p-0 tw-text-white"
-        onClick={modalCtx.toggleModal}
+        onClick={modalCtx.toggleLoginModal}
       />
       <div className="tw-text-center">
         <h1 className="tw-text-white tw-my-4">Login</h1>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="tw-text-center">
         <label>
           Username:
           <input

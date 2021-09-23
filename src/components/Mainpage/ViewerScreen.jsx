@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import MediaPlayer from "../UI/MediaPlayer";
 import VideoPlayer from "../UI/VideoPlayer";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-import useAgora from "./useAgora";
+import useAgora from "../../hooks/useAgora";
 import { useRouter } from "next/router";
 import { useViewerContext } from "../../app/Viewercontext";
 
@@ -36,7 +36,7 @@ function Videocall(props) {
   useEffect(() => {
     if (ctx.isLoggedIn === true) {
       fetch(
-        "http://localhost:8080/api/website/token-builder/authed-viewer-join-stream",
+        "http://localhost:8080/api/website/token-builder/unauthed-viewer-join-stream",
         {
           method: "POST",
           cors: "include",
@@ -61,7 +61,7 @@ function Videocall(props) {
     }
     if (!router.streaming) {
       console.log("Joining ......");
-      join(tk, ch, ctx.relatedUserId);
+      join(token, channel, ctx.relatedUserId);
     }
   }, []);
 
@@ -69,7 +69,7 @@ function Videocall(props) {
     <div className="sm:tw-h-[70vh] ">
       <div className="tw-flex">
         <Button variant="primary" onClick={join}>
-          Join()
+          Join
         </Button>
         <Button variant="danger" onClick={leave}>
           Leave

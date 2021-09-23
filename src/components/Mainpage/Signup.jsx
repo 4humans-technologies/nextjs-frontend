@@ -66,13 +66,12 @@ function Signup() {
     <div className="tw-bg-black tw-text-white sm:tw-p-8 tw-p-4 tw-rounded-l-lg tw-rounded-r-lg">
       <CloseIcon
         className="tw-ml-0 tw-p-0 tw-text-white"
-        onClick={modalCtx.toggleModal}
+        onClick={modalCtx.toggleRegisterModal}
       />
       <div className="tw-text-center">
         <h1 className="tw-text-white tw-my-4">Registration </h1>
       </div>
-      <form onSubmit={handleSubmit}>
-        {!ctx.rootUserId ? <p>no id</p> : <p>{ctx.rootUserId}</p>}
+      <form onSubmit={handleSubmit} className="tw-text-center">
         <label>
           Username:
           <input

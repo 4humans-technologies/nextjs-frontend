@@ -15,6 +15,7 @@ import VideoPlayer from "../UI/VideoPlayer";
 import { io } from "socket.io-client";
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions";
 import dynamic from "next/dynamic";
+import Protected from "../UI/Protected";
 
 // import { useTokenContext } from "../../app/Tokencontext";
 // import { useUpdateContext } from "../../app/Tokencontext";
@@ -76,7 +77,7 @@ function Live() {
         cors: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("jwtTokenModel")}`,
         },
       }
     )
@@ -201,4 +202,4 @@ function Live() {
   );
 }
 
-export default Live;
+export default Protected(Live);

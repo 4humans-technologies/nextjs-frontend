@@ -6,13 +6,112 @@ import Photo from "../../../public/pp.jpg";
 function Boxgroup() {
   const [streams, setStreams] = useState([]);
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/website/compose-ui/get-streaming-models")
-      .then((res) => res.json)
-      .then((data) => {
-        setStreams(data.resultDoc);
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch("http://localhost:8080/api/website/compose-ui/get-streaming-models")
+  //     .then((res) => res.json)
+  //     .then((data) => {
+  //       setStreams(data.resultDoc);
+  //     });
+  // }, []);
+
+  const data = [
+    {
+      id: 1,
+      Name: "Vikas",
+      Age: 22,
+      Gender: "Male",
+      Language: "Marwadi",
+      Nation: "Cjina",
+      Rating: 4,
+      image: Photo,
+      Group: 23,
+      Private: 34,
+    },
+    {
+      id: 2,
+      Name: "Vikas",
+      Age: 22,
+      Gender: "Male",
+      Language: "Marwadi",
+      Nation: "Cjina",
+      Rating: 4,
+      image: Photo,
+      Group: 23,
+      Private: 34,
+    },
+    {
+      id: 3,
+      Name: "Vikas",
+      Age: 22,
+      Gender: "Male",
+      Language: "Marwadi",
+      Nation: "Cjina",
+      Rating: 4,
+      image: Photo,
+      Group: 23,
+      Private: 34,
+    },
+    {
+      id: 4,
+      Name: "Vikas",
+      Age: 22,
+      Gender: "Male",
+      Language: "Marwadi",
+      Nation: "Cjina",
+      Rating: 4,
+      image: Photo,
+      Group: 23,
+      Private: 34,
+    },
+    {
+      id: 5,
+      Name: "Vikas",
+      Age: 22,
+      Gender: "Male",
+      Language: "Marwadi",
+      Nation: "Cjina",
+      Rating: 4,
+      image: Photo,
+      Group: 23,
+      Private: 34,
+    },
+    {
+      id: 6,
+      Name: "Vikas",
+      Age: 22,
+      Gender: "Male",
+      Language: "Marwadi",
+      Nation: "Cjina",
+      Rating: 4,
+      image: Photo,
+      Group: 23,
+      Private: 34,
+    },
+    {
+      id: 7,
+      Name: "Vikas",
+      Age: 22,
+      Gender: "Male",
+      Language: "Marwadi",
+      Nation: "Cjina",
+      Rating: 4,
+      image: Photo,
+      Group: 23,
+      Private: 34,
+    },
+    {
+      id: 8,
+      Name: "Vikas",
+      Age: 22,
+      Gender: "Male",
+      Language: "Marwadi",
+      Nation: "Cjina",
+      Rating: 4,
+      image: Photo,
+      Group: 23,
+      Private: 34,
+    },
+  ];
 
   return (
     <div className="tw-bg-first-color tw-w-full tw-px-3">
@@ -20,10 +119,10 @@ function Boxgroup() {
         Test Webcams
       </h1>
       <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-4 tw-gap-x-3 tw-gap-y-2 tw-auto-rows-min tw-justify-items-center">
-        {streams.map((stream, index) => {
+        {data.map((item, index) => {
           return (
             <Mainbox
-              key={stream}
+              key={index}
               Name={item.Name}
               Age={item.Age}
               Gender={item.Gender}

@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { validPassword, validEmail, validatePhone } from "../UI/Regex";
 
 //Validation is still left in this
-
+// I did blunder using multiple state ,rather than using single to create it
 function Registration() {
   const [formsubmit, SetFormsubmit] = useState(false);
   const [name, setName] = useState("");
@@ -46,14 +46,16 @@ function Registration() {
   };
 
   return (
-    <div className="tw-bg-dark-black  tw-h-screen tw-w-screen tw-text-center">
-      <h1 className="tw-text-white tw-pt-32 tw-font-bold tw-text-lg">
-        Model Registraion Form
-      </h1>
-
-      <div className="tw-flex tw-flex-col tw-bg-black tw-absolute tw-top-1/4 sm:tw-left-[38%]  tw-shadow-xl tw-text-lg tw-font-sans tw-text-white  tw-rounded-l-lg tw-rounded-r-lg tw-px-8 tw-py-8">
+    <div className="tw-bg-dark-black  tw-h-screen tw-w-screen tw-text-center tw-min-h-screen">
+      <div
+        className="  tw-bg-no-repeat tw-bg-cover   tw-absolute tw-shadow-xl tw-text-lg tw-font-sans tw-text-white  tw-rounded-l-lg tw-rounded-r-lg tw-top-0  tw-right-auto tw-bottom-auto md:tw-translate-x-1/2 tw-translate-x-[10%] md:tw-translate-y-[15%] tw-translate-y-[10%]  md:tw-w-[50vw] tw-w-[80vw]   tw-h-[85vh] tw-py-8"
+        style={{ backgroundImage: `url("/login.jpg")` }}
+      >
+        <h1 className="tw-text-white  tw-font-bold tw-text-lg">
+          Model Registraion Form
+        </h1>
         <form onSubmit={handleSubmit} className="tw-text-center">
-          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+          <div className="tw-inline-block tw-py-2 tw-px-2 tw-self-center">
             <input
               type="text"
               name="Username"
@@ -61,10 +63,10 @@ function Registration() {
               placeholder="UserName"
               value={username}
               onChange={(e) => setuserName(e.target.value)}
-              className=" tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black"
+              className=" tw-w-80 tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black tw-py-2"
             />
           </div>
-          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-center">
             <input
               type="text"
               name="Name"
@@ -72,11 +74,11 @@ function Registration() {
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-w-5/6 sm:tw-w-max tw-text-black"
+              className="tw-w-80 tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black tw-py-2"
             />
           </div>
 
-          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-center">
             <input
               type="number"
               name="Age"
@@ -84,11 +86,11 @@ function Registration() {
               placeholder="Age"
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              className="tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black"
+              className="tw-w-80 tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black tw-py-2"
             />
           </div>
 
-          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-center">
             <input
               type="Password"
               name="Password"
@@ -96,11 +98,11 @@ function Registration() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className=" tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black"
+              className=" tw-w-80 tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black tw-py-2"
             />
           </div>
 
-          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-center">
             <input
               type="email"
               name="Email"
@@ -108,11 +110,11 @@ function Registration() {
               placeholder="Your email Id"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className=" tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black"
+              className="tw-w-80  tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black tw-py-2"
             />
           </div>
 
-          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-center">
             <input
               type="tel"
               name="Phone"
@@ -120,34 +122,36 @@ function Registration() {
               placeholder="Your Number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className=" tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black"
+              className=" tw-w-80 tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-text-black tw-py-2"
             />
           </div>
 
-          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+          <div className="tw-flex tw-py-2 tw-px-2 tw-justify-center">
             <select
               type=""
               name="gender"
               id="gender"
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className=" tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-w-full tw-text-black"
+              className="tw-w-80  tw-rounded-full tw-border-none tw-outline-none tw-pl-2  tw-text-black tw-py-2"
             >
+              <option value="Female" selected>
+                Female
+              </option>
               <option value="Male">Male </option>
-              <option value="Female">Female</option>
             </select>
           </div>
 
           <Button
             variant="success"
-            className="tw-mt-4 tw-rounded-full"
+            className="tw-mt-4 tw-rounded-full  tw-w-44"
             type="submit"
           >
             Submit
           </Button>
         </form>
-        <h1 className="tw-my-2">Already Register </h1>
-        <Button className="tw-rounded-full">Login</Button>
+        <h1 className="tw-my-2 ">Already Register </h1>
+        <Button className="tw-rounded-full tw-w-44">Login</Button>
       </div>
     </div>
   );

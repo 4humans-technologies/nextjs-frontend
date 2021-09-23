@@ -4,7 +4,11 @@ import dynamic from "next/dynamic";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { Fragment } from "react";
 import useAgora from "../../hooks/useAgora";
-import CallDetailsPopUp from "../Call/CallDetailsPopUp";
+import dynamic from "next/dynamic";
+
+const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
+  ssr: false,
+});
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =

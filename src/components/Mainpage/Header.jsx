@@ -79,25 +79,22 @@ function Header(props) {
                 onClick={modalCtx.toggleRegisterModal}
               >
                 Create account
-                <Modal
-                  isOpen={modalCtx.registerOpen}
-                  onRequestClose={modalCtx.toggleRegisterModal}
-                >
-                  <Signup />
-                </Modal>
               </div>
+              <Modal
+                isOpen={modalCtx.registerOpen}
+                onRequestClose={modalCtx.toggleRegisterModal}
+              >
+                <Signup />
+              </Modal>
               <div
                 className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-6 tw-text-white tw-border-2 sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center "
                 onClick={modalCtx.toggleLoginModal}
               >
                 Login
-                <Modal
-                  isOpen={modalCtx.loginOpen}
-                  onRequestClose={modalCtx.toggleLoginModal}
-                >
-                  <Login />
-                </Modal>
               </div>
+              <Modal>
+                <Login />
+              </Modal>
             </div>
           ) : (
             <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg"></div>
@@ -110,25 +107,25 @@ function Header(props) {
             onClick={modalCtx.toggleRegisterModal}
           >
             Create account
-            <Modal
-              isOpen={modalCtx.registerOpen}
-              onRequestClose={modalCtx.toggleRegisterModal}
-            >
-              <Signup />
-            </Modal>
           </div>
+          <Modal
+            isOpen={modalCtx.registerOpen}
+            onRequestClose={modalCtx.toggleRegisterModal}
+          >
+            <Signup />
+          </Modal>
           <div
             className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black"
             onClick={modalCtx.toggleLoginModal}
           >
             Login
-            <Modal
-              isOpen={modalCtx.loginOpen}
-              onRequestClose={modalCtx.toggleLoginModal}
-            >
-              <Login />
-            </Modal>
           </div>
+          <Modal
+            isOpen={modalCtx.loginOpen}
+            onRequestClose={modalCtx.toggleLoginModal}
+          >
+            <Login />
+          </Modal>
         </div>
       )}
       {/* --------------------------------------------------------------*/}
