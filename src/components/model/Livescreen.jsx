@@ -19,7 +19,7 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import { Button } from "react-bootstrap";
 import useModalContext from "../../app/ModalContext";
 
-const DynamicComponent = dynamic(() => import("../Mainpage/ViewerScreen"), {
+const ViewerScreen = dynamic(() => import("../Mainpage/ViewerScreen"), {
   ssr: false,
 });
 
@@ -45,7 +45,7 @@ function Livescreen() {
     <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
       <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-7/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
         {/* <img src="brandikaran.jpg" alt="" /> */}
-        <DynamicComponent />
+        <ViewerScreen />
         <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-1 tw-mb-0 tw-self-center tw-py-3 tw-px-2">
           <div className="tw-flex tw-justify-between tw-self-center tw-text-white">
             <div className="tw-flex tw-self-center">

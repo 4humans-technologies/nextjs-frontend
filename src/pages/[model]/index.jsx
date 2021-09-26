@@ -1,7 +1,7 @@
 import React from "react";
 import Footer from "../../components/Mainpage/Footer";
 import Header from "../../components/Mainpage/Header";
-import Livescreen from "../../components/model/Livescreen";
+import Livescreen from "../../components/model/LiveScreen";
 import { useSidebarUpdate, useSidebarStatus } from "../../app/Sidebarcontext";
 import Sidebar from "../../components/Mainpage/Sidebar";
 import ModelProfile from "../../components/model/ModelProfile.jsx";

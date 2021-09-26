@@ -6,7 +6,7 @@ import {
   Audiotrack,
   Favorite,
   Security,
-  FastForward,
+  FlashOn,
   Cancel,
 } from "@material-ui/icons";
 import Image from "next/image";

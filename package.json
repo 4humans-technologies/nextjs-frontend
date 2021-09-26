@@ -13,8 +13,8 @@
     "agora-rtc-sdk-ng": "^4.6.3",
     "babel-plugin-styled-components": "^1.13.2",
     "bootstrap": "^5.1.0",
-    "formik": "^2.2.9",
-    "mdbreact": "^5.1.0",
+    "fetch-intercept": "^2.4.0",
+    "nanoid": "^3.1.25",
     "next": "latest",
     "react": "^17.0.2",
     "react-bootstrap": "^2.0.0-beta.6",
@@ -22,7 +22,6 @@
     "react-modal": "^3.14.3",
     "react-redux": "7.2.2",
     "react-router-dom": "^5.2.1",
-    "socket.io": "^4.2.0",
     "socket.io-client": "^4.2.0",
     "yup": "^0.32.9"
   },

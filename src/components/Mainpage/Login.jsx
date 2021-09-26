@@ -3,17 +3,17 @@ import { useState } from "react";
 import CloseIcon from "@material-ui/icons/Close";
 import { useRouter } from "next/router";
 import {
-  useViewerContext,
-  useViewerUpdateContext,
-} from "../../app/Viewercontext";
+  useAuthContext,
+  useAuthUpdateContext,
+} from "../../app/AuthContext";
 import useModalContext from "../../app/ModalContext";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const ctx = useViewerContext();
+  const ctx = useAuthContext();
   const modalCtx = useModalContext();
-  const updatectx = useViewerUpdateContext();
+  const updatectx = useAuthUpdateContext();
   const router = useRouter();
 
   const handleSubmit = (e) => {
