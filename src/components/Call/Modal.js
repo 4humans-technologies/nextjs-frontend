@@ -11,7 +11,7 @@ function IncomingCall(props) {
       bottom: "auto",
       transform: "translate(-50%, -50%)",
       width: "90%",
-      backgroundColor: "#232323",
+      backgroundColor: props.contentBgColor || "#232323",
       borderWidth: 0,
       borderRadius: 4,
       overflowY: "auto",
@@ -21,7 +21,7 @@ function IncomingCall(props) {
     },
     overlay: {
       position: "fixed",
-      zIndex: 150,
+      zIndex: props.zIndex || 150,
       top: 0,
       bottom: 0,
       left: 0,
@@ -37,6 +37,7 @@ function IncomingCall(props) {
           onRequestClose={props.onRequestClose}
           style={modalStyles}
           shouldCloseOnOverlayClick={true}
+          ariaHideApp={false}
         >
           {props.children}
         </Modal>

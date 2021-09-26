@@ -3,22 +3,27 @@ import { createContext, useContext, useState, useEffect } from "react";
 const initialState = {
   rootUserId: null,
   relatedUserId: null,
+  /**
+   * 👇👇 for twilio chat service handling
+   */
+  tempUnAuthedUserId: null,
   user: {
     userType: "UnAuthedViewer",
   },
   jwtToken: null,
   rtcToken: "",
+  twilioChatToken: null,
   isLoggedIn: false,
   isError: false,
   errorMessage: "",
 };
 
-const ViewerContext = createContext(initialState);
-const ViewerUpdateContext = createContext({
-  updateViewer: () => {},
+const AuthContext = createContext(initialState);
+const AuthUpdateContext = createContext({
+  updateViewer: () => { },
 });
 
-export const ViewerContextProvider = ({ children }) => {
+export const AuthContextProvider = ({ children }) => {
   const [viewer, setViewer] = useState(initialState);
 
   const updateViewer = (newViewer) => {
@@ -31,17 +36,17 @@ export const ViewerContextProvider = ({ children }) => {
   // };
 
   return (
-    <ViewerContext.Provider value={{ viewer, setViewer }}>
-      <ViewerUpdateContext.Provider
+    <AuthContext.Provider value={{ viewer, setViewer }}>
+      <AuthUpdateContext.Provider
         value={{
           updateViewer,
         }}
       >
         {children}
-      </ViewerUpdateContext.Provider>
-    </ViewerContext.Provider>
+      </AuthUpdateContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
-export const useViewerContext = () => useContext(ViewerContext);
-export const useViewerUpdateContext = () => useContext(ViewerUpdateContext);
+export const useAuthContext = () => useContext(AuthContext);
+export const useAuthUpdateContext = () => useContext(AuthUpdateContext);

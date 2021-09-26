@@ -6,35 +6,48 @@ import VideoPlayer from "../UI/VideoPlayer";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import useAgora from "./useAgora";
 import { useRouter } from "next/router";
-import { useViewerContext } from "../../app/Viewercontext";
+import { useAuthContext } from "../../app/AuthContext";
 
-let client;
-const createClient = (role) => {
-  const clientOptions = { codec: "h264", mode: "live" };
-  client = AgoraRTC.createClient(clientOptions);
-  client.setClientRole("audience");
-};
-createClient();
+/**
+ * If this screen is being mounted then it is understood by default that,
+ * role will of be viewer.
+ */
 
-const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
+const clientOptions = { codec: "h264", mode: "live" };
+let client = AgoraRTC.createClient(clientOptions);
+client.setClientRole("audience");
+
+/**
+ * APPID can in feature be dynamic also
+ */
+const appId = "ae3edf155f1a4e78a544d125c8f53137";
 let token;
 let channel;
 
 function Videocall(props) {
-  const ctx = useViewerContext();
+  const ctx = useAuthContext();
   const router = useRouter();
-  const {
-    localAudioTrack,
-    localVideoTrack,
-    joinState,
-    leave,
-    join,
-    remoteUsers,
-  } = useAgora(client, appId, token, channel, props.role, null, props.callType);
+  if (!token && channel) {
+    /**
+     * if there is no token and channel then don't call useAgora as the required
+     * parameters will not have been ready yet
+     */
 
-  console.log("props >>", router.streaming);
+    const {
+      localAudioTrack,
+      localVideoTrack,
+      joinState,
+      leave,
+      join,
+      remoteUsers,
+    } = useAgora(client, appId, token, channel, props.role, null, props.callType);
+  }
+
   useEffect(() => {
     if (ctx.isLoggedIn === true) {
+      /**
+       * if logged in then fetch RTC token as loggedIn user
+       */
       fetch(
         "http://localhost:8080/api/website/token-builder/authed-viewer-join-stream",
         {
@@ -57,30 +70,48 @@ function Videocall(props) {
           channel = "s";
         });
     } else {
-      // un authenticated user
-    }
-    if (!router.streaming) {
-      console.log("Joining ......");
-      join(tk, ch, ctx.relatedUserId);
+      /**
+       * fetch RTC token as a un-authenticated user
+       */
+      fetch(
+        "http://localhost:8080/api/website/token-builder/unauthed-viewer-join-stream",
+        {
+          method: "POST",
+          cors: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: {
+            viewerId: ctx.relatedUserId,
+            channel: "ff",
+            streamId: "ede",
+          },
+        }
+      )
+        .then((resp) => resp.json())
+        .then((data) => {
+          token = data.rtcToken;
+          channel = "s";
+        });
     }
   }, []);
 
   return (
     <div className="sm:tw-h-[70vh] ">
-      <div className="tw-flex">
+      {token && <div className="tw-flex tw-py-2 tw-justify-between tw-items-center">
         <Button variant="primary" onClick={join}>
-          Join()
+          Join
         </Button>
         <Button variant="danger" onClick={leave}>
           Leave
         </Button>
-      </div>
-      {joinState ? (
+      </div>}
+      {token ? (joinState ? (
         <p className="tw-text-white">Connected</p>
       ) : (
         <p className="tw-text-white">Disconnected</p>
-      )}
-      {remoteUsers.length > 0 &&
+      )) : null}
+      {token && (remoteUsers.length > 0 &&
         remoteUsers.map((user) => {
           return (
             <VideoPlayer
@@ -91,7 +122,7 @@ function Videocall(props) {
               playAudio={true}
             />
           );
-        })}
+        }))}
     </div>
   );
 }

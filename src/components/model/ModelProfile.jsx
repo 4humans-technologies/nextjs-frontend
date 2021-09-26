@@ -38,16 +38,16 @@ function ModelProfile(props) {
   const { name, age } = props.profileData;
   const modalContext = useModalContext();
 
-  const tags = props.profileData.tags.map((tag) => (
-    <ChipArea>
+  const tags = props.profileData.tags.map((tag,index) => (
+    <ChipArea key={`tag-chip${index}`}>
       <a href="#" className="hover:tw-text-white-color tw-px-2">
         {tag}
       </a>
     </ChipArea>
   ));
 
-  const categories = props.profileData.categories.map((category) => (
-    <ChipArea>
+  const categories = props.profileData.categories.map((category, index) => (
+    <ChipArea key={`category-chip${index}`}>
       <a href="#" className="hover:tw-text-white-color tw-px-4">
         {category}
       </a>

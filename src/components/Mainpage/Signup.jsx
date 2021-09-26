@@ -3,9 +3,9 @@ import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import { useRouter } from "next/router";
 import {
-  useViewerUpdateContext,
-  useViewerContext,
-} from "../../app/Viewercontext";
+  useAuthUpdateContext,
+  useAuthContext,
+} from "../../app/AuthContext";
 import useModalContext from "../../app/ModalContext";
 
 function Signup() {
@@ -20,8 +20,8 @@ function Signup() {
   const [username, setUsername] = useState(
     `ravi_4${Math.floor(Math.random() * 1000000)}`
   );
-  const ctx = useViewerContext();
-  const updateCtx = useViewerUpdateContext();
+  const ctx = useAuthContext();
+  const updateCtx = useAuthUpdateContext();
   const router = useRouter();
 
   const handleSubmit = (e) => {

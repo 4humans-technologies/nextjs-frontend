@@ -133,7 +133,7 @@ function Registration() {
               onChange={(e) => setGender(e.target.value)}
               className=" tw-rounded-full tw-border-none tw-outline-none tw-pl-2 tw-w-full tw-text-black"
             >
-              <option value="Male">Male </option>
+              <option value="Male" selected>Male </option>
               <option value="Female">Female</option>
             </select>
           </div>

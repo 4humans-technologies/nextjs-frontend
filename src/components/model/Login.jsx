@@ -2,8 +2,8 @@ import React, { useState, useRef } from "react";
 import { Button } from "react-bootstrap";
 import { validPassword, validEmail, validatePhone } from "../UI/Regex";
 import {
-  useViewerContext,
-  useViewerUpdateContext,
+  useAuthContext,
+  useAuthUpdateContext,
 } from "../../app/Viewercontext";
 
 //Validation is still left in this
@@ -13,8 +13,8 @@ function Login() {
 
   const [username, setuserName] = useState("");
   const [password, setPassword] = useState("");
-  const ctx = useViewerContext();
-  const updatectx = useViewerUpdateContext();
+  const ctx = useAuthContext();
+  const updatectx = useAuthUpdateContext();
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -19,8 +19,8 @@ import dynamic from "next/dynamic";
 // import { useTokenContext } from "../../app/Tokencontext";
 // import { useUpdateContext } from "../../app/Tokencontext";
 
-import { useViewerContext } from "../../app/Viewercontext";
-import { useViewerUpdateContext } from "../../app/Viewercontext";
+import { useAuthContext } from "../../app/Viewercontext";
+import { useAuthUpdateContext } from "../../app/Viewercontext";
 
 const initState = { val: <Publicchat /> };
 
@@ -53,8 +53,8 @@ const createClient = (role) => {
 createClient();
 
 function Live() {
-  const Ctx = useViewerContext();
-  const updateCtx = useViewerUpdateContext();
+  const Ctx = useAuthContext();
+  const updateCtx = useAuthUpdateContext();
   const [state, dispatch] = useReducer(reducer, initState);
 
   const {
