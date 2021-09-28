@@ -93,14 +93,56 @@ function Publicchat() {
       age: 29,
       message: "我是Ravi",
     },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
   ];
 
   return (
-    <div className="tw-font-sans">
+    <div className="tw-font-sans chat-box">
       {data.map((item, index) => {
         return (
           <div key={index}>
-            <div className="tw-flex tw-bg-second-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans">
+            <div className="tw-flex tw-bg-first-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans">
               <div className="tw-flex">
                 <div className="md:tw-mx-2 tw-font-bold tw-text-gray-400 tw-text-base">
                   {item.name} :

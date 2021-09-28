@@ -90,8 +90,7 @@ function PrivateChat() {
   ];
 
   return (
-    <div>
-      <div className="tw-font-sans">
+      <div className="tw-font-sans chat-box">
         {data.map((item, index) => {
           return (
             <div>
@@ -114,7 +113,6 @@ function PrivateChat() {
           );
         })}
       </div>
-    </div>
   );
 }
 

@@ -38,7 +38,7 @@ function ModelProfile(props) {
   const { name, age } = props.profileData;
   const modalContext = useModalContext();
 
-  const tags = props.profileData.tags.map((tag,index) => (
+  const tags = props.profileData.tags.map((tag, index) => (
     <ChipArea key={`tag-chip${index}`}>
       <a href="#" className="hover:tw-text-white-color tw-px-2">
         {tag}

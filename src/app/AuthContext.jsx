@@ -6,9 +6,9 @@ const initialState = {
   /**
    * 👇👇 for twilio chat service handling
    */
-  tempUnAuthedUserId: null,
+  twilioTempUserId: null,
   user: {
-    userType: "UnAuthedViewer",
+    userType: "UnAuthedViewer"
   },
   jwtToken: null,
   rtcToken: "",

@@ -10,15 +10,18 @@ import fetchIntercept from 'fetch-intercept';
 import { ErrorContextProvider } from '../app/Error/ErrorContext';
 import { useEffect } from 'react';
 
-
 const unRegister = fetchIntercept.register({
   request: function (url, config) {
+    console.log("Intercepted fetch request", config);
     /**
      * Authorization header is needed very much for each user type
      */
-
-    console.log("Intercepted fetch request", config);
-    return [url, config]
+    let baseUrl = "http://localhost:8080"
+    if (window.location.hostname !== "localhost") {
+      baseUrl = "https://dreamgirl.live"
+    }
+    const finalUrl = `${baseUrl}${url}`
+    return [finalUrl, config]
   },
   requestError: function (error) {
     return Promise.reject(error)
@@ -41,6 +44,16 @@ const MyApp = ({ Component, pageProps }) => {
      * Check if user has any pending call or not __AND__
      * if the user is un-authed then his temp chat id is valid or not
      */
+    if(false){
+      /**
+       * check for pending calls
+       */
+      if(localStorage.getItem("pending-calls") && localStorage.getItem("pending-calls").length > 0){
+        /**
+         * viewer has pending calls, hence inform about it
+         */
+      }
+    }
     console.log("__app is mounted");
   }, [])
 

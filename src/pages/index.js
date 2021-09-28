@@ -47,7 +47,7 @@ export default function Home() {
   useEffect(() => {
     // fetch all live streams
     debugger
-    fetch("http://localhost:8080/api/website/compose-ui/get-ranking-online-models")
+    fetch("/api/website/compose-ui/get-ranking-online-models")
       .then((res) => res.json())
       .then((data) => {
         debugger

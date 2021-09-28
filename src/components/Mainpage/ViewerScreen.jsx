@@ -49,7 +49,7 @@ function Videocall(props) {
        * if logged in then fetch RTC token as loggedIn user
        */
       fetch(
-        "http://localhost:8080/api/website/token-builder/authed-viewer-join-stream",
+        "/api/website/token-builder/authed-viewer-join-stream",
         {
           method: "POST",
           cors: "include",
@@ -74,7 +74,7 @@ function Videocall(props) {
        * fetch RTC token as a un-authenticated user
        */
       fetch(
-        "http://localhost:8080/api/website/token-builder/unauthed-viewer-join-stream",
+        "/api/website/token-builder/unauthed-viewer-join-stream",
         {
           method: "POST",
           cors: "include",

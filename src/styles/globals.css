@@ -82,6 +82,29 @@
 .video-call-icon-container {
   box-shadow: 0px 0px 10px #FFFFFF;
 }
+
 .video-call-button {
   box-shadow: 0px 0px 10px #FD1E47;
+}
+
+.chat-box {
+  overflow-y: auto;
+}
+
+.chat-box::-webkit-scrollbar {
+  display: none;
+}
+
+/* .chat-box-container::-webkit-scrollbar {
+  display: none;
+} */
+
+.chat-box-container::-webkit-scrollbar {
+  width: 5px;               /* width of the entire scrollbar */
+}
+.chat-box-container::-webkit-scrollbar-track {
+  background: transparent;        /* color of the tracking area */
+}
+.chat-box-container::-webkit-scrollbar-thumb {
+  background-color: wheat;    /* color of the scroll thumb */
 }

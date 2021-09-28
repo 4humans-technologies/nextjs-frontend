@@ -47,16 +47,18 @@ function Header(props) {
         </div>
       </div>
       {/* ------------------------ */}
-      <div className="tw-hidden sm:tw-inline-block">
-        <div className="tw-rounded-full tw-py-3 tw-px-6 tw-bg-dark-black tw-flex">
-          <SearchIcon className="tw-mr-2" />
+      <span className="tw-hidden sm:tw-inline-block">
+        <div className="tw-rounded-full tw-p-0 tw-relative">
+          <button className="tw-absolute tw-right-4 tw-top-[50%] tw-translate-y-[-50%]">
+            <SearchIcon className="tw-text-text-black" />
+          </button>
           <input
-            className="tw-rounded-full tw-bg-dark-black tw-border-transparent tw-outline-none tw-px-2"
+            className="tw-rounded-full tw-bg-second-color tw-border-transparent tw-outline-none tw-py-3 tw-pl-6 tw-pr-12 tw-capitalize xl:tw-w-96 lg:tw-w-[300px]"
             type="text"
-            placeholder="Search Neeraj location"
+            placeholder="Search Models"
           />
         </div>
-      </div>
+      </span>
       {/* ------------- experiment----------- */}
       {screenWidth < 600 ? (
         [
@@ -105,30 +107,31 @@ function Header(props) {
         ]
       ) : (
         <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
-          <div
+          <Modal
+            isOpen={modalCtx.registerOpen}
+            onRequestClose={modalCtx.toggleRegisterModal}
+          >
+            <Signup />
+          </Modal>
+          <Modal
+            isOpen={modalCtx.loginOpen}
+            onRequestClose={modalCtx.toggleLoginModal}
+          >
+            <Login />
+          </Modal>
+          <button
             className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2"
             onClick={modalCtx.toggleRegisterModal}
           >
             Create account
-            <Modal
-              isOpen={modalCtx.registerOpen}
-              onRequestClose={modalCtx.toggleRegisterModal}
-            >
-              <Signup />
-            </Modal>
-          </div>
-          <div
+          </button>
+
+          <button
             className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black"
             onClick={modalCtx.toggleLoginModal}
           >
             Login
-            <Modal
-              isOpen={modalCtx.loginOpen}
-              onRequestClose={modalCtx.toggleLoginModal}
-            >
-              <Login />
-            </Modal>
-          </div>
+          </button>
         </div>
       )}
       {/* --------------------------------------------------------------*/}
