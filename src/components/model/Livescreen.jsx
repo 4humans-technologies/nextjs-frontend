@@ -40,7 +40,7 @@ const reducer = (state = initState, action) => {
 
 function Livescreen() {
   const [state, dispatch] = useReducer(reducer, initState);
-  const ctx = useModalContext()
+  const ctx = useModalContext();
   return (
     <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
       <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-7/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
@@ -121,7 +121,7 @@ function Livescreen() {
           {/* ------------------------------------------------------------------------------------- */}
         </div>
         <div className="tw-absolute tw-overflow-y-scroll tw-h-[90%] tw-bottom-4 tw-w-full">
-          <div className="tw-bottom-0 tw-relative tw-w-full">{state.val}</div>
+          {state.val}
         </div>
 
         <div className="tw-flex tw-py-2 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">

@@ -1,10 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Button } from "react-bootstrap";
 import { validPassword, validEmail, validatePhone } from "../UI/Regex";
-import {
-  useAuthContext,
-  useAuthUpdateContext,
-} from "../../app/Viewercontext";
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
 
 import Link from "next/link";
 import { useRouter } from "next/router";

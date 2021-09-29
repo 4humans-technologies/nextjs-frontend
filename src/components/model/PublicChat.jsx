@@ -93,6 +93,78 @@ function Publicchat() {
       age: 29,
       message: "我是Ravi",
     },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
+    {
+      id: 15,
+      name: "Ravi shankar singh",
+      age: 29,
+      message: "我是Ravi",
+    },
   ];
 
   return (
