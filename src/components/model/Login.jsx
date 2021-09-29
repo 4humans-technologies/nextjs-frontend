@@ -4,7 +4,7 @@ import { validPassword, validEmail, validatePhone } from "../UI/Regex";
 import {
   useAuthContext,
   useAuthUpdateContext,
-} from "../../app/Viewercontext";
+} from "../../app/AuthContext";
 
 //Validation is still left in this
 

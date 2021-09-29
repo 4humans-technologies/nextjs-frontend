@@ -7,6 +7,10 @@ const initialState = {
    * 👇👇 for twilio chat service handling
    */
   twilioTempUserId: null,
+  /**
+   * identifier for un-authed user
+   */
+  unAuthedUserId: null,
   user: {
     userType: "UnAuthedViewer"
   },
@@ -28,12 +32,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const updateViewer = (newViewer) => {
     setViewer((prevValue) => ({ ...prevValue, ...newViewer }));
-    console.log("updateViewer.........", newViewer);
   };
-  // const updateViewer = (newViewer, cb) => {
-  //   setViewer((prevValue) => ({ ...prevValue, ...newViewer })), cb();
-  //   console.log("updateViewer.........", newViewer);
-  // };
 
   return (
     <AuthContext.Provider value={{ viewer, setViewer }}>

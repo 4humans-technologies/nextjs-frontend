@@ -6,7 +6,7 @@ import VideoPlayer from "../UI/VideoPlayer";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import useAgora from "./useAgora";
 import { useRouter } from "next/router";
-import { useAuthContext } from "../../app/AuthContext";
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
 
 /**
  * If this screen is being mounted then it is understood by default that,
@@ -26,7 +26,8 @@ let channel;
 
 function Videocall(props) {
   const ctx = useAuthContext();
-  const router = useRouter();
+  const updateCtx = useAuthUpdateContext()
+  // console.log(">>>", window.location.pathname.split("/").reverse()[0]);
   if (!token && channel) {
     /**
      * if there is no token and channel then don't call useAgora as the required
@@ -57,11 +58,10 @@ function Videocall(props) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
           },
-          body: {
+          body: JSON.stringify({
             viewerId: ctx.relatedUserId,
-            channel: "ff",
-            streamId: "ede",
-          },
+            modelId: window.location.pathname.split("/").reverse()[0],
+          }),
         }
       )
         .then((resp) => resp.json())
@@ -73,6 +73,19 @@ function Videocall(props) {
       /**
        * fetch RTC token as a un-authenticated user
        */
+      let newSession = false;
+      if (!sessionStorage.getItem(newSession)) {
+        sessionStorage.setItem("newSession", "false")
+        newSession = true
+      }
+      const payload = {
+        modelId: window.location.pathname.split("/").reverse()[0],
+        newSession: newSession
+      }
+      if (ctx.unAuthedUserId) {
+        payload.unAuthedUserId = unAuthedUserId
+      }
+
       fetch(
         "/api/website/token-builder/unauthed-viewer-join-stream",
         {
@@ -81,18 +94,19 @@ function Videocall(props) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: {
-            viewerId: ctx.relatedUserId,
-            channel: "ff",
-            streamId: "ede",
-          },
+          body: JSON.stringify(payload),
         }
       )
         .then((resp) => resp.json())
         .then((data) => {
-          token = data.rtcToken;
-          channel = "s";
-        });
+          localStorage.setItem("unAuthed-namespace", JSON.stringify({
+            unAuthedUserId: data.unAuthedUserId
+          }))
+          updateCtx({
+            unAuthedUserId: unAuthedUserId
+          })
+        })
+        .catch(err => alert(err))
     }
   }, []);
 

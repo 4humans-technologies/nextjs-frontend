@@ -19,8 +19,8 @@ import dynamic from "next/dynamic";
 // import { useTokenContext } from "../../app/Tokencontext";
 // import { useUpdateContext } from "../../app/Tokencontext";
 
-import { useAuthContext } from "../../app/Viewercontext";
-import { useAuthUpdateContext } from "../../app/Viewercontext";
+import { useAuthContext } from "../../app/AuthContext";
+import { useAuthUpdateContext } from "../../app/AuthContext";
 
 const initState = { val: <Publicchat /> };
 

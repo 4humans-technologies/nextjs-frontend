@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import React from 'react'
 import Footer from '../../components/Mainpage/Footer'
 import Header from '../../components/Mainpage/Header'
