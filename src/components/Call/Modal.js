@@ -1,7 +1,8 @@
 import Modal from "react-modal";
 import useModalContext from "../../app/ModalContext";
+import PropTypes from "prop-types"
 
-function IncomingCall(props) {
+function ContentModal(props) {
   const ctx = useModalContext();
   const modalStyles = {
     content: {
@@ -29,6 +30,7 @@ function IncomingCall(props) {
       backgroundColor: "rgba(0,0,0,0.6)",
     },
   };
+  const appElement = typeof window === undefined ? document.getElementById("modal-portal") : null
   return (
     <>
       <div>
@@ -38,6 +40,7 @@ function IncomingCall(props) {
           style={modalStyles}
           shouldCloseOnOverlayClick={true}
           ariaHideApp={false}
+          appElement={appElement}
         >
           {props.children}
         </Modal>
@@ -46,4 +49,12 @@ function IncomingCall(props) {
   );
 }
 
-export default IncomingCall;
+ContentModal.prototypes = {
+  children: PropTypes.node,
+  contentBgColor: PropTypes.string,
+  isOpen: PropTypes.bool.isRequired,
+  onRequestClose: PropTypes.func.isRequired,
+  zIndex: PropTypes.number
+}
+
+export default ContentModal;

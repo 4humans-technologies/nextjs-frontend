@@ -50,9 +50,7 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     await client.join(appId, ch, tk, id);
   }
 
-  async function ready() {
-    console.log("join running..");
-
+  async function startLocalCameraPreview() {
     if (!client) {
       return;
     }
@@ -125,7 +123,7 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     leave,
     join,
     remoteUsers,
-    ready,
+    startLocalCameraPreview,
   };
 }
 

@@ -1,3 +1,5 @@
+/* eslint-disable no-debugger */
+import React from "react";
 import { createContext, useContext, useState, useEffect } from "react";
 
 const initialState = {
@@ -15,11 +17,15 @@ const initialState = {
     userType: "UnAuthedViewer"
   },
   jwtToken: null,
+  jwtExpiresIn: null,
   rtcToken: "",
   twilioChatToken: null,
   isLoggedIn: false,
   isError: false,
   errorMessage: "",
+  loginSuccessUrl: "/",
+  loadedFromLocalStorage: false,
+  fetchIntercepted: false
 };
 
 const AuthContext = createContext(initialState);
@@ -28,14 +34,47 @@ const AuthUpdateContext = createContext({
 });
 
 export const AuthContextProvider = ({ children }) => {
-  const [viewer, setViewer] = useState(initialState);
+  const [authSate, setAuthState] = useState(initialState);
 
   const updateViewer = (newViewer) => {
-    setViewer((prevValue) => ({ ...prevValue, ...newViewer }));
+    setAuthState((prevValue) => {
+      debugger
+      let newState;
+      if (newViewer.user) {
+        newState = { ...prevValue, ...newViewer, user: { ...newViewer.user } }
+      } else {
+        newState = { ...prevValue, ...newViewer, user: { ...prevValue.user } }
+      }
+      return newState
+    });
   };
 
+  useEffect(() => {
+    debugger
+    const jwtToken = localStorage.getItem('jwtToken')
+    if (jwtToken) {
+      if (parseInt(localStorage.getItem('jwtExpiresIn')) > Date.now()) {
+        updateViewer({
+          isLoggedIn: true,
+          user: { userType: localStorage.getItem('userType') },
+          jwtExpiresIn: +localStorage.getItem('jwtExpiresIn'),
+          rootUserId: localStorage.getItem('rootUserId'),
+          relatedUserId: localStorage.getItem('relatedUserId'),
+          jwtToken: jwtToken,
+        })
+      } else {
+        localStorage.setItem("jwtToken", "");
+        localStorage.setItem("jwtExpiresIn", "");
+        localStorage.setItem("rootUserId", "");
+        localStorage.setItem("relatedUserId", "");
+        localStorage.setItem("userType", "");
+      }
+    }
+    updateViewer({ loadedFromLocalStorage: true })
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ viewer, setViewer }}>
+    <AuthContext.Provider value={authSate}>
       <AuthUpdateContext.Provider
         value={{
           updateViewer,

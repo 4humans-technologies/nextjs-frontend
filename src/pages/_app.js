@@ -1,17 +1,26 @@
 // import { store } from "../app/store";
-import { Provider } from 'react-redux'
+// import { Provider } from 'react-redux'
 import { ContextProvider } from "../app/Context";
 import { SidebarContextProvider } from "../app/Sidebarcontext";
-import { AuthContextProvider, useAuthContext } from "../app/AuthContext";
+import { AuthContextProvider } from "../app/AuthContext";
 import { ModalContextProvider } from "../app/ModalContext"
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/globals.css";
-import fetchIntercept from 'fetch-intercept';
 import { ErrorContextProvider } from '../app/Error/ErrorContext';
 import { useEffect } from 'react';
+import { SpinnerContextProvider } from '../app/Loading/SpinnerContext';
+
+/**
+ * RULES OF HOOKS
+ * react hooks must be called in the same order in every render
+ * hence implement all the hooks in the start of the compoent and 
+ * then think about rendering
+ * ---------
+ * do not mutate state in between of a rendering of a component,
+ * usually it happens when u mutate state directly in a hook
+ */
 
 const MyApp = ({ Component, pageProps }) => {
-  const ctx = useAuthContext()
   useEffect(() => {
     /**
      * will run whenever a page is mounted, A Page
@@ -31,70 +40,6 @@ const MyApp = ({ Component, pageProps }) => {
     console.log("__app is mounted");
   }, [])
 
-  useEffect(() => {
-    /**
-     * for setup of fetch-interceptor,
-     * setting up in useEffect because i have to use context
-     */
-    if (typeof window !== undefined) {
-      fetchIntercept.register({
-        request: function (url, config) {
-          console.log("Intercepted fetch request", config);
-          /**
-           * Authorization header is needed very much for each user type
-           */
-          let baseUrl = "http://localhost:8080"
-          if (window.location.hostname !== "localhost") {
-            baseUrl = "https://dreamgirl.live"
-          }
-          const finalUrl = `${baseUrl}${url}`
-          let finalConfig;
-          if (ctx.isLoggedIn) {
-            finalConfig = {
-              ...config,
-              headers: {
-                ...config.headers,
-                Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-              }
-            }
-          }
-          else if (ctx.unAuthedUserId && !ctx.twilioTempUserId) {
-            finalConfig = {
-              ...config,
-              body: {
-                ...config.body,
-                unAuthedUserId: unAuthedUserId,
-
-              }
-            }
-          }
-          else if (ctx.unAuthedUserId && ctx.twilioTempUserId) {
-            finalConfig = {
-              ...config,
-              body: {
-                ...config.body,
-                unAuthedUserId: unAuthedUserId,
-                twilioTempUserId: twilioTempUserId
-              }
-            }
-          }
-          return [finalUrl, finalConfig || config]
-        },
-        requestError: function (error) {
-          return Promise.reject(error)
-        },
-        response: function (response) {
-          // Modify the reponse object
-          return response
-        },
-        responseError: function (error) {
-          // Handle an fetch error
-          return Promise.reject(error)
-        }
-      })
-    }
-  }, [])
-
   return (
     // <Provider store={store}>
     <AuthContextProvider>
@@ -102,7 +47,9 @@ const MyApp = ({ Component, pageProps }) => {
         <ContextProvider>
           <ModalContextProvider>
             <ErrorContextProvider>
-              <Component {...pageProps} />
+              <SpinnerContextProvider>
+                <Component {...pageProps} />
+              </SpinnerContextProvider>
             </ErrorContextProvider>
           </ModalContextProvider>
         </ContextProvider>

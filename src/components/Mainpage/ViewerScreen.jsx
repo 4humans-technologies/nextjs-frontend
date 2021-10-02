@@ -33,7 +33,6 @@ function Videocall(props) {
      * if there is no token and channel then don't call useAgora as the required
      * parameters will not have been ready yet
      */
-
     const {
       localAudioTrack,
       localVideoTrack,
