@@ -1,46 +1,57 @@
 import React, { useContext, createContext, useState } from "react";
+import Modal from "../components/Call/Modal";
+
+import GlobalModalContent, { SetGlobalModalContent } from "../app/GlobalModalContent"
 
 const ModalContext = createContext({
-  callDetailsOpen: false,
-  loginOpen: false,
-  registerOpen: false,
-  toggleCallModal: () => {},
-  toggleLoginModal: () => {},
-  toggleRegisterModal: () => {},
+  isOpen: false,
+  modalContent: <></>,
+  showModal: () => { },
+  showModalWithContent: () => { },
+  clearModalWithContent: () => { },
+  hideModal: () => { },
 });
 
 export function ModalContextProvider(props) {
-  const [callDetailsOpen, setCallDetailsOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [registerOpen, setRegisterOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const [modalContent, setModalContent] = useState(<h1>Modal Content Not Set</h1>)
 
-  const toggleCallModal = () => {
-    setLoginOpen(false);
-    setRegisterOpen(false);
-    setCallDetailsOpen((prev) => !prev);
-  };
-  const toggleLoginModal = () => {
-    setLoginOpen((prev) => !prev);
-    setRegisterOpen(false);
-    setCallDetailsOpen(false);
-  };
-  const toggleRegisterModal = () => {
-    setLoginOpen(false);
-    setRegisterOpen((prev) => !prev);
-    setCallDetailsOpen(false);
-  };
+  const showModal = () => {
+    setIsOpen(true)
+  }
+
+  const showModalWithContent = (content) => {
+    /**
+     * set content and show modal
+     */
+    debugger
+    setModalContent(content)
+    setIsOpen(true)
+  }
+
+  const clearModalWithContent = () => {
+    /**
+     * Hide the modal and clear the content
+     */
+    setModalContent(<h1 className="tw-text-center tw-text-lg">Modal Content Not Set</h1>)
+    setIsOpen(false)
+  }
+
+  const hideModal = () => {
+    setIsOpen(false)
+  }
 
   return (
     <ModalContext.Provider
       value={{
-        callDetailsOpen,
-        loginOpen,
-        registerOpen,
-        toggleCallModal,
-        toggleLoginModal,
-        toggleRegisterModal,
+        isOpen,
+        showModal,
+        showModalWithContent,
+        clearModalWithContent,
+        hideModal,
       }}
     >
+      {isOpen && <Modal isOpen={isOpen} onRequestClose={() => setIsOpen(false)}>{modalContent}</Modal>}
       {props.children}
     </ModalContext.Provider>
   );

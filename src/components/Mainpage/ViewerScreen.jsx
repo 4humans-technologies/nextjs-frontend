@@ -6,7 +6,7 @@ import VideoPlayer from "../UI/VideoPlayer";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import useAgora from "../../hooks/useAgora";
 import { useRouter } from "next/router";
-import { useAuthContext } from "../../app/AuthContext";
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
 
 /**
  * If this screen is being mounted then it is understood by default that,
@@ -26,13 +26,13 @@ let channel;
 
 function Videocall(props) {
   const ctx = useAuthContext();
-  const router = useRouter();
+  const updateCtx = useAuthUpdateContext();
+  // console.log(">>>", window.location.pathname.split("/").reverse()[0]);
   if (!token && channel) {
     /**
      * if there is no token and channel then don't call useAgora as the required
      * parameters will not have been ready yet
      */
-
     const {
       localAudioTrack,
       localVideoTrack,
@@ -56,22 +56,18 @@ function Videocall(props) {
       /**
        * if logged in then fetch RTC token as loggedIn user
        */
-      fetch(
-        "http://localhost:8080/api/website/token-builder/unauthed-viewer-join-stream",
-        {
-          method: "POST",
-          cors: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-          body: {
-            viewerId: ctx.relatedUserId,
-            channel: "ff",
-            streamId: "ede",
-          },
-        }
-      )
+      fetch("/api/website/token-builder/authed-viewer-join-stream", {
+        method: "POST",
+        cors: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+        body: JSON.stringify({
+          viewerId: ctx.relatedUserId,
+          modelId: window.location.pathname.split("/").reverse()[0],
+        }),
+      })
         .then((resp) => resp.json())
         .then((data) => {
           token = data.rtcToken;
@@ -81,26 +77,40 @@ function Videocall(props) {
       /**
        * fetch RTC token as a un-authenticated user
        */
-      fetch(
-        "http://localhost:8080/api/website/token-builder/unauthed-viewer-join-stream",
-        {
-          method: "POST",
-          cors: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: {
-            viewerId: ctx.relatedUserId,
-            channel: "ff",
-            streamId: "ede",
-          },
-        }
-      )
+      let newSession = false;
+      if (!sessionStorage.getItem(newSession)) {
+        sessionStorage.setItem("newSession", "false");
+        newSession = true;
+      }
+      const payload = {
+        modelId: window.location.pathname.split("/").reverse()[0],
+        newSession: newSession,
+      };
+      if (ctx.unAuthedUserId) {
+        payload.unAuthedUserId = unAuthedUserId;
+      }
+
+      fetch("/api/website/token-builder/unauthed-viewer-join-stream", {
+        method: "POST",
+        cors: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
         .then((resp) => resp.json())
         .then((data) => {
-          token = data.rtcToken;
-          channel = "s";
-        });
+          localStorage.setItem(
+            "unAuthed-namespace",
+            JSON.stringify({
+              unAuthedUserId: data.unAuthedUserId,
+            })
+          );
+          updateCtx({
+            unAuthedUserId: unAuthedUserId,
+          });
+        })
+        .catch((err) => alert(err));
     }
   }, []);
 

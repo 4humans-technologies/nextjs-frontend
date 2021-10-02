@@ -1,13 +1,13 @@
 import React from "react";
-import { useViewerContext } from "../../app/Viewercontext";
-import { useViewerUpdateContext } from "../../app/Viewercontext";
+import { useAuthContext } from "../../app/AuthContext";
+import { useAuthUpdateContext } from "../../app/AuthContext";
 import Modal from "./Modal";
 import { useRouter } from "next/router";
 
 function ProtectedHOC(WrappedComponent) {
   return (props) => {
     if (typeof window !== "undefined") {
-      const ctx = useViewerContext();
+      const ctx = useAuthContext();
       const router = useRouter();
       //   checks whether on windows or on server
       if (!ctx.isLoggedIn) {

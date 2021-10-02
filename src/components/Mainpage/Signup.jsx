@@ -2,10 +2,7 @@ import React, { useState } from "react";
 import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import { useRouter } from "next/router";
-import {
-  useAuthUpdateContext,
-  useAuthContext,
-} from "../../app/AuthContext";
+import { useAuthUpdateContext, useAuthContext } from "../../app/AuthContext";
 import useModalContext from "../../app/ModalContext";
 
 function Signup() {
@@ -66,7 +63,7 @@ function Signup() {
     <div className="tw-bg-black tw-text-white sm:tw-p-8 tw-p-4 tw-rounded-l-lg tw-rounded-r-lg">
       <CloseIcon
         className="tw-ml-0 tw-p-0 tw-text-white"
-        onClick={modalCtx.toggleRegisterModal}
+        onClick={modalCtx.hideModal}
       />
       <div className="tw-text-center">
         <h1 className="tw-text-white tw-my-4">Registration </h1>

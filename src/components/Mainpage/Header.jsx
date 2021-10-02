@@ -47,16 +47,18 @@ function Header(props) {
         </div>
       </div>
       {/* ------------------------ */}
-      <div className="tw-hidden sm:tw-inline-block">
-        <div className="tw-rounded-full tw-py-3 tw-px-6 tw-bg-dark-black tw-flex">
-          <SearchIcon className="tw-mr-2" />
+      <span className="tw-hidden sm:tw-inline-block">
+        <div className="tw-rounded-full tw-p-0 tw-relative">
+          <button className="tw-absolute tw-right-4 tw-top-[50%] tw-translate-y-[-50%]">
+            <SearchIcon className="tw-text-text-black" />
+          </button>
           <input
-            className="tw-rounded-full tw-bg-dark-black tw-border-transparent tw-outline-none tw-px-2"
+            className="tw-rounded-full tw-bg-second-color tw-border-transparent tw-outline-none tw-py-3 tw-pl-6 tw-pr-12 tw-capitalize xl:tw-w-96 lg:tw-w-[300px]"
             type="text"
-            placeholder="Search Neeraj location"
+            placeholder="Search Models"
           />
         </div>
-      </div>
+      </span>
       {/* ------------- experiment----------- */}
       {screenWidth < 600 ? (
         [
@@ -74,27 +76,18 @@ function Header(props) {
                   <p>Top Model</p>
                 </div>
               </div>
-              <div
+              <button
                 className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-text-black sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-my-4"
-                onClick={modalCtx.toggleRegisterModal}
+                onClick={() => modalCtx.showModalWithContent(<Signup />)}
               >
                 Create account
-              </div>
-              <Modal
-                isOpen={modalCtx.registerOpen}
-                onRequestClose={modalCtx.toggleRegisterModal}
-              >
-                <Signup />
-              </Modal>
-              <div
+              </button>
+              <button
                 className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-6 tw-text-white tw-border-2 sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center "
-                onClick={modalCtx.toggleLoginModal}
+                onClick={() => modalCtx.showModalWithContent(<Login />)}
               >
                 Login
-              </div>
-              <Modal>
-                <Login />
-              </Modal>
+              </button>
             </div>
           ) : (
             <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg"></div>
@@ -102,30 +95,19 @@ function Header(props) {
         ]
       ) : (
         <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
-          <div
+          <button
             className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2"
-            onClick={modalCtx.toggleRegisterModal}
+            onClick={() => modalCtx.showModalWithContent(<Signup />)}
           >
             Create account
-          </div>
-          <Modal
-            isOpen={modalCtx.registerOpen}
-            onRequestClose={modalCtx.toggleRegisterModal}
-          >
-            <Signup />
-          </Modal>
-          <div
+          </button>
+
+          <button
             className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black"
-            onClick={modalCtx.toggleLoginModal}
+            onClick={() => modalCtx.showModalWithContent(<Login />)}
           >
             Login
-          </div>
-          <Modal
-            isOpen={modalCtx.loginOpen}
-            onRequestClose={modalCtx.toggleLoginModal}
-          >
-            <Login />
-          </Modal>
+          </button>
         </div>
       )}
       {/* --------------------------------------------------------------*/}
