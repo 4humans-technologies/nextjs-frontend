@@ -30,6 +30,7 @@ const Data = [
 
 function Profile() {
   const [checked, setChecked] = useState(false);
+  const [infoedited, setInfoedited] = useState(false);
   const [dynamicData, setDynamicData] = useState([2]);
   const [modelState, setModelState] = useState({
     images: [],
@@ -98,8 +99,24 @@ function Profile() {
                 <p>SubCulture</p>
               </div>
               <div className="tw-col-span-5 ">
-                <p>Intrested in</p>
-                <p>From</p>
+                <p
+                  onInput={
+                    ((e) => e.currentTarget.textContent,
+                    () => setInfoedited(true))
+                  }
+                  contentEditable="true"
+                >
+                  Intrested in
+                </p>
+                <p
+                  onInput={
+                    ((e) => e.currentTarget.textContent,
+                    () => setInfoedited(true))
+                  }
+                  contentEditable="true"
+                >
+                  From
+                </p>
                 <p>Language</p>
                 <p>Age</p>
                 <p>Body type</p>
@@ -107,6 +124,13 @@ function Profile() {
                 <p>Hair</p>
                 <p>Eye color</p>
                 <p>SubCulture</p>
+
+                <br />
+                {infoedited && (
+                  <Button type="submit" onClick={() => setInfoedited(false)}>
+                    Save
+                  </Button>
+                )}
               </div>
             </div>
             <div className="tw-bg-first-color tw-my-4 tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-px-4 tw-py-2 ">

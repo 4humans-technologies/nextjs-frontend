@@ -104,8 +104,138 @@
   z-index: 10;
 }
 
+/* ----------------------- */
+
+.accept_call {
+    height: 50px;
+    width: 50px;
+    z-index: 10;
+    background-color:greenyellow;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.reject_call {
+    height: 50px;
+    width: 50px;
+    z-index: 10;
+    background-color:red;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative
+}
+/* ----------------------- */
+
+.accept_call::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    border: 1px solid greenyellow;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    border-radius: 50%;
+    animation: pulse 1s linear infinite
+}
+.reject_call::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    border: 1px solid rgb(155, 37, 37);
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    border-radius: 50%;
+    animation: pulse 1s linear infinite
+}
 
 
+.accept_call::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    border: 1px solid yellowgreen;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    border-radius: 50%;
+    animation: pulse 1s linear infinite;
+    animation-delay: 0.3s;
+}
+.reject_call::after {
+    content: "";
+    z-index: 0;
+    position: absolute;
+    border: 1px solid red;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    border-radius: 50%;
+    animation: pulse 1s linear infinite;
+    animation-delay: 0.3s
+}
+
+@keyframes pulse  {
+    0% {
+        transform: scale(0.5);
+        opacity: 0
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 1
+    }
+
+    100% {
+        transform: scale(1.3);
+        opacity: 0
+    }
+}
+
+@keyframes accept_call  {
+    0% {
+        transform: scale(0.5);
+        opacity: 0
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 1
+    }
+
+    100% {
+        transform: scale(1.3);
+        opacity: 0
+    }
+}
+@keyframes reject_call  {
+    0% {
+        transform: scale(0.5);
+        opacity: 0
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 1
+    }
+
+    100% {
+        transform: scale(1.3);
+        opacity: 0
+    }
+}
+
+
+/* slider */
+
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+/* slider */
 
 /* Drop down in profile.jsx */
 .file-input__input {
