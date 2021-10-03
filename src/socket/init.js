@@ -1,21 +1,16 @@
 import io from "socket.io-client";
-
 /**
  * should the implementation differ for viewer and model
  */
-
-
 let pendingCalls;
 if (localStorage.getItem("pendingCalls")) {
     pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
 } else {
-    localStorage.setItem("pendingCalls", JSON.stringify({ audioCalls: [], videoCalls: [] }))
+    localStorage.setItem("pendingCalls", JSON.stringify({ audioCall: {}, videoCall: {} }))
     pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
 }
 
-
-
-let socket = io('http://localhost:8080', {
+let socket = io("http://192.168.1.104:8080", {
     auth: {
         // token will be fetched from local storage
         token: localStorage.getItem("jwtToken") || "",
@@ -25,11 +20,9 @@ let socket = io('http://localhost:8080', {
         // if nothing in local storage default to UnAuthedViewer
         // no worries if user provides wrong info, we have token we can validate
         userType: localStorage.getItem("userType") || "UnAuthedViewer",
-        hasAudioCall: pendingCalls.audioCalls.length !== 0,
-        hasVideoCall: pendingCalls.videoCalls.length !== 0,
-        audioCalls: JSON.stringify(pendingCalls.audioCalls),
-        videoCalls: JSON.stringify(pendingCalls.videoCalls),
+        hasAudioCall: pendingCalls.audioCall ? true : false,
+        hasVideoCall: pendingCalls.videoCall ? true : false,
+        audioCall: JSON.stringify(pendingCalls.audioCall),
+        videoCall: JSON.stringify(pendingCalls.videoCall),
     }
 });
-
-export default socket

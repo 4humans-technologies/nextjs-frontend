@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 import router, { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import StarIcon from "@material-ui/icons/Star";
+import Link from "next/link"
 
 const DynamicComponent = dynamic(() => import("./ViewerScreen"), {
   ssr: false,
@@ -58,13 +59,13 @@ function Mainbox(props) {
             </li>
           </ul>
           {/* <div className="tw-absolute tw-bottom-0 tw-w-full tw-align-middle tw-flex "> */}
-          <a
-            className={`${props.onCall ? "tw-bg-purple-600" : "tw-bg-green-color"} tw-w-full tw-text-center tw-opacity-100 tw-text-white tw-bottom-0 tw-absolute tw-z-50 hover:tw-text-white`}
-            // onClick={watch}
-            href={`/view-stream/${props.modelId}`}
-          >
-            {props.onCall ? "onCall" : "streaming"}
-          </a>
+          <Link href={`/view-stream/${props.modelId}`}>
+            <a
+              className={`${props.onCall ? "tw-bg-purple-600" : "tw-bg-green-color"} tw-w-full tw-text-center tw-opacity-100 tw-text-white tw-bottom-0 tw-absolute tw-z-50 hover:tw-text-white`}
+            >
+              {props.onCall ? "onCall" : "streaming"}
+            </a>
+          </Link>
           {/* </div> */}
         </div>
         {/* ral code */}

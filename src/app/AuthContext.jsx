@@ -8,7 +8,7 @@ const initialState = {
   /**
    * 👇👇 for twilio chat service handling
    */
-  twilioTempUserId: null,
+  twilioTempUserId: null, /* 👉👉 Now no need of twilioTemp userId */
   /**
    * identifier for un-authed user
    */
@@ -19,13 +19,11 @@ const initialState = {
   jwtToken: null,
   jwtExpiresIn: null,
   rtcToken: "",
-  twilioChatToken: null,
+  twilioChatToken: null, /*👉👉 Now no need of twilio chatRTM token as we are using our own chat backend */
   isLoggedIn: false,
-  isError: false,
-  errorMessage: "",
   loginSuccessUrl: "/",
   loadedFromLocalStorage: false,
-  fetchIntercepted: false
+  fetchIntercepted: false,
 };
 
 const AuthContext = createContext(initialState);
@@ -34,7 +32,7 @@ const AuthUpdateContext = createContext({
 });
 
 export const AuthContextProvider = ({ children }) => {
-  const [authSate, setAuthState] = useState(initialState);
+  const [authState, setAuthState] = useState(initialState);
 
   const updateViewer = (newViewer) => {
     setAuthState((prevValue) => {
@@ -48,6 +46,18 @@ export const AuthContextProvider = ({ children }) => {
       return newState
     });
   };
+
+
+  useEffect(() => {
+    /**
+     * Now no need for use
+     */
+    localStorage.setItem("authContext", JSON.stringify({
+      isLoggedIn: authState.isLoggedIn,
+      jwtToken: authState.jwtToken,
+      userType: authState.user.userType
+    }))
+  }, [authState.isLoggedIn, authState.jwtToken, authState.user.userType])
 
   useEffect(() => {
     debugger
@@ -74,7 +84,7 @@ export const AuthContextProvider = ({ children }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={authSate}>
+    <AuthContext.Provider value={authState}>
       <AuthUpdateContext.Provider
         value={{
           updateViewer,

@@ -4,7 +4,7 @@ import SecondHeader from "../Mainpage/SecondHeader";
 import photo from "../../../public/brandikaran.jpg";
 import Image from "next/image";
 import Sidebar from "../Mainpage/Sidebar";
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import Publicchat from "./PublicChat";
@@ -60,6 +60,7 @@ function Live(props) {
   const updateCtx = useAuthUpdateContext();
   const ctx = useAuthContext();
   const [state, dispatch] = useReducer(reducer, initState);
+  const [rejoin, setRejoin] = useState(true)
 
   if (token && channel) {
     const {
@@ -104,7 +105,7 @@ function Live(props) {
           .catch((error) => console.log(error));
       }
     }
-  }, [token, channel, ctx.fetchIntercepted, ctx.loadedFromLocalStorage, ctx.isLoggedIn, ctx.user.userType]);
+  }, [token, channel, ctx.fetchIntercepted, ctx.loadedFromLocalStorage, ctx.isLoggedIn, ctx.user.userType, rejoin]);
 
   // implimenting soket
 
@@ -203,7 +204,7 @@ function Live(props) {
           </div>
         </div> */}
     </div>
-  </div>) : <h1 className="tw-text-center tw-text-lg">Without token and channel, fetch not initiated</h1> : (
+  </div>) : <div><h1 className="tw-text-center tw-text-lg">Without token and channel, fetch not initiated</h1><button className="tw-p-3" onClick={() => setRejoin(prev => !prev)}>Rejoin</button></div> : (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">
       <h1 className="tw-font-semibold tw-text-xl">You are not a Model</h1>
     </div>

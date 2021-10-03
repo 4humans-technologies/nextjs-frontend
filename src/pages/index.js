@@ -72,7 +72,11 @@ const Home = () => {
               { title: "Online Models | Either onCall or onStream", data: transformedData }
             ]
           });
-        });
+        })
+        .catch(error => {
+          console.error(error);
+          alert(error)
+        })
     }
   }, [ctx.loadedFromLocalStorage, ctx.fetchIntercepted]);
 

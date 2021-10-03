@@ -15,13 +15,21 @@ const useFetchInterceptor = () => {
             if (typeof window !== undefined) {
                 fetchIntercept.register({
                     request: function (url, config) {
-                        if (url.startsWith("/api/website/", 0)) {
+                        /***
+                         * 😯😯😯😯😯😯
+                         * Here the values are locked in clousers
+                         * spinnerCtx and ctx are all STALE in here hence have to call
+                         * getter functions to the latest value
+                         */
+                        if (url.startsWith("/api/website/")) {
                             /**
                              * SHOW SPINNER
                              */
-
                             spinnerCtx.setShowSpinner(true)
                             debugger
+                            if (typeof (config) === "undefined") {
+                                config = {}
+                            }
                             /**
                              * if request initiated by our fetch request
                              */
@@ -29,25 +37,35 @@ const useFetchInterceptor = () => {
                             /**
                              * Authorization header is needed very much for each user type
                              */
-                            let baseUrl = "http://localhost:8080"
+                            let baseUrl = "http://192.168.1.104:8080"
                             if (window.location.hostname !== "localhost") {
                                 baseUrl = "https://dreamgirl.live"
                             }
                             const finalUrl = `${baseUrl}${url}`
                             let finalConfig;
-                            if (ctx.isLoggedIn) {
+                            const latestCtx = JSON.parse(localStorage.getItem("authContext"))
+                            if (latestCtx.isLoggedIn) {
                                 /**
                                  * 
                                  */
-                                finalConfig = {
-                                    ...config,
-                                    headers: {
-                                        ...config.headers,
-                                        Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+                                if (typeof (config?.headers) !== "undefined") {
+                                    finalConfig = {
+                                        ...config,
+                                        headers: {
+                                            ...config.headers,
+                                            Authorization: `Bearer ${latestCtx.jwtToken}`,
+                                        }
+                                    }
+                                } else {
+                                    finalConfig = {
+                                        ...config,
+                                        headers: {
+                                            Authorization: `Bearer ${latestCtx.jwtToken}`,
+                                        }
                                     }
                                 }
                             }
-                            else if (ctx.unAuthedUserId && !ctx.twilioTempUserId) {
+                            else if (latestCtx.unAuthedUserId && !latestCtx.twilioTempUserId) {
                                 /**
                                  * 
                                  */
@@ -55,12 +73,12 @@ const useFetchInterceptor = () => {
                                     ...config,
                                     body: {
                                         ...config.body,
-                                        unAuthedUserId: ctx.unAuthedUserId,
+                                        unAuthedUserId: latestCtx.unAuthedUserId,
 
                                     }
                                 }
                             }
-                            else if (ctx.unAuthedUserId && ctx.twilioTempUserId) {
+                            else if (latestCtx.unAuthedUserId && latestCtx.twilioTempUserId) {
                                 /**
                                  * 
                                  */
@@ -68,8 +86,8 @@ const useFetchInterceptor = () => {
                                     ...config,
                                     body: {
                                         ...config.body,
-                                        unAuthedUserId: ctx.unAuthedUserId,
-                                        twilioTempUserId: ctx.twilioTempUserId
+                                        unAuthedUserId: latestCtx.unAuthedUserId,
+                                        twilioTempUserId: latestCtx.twilioTempUserId
                                     }
                                 }
                             }
@@ -79,7 +97,6 @@ const useFetchInterceptor = () => {
                             debugger
                             return [finalUrl, finalConfig || config]
                         }
-                        debugger
                         return [url, config]
                     },
                     requestError: function (error) {
@@ -89,22 +106,25 @@ const useFetchInterceptor = () => {
                     },
                     response: function (response) {
                         // Modify the reponse object
-                        debugger
-                        spinnerCtx.setShowSpinner(false)
-                        if (!response.ok) {
-                            return response.json()
-                                .then(data => Promise.reject(data))
-
-                        }
-                        if (response.status <= 500 && response.status >= 300) {
-                            return response.json()
-                                .then(data => Promise.reject(data))
+                        if (response.url.startsWith("http://192.168.1.104:8080/api/website/")) {
+                            debugger
+                            spinnerCtx.setShowSpinner(false)
+                            if (!response.ok) {
+                                return response.json()
+                                    .then(data => Promise.reject(data))
+                            }
+                            if ((response.status <= 500 && response.status >= 300)) {
+                                return response.json()
+                                    .then(data => Promise.reject(data))
+                            }
+                            return response
                         }
                         return response
                     },
                     responseError: function (error) {
                         // Handle an fetch error
                         debugger
+                        console.error(error)
                         spinnerCtx.setShowSpinner(false)
                         return Promise.reject(error)
                     }

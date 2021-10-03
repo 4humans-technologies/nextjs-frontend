@@ -25,7 +25,7 @@ function GoLive() {
         return router.push("/auth/login")
       }
     }
-  }, [ctx.loadedFromLocalStorage, ctx.fetchIntercepted])
+  }, [ctx.loadedFromLocalStorage, ctx.fetchIntercepted, ctx.isLoggedIn, ctx.user.userType])
   return (
     (ctx.isLoggedIn === true && ctx.user.userType === "Model") ? <LiveComponent /> : <h1>Should not reach here</h1>
   );
