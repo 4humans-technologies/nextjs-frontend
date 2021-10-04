@@ -44,7 +44,7 @@ function Videocall(props) {
   }
 
   useEffect(() => {
-    if (ctx.fetchIntercepted && ctx.loadedFromLocalStorage) {
+    if ( ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === true) {
         /**
          * if logged in then fetch RTC token as loggedIn user

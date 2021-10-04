@@ -76,7 +76,7 @@ function Live(props) {
 
   useEffect(() => {
     debugger;
-    if (ctx.loadedFromLocalStorage && ctx.fetchIntercepted) {
+    if (ctx.loadedFromLocalStorage) {
       if ((ctx.isLoggedIn === true && ctx.user.userType === "Model")) {
         fetch(
           "/api/website/token-builder/create-stream-and-gen-token",
@@ -105,7 +105,7 @@ function Live(props) {
           .catch((error) => console.log(error));
       }
     }
-  }, [token, channel, ctx.fetchIntercepted, ctx.loadedFromLocalStorage, ctx.isLoggedIn, ctx.user.userType, rejoin]);
+  }, [token, channel,  ctx.loadedFromLocalStorage, ctx.isLoggedIn, ctx.user.userType, rejoin]);
 
   // implimenting soket
 

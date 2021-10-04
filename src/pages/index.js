@@ -5,9 +5,9 @@ import Sidebar from "../components/Mainpage/Sidebar";
 import Boxgroup from "../components/Mainpage/Boxgroup";
 import { useState, useEffect } from "react";
 // import Mainbox from "../components/Mainbox";
-import { useSidebarUpdate, useSidebarStatus } from "../app/Sidebarcontext";
 import Footer from "../components/Mainpage/Footer"
 import useFetchInterceptor from "../hooks/useFetchInterceptor";
+import { useAuthContext } from "../app/AuthContext";
 
 /**
  * just for development not for production 👇👇
@@ -28,9 +28,11 @@ const data = Array(8).fill("").map(_empty => ({
   userType: "Model"
 }))
 
+let fetchIntercepted;
 const Home = () => {
-  const { ctx } = useFetchInterceptor()
-  const sidebarStatus = useSidebarStatus();
+  const ctx = useAuthContext()
+  useFetchInterceptor(fetchIntercepted)
+  fetchIntercepted = true
   const [boxGroupsData, setBoxGroupData] = useState([
     {
       title: "Test Webcams",
@@ -49,7 +51,7 @@ const Home = () => {
   useEffect(() => {
     // fetch all live streams
     debugger
-    if (ctx.loadedFromLocalStorage && ctx.fetchIntercepted) {
+    if (ctx.loadedFromLocalStorage) {
       fetch("/api/website/compose-ui/get-ranking-online-models")
         .then((res) => res.json())
         .then((data) => {
@@ -78,7 +80,7 @@ const Home = () => {
           alert(error)
         })
     }
-  }, [ctx.loadedFromLocalStorage, ctx.fetchIntercepted]);
+  }, [ctx.loadedFromLocalStorage]);
 
   return (
     <div className="tw-min-h-screen">

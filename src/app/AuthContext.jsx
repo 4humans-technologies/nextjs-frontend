@@ -31,7 +31,9 @@ const AuthUpdateContext = createContext({
   updateViewer: () => { },
 });
 
+let numberOfInits = 0;
 export const AuthContextProvider = ({ children }) => {
+  console.log("Again initializing AUTHCONTEXT => ", numberOfInits);
   const [authState, setAuthState] = useState(initialState);
 
   const updateViewer = (newViewer) => {
@@ -47,17 +49,15 @@ export const AuthContextProvider = ({ children }) => {
     });
   };
 
-
   useEffect(() => {
-    /**
-     * Now no need for use
-     */
+    /* Now no need for use of ctx in useFetchInterceptor */
     localStorage.setItem("authContext", JSON.stringify({
       isLoggedIn: authState.isLoggedIn,
       jwtToken: authState.jwtToken,
-      userType: authState.user.userType
+      userType: authState.user.userType,
+      unAuthedUserId: authState.unAuthedUserId
     }))
-  }, [authState.isLoggedIn, authState.jwtToken, authState.user.userType])
+  }, [authState.isLoggedIn, authState.jwtToken, authState.user.userType, authState.unAuthedUserId])
 
   useEffect(() => {
     debugger

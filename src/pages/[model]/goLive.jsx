@@ -19,13 +19,13 @@ function GoLive() {
   useEffect(() => {
     // eslint-disable-next-line no-debugger
     debugger
-    if (ctx.loadedFromLocalStorage && ctx.fetchIntercepted) {
+    if (ctx.loadedFromLocalStorage) {
       if ((ctx.isLoggedIn === false && ctx.user.userType !== "Model")) {
         updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname })
         return router.push("/auth/login")
       }
     }
-  }, [ctx.loadedFromLocalStorage, ctx.fetchIntercepted, ctx.isLoggedIn, ctx.user.userType])
+  }, [ctx.loadedFromLocalStorage,  ctx.isLoggedIn, ctx.user.userType])
   return (
     (ctx.isLoggedIn === true && ctx.user.userType === "Model") ? <LiveComponent /> : <h1>Should not reach here</h1>
   );
