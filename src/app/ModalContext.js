@@ -24,22 +24,25 @@ export function ModalContextProvider(props) {
     /**
      * set content and show modal
      */
-    debugger
-    setModalContent(content)
-    setIsOpen(true)
-  }
+    // debugger
+    setModalContent(content);
+    setIsOpen(true);
+  };
 
   const clearModalWithContent = () => {
     /**
      * Hide the modal and clear the content
      */
-    setModalContent(<h1 className="tw-text-center tw-text-lg">Modal Content Not Set</h1>)
-    setIsOpen(false)
-  }
+    setModalContent(
+      <h1 className="tw-text-center tw-text-lg">Modal Content Not Set</h1>
+    );
+    setIsOpen(false);
+  };
 
   const hideModal = () => {
-    setIsOpen(false)
-  }
+    debugger;
+    setIsOpen(false);
+  };
 
   return (
     <ModalContext.Provider

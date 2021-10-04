@@ -1,4 +1,4 @@
-/* eslint-disable no-debugger */
+// /* eslint-disable no-debugger */
 import React from "react";
 import { createContext, useContext, useState, useEffect } from "react";
 
@@ -14,7 +14,7 @@ const initialState = {
    */
   unAuthedUserId: null,
   user: {
-    userType: "UnAuthedViewer"
+    userType: "UnAuthedViewer",
   },
   jwtToken: null,
   jwtExpiresIn: null,
@@ -25,12 +25,12 @@ const initialState = {
   errorMessage: "",
   loginSuccessUrl: "/",
   loadedFromLocalStorage: false,
-  fetchIntercepted: false
+  fetchIntercepted: false,
 };
 
 const AuthContext = createContext(initialState);
 const AuthUpdateContext = createContext({
-  updateViewer: () => { },
+  updateViewer: () => {},
 });
 
 export const AuthContextProvider = ({ children }) => {
@@ -38,30 +38,30 @@ export const AuthContextProvider = ({ children }) => {
 
   const updateViewer = (newViewer) => {
     setAuthState((prevValue) => {
-      debugger
+      // debugger
       let newState;
       if (newViewer.user) {
-        newState = { ...prevValue, ...newViewer, user: { ...newViewer.user } }
+        newState = { ...prevValue, ...newViewer, user: { ...newViewer.user } };
       } else {
-        newState = { ...prevValue, ...newViewer, user: { ...prevValue.user } }
+        newState = { ...prevValue, ...newViewer, user: { ...prevValue.user } };
       }
-      return newState
+      return newState;
     });
   };
 
   useEffect(() => {
-    debugger
-    const jwtToken = localStorage.getItem('jwtToken')
+    // debugger
+    const jwtToken = localStorage.getItem("jwtToken");
     if (jwtToken) {
-      if (parseInt(localStorage.getItem('jwtExpiresIn')) > Date.now()) {
+      if (parseInt(localStorage.getItem("jwtExpiresIn")) > Date.now()) {
         updateViewer({
           isLoggedIn: true,
-          user: { userType: localStorage.getItem('userType') },
-          jwtExpiresIn: +localStorage.getItem('jwtExpiresIn'),
-          rootUserId: localStorage.getItem('rootUserId'),
-          relatedUserId: localStorage.getItem('relatedUserId'),
+          user: { userType: localStorage.getItem("userType") },
+          jwtExpiresIn: +localStorage.getItem("jwtExpiresIn"),
+          rootUserId: localStorage.getItem("rootUserId"),
+          relatedUserId: localStorage.getItem("relatedUserId"),
           jwtToken: jwtToken,
-        })
+        });
       } else {
         localStorage.setItem("jwtToken", "");
         localStorage.setItem("jwtExpiresIn", "");
@@ -70,8 +70,8 @@ export const AuthContextProvider = ({ children }) => {
         localStorage.setItem("userType", "");
       }
     }
-    updateViewer({ loadedFromLocalStorage: true })
-  }, [])
+    updateViewer({ loadedFromLocalStorage: true });
+  }, []);
 
   return (
     <AuthContext.Provider value={authSate}>

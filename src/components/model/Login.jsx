@@ -66,10 +66,10 @@ function Login() {
   };
 
   return (
-    <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen tw-bg-third-color">
-      <div className="tw-flex-shrink-0 tw-flex-grow-0">
-        <div className="tw-grid tw-grid-cols-2 tw-grid-rows-1 tw-w-full tw-h-full">
-          <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-20 tw-pb-20 tw-rounded-md">
+    <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen tw-bg-third-color tw-w-[100vw] sm:tw-w-auto ">
+      <div className="tw-flex-shrink-0 tw-flex-grow-0  ">
+        <div className="tw-grid sm:tw-grid-cols-2 tw-grid-cols-1  tw-grid-rows-1 sm:tw-w-full   tw-h-full tw-w-[100vw]  ">
+          <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-20 tw-pb-20 tw-rounded-md  ">
             <h1 className="tw-text-3xl tw-font-medium tw-text-white-color tw-mb-4 tw-text-center tw-ml-3 tw-z-20">
               {" "}
               Login
@@ -118,7 +118,7 @@ function Login() {
               </div>
             </form>
           </div>
-          <div className="tw-col-span-1 tw-row-span-1 tw-relative">
+          <div className="tw-col-span-1 tw-row-span-1 sm:tw-relative tw-absolute tw-z-[-10] sm:tw-z-0 ">
             <div
               className="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-flex-col tw-items-start tw-align-bottom tw-content-end tw-px-4 tw-py-10 login-bg tw-bg-cover tw-bg-left-top"
               style={{ backgroundImage: `url(${loginBg.src})` }}

@@ -32,9 +32,9 @@ function UserProfile() {
         </div>
       </div>
       {/* name and profile */}
-      <div className="tw-grid tw-grid-cols-7 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-w-screen">
-        <div className="tw-col-span-4 tw-grid tw-grid-cols-4 ">
-          <div className="tw-col-span-1  ">
+      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4   md:tw-py-2 md:tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-w-screen">
+        <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 tw-bg-first-color tw-pl-4 tw-py-4">
+          <div className="md:tw-col-span-1 tw-col-span-2   ">
             <p>Intrested in</p>
             <p>From</p>
             <p>Language</p>
@@ -45,7 +45,7 @@ function UserProfile() {
             <p>Eye color</p>
             <p>SubCulture</p>
           </div>
-          <div className="tw-col-span-3 ">
+          <div className="md:tw-col-span-3 tw-col-span-2 ">
             <p>Intrested in</p>
             <p>From</p>
             <p>Language</p>
@@ -57,9 +57,10 @@ function UserProfile() {
             <p>SubCulture</p>
           </div>
         </div>
-        <div className="tw-grid  tw-bg-red-400 tw-col-span-3">
+        <div className="tw-grid  tw-bg-red-400 md:tw-col-span-3 tw-col-span-1">
           <h1>Freinds</h1>
-          <div className="tw-flex tw-flex-wrap">
+          <br />
+          <div className="tw-flex tw-flex-wrap tw-justify-between">
             <br />
             <div className="tw-text-center">
               <img

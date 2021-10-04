@@ -82,12 +82,12 @@ function Profile() {
       </div>
       {/* horizontal bar */}
       {/* Profile compy from grid */}
-      <div className="tw-grid tw-grid-cols-7 tw-gap-4">
-        <div className="tw-col-span-4">
+      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4">
+        <div className="md:tw-col-span-4 tw-col-span-1">
           <div className="tw-bg-gray-600  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
             <h1 className="tw-ml-4">My Information</h1>
             <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
-              <div className="tw-col-span-1  ">
+              <div className=" md:tw-col-span-1 tw-col-span-2 ">
                 <p>Intrested in</p>
                 <p>From</p>
                 <p>Language</p>
@@ -98,7 +98,7 @@ function Profile() {
                 <p>Eye color</p>
                 <p>SubCulture</p>
               </div>
-              <div className="tw-col-span-5 ">
+              <div className="md:tw-col-span-5 tw-col-span-4 ">
                 <p
                   onInput={
                     ((e) => e.currentTarget.textContent,
@@ -383,14 +383,14 @@ function Profile() {
           </div>
           {/* Scroll */}
         </div>
-        <div className="tw-col-span-3 tw-bg-gray-600  tw-text-white tw-py-8">
+        <div className="md:tw-col-span-3 tw-col-span-1 tw-bg-gray-600  tw-text-white tw-py-8">
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             <div className="tw-flex tw-justify-between">
               <h1>My Photos</h1>
               <CreateIcon className="tw-mr-2 tw-underline tw-text-white" />
             </div>
             {/* Make Model Clickeble in model */}
-            <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-py-4">
+            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1  tw-flex tw-flex-wrap tw-justify-around tw-py-4">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 ">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
@@ -436,7 +436,7 @@ function Profile() {
               <CreateIcon className="tw-mr-2 tw-underline tw-text-white" />
             </div>
             {/* Make Model Clickeble in model */}
-            <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-py-4">
+            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1  tw-flex tw-flex-wrap tw-justify-around tw-py-4">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4">
                 {/* input */}
                 <div className="file-input tw-mt-10 tw-ml-2 tw-grid">
