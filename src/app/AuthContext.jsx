@@ -29,12 +29,14 @@ const initialState = {
 const AuthContext = createContext(initialState);
 const AuthUpdateContext = createContext({
   updateViewer: () => { },
+  readFromLocalStorage: () => { },
 });
 
 let numberOfInits = 0;
 export const AuthContextProvider = ({ children }) => {
   console.log("Again initializing AUTHCONTEXT => ", numberOfInits);
   const [authState, setAuthState] = useState(initialState);
+  const [readFromLS, setReadFromLS] = useState(false)
 
   const updateViewer = (newViewer) => {
     setAuthState((prevValue) => {
@@ -49,18 +51,7 @@ export const AuthContextProvider = ({ children }) => {
     });
   };
 
-  useEffect(() => {
-    /* Now no need for use of ctx in useFetchInterceptor */
-    localStorage.setItem("authContext", JSON.stringify({
-      isLoggedIn: authState.isLoggedIn,
-      jwtToken: authState.jwtToken,
-      userType: authState.user.userType,
-      unAuthedUserId: authState.unAuthedUserId
-    }))
-  }, [authState.isLoggedIn, authState.jwtToken, authState.user.userType, authState.unAuthedUserId])
-
-  useEffect(() => {
-    debugger
+  const readFromLocalStorage = () => {
     const jwtToken = localStorage.getItem('jwtToken')
     if (jwtToken) {
       if (parseInt(localStorage.getItem('jwtExpiresIn')) > Date.now()) {
@@ -71,23 +62,77 @@ export const AuthContextProvider = ({ children }) => {
           rootUserId: localStorage.getItem('rootUserId'),
           relatedUserId: localStorage.getItem('relatedUserId'),
           jwtToken: jwtToken,
+          loadedFromLocalStorage: true
         })
+        localStorage.setItem("authContext", JSON.stringify({
+          isLoggedIn: authState.isLoggedIn,
+          jwtToken: authState.jwtToken,
+          userType: authState.user.userType,
+          unAuthedUserId: authState.unAuthedUserId
+        }))
       } else {
         localStorage.setItem("jwtToken", "");
         localStorage.setItem("jwtExpiresIn", "");
         localStorage.setItem("rootUserId", "");
         localStorage.setItem("relatedUserId", "");
         localStorage.setItem("userType", "");
+        localStorage.setItem("authContext", "");
+        updateViewer({ loadedFromLocalStorage: true })
       }
+    } else {
+      updateViewer({ loadedFromLocalStorage: true })
     }
-    updateViewer({ loadedFromLocalStorage: true })
-  }, [])
+  }
+
+  if (!authState.loadedFromLocalStorage && typeof window !== "undefined") {
+    debugger
+    readFromLocalStorage()
+  }
+
+
+
+  useEffect(() => {
+    /* Now no need for use of ctx in useFetchInterceptor */
+    localStorage.setItem("authContext", JSON.stringify({
+      isLoggedIn: authState.isLoggedIn,
+      jwtToken: authState.jwtToken,
+      userType: authState.user.userType,
+      unAuthedUserId: authState.unAuthedUserId
+    }))
+  }, [authState.isLoggedIn, authState.jwtToken, authState.user.userType, authState.unAuthedUserId])
+
+  // useEffect(() => {
+  //   debugger
+  //   if (!authState.loadedFromLocalStorage) {
+  //     const jwtToken = localStorage.getItem('jwtToken')
+  //     if (jwtToken) {
+  //       if (parseInt(localStorage.getItem('jwtExpiresIn')) > Date.now()) {
+  //         updateViewer({
+  //           isLoggedIn: true,
+  //           user: { userType: localStorage.getItem('userType') },
+  //           jwtExpiresIn: +localStorage.getItem('jwtExpiresIn'),
+  //           rootUserId: localStorage.getItem('rootUserId'),
+  //           relatedUserId: localStorage.getItem('relatedUserId'),
+  //           jwtToken: jwtToken,
+  //         })
+  //       } else {
+  //         localStorage.setItem("jwtToken", "");
+  //         localStorage.setItem("jwtExpiresIn", "");
+  //         localStorage.setItem("rootUserId", "");
+  //         localStorage.setItem("relatedUserId", "");
+  //         localStorage.setItem("userType", "");
+  //       }
+  //     }
+  //   }
+  //   updateViewer({ loadedFromLocalStorage: true })
+  // }, [])
 
   return (
     <AuthContext.Provider value={authState}>
       <AuthUpdateContext.Provider
         value={{
           updateViewer,
+          readFromLocalStorage
         }}
       >
         {children}

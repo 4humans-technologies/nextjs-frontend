@@ -7,7 +7,8 @@ import { useState, useEffect } from "react";
 // import Mainbox from "../components/Mainbox";
 import Footer from "../components/Mainpage/Footer"
 import useFetchInterceptor from "../hooks/useFetchInterceptor";
-import { useAuthContext } from "../app/AuthContext";
+import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext";
+import useSetupSocket from "../socket/useSetupSocket";
 
 /**
  * just for development not for production 👇👇
@@ -30,9 +31,11 @@ const data = Array(8).fill("").map(_empty => ({
 
 let fetchIntercepted;
 const Home = () => {
+  console.log("rendering home");
   const ctx = useAuthContext()
   useFetchInterceptor(fetchIntercepted)
   fetchIntercepted = true
+
   const [boxGroupsData, setBoxGroupData] = useState([
     {
       title: "Test Webcams",
@@ -48,6 +51,7 @@ const Home = () => {
     }
   ])
 
+  useSetupSocket()
   useEffect(() => {
     // fetch all live streams
     debugger
@@ -65,7 +69,7 @@ const Home = () => {
               rootUserId: model.rootUser._id,
               userName: model.rootUser.username,
               userType: model.rootUser.userType,
-              currentStream: model.rootUser.currentStream || 1
+              // currentStream: model.rootUser.currentStream || 1 /*🤔🤔 why did i put currentStream??  */
             }
           })
           setBoxGroupData(prev => {

@@ -9,6 +9,8 @@ import "../styles/globals.css";
 import { ErrorContextProvider } from '../app/Error/ErrorContext';
 import { useEffect } from 'react';
 import { SpinnerContextProvider } from '../app/Loading/SpinnerContext';
+import dynamic from "next/dynamic";
+// const io = dynamic(() => import("../socket/socket"), { ssr: false })
 
 /**
  * RULES OF HOOKS
@@ -39,6 +41,18 @@ const MyApp = ({ Component, pageProps }) => {
     }
     console.log("__app is mounted");
   }, [])
+
+  // useEffect(() => {
+  //   /* Init socket */
+  //   const socket = io.connect()
+  //   socket.on("connect", () => {
+  //     console.log("socket connected!");
+  //   })
+
+  //   socket.on("disconnect", () => {
+  //     console.log("socket disconnected!");
+  //   })
+  // }, [])
 
   return (
     // <Provider store={store}>

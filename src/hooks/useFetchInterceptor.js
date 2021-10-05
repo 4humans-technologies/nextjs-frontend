@@ -34,7 +34,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                         if (typeof (config) === "undefined") {
                             config = {}
                         }
-                        let baseUrl = "http://192.168.1.104:8080"
+                        let baseUrl = "http://localhost:8080"
                         if (window.location.hostname !== "localhost") {
                             baseUrl = "https://dreamgirl.live"
                         }
