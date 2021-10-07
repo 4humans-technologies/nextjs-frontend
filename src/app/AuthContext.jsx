@@ -28,6 +28,7 @@ const initialState = {
 
 const AuthContext = createContext(initialState);
 const AuthUpdateContext = createContext({
+  logout: () => { },
   updateViewer: () => { },
   readFromLocalStorage: () => { },
 });
@@ -50,6 +51,25 @@ export const AuthContextProvider = ({ children }) => {
     });
   };
 
+  const logout = () => {
+    localStorage.setItem("jwtToken", "");
+    localStorage.setItem("jwtExpiresIn", "");
+    localStorage.setItem("rootUserId", "");
+    localStorage.setItem("relatedUserId", "");
+    localStorage.setItem("userType", "");
+    localStorage.setItem("authContext", "");
+    updateViewer({
+      isLoggedIn: false,
+      user: { userType: "UnAuthedViewer" },
+      jwtExpiresIn: null,
+      rtcExpiresIn: null,
+      rootUserId: "",
+      relatedUserId: "",
+      jwtToken: "",
+      rtcToken: ""
+    })
+  }
+
   const readFromLocalStorage = () => {
     const jwtToken = localStorage.getItem('jwtToken')
     if (jwtToken) {
@@ -61,6 +81,7 @@ export const AuthContextProvider = ({ children }) => {
           rootUserId: localStorage.getItem('rootUserId'),
           relatedUserId: localStorage.getItem('relatedUserId'),
           jwtToken: jwtToken,
+          unAuthedUserId: localStorage.getItem("unAuthedUserId"),
           loadedFromLocalStorage: true
         })
         localStorage.setItem("authContext", JSON.stringify({
@@ -76,10 +97,15 @@ export const AuthContextProvider = ({ children }) => {
         localStorage.setItem("relatedUserId", "");
         localStorage.setItem("userType", "");
         localStorage.setItem("authContext", "");
+        localStorage.setItem("unAuthedUserId", "");
         updateViewer({ loadedFromLocalStorage: true })
       }
+      localStorage.setItem("rtcToken", "");
+      localStorage.setItem("rtcExpiresIn", "");
     } else {
       updateViewer({ loadedFromLocalStorage: true })
+      localStorage.setItem("rtcToken", "");
+      localStorage.setItem("rtcExpiresIn", "");
     }
   }
 
@@ -105,7 +131,8 @@ export const AuthContextProvider = ({ children }) => {
       <AuthUpdateContext.Provider
         value={{
           updateViewer,
-          readFromLocalStorage
+          readFromLocalStorage,
+          logout
         }}
       >
         {children}

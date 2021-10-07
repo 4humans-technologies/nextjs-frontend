@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 
-function useAgora(client, appId, token, channel, role, uid, callType) {
-  debugger
+const appId = "ae3edf155f1a4e78a544d125c8f53137";
+function useAgora(client, role, callType) {
   console.log("running useAgora!");
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
@@ -27,11 +27,13 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
       }
       return tracks;
     }
-    // if client
+    // if client, no local track
     return null;
   }
 
-  async function join(ch, tk, id) {
+  async function join(channel, token, uid) {
+    debugger
+    /* relatedUserId Will Be the > uid */
     console.log("join running..");
 
     if (!client) {
@@ -44,28 +46,34 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
         encoderConfig: { height: 720, width: 720, frameRate: 23 },
       });
       debugger;
-      await client.join(appId, ch, tk, id);
+      await client.join(appId, channel, token, uid);
       await client.publish(track);
       return setJoinState(true);
     }
     // if client
-    await client.join(appId, ch, tk, id);
+    await client.join(appId, channel, token, uid);
   }
 
-  async function startLocalCameraPreview() {
-    debugger
-    if (!client) {
-      return;
-    }
-    if (role === "host") {
-      if (!localAudioTrack || !localVideoTrack) {
-        let track = await createLocalTracks();
-        return track;
+    async function startLocalCameraPreview() {
+      debugger
+      if (!client) {
+        return;
+      }
+      if (role === "host") {
+        if (!localAudioTrack || !localVideoTrack) {
+          let track = await createLocalTracks();
+          return track;
+        }
       }
     }
-  }
 
   async function leave() {
+    await client?.leave();
+    setRemoteUsers([]);
+    setJoinState(false);
+  }
+
+  async function leaveAndCloseTracks () {
     if (localAudioTrack) {
       localAudioTrack.stop();
       localAudioTrack.close();
@@ -75,9 +83,6 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
       localVideoTrack.stop();
       localVideoTrack.close();
     }
-    await client?.leave();
-    setRemoteUsers([]);
-    setJoinState(false);
   }
 
   useEffect(() => {
@@ -121,15 +126,16 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     };
   }, [client]);
 
-  return {
-    localAudioTrack,
-    localVideoTrack,
-    joinState,
-    leave,
-    join,
-    remoteUsers,
-    startLocalCameraPreview,
-  };
+    return {
+      localAudioTrack,
+      localVideoTrack,
+      joinState,
+      leave,
+      join,
+      remoteUsers,
+      startLocalCameraPreview,
+      leaveAndCloseTracks
+    };
 }
 
 export default useAgora;

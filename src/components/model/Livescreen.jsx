@@ -60,7 +60,6 @@ function Livescreen() {
                 <CardGiftcardIcon fontSize="small" />
                 <p className="tw-pl-1 tw-tracking-tight">Send Gift</p>
               </Button>
-
             </div>
             <div className="tw-col-span-1 tw-row-span-1">
               <Button

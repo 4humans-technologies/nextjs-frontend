@@ -27,6 +27,7 @@ import useSetupSocket from "../socket/useSetupSocket";
 
 const MyApp = ({ Component, pageProps }) => {
   console.log("rendering MyApp");
+  // useSetupSocket("http://192.168.43.85:8080")
   useSetupSocket("http://192.168.1.104:8080")
   return (
     // <Provider store={store}>

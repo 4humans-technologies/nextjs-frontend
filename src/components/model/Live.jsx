@@ -39,11 +39,10 @@ const reducer = (state = initState, action) => {
 
 // /api/website/token-builder/create-stream-and-gen-token
 
-const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
+// Replace with your App ID.
 let token;
-let channel;
 let client;
-const role = "host";
+let rtcTokenExpireIn;
 const callType = "videoCall"; /* to tell useAgora if want to create videoTrack/audioTrack */
 
 /**
@@ -57,11 +56,10 @@ const createAgoraClient = (extraOptions) => {
   client = AgoraRTC.createClient(clientOptions);
   client.setClientRole("host");
 }
-
 /* Init Client */
 createAgoraClient()
 
-function Live(props) {
+function Live() {
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
   const [state, dispatch] = useReducer(reducer, initState);
@@ -76,10 +74,7 @@ function Live(props) {
     join,
     remoteUsers,
     startLocalCameraPreview,
-  } = useAgora(client, appId, token, ctx.relatedUserId || localStorage.getItem("relatedUserId"), role, ctx.relatedUserId || ctx.unAuthedUserId, callType);
-
-
-
+  } = useAgora(client, "host", callType);
 
   useEffect(() => {
     startLocalCameraPreview()
@@ -88,7 +83,7 @@ function Live(props) {
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = () => {
     debugger
-    if (ctx.loadedFromLocalStorage) {
+    if (ctx?.rtcToken && ctx?.rtcTokenExpireIn * 1000 >= new Date.now() && ctx.loadedFromLocalStorage) {
       if ((ctx.isLoggedIn === true && ctx.user.userType === "Model")) {
         fetch(
           "/api/website/token-builder/create-stream-and-gen-token",
@@ -106,13 +101,13 @@ function Live(props) {
           })
           .then((data) => {
             debugger;
-            console.log(ctx);
+            token = data.rtcToken;
+            rtcTokenExpireIn = data.privilegeExpiredTs
+            join(ctx.relatedUserId, token, ctx.relatedUserId)
             updateCtx.updateViewer({
               rtcToken: data.rtcToken,
+              rtcTokenExpireIn: data.privilegeExpiredTs
             });
-            token = data.rtcToken;
-            channel = data.modelId;
-            join(channel, token, ctx.relatedUserId || ctx.unAuthedUserId)
           })
           .catch((error) => console.log(error));
       }
@@ -122,9 +117,6 @@ function Live(props) {
   const endStream = () => {
     debugger
     leave()
-    updateCtx.updateViewer({
-      rtcToken: "",
-    });
   }
 
 
@@ -138,7 +130,7 @@ function Live(props) {
           <VideoPlayer
             videoTrack={localVideoTrack}
             audioTrack={localAudioTrack}
-            uid={ctx.relatedUserId || ctx.unAuthedUserId}
+            uid={ctx.relatedUserId}
             playAudio={false}
           />
           <div className="tw-text-center tw-mt-1 tw-flex tw-ml-[40%]">

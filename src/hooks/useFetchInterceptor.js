@@ -26,7 +26,8 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                         debugger
                         const latestCtx = JSON.parse(localStorage.getItem("authContext"))
                         /* for GET requests when there is no config */
-                        let baseUrl = "http://192.168.1.104:8080";
+                        let baseUrl = "http://192.168.1.104:8080"; /* vishalprajapati */
+                        // let baseUrl = "http://192.168.43.85:8080"; /* 👉 asus */
                         if (window.location.hostname !== "localhost") {
                             baseUrl = "https://dreamgirl.live"
                         }
@@ -80,14 +81,14 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                     if (response.url.includes("/api/website/")) {
                         debugger
                         spinnerCtx.setShowSpinner(false)
-                        if (!response.ok) {
-                            return response.json()
-                                .then(data => Promise.reject(data))
-                        }
-                        if ((response.status <= 500 && response.status >= 300)) {
-                            return response.json()
-                                .then(data => Promise.reject(data))
-                        }
+                        // if (!response.ok) {
+                        //     return response.json()
+                        //         .then(data => Promise.reject(data))
+                        // }
+                        // if ((response.status <= 500 && response.status >= 300)) {
+                        //     return response.json()
+                        //         .then(data => Promise.reject(data))
+                        // }
                         return response
                     }
                     spinnerCtx.setShowSpinner(false)

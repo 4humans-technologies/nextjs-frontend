@@ -14,6 +14,7 @@ import io from "../../socket/socket"
 function Login() {
   const [username, setuserName] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState(null)
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
   const router = useRouter()
@@ -57,8 +58,7 @@ function Login() {
         }
       })
       .catch((err) => {
-        alert(err.message)
-        console.log(err);
+        setLoginError(err.message)
       });
   };
 
@@ -92,8 +92,12 @@ function Login() {
                   className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 />
               </div>
-
-              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-6">
+              {loginError && (
+                <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3">
+                  <div className="tw-text-white-color tw-font-semibold">{loginError}</div>
+                </div>                
+              )}
+              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-3">
                 <Button
                   variant="danger"
                   className="tw-rounded-full tw-inline-block tw-w-11/12"

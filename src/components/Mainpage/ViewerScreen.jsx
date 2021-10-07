@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import MediaPlayer from "../UI/MediaPlayer";
 import VideoPlayer from "../UI/VideoPlayer";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-import useAgora from "./useAgora";
+import useAgora from "../../hooks/useAgora";
 import { useRouter } from "next/router";
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
 
@@ -20,26 +20,18 @@ client.setClientRole("audience");
 /**
  * APPID can in feature be dynamic also
  */
-const appId = "ae3edf155f1a4e78a544d125c8f53137";
 let token;
-let channel;
-
+let rtcTokenExpireIn;
 function Videocall(props) {
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext()
   // console.log(">>>", window.location.pathname.split("/").reverse()[0]);
-  /**
-   * if there is no token and channel then don't call useAgora as the required
-   * parameters will not have been ready yet
-   */
   const {
-    localAudioTrack,
-    localVideoTrack,
     joinState,
     leave,
     join,
-    remoteUsers,
-  } = useAgora(client, appId, token, channel, props.role, null, props.callType);
+    remoteUsers
+  } = useAgora(client, "audience", props.callType || "");
 
   useEffect(() => {
     if (ctx.loadedFromLocalStorage) {
@@ -64,26 +56,26 @@ function Videocall(props) {
         )
           .then((resp) => resp.json())
           .then((data) => {
-            token = data.rtcToken;
-            channel = "s";
+            token = data.rtcToken
+            rtcTokenExpireIn = data.privilegeExpiredTs
+            const channel = window.location.pathname.split("/").reverse()[0]
+            join(channel, data.rtcToken, ctx.relatedUserId)
+            updateCtx.updateViewer({
+              unAuthedUserId: data.unAuthedUserId,
+              rtcToken: data.rtcToken
+            })
           });
       } else {
         /**
          * fetch RTC token as a un-authenticated user
          */
-        let newSession = false;
-        if (!sessionStorage.getItem(newSession)) {
-          sessionStorage.setItem("newSession", "false")
-          newSession = true
-        }
         const payload = {
+          /* which models's stream to join */
           modelId: window.location.pathname.split("/").reverse()[0],
-          newSession: newSession
         }
-        if (ctx.unAuthedUserId) {
-          payload.unAuthedUserId = unAuthedUserId
-        }
-
+        // if (ctx.unAuthedUserId || JSON.parse("authContext").unAuthedUserId) {
+        //   payload.unAuthedUserId = unAuthedUserId
+        // }
         fetch(
           "/api/website/token-builder/unauthed-viewer-join-stream",
           {
@@ -97,17 +89,27 @@ function Videocall(props) {
         )
           .then((resp) => resp.json())
           .then((data) => {
-            localStorage.setItem("unAuthed-namespace", JSON.stringify({
-              unAuthedUserId: data.unAuthedUserId
-            }))
-            updateCtx({
-              unAuthedUserId: unAuthedUserId
-            })
+            debugger
+            if (data.newUnAuthedUserCreated) {
+              /* if new viewer was created save the _id in localstorage */
+              localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
+              updateCtx.updateViewer({
+                unAuthedUserId: data.unAuthedUserId,
+                rtcToken: data.rtcToken
+              })
+            } else {
+              updateCtx.updateViewer({
+                rtcToken: data.rtcToken
+              })
+            }
+            /* 🤩🤩🔥🔥 join stream */
+            const channel = window.location.pathname.split("/").reverse()[0]
+            join(channel, data.rtcToken, localStorage.getItem("unAuthedUserId"))
           })
-          .catch(err => alert(err))
+          .catch(err => alert(err.message))
       }
     }
-  }, []);
+  }, [ctx.isLoggedIn]);
 
   return (
     <div className="sm:tw-h-[70vh] ">
@@ -124,7 +126,7 @@ function Videocall(props) {
       ) : (
         <p className="tw-text-white">Disconnected</p>
       )) : null}
-      {token && (remoteUsers.length > 0 &&
+      {(remoteUsers.length > 0 &&
         remoteUsers.map((user) => {
           return (
             <VideoPlayer
