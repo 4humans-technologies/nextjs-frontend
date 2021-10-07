@@ -124,13 +124,19 @@ function Registration() {
                   className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 />
               </div>
+
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
                 <select
-                  class="form-control"
                   placeholder="Choose"
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-14 tw-text-lg"
+                  className="tw-rounded-full tw-flex-grow tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 >
-                  <option selected>Choose Gender</option>
+                  <option
+                    selected
+                    className="tw-justify-between tw-rounded-full tw-border-none tw-py-4"
+                    placeholder="Choose Gender"
+                  >
+                    Choose Gender
+                  </option>
                   <option>Female</option>
                   <option>Male</option>
                 </select>
