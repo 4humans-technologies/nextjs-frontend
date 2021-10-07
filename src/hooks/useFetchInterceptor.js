@@ -1,9 +1,7 @@
 /* eslint-disable no-debugger */
-import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
 import useSpinnerContext from "../app/Loading/SpinnerContext"
 import fetchIntercept from 'fetch-intercept';
 import { useEffect } from "react";
-
 const useFetchInterceptor = (isAlreadyIntercepted) => {
     /**
      * if all i need is the access to the functions in the context(s) than,
@@ -16,69 +14,56 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
     useEffect(() => {
         debugger
         if (!isAlreadyIntercepted) {
+            debugger
+            /* when new page is mounted */
+            fetchIntercept.clear()
             fetchIntercept.register({
                 request: function (url, config) {
-                    /***
-                     * 😯😯😯😯😯😯
-                     * Here the values are locked in clousers
-                     * spinnerCtx and ctx are all STALE in here hence have to call
-                     * getter functions to the latest value
-                     */
-
                     /* Only intercept app server request */
                     if (url.startsWith("/api/website/")) {
                         /* SHOW SPINNER */
                         spinnerCtx.setShowSpinner(true)
                         debugger
+                        const latestCtx = JSON.parse(localStorage.getItem("authContext"))
                         /* for GET requests when there is no config */
-                        if (typeof (config) === "undefined") {
-                            config = {}
-                        }
-                        let baseUrl = "http://localhost:8080"
+                        let baseUrl = "http://192.168.1.104:8080";
                         if (window.location.hostname !== "localhost") {
                             baseUrl = "https://dreamgirl.live"
                         }
-                        const finalUrl = `${baseUrl}${url}`
+                        let finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem("socketId")}&unAuthedUserId=`;
+
+                        if (typeof (config) === "undefined") {
+                            /* get request */
+                            config = {}
+                        }
+
+                        if (latestCtx.unAuthedUserId) {
+                            finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem("socketId")}&unAuthedUserId=${latestCtx.unAuthedUserId}`
+                        }
+
+                        /* attach jwtToken in the header */
                         let finalConfig;
-                        const latestCtx = JSON.parse(localStorage.getItem("authContext"))
                         if (latestCtx.isLoggedIn) {
-                            /* attach jwtToken in the header */
-                            if (!config?.headers) {
+                            if (config?.headers) {
                                 finalConfig = {
                                     ...config,
                                     headers: {
                                         ...config.headers,
                                         Authorization: `Bearer ${latestCtx.jwtToken}`,
-                                    }
+                                    },
                                 }
                             } else {
                                 finalConfig = {
                                     ...config,
                                     headers: {
                                         Authorization: `Bearer ${latestCtx.jwtToken}`,
-                                    }
+                                    },
                                 }
                             }
-                        }
-                        else if (latestCtx.unAuthedUserId) {
-                            /* attach Identifier for the unAuthenticated user */
-                            if (!config?.body) {
-                                finalConfig = {
-                                    ...config,
-                                    body: {
-                                        unAuthedUserId: latestCtx.unAuthedUserId,
-                                    }
-                                }
-                            } else {
-                                finalConfig = {
-                                    ...config,
-                                    body: {
-                                        ...config.body,
-                                        unAuthedUserId: latestCtx.unAuthedUserId,
-                                    }
-                                }
+                        } else {
+                            if (Object.keys(config).length !== 0) {
+                                finalConfig = config
                             }
-
                         }
                         debugger
                         return [finalUrl, finalConfig]
@@ -92,7 +77,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                 },
                 response: function (response) {
                     /* Modify the response object */
-                    if (response.url.startsWith("http://192.168.1.104:8080/api/website/")) {
+                    if (response.url.includes("/api/website/")) {
                         debugger
                         spinnerCtx.setShowSpinner(false)
                         if (!response.ok) {
@@ -105,6 +90,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                         }
                         return response
                     }
+                    spinnerCtx.setShowSpinner(false)
                     return response
                 },
                 responseError: function (error) {

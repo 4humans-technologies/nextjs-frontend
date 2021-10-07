@@ -9,7 +9,7 @@ import Footer from "../components/Mainpage/Footer"
 import useFetchInterceptor from "../hooks/useFetchInterceptor";
 import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext";
 import useSetupSocket from "../socket/useSetupSocket";
-
+import socket from "../socket/socket";
 /**
  * just for development not for production 👇👇
  */
@@ -32,9 +32,9 @@ const data = Array(8).fill("").map(_empty => ({
 let fetchIntercepted;
 const Home = () => {
   console.log("rendering home");
-  const ctx = useAuthContext()
-  useFetchInterceptor(fetchIntercepted)
-  fetchIntercepted = true
+  const ctx = useAuthContext();
+  useFetchInterceptor(fetchIntercepted);
+  fetchIntercepted = true;
 
   const [boxGroupsData, setBoxGroupData] = useState([
     {
@@ -51,7 +51,17 @@ const Home = () => {
     }
   ])
 
-  useSetupSocket()
+  const doRequest = () => {
+    debugger
+    const id = socket.getSocketId()
+    console.log(`${socket.getSocketId()}`);
+    fetch("/api/website/compose-ui/get-ranking-online-models")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("request completed!");
+      })
+  }
+
   useEffect(() => {
     // fetch all live streams
     debugger
@@ -102,6 +112,9 @@ const Home = () => {
             return <Boxgroup groupTitle={data.title} data={data.data} key={`${index}_boxGroup_&^HJK`} />
           })}
         </div>
+      </div>
+      <div className="tw-text-center">
+        <button onClick={doRequest} className="tw-px-4 py-2 tw-bg-red-500 tw-text-xl tw-my-4 tw-text-white-color">Do Request</button>
       </div>
       <Footer />
     </div>

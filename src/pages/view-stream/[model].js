@@ -6,9 +6,13 @@ import SecondHeader from '../../components/Mainpage/SecondHeader'
 import Sidebar from '../../components/Mainpage/Sidebar'
 import LiveScreen from '../../components/model/LiveScreen'
 import ModelProfile from '../../components/model/ModelProfile'
+import useFetchInterceptor from '../../hooks/useFetchInterceptor'
 
 
+let fetchIntercepted;
 function ViewModelStream() {
+    useFetchInterceptor(fetchIntercepted);
+    fetchIntercepted = true;
     return (
         <>
             <Header />

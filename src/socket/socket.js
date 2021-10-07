@@ -1,20 +1,19 @@
 import io from "socket.io-client";
 let socketConnectionInstance;
-
-/**
- * should the implementation differ for viewer and model
- */
 let pendingCalls;
-if (localStorage.getItem("pendingCalls")) {
-    pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
-} else {
-    localStorage.setItem("pendingCalls", JSON.stringify({ audioCall: {}, videoCall: {} }))
-    pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
-}
-
 export default {
     connect: (url) => {
-        socketConnectionInstance = io(url || "http://192.168.1.104:8080", {
+        /**
+         * should the implementation differ for viewer and model
+         */
+        if (localStorage.getItem("pendingCalls")) {
+            pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
+        } else {
+            localStorage.setItem("pendingCalls", JSON.stringify({ audioCall: {}, videoCall: {} }))
+            pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
+        }
+        debugger
+        socketConnectionInstance = io(url || "http://localhost:8080", {
             auth: {
                 // token will be fetched from local storage
                 token: localStorage.getItem("jwtToken") || "",
@@ -24,8 +23,8 @@ export default {
                 // if nothing in local storage default to UnAuthedViewer
                 // no worries if user provides wrong info, we have token we can validate
                 userType: localStorage.getItem("userType") || "UnAuthedViewer",
-                hasAudioCall: pendingCalls.audioCall ? true : false,
-                hasVideoCall: pendingCalls.videoCall ? true : false,
+                hasAudioCall: Object.keys(pendingCalls.audioCall).length > 0 ? true : false,
+                hasVideoCall: Object.keys(pendingCalls.videoCall).length > 0 ? true : false,
                 audioCall: JSON.stringify(pendingCalls.audioCall),
                 videoCall: JSON.stringify(pendingCalls.videoCall),
             }
@@ -40,11 +39,12 @@ export default {
     },
     getSocketId: () => {
         if (!socketConnectionInstance) {
-            throw Error("Socket is not initialized!")
+            // throw Error("Socket is not initialized!")
+            return "socket not init"
         }
         return socketConnectionInstance.id
     },
-    globalListners: (socket) => {
+    globalListeners: (socket) => {
         socket.on("new-model-started-stream", (data) => {
             const model = JSON.parse(data)
             const dataObj = {
@@ -57,9 +57,53 @@ export default {
                 userType: model.rootUser.userType,
             }
         })
+
+        socket.on("viewer-left", (data) => {
+            alert("Viewer left")
+            console.log(data.roomSize);
+        })
+
+        socket.on("viewer-joined", (data) => {
+            alert(data.message)
+            console.log(data.roomSize);
+        })
+        // "model-public-message"
     },
     modelListners: (socket) => {
 
-    }
+    },
+    viewerListners: (socket) => {
+        socket.on("model-audio-calling", (data) => {
+            alert(data.message)
+            console.log(data.roomSize);
+        })
+
+        socket.on("model-video-calling", (data) => {
+            alert(data.message)
+            console.log(data.roomSize);
+        })
+
+        socket.on("model-accepted-video-call", (data) => {
+            alert(data.message)
+            console.log(data.roomSize);
+        })
+
+        socket.on("model-accepted-audio-call", (data) => {
+            alert(data.message)
+            console.log(data.roomSize);
+        })
+        socket.on("model-declined-video-call", (data) => {
+            alert(data.message)
+            console.log(data.roomSize);
+        })
+        socket.on("model-declined-audio-call", (data) => {
+            alert(data.message)
+            console.log(data.roomSize);
+        })
+    },
+    unAuthedViewerListners: (socket) => {
+
+    },
+
 
 }

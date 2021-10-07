@@ -36,7 +36,6 @@ let numberOfInits = 0;
 export const AuthContextProvider = ({ children }) => {
   console.log("Again initializing AUTHCONTEXT => ", numberOfInits);
   const [authState, setAuthState] = useState(initialState);
-  const [readFromLS, setReadFromLS] = useState(false)
 
   const updateViewer = (newViewer) => {
     setAuthState((prevValue) => {
@@ -100,32 +99,6 @@ export const AuthContextProvider = ({ children }) => {
       unAuthedUserId: authState.unAuthedUserId
     }))
   }, [authState.isLoggedIn, authState.jwtToken, authState.user.userType, authState.unAuthedUserId])
-
-  // useEffect(() => {
-  //   debugger
-  //   if (!authState.loadedFromLocalStorage) {
-  //     const jwtToken = localStorage.getItem('jwtToken')
-  //     if (jwtToken) {
-  //       if (parseInt(localStorage.getItem('jwtExpiresIn')) > Date.now()) {
-  //         updateViewer({
-  //           isLoggedIn: true,
-  //           user: { userType: localStorage.getItem('userType') },
-  //           jwtExpiresIn: +localStorage.getItem('jwtExpiresIn'),
-  //           rootUserId: localStorage.getItem('rootUserId'),
-  //           relatedUserId: localStorage.getItem('relatedUserId'),
-  //           jwtToken: jwtToken,
-  //         })
-  //       } else {
-  //         localStorage.setItem("jwtToken", "");
-  //         localStorage.setItem("jwtExpiresIn", "");
-  //         localStorage.setItem("rootUserId", "");
-  //         localStorage.setItem("relatedUserId", "");
-  //         localStorage.setItem("userType", "");
-  //       }
-  //     }
-  //   }
-  //   updateViewer({ loadedFromLocalStorage: true })
-  // }, [])
 
   return (
     <AuthContext.Provider value={authState}>

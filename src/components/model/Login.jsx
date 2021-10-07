@@ -9,8 +9,7 @@ import {
 import { Money, Person, VerifiedUser } from "@material-ui/icons"
 import loginBg from "../../../public/dreamgirl-bg-3.jpg"
 import { useRouter } from "next/router"
-import useFetchInterceptor from "../../hooks/useFetchInterceptor";
-
+import io from "../../socket/socket"
 //Validation is still left in this
 function Login() {
   const [username, setuserName] = useState("");
@@ -51,8 +50,9 @@ function Login() {
             user: {
               userType: data.userType,
             },
-            jwtExpiresIn: data.expiresIn
+            jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000
           })
+          io.connect()
           router.push(ctx.loginSuccessUrl)
         }
       })

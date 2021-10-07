@@ -28,23 +28,21 @@ function Videocall(props) {
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext()
   // console.log(">>>", window.location.pathname.split("/").reverse()[0]);
-  if (!token && channel) {
-    /**
-     * if there is no token and channel then don't call useAgora as the required
-     * parameters will not have been ready yet
-     */
-    const {
-      localAudioTrack,
-      localVideoTrack,
-      joinState,
-      leave,
-      join,
-      remoteUsers,
-    } = useAgora(client, appId, token, channel, props.role, null, props.callType);
-  }
+  /**
+   * if there is no token and channel then don't call useAgora as the required
+   * parameters will not have been ready yet
+   */
+  const {
+    localAudioTrack,
+    localVideoTrack,
+    joinState,
+    leave,
+    join,
+    remoteUsers,
+  } = useAgora(client, appId, token, channel, props.role, null, props.callType);
 
   useEffect(() => {
-    if ( ctx.loadedFromLocalStorage) {
+    if (ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === true) {
         /**
          * if logged in then fetch RTC token as loggedIn user

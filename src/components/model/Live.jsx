@@ -13,9 +13,7 @@ import LivePeople from "./LivePeople";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import useAgora from "../../hooks/useAgora"; //using agora from Hooks
 import VideoPlayer from "../UI/VideoPlayer";
-import { io } from "socket.io-client";
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions";
-import dynamic from "next/dynamic";
 
 // import { useTokenContext } from "../../app/Tokencontext";
 // import { useUpdateContext } from "../../app/Tokencontext";
@@ -46,36 +44,46 @@ let token;
 let channel;
 let client;
 const role = "host";
-const callType = "videoCall";
+const callType = "videoCall"; /* to tell useAgora if want to create videoTrack/audioTrack */
 
 /**
  * CREATING AGORA CLIENT
  */
 
-const clientOptions = { codec: "h264", mode: "live" };
-client = AgoraRTC.createClient(clientOptions);
-client.setClientRole("host");
+
 
 function Live(props) {
-  const updateCtx = useAuthUpdateContext();
   const ctx = useAuthContext();
+  const updateCtx = useAuthUpdateContext();
   const [state, dispatch] = useReducer(reducer, initState);
-  const [rejoin, setRejoin] = useState(true)
+  // const [rejoin, setRejoin] = useState(true)
 
-  if (token && channel) {
-    const {
-      localAudioTrack,
-      localVideoTrack,
-      joinState,
-      leave,
-      join,
-      remoteUsers,
-      startLocalCameraPreview,
-    } = useAgora(client, appId, token, channel, role, null, callType);
+  const {
+    localAudioTrack,
+    localVideoTrack,
+    joinState,
+    leave,
+    join,
+    remoteUsers,
+    startLocalCameraPreview,
+  } = useAgora(client, appId, token, channel, role, null, callType);
+
+
+  const createAgoraClient = (extraOptions) => {
+    if (!extraOptions) {
+      extraOptions = {}
+    }
+    const clientOptions = { codec: "h264", mode: "live", ...extraOptions };
+    client = AgoraRTC.createClient(clientOptions);
+    client.setClientRole("host");
   }
 
   useEffect(() => {
-    debugger;
+    startLocalCameraPreview()
+  }, [startLocalCameraPreview])
+
+  /* Will Not Go Live When The Component Mounts */
+  const startStreamingAndGoLive = () => {
     if (ctx.loadedFromLocalStorage) {
       if ((ctx.isLoggedIn === true && ctx.user.userType === "Model")) {
         fetch(
@@ -100,16 +108,22 @@ function Live(props) {
             });
             token = data.rtcToken;
             channel = data.modelId;
-            console.log(`${data.actionStatus}`);
+            join(channel, token, ctx.relatedUserId || ctx.unAuthedUserId)
           })
           .catch((error) => console.log(error));
       }
     }
-  }, [token, channel,  ctx.loadedFromLocalStorage, ctx.isLoggedIn, ctx.user.userType, rejoin]);
+  }
 
-  // implimenting soket
+  const endStream = () => {
+    leave()
+    updateCtx.updateViewer({
+      rtcToken: "",
+    });
+  }
 
-  return ((ctx.isLoggedIn === true && ctx.user.userType === "Model") ? token && channel ? (<div>
+
+  return ((ctx.isLoggedIn === true && ctx.user.userType === "Model") ? (<div>
     <Header />
     <SecondHeader />
     <div className="tw-flex">
@@ -119,22 +133,20 @@ function Live(props) {
           <VideoPlayer
             videoTrack={localVideoTrack}
             audioTrack={localAudioTrack}
-            uid={4534534}
+            uid={ctx.relatedUserId || ctx.unAuthedUserId}
             playAudio={false}
           />
           <div className="tw-text-center tw-mt-1 tw-flex tw-ml-[40%]">
             {joinState ? (
               <button
-                onClick={leave}
-                // onClick={socketjoin}
-                // disabled={!joinState}
-                className="tw-rounded-full sm:tw-px-2 tw-px-0 sm:tw-py-1 tw-py-0 tw-bg-yellow-300 tw-mx-2 "
+                onClick={endStream}
+                className="tw-rounded-full sm:tw-px-2 tw-px-0 sm:tw-py-1 tw-py-0 tw-bg-yellow-300 tw-mx-2 tw-capitalize"
               >
-                leave
+                end streaming
               </button>
             ) : (
               <button
-                onClick={() => join(channel, token, channel)}
+                onClick={startStreamingAndGoLive}
                 // disabled={joinState}
                 className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300 mx-2"
               >
@@ -143,7 +155,7 @@ function Live(props) {
             )}
 
             <button
-              onClick={leave}
+              onClick={endStream}
               disabled={joinState}
               className={`${joinState ? "tw-bg-green-500" : "tw-bg-red-500"
                 } tw-rounded-full tw-px-2 tw-py-1`}
@@ -193,18 +205,8 @@ function Live(props) {
           </div>
         </div>
       </div>
-
-      {/* <div className="tw-bg-second-color tw-flex-[2] sm:tw-h-[40rem] tw-h-[30rem] sm:tw-ml-4 sm:tw-mt-4 tw-mt-2 tw-relative">
-          <div className="tw-flex ">
-            <PersonIcon className="tw-mr-2 tw-text-white-color" />
-            <p className="tw-text-white-color">211</p>
-          </div>
-          <div className="tw-absolute tw-bottom-2 tw-overflow-y-scroll sm:tw-h-[38rem] tw-h-[30rem]">
-            <LivePeople />
-          </div>
-        </div> */}
     </div>
-  </div>) : <div><h1 className="tw-text-center tw-text-lg">Without token and channel, fetch not initiated</h1><button className="tw-p-3" onClick={() => setRejoin(prev => !prev)}>Rejoin</button></div> : (
+  </div>) : (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">
       <h1 className="tw-font-semibold tw-text-xl">You are not a Model</h1>
     </div>
