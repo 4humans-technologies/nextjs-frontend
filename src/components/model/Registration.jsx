@@ -3,10 +3,14 @@ import { Button } from "react-bootstrap";
 import { validPassword, validEmail, validatePhone } from "../UI/Regex";
 import loginBg from "../../../public/dreamgirl-bg-3.jpg";
 import { Money, Person, VerifiedUser } from "@material-ui/icons";
+import useFetchInterceptor from "../../hooks/useFetchInterceptor";
 
 //Validation is still left in this
 // I did blunder using multiple state ,rather than using single to create it
+let fetchItercepted;
 function Registration() {
+  useFetchInterceptor(fetchItercepted);
+  fetchItercepted = true;
   const [formsubmit, SetFormsubmit] = useState(false);
   const [name, setName] = useState("");
   const [username, setuserName] = useState("");
@@ -15,10 +19,11 @@ function Registration() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
+  const [profile, setProfile] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password, username);
+    console.log(email, gender);
     fetch("/api/website/register/model/create", {
       method: "POST",
       cors: "include",
@@ -33,7 +38,7 @@ function Registration() {
         username,
         phone,
         gender,
-        profileImage: "/path-to-img",
+        profile,
       }),
     })
       .then((resp) => resp.json())
@@ -65,7 +70,7 @@ function Registration() {
                   placeholder="UserName"
                   value={username}
                   onChange={(e) => setuserName(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-flex-grow tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 />
               </div>
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
@@ -76,7 +81,7 @@ function Registration() {
                   placeholder="Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-flex-grow tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 />
               </div>
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
@@ -87,7 +92,7 @@ function Registration() {
                   placeholder="age"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-flex-grow tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 />
               </div>
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
@@ -98,7 +103,7 @@ function Registration() {
                   placeholder="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-flex-grow tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 />
               </div>
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
@@ -109,7 +114,7 @@ function Registration() {
                   placeholder="phone Number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-flex-grow tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 />
               </div>
 
@@ -121,24 +126,43 @@ function Registration() {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-flex-grow  tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                 />
+              </div>
+              <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+                <input
+                  type="file"
+                  name="image"
+                  id="image"
+                  accept="image/*"
+                  placeholder="Profile"
+                  value={profile}
+                  onChange={(e) => setProfile(e.target.value)}
+                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-py-2 tw-px-2 tw-flex-grow file-input__input "
+                />
+                <label
+                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-py-2 tw-px-2 tw-flex-grow"
+                  htmlFor="image"
+                >
+                  Uplode Profile Image
+                </label>
               </div>
 
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
                 <select
                   placeholder="Choose"
                   className="tw-rounded-full tw-flex-grow tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  onChange={(e) => setGender(e.target.value)}
+                  value={gender}
                 >
                   <option
-                    selected
-                    className="tw-justify-between tw-rounded-full tw-border-none tw-py-4"
+                    className="tw-justify-between tw-rounded-full tw-border-none tw-py-4 "
                     placeholder="Choose Gender"
                   >
                     Choose Gender
                   </option>
-                  <option>Female</option>
-                  <option>Male</option>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
                 </select>
               </div>
 

@@ -102,19 +102,30 @@ const Home = () => {
         <title>DreamGirl Live Online Video Vhat</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="tw-h-32"></div>
+      <div className="tw-h-20"></div>
       <Header />
       <SecondHeader />
       <div className="tw-flex">
         <Sidebar />
         <div className="">
           {boxGroupsData.map((data, index) => {
-            return <Boxgroup groupTitle={data.title} data={data.data} key={`${index}_boxGroup_&^HJK`} />
+            return (
+              <Boxgroup
+                groupTitle={data.title}
+                data={data.data}
+                key={`${index}_boxGroup_&^HJK`}
+              />
+            );
           })}
         </div>
       </div>
       <div className="tw-text-center">
-        <button onClick={doRequest} className="tw-px-4 py-2 tw-bg-red-500 tw-text-xl tw-my-4 tw-text-white-color">Do Request</button>
+        <button
+          onClick={doRequest}
+          className="tw-px-4 py-2 tw-bg-red-500 tw-text-xl tw-my-4 tw-text-white-color"
+        >
+          Do Request
+        </button>
       </div>
       <Footer />
     </div>

@@ -20,6 +20,9 @@ import Link from "next/link";
 
 function Header(props) {
   const [menu, setMenu] = useState(false);
+  const [searchShow, setSearchShow] = useState(false);
+  const [query, setQuery] = useState("");
+  // need to add search parmeters
   const screenWidth = useWidth();
   const modalCtx = useModalContext();
   const router = useRouter();
@@ -28,7 +31,7 @@ function Header(props) {
   const [isLogin, setLogin] = useState(false);
 
   return (
-    <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[101]">
+    <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[102]">
       {/* ------------------------ */}
       <div className="tw-flex tw-text-center">
         <div onClick={sidebarUpdate} className="tw-self-center tw-mr-4">
@@ -54,8 +57,8 @@ function Header(props) {
           <p>Top Modle</p>
         </div>
       </div>
-      {/* ------------------------ */}
-      <span className="tw-hidden sm:tw-inline-block">
+      {/* --------------search text---------- */}
+      <span className="tw-hidden sm:tw-inline-block ">
         <div className="tw-rounded-full tw-p-0 tw-relative">
           <button className="tw-absolute tw-right-4 tw-top-[50%] tw-translate-y-[-50%]">
             <SearchIcon className="tw-text-text-black" />
@@ -64,9 +67,19 @@ function Header(props) {
             className="tw-rounded-full tw-bg-second-color tw-border-transparent tw-outline-none tw-py-3 tw-pl-6 tw-pr-12 tw-capitalize xl:tw-w-96 lg:tw-w-[300px]"
             type="text"
             placeholder="Search Models"
+            onFocus={() => setSearchShow(true)}
+            onBlur={() => setSearchShow(false)}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
           />
         </div>
+        <div
+          className={`tw-absolute tw-z-[120] tw-bg-gray-600 tw-h-96 tw-w-96 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl  ${
+            searchShow ? "" : "tw-hidden"
+          }`}
+        ></div>
       </span>
+
       {/* ------------- experiment----------- */}
 
       {isLogin

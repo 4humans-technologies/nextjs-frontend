@@ -7,7 +7,12 @@ import useModalContext from "../../app/ModalContext";
 import loginBg from "../../../public/dreamgirl-bg-3.jpg";
 import { Money, Person, VerifiedUser } from "@material-ui/icons";
 import { Button } from "react-bootstrap";
+import useFetchInterceptor from "../../hooks/useFetchInterceptor";
+
+let fetchItercepted;
 function Signup() {
+  useFetchInterceptor(fetchItercepted);
+  fetchItercepted = true;
   const modalCtx = useModalContext();
 
   const [email, setEmail] = useState(
@@ -36,10 +41,8 @@ function Signup() {
         email: email,
         password: password,
         username: username,
-        phone: "924564345423",
         gender: "Male",
-        name: "ram",
-        screenName: "screenName",
+        name: "ram1",
       }),
     })
       .then((resp) => resp.json())
