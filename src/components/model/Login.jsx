@@ -6,10 +6,10 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
 import { Money, Person, VerifiedUser } from "@material-ui/icons";
 import loginBg from "../../../public/dreamgirl-bg-3.jpg";
 import { useRouter } from "next/router";
-import useFetchInterceptor from "../../hooks/useFetchInterceptor";
+import io from "../../socket/socket";
+import { useFetchInterceptor } from "../../hooks/useFetchInterceptor";
 
 //Validation is still left in this
-
 function Login() {
   const router = useRouter();
   const [formsubmit, SetFormsubmit] = useState(false);
@@ -54,8 +54,9 @@ function Login() {
             user: {
               userType: data.userType,
             },
-            jwtExpiresIn: data.expiresIn,
+            jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
           });
+          io.connect();
           router.push(ctx.loginSuccessUrl);
         }
       })

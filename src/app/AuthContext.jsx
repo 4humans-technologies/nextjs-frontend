@@ -1,4 +1,4 @@
-// /* eslint-disable no-debugger */
+/* eslint-disable no-debugger */
 import React from "react";
 import { createContext, useContext, useState, useEffect } from "react";
 
@@ -8,7 +8,7 @@ const initialState = {
   /**
    * 👇👇 for twilio chat service handling
    */
-  twilioTempUserId: null,
+  twilioTempUserId: null /* 👉👉 Now no need of twilioTemp userId */,
   /**
    * identifier for un-authed user
    */
@@ -19,10 +19,9 @@ const initialState = {
   jwtToken: null,
   jwtExpiresIn: null,
   rtcToken: "",
-  twilioChatToken: null,
+  twilioChatToken:
+    null /*👉👉 Now no need of twilio chatRTM token as we are using our own chat backend */,
   isLoggedIn: false,
-  isError: false,
-  errorMessage: "",
   loginSuccessUrl: "/",
   loadedFromLocalStorage: false,
   fetchIntercepted: false,
@@ -31,14 +30,17 @@ const initialState = {
 const AuthContext = createContext(initialState);
 const AuthUpdateContext = createContext({
   updateViewer: () => {},
+  readFromLocalStorage: () => {},
 });
 
+let numberOfInits = 0;
 export const AuthContextProvider = ({ children }) => {
-  const [authSate, setAuthState] = useState(initialState);
+  console.log("Again initializing AUTHCONTEXT => ", numberOfInits);
+  const [authState, setAuthState] = useState(initialState);
 
   const updateViewer = (newViewer) => {
     setAuthState((prevValue) => {
-      // debugger
+      debugger;
       let newState;
       if (newViewer.user) {
         newState = { ...prevValue, ...newViewer, user: { ...newViewer.user } };
@@ -49,8 +51,7 @@ export const AuthContextProvider = ({ children }) => {
     });
   };
 
-  useEffect(() => {
-    // debugger
+  const readFromLocalStorage = () => {
     const jwtToken = localStorage.getItem("jwtToken");
     if (jwtToken) {
       if (parseInt(localStorage.getItem("jwtExpiresIn")) > Date.now()) {
@@ -61,23 +62,60 @@ export const AuthContextProvider = ({ children }) => {
           rootUserId: localStorage.getItem("rootUserId"),
           relatedUserId: localStorage.getItem("relatedUserId"),
           jwtToken: jwtToken,
+          loadedFromLocalStorage: true,
         });
+        localStorage.setItem(
+          "authContext",
+          JSON.stringify({
+            isLoggedIn: authState.isLoggedIn,
+            jwtToken: authState.jwtToken,
+            userType: authState.user.userType,
+            unAuthedUserId: authState.unAuthedUserId,
+          })
+        );
       } else {
         localStorage.setItem("jwtToken", "");
         localStorage.setItem("jwtExpiresIn", "");
         localStorage.setItem("rootUserId", "");
         localStorage.setItem("relatedUserId", "");
         localStorage.setItem("userType", "");
+        localStorage.setItem("authContext", "");
+        updateViewer({ loadedFromLocalStorage: true });
       }
+    } else {
+      updateViewer({ loadedFromLocalStorage: true });
     }
-    updateViewer({ loadedFromLocalStorage: true });
-  }, []);
+  };
+
+  if (!authState.loadedFromLocalStorage && typeof window !== "undefined") {
+    debugger;
+    readFromLocalStorage();
+  }
+
+  useEffect(() => {
+    /* Now no need for use of ctx in useFetchInterceptor */
+    localStorage.setItem(
+      "authContext",
+      JSON.stringify({
+        isLoggedIn: authState.isLoggedIn,
+        jwtToken: authState.jwtToken,
+        userType: authState.user.userType,
+        unAuthedUserId: authState.unAuthedUserId,
+      })
+    );
+  }, [
+    authState.isLoggedIn,
+    authState.jwtToken,
+    authState.user.userType,
+    authState.unAuthedUserId,
+  ]);
 
   return (
-    <AuthContext.Provider value={authSate}>
+    <AuthContext.Provider value={authState}>
       <AuthUpdateContext.Provider
         value={{
           updateViewer,
+          readFromLocalStorage,
         }}
       >
         {children}

@@ -16,7 +16,7 @@ import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext";
 import Login from "./Login";
 import Signup from "./Signup";
 import useModalContext from "../../app/ModalContext";
-import Modal from "../Call/Modal";
+import Link from "next/link";
 
 function Header(props) {
   const [menu, setMenu] = useState(false);
@@ -34,9 +34,11 @@ function Header(props) {
         <div onClick={sidebarUpdate} className="tw-self-center tw-mr-4">
           {sidebarStatus ? <ClearIcon /> : <MenuIcon />}
         </div>
-        <a href="/">
-          <Image src={logo} width={124} height={65} />
-        </a>
+        <Link href="/">
+          <a className="tw-z-50 tw-cursor-pointer">
+            <Image src={logo} width={124} height={65} />
+          </a>
+        </Link>
       </div>
       {/* ------------------------ */}
       <div className="md:tw-flex md:tw-items-center tw-hidden ">

@@ -9,6 +9,11 @@ import "../styles/globals.css";
 import { ErrorContextProvider } from '../app/Error/ErrorContext';
 import { useEffect } from 'react';
 import { SpinnerContextProvider } from '../app/Loading/SpinnerContext';
+import { SocketContextProvider } from "../app/socket/SocketContext"
+import io from "../socket/socket";
+import useSetupSocket from "../socket/useSetupSocket";
+// import dynamic from "next/dynamic";
+// const io = dynamic(() => import("../socket/socket"), { ssr: false })
 
 /**
  * RULES OF HOOKS
@@ -21,25 +26,8 @@ import { SpinnerContextProvider } from '../app/Loading/SpinnerContext';
  */
 
 const MyApp = ({ Component, pageProps }) => {
-  useEffect(() => {
-    /**
-     * will run whenever a page is mounted, A Page
-     * Check if user has any pending call or not __AND__
-     * if the user is un-authed then his temp chat id is valid or not
-     */
-    if (false) {
-      /**
-       * check for pending calls
-       */
-      if (localStorage.getItem("pending-calls") && localStorage.getItem("pending-calls").length > 0) {
-        /**
-         * viewer has pending calls, hence inform about it
-         */
-      }
-    }
-    console.log("__app is mounted");
-  }, [])
-
+  console.log("rendering MyApp");
+  useSetupSocket("http://192.168.1.104:8080")
   return (
     // <Provider store={store}>
     <AuthContextProvider>
@@ -48,7 +36,9 @@ const MyApp = ({ Component, pageProps }) => {
           <ModalContextProvider>
             <ErrorContextProvider>
               <SpinnerContextProvider>
-                <Component {...pageProps} />
+                <SocketContextProvider>
+                  <Component {...pageProps} />
+                </SocketContextProvider>
               </SpinnerContextProvider>
             </ErrorContextProvider>
           </ModalContextProvider>

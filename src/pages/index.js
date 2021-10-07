@@ -5,10 +5,11 @@ import Sidebar from "../components/Mainpage/Sidebar";
 import Boxgroup from "../components/Mainpage/Boxgroup";
 import { useState, useEffect } from "react";
 // import Mainbox from "../components/Mainbox";
-import { useSidebarUpdate, useSidebarStatus } from "../app/Sidebarcontext";
 import Footer from "../components/Mainpage/Footer"
 import useFetchInterceptor from "../hooks/useFetchInterceptor";
-
+import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext";
+import useSetupSocket from "../socket/useSetupSocket";
+import socket from "../socket/socket";
 /**
  * just for development not for production 👇👇
  */
@@ -28,9 +29,13 @@ const data = Array(8).fill("").map(_empty => ({
   userType: "Model"
 }))
 
+let fetchIntercepted;
 const Home = () => {
-  const { ctx } = useFetchInterceptor()
-  const sidebarStatus = useSidebarStatus();
+  console.log("rendering home");
+  const ctx = useAuthContext();
+  useFetchInterceptor(fetchIntercepted);
+  fetchIntercepted = true;
+
   const [boxGroupsData, setBoxGroupData] = useState([
     {
       title: "Test Webcams",
@@ -46,10 +51,21 @@ const Home = () => {
     }
   ])
 
+  const doRequest = () => {
+    debugger
+    const id = socket.getSocketId()
+    console.log(`${socket.getSocketId()}`);
+    fetch("/api/website/compose-ui/get-ranking-online-models")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("request completed!");
+      })
+  }
+
   useEffect(() => {
     // fetch all live streams
     debugger
-    if (ctx.loadedFromLocalStorage && ctx.fetchIntercepted) {
+    if (ctx.loadedFromLocalStorage) {
       fetch("/api/website/compose-ui/get-ranking-online-models")
         .then((res) => res.json())
         .then((data) => {
@@ -63,7 +79,7 @@ const Home = () => {
               rootUserId: model.rootUser._id,
               userName: model.rootUser.username,
               userType: model.rootUser.userType,
-              currentStream: model.rootUser.currentStream || 1
+              // currentStream: model.rootUser.currentStream || 1 /*🤔🤔 why did i put currentStream??  */
             }
           })
           setBoxGroupData(prev => {
@@ -72,9 +88,13 @@ const Home = () => {
               { title: "Online Models | Either onCall or onStream", data: transformedData }
             ]
           });
-        });
+        })
+        .catch(error => {
+          console.error(error);
+          alert(error)
+        })
     }
-  }, [ctx.loadedFromLocalStorage, ctx.fetchIntercepted]);
+  }, [ctx.loadedFromLocalStorage]);
 
   return (
     <div className="tw-min-h-screen">
@@ -92,6 +112,9 @@ const Home = () => {
             return <Boxgroup groupTitle={data.title} data={data.data} key={`${index}_boxGroup_&^HJK`} />
           })}
         </div>
+      </div>
+      <div className="tw-text-center">
+        <button onClick={doRequest} className="tw-px-4 py-2 tw-bg-red-500 tw-text-xl tw-my-4 tw-text-white-color">Do Request</button>
       </div>
       <Footer />
     </div>

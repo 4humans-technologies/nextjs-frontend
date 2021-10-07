@@ -28,89 +28,81 @@ function Videocall(props) {
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
   // console.log(">>>", window.location.pathname.split("/").reverse()[0]);
-  if (!token && channel) {
-    /**
-     * if there is no token and channel then don't call useAgora as the required
-     * parameters will not have been ready yet
-     */
-    const {
-      localAudioTrack,
-      localVideoTrack,
-      joinState,
-      leave,
-      join,
-      remoteUsers,
-    } = useAgora(
-      client,
-      appId,
-      token,
-      channel,
-      props.role,
-      null,
-      props.callType
-    );
-  }
+  /**
+   * if there is no token and channel then don't call useAgora as the required
+   * parameters will not have been ready yet
+   */
+  const {
+    localAudioTrack,
+    localVideoTrack,
+    joinState,
+    leave,
+    join,
+    remoteUsers,
+  } = useAgora(client, appId, token, channel, props.role, null, props.callType);
 
   useEffect(() => {
-    if (ctx.isLoggedIn === true) {
-      /**
-       * if logged in then fetch RTC token as loggedIn user
-       */
-      fetch("/api/website/token-builder/authed-viewer-join-stream", {
-        method: "POST",
-        cors: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-        },
-        body: JSON.stringify({
-          viewerId: ctx.relatedUserId,
-          modelId: window.location.pathname.split("/").reverse()[0],
-        }),
-      })
-        .then((resp) => resp.json())
-        .then((data) => {
-          token = data.rtcToken;
-          channel = "s";
-        });
-    } else {
-      /**
-       * fetch RTC token as a un-authenticated user
-       */
-      let newSession = false;
-      if (!sessionStorage.getItem(newSession)) {
-        sessionStorage.setItem("newSession", "false");
-        newSession = true;
-      }
-      const payload = {
-        modelId: window.location.pathname.split("/").reverse()[0],
-        newSession: newSession,
-      };
-      if (ctx.unAuthedUserId) {
-        payload.unAuthedUserId = unAuthedUserId;
-      }
-
-      fetch("/api/website/token-builder/unauthed-viewer-join-stream", {
-        method: "POST",
-        cors: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      })
-        .then((resp) => resp.json())
-        .then((data) => {
-          localStorage.setItem(
-            "unAuthed-namespace",
-            JSON.stringify({
-              unAuthedUserId: data.unAuthedUserId,
-            })
-          );
-          updateCtx({
-            unAuthedUserId: unAuthedUserId,
-          });
+    if (ctx.loadedFromLocalStorage) {
+      if (ctx.isLoggedIn === true) {
+        /**
+         * if logged in then fetch RTC token as loggedIn user
+         */
+        fetch("/api/website/token-builder/authed-viewer-join-stream", {
+          method: "POST",
+          cors: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+          body: JSON.stringify({
+            viewerId: ctx.relatedUserId,
+            modelId: window.location.pathname.split("/").reverse()[0],
+          }),
         })
-        .catch((err) => alert(err));
+          .then((resp) => resp.json())
+          .then((data) => {
+            token = data.rtcToken;
+            channel = "s";
+          });
+      } else {
+        /**
+         * fetch RTC token as a un-authenticated user
+         */
+        let newSession = false;
+        if (!sessionStorage.getItem(newSession)) {
+          sessionStorage.setItem("newSession", "false");
+          newSession = true;
+        }
+        const payload = {
+          modelId: window.location.pathname.split("/").reverse()[0],
+          newSession: newSession,
+        };
+        if (ctx.unAuthedUserId) {
+          payload.unAuthedUserId = unAuthedUserId;
+        }
+
+        fetch("/api/website/token-builder/unauthed-viewer-join-stream", {
+          method: "POST",
+          cors: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        })
+          .then((resp) => resp.json())
+          .then((data) => {
+            localStorage.setItem(
+              "unAuthed-namespace",
+              JSON.stringify({
+                unAuthedUserId: data.unAuthedUserId,
+              })
+            );
+            updateCtx({
+              unAuthedUserId: unAuthedUserId,
+            });
+          })
+          .catch((err) => alert(err));
+      }
     }
   }, []);
 
