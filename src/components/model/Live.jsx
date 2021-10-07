@@ -49,13 +49,23 @@ const callType = "videoCall"; /* to tell useAgora if want to create videoTrack/a
 /**
  * CREATING AGORA CLIENT
  */
+const createAgoraClient = (extraOptions) => {
+  if (!extraOptions) {
+    extraOptions = {}
+  }
+  const clientOptions = { codec: "h264", mode: "live", ...extraOptions };
+  client = AgoraRTC.createClient(clientOptions);
+  client.setClientRole("host");
+}
 
-
+/* Init Client */
+createAgoraClient()
 
 function Live(props) {
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
   const [state, dispatch] = useReducer(reducer, initState);
+  const [reRender, causeReRender] = useState(false)
   // const [rejoin, setRejoin] = useState(true)
 
   const {
@@ -66,24 +76,18 @@ function Live(props) {
     join,
     remoteUsers,
     startLocalCameraPreview,
-  } = useAgora(client, appId, token, channel, role, null, callType);
+  } = useAgora(client, appId, token, ctx.relatedUserId || localStorage.getItem("relatedUserId"), role, ctx.relatedUserId || ctx.unAuthedUserId, callType);
 
 
-  const createAgoraClient = (extraOptions) => {
-    if (!extraOptions) {
-      extraOptions = {}
-    }
-    const clientOptions = { codec: "h264", mode: "live", ...extraOptions };
-    client = AgoraRTC.createClient(clientOptions);
-    client.setClientRole("host");
-  }
+
 
   useEffect(() => {
     startLocalCameraPreview()
-  }, [startLocalCameraPreview])
+  }, [])
 
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = () => {
+    debugger
     if (ctx.loadedFromLocalStorage) {
       if ((ctx.isLoggedIn === true && ctx.user.userType === "Model")) {
         fetch(
@@ -116,6 +120,7 @@ function Live(props) {
   }
 
   const endStream = () => {
+    debugger
     leave()
     updateCtx.updateViewer({
       rtcToken: "",

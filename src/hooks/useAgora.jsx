@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 
 function useAgora(client, appId, token, channel, role, uid, callType) {
+  debugger
+  console.log("running useAgora!");
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [joinState, setJoinState] = useState(false);
@@ -51,12 +53,15 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
   }
 
   async function startLocalCameraPreview() {
+    debugger
     if (!client) {
       return;
     }
     if (role === "host") {
-      let track = await createLocalTracks();
-      return track;
+      if (!localAudioTrack || !localVideoTrack) {
+        let track = await createLocalTracks();
+        return track;
+      }
     }
   }
 
