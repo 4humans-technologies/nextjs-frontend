@@ -1,7 +1,10 @@
 import { useEffect } from "react"
+import { useAuthUpdateContext, useAuthContext } from "../app/AuthContext";
 import io from "../socket/socket";
 
 function useSetupSocket(url) {
+    const updateCtx = useAuthUpdateContext()
+    const ctx = useAuthContext()
     useEffect(() => {
         debugger
         /* Init socket */
@@ -19,10 +22,15 @@ function useSetupSocket(url) {
         socket.on("connect", () => {
             console.log("socket connected!");
             localStorage.setItem("socketId", socket.id)
+            if (!ctx.socketSetup) {
+                updateCtx.updateViewer({
+                    socketSetup: true
+                })
+            }
         })
 
-        socket.on("disconnect", () => {
-            console.log("socket disconnected!");
+        socket.on("disconnect", (reason) => {
+            console.log("socket disconnected! due to >>>", reason);
             localStorage.removeItem("socketId")
         })
 

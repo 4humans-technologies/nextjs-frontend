@@ -37,7 +37,6 @@ function Login() {
       .then((data) => {
         debugger;
         if (data.actionStatus === "success") {
-          console.log("Data", data);
           localStorage.setItem("jwtToken", data.token);
           localStorage.setItem(
             "jwtExpiresIn",
@@ -56,11 +55,14 @@ function Login() {
             },
             jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
           });
-          io.connect();
+          debugger
+          io.getSocket().close();
+          io.getSocket().open();
           router.push(ctx.loginSuccessUrl);
         }
       })
       .catch((err) => {
+        debugger
         setLoginError(err.message)
       });
   };
@@ -74,8 +76,8 @@ function Login() {
               {" "}
               Login
             </h1>
-            <form onSubmit={handleSubmit} className="tw-mb-4">
-              <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+            <form onSubmit={handleSubmit} className="tw-mb-4 tw-flex tw-flex-col tw-justify-center">
+              <div className="tw-flex-grow tw-py-2 tw-px-2">
                 <input
                   type="text"
                   name="Username"
@@ -83,11 +85,10 @@ function Login() {
                   placeholder="UserName"
                   value={username}
                   onChange={(e) => setuserName(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg tw-w-full"
                 />
               </div>
-
-              <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+              <div className="tw-flex-grow tw-py-2 tw-px-2">
                 <input
                   type="Password"
                   name="Password"
@@ -95,13 +96,13 @@ function Login() {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg tw-w-full"
                 />
               </div>
               {loginError && (
                 <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3">
                   <div className="tw-text-white-color tw-font-semibold">{loginError}</div>
-                </div>                
+                </div>
               )}
               <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-3">
                 <Button

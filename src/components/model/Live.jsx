@@ -83,7 +83,7 @@ function Live() {
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = () => {
     debugger
-    if (!localStorage.getItem("rtcToken") && localStorage.getItem("rtcTokenExpireIn") >= Date.now() && ctx.loadedFromLocalStorage) {
+    if (!localStorage.getItem("rtcToken") && localStorage.getItem("rtcTokenExpireIn") <= Date.now() && ctx.loadedFromLocalStorage) {
       if ((ctx.isLoggedIn === true && ctx.user.userType === "Model")) {
         fetch(
           "/api/website/token-builder/create-stream-and-gen-token",
@@ -110,7 +110,6 @@ function Live() {
           .catch((error) => console.log(error));
       }
     } else {
-      localStorage.getItem("rtcToken")
       join(ctx.relatedUserId, localStorage.getItem("rtcToken"), ctx.relatedUserId)
     }
   }

@@ -46,6 +46,7 @@ export default {
     },
     globalListeners: (socket) => {
         socket.on("new-model-started-stream", (data) => {
+            alert("New Model Started Streaming...")
             const model = JSON.parse(data)
             const dataObj = {
                 ...model,

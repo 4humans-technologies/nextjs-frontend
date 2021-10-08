@@ -21,11 +21,9 @@ client.setClientRole("audience");
  * APPID can in feature be dynamic also
  */
 let token;
-let rtcTokenExpireIn;
 function Videocall(props) {
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
-  // console.log(">>>", window.location.pathname.split("/").reverse()[0]);
   const {
     joinState,
     leave,
@@ -34,84 +32,89 @@ function Videocall(props) {
   } = useAgora(client, "audience", props.callType || "");
 
   useEffect(() => {
+    debugger
     if (ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === true) {
         /**
          * if logged in then fetch RTC token as loggedIn user
          */
-        fetch("/api/website/token-builder/authed-viewer-join-stream", {
-          method: "POST",
-          cors: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-          body: JSON.stringify({
-            viewerId: ctx.relatedUserId,
-            modelId: window.location.pathname.split("/").reverse()[0],
-          }),
-        })
-          .then((resp) => resp.json())
-          .then((data) => {
-            token = data.rtcToken
-            rtcTokenExpireIn = data.privilegeExpiredTs
-            const channel = window.location.pathname.split("/").reverse()[0]
-            join(channel, data.rtcToken, ctx.relatedUserId)
-            updateCtx.updateViewer({
-              unAuthedUserId: data.unAuthedUserId,
-              rtcToken: data.rtcToken
-            })
-          });
-      } else {
-        /**
-         * fetch RTC token as a un-authenticated user
-         */
-        let newSession = false;
-        if (!sessionStorage.getItem(newSession)) {
-          sessionStorage.setItem("newSession", "false");
-          newSession = true;
-        }
-        const payload = {
-          /* which models's stream to join */
-          modelId: window.location.pathname.split("/").reverse()[0],
-        }
-        // if (ctx.unAuthedUserId || JSON.parse("authContext").unAuthedUserId) {
-        //   payload.unAuthedUserId = unAuthedUserId
-        // }
-        fetch(
-          "/api/website/token-builder/unauthed-viewer-join-stream",
-          {
+        if (!localStorage.getItem("rtcToken") && +localStorage.getItem("rtcTokenExpireIn") < Date.now()) {
+          /* make new request as their is no token or expired token */
+          fetch("/api/website/token-builder/authed-viewer-join-stream", {
             method: "POST",
             cors: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(payload),
-          }
-        )
-          .then((resp) => resp.json())
-          .then((data) => {
-            debugger
-            if (data.newUnAuthedUserCreated) {
-              /* if new viewer was created save the _id in localstorage */
-              localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
-              updateCtx.updateViewer({
-                unAuthedUserId: data.unAuthedUserId,
-                rtcToken: data.rtcToken
-              })
-            } else {
-              updateCtx.updateViewer({
-                rtcToken: data.rtcToken
-              })
-            }
-            /* 🤩🤩🔥🔥 join stream */
-            const channel = window.location.pathname.split("/").reverse()[0]
-            join(channel, data.rtcToken, localStorage.getItem("unAuthedUserId"))
+            body: JSON.stringify({
+              modelId: window.location.pathname.split("/").reverse()[0],
+            }),
           })
-          .catch(err => alert(err.message))
+            .then((resp) => resp.json())
+            .then((data) => {
+              token = data.rtcToken
+              localStorage.setItem("rtcToken", data.rtcToken)
+              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+              const channel = window.location.pathname.split("/").reverse()[0]
+              join(channel, data.rtcToken, ctx.relatedUserId)
+              updateCtx.updateViewer({
+                rtcToken: data.rtcToken
+              })
+            });
+        } else {
+          /* get token  from local storage */
+          const channel = window.location.pathname.split("/").reverse()[0]
+          join(channel, localStorage.getItem("rtcToken"), ctx.relatedUserId)
+        }
+      } else {
+        if (!localStorage.getItem("rtcToken") && localStorage.getItem("rtcTokenExpireIn") < Date.now()) {
+          /**
+         * fetch RTC token as a un-authenticated user
+         */
+          const payload = {
+            /* which models's stream to join */
+            modelId: window.location.pathname.split("/").reverse()[0],
+          }
+          fetch(
+            "/api/website/token-builder/unauthed-viewer-join-stream",
+            {
+              method: "POST",
+              cors: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            }
+          )
+            .then((resp) => resp.json())
+            .then((data) => {
+              debugger
+              /* 🤩🤩🔥🔥 join stream */
+              localStorage.setItem("rtcToken", data.rtcToken)
+              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+              const channel = window.location.pathname.split("/").reverse()[0]
+              join(channel, data.rtcToken, data.unAuthedUserId)
+              if (data.newUnAuthedUserCreated) {
+                /* if new viewer was created save the _id in localstorage */
+                localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
+                updateCtx.updateViewer({
+                  unAuthedUserId: data.unAuthedUserId,
+                  rtcToken: data.rtcToken
+                })
+              } else {
+                updateCtx.updateViewer({
+                  rtcToken: data.rtcToken
+                })
+              }
+            })
+            .catch(err => alert(err.message))
+        } else {
+          const channel = window.location.pathname.split("/").reverse()[0]
+          join(channel, localStorage.getItem("rtcToken"), localStorage.getItem("unAuthedUserId"))
+        }
       }
     }
-  }, [ctx.isLoggedIn]);
+  }, [ctx.isLoggedIn, ctx.socketSetup, ctx.relatedUserId, window.location.pathname, ctx.loadedFromLocalStorage]);
 
   return (
     <div className="sm:tw-h-[70vh] ">

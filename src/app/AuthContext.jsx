@@ -25,6 +25,7 @@ const initialState = {
   loginSuccessUrl: "/",
   loadedFromLocalStorage: false,
   fetchIntercepted: false,
+  socketSetup: false
 };
 
 const AuthContext = createContext(initialState);
@@ -59,11 +60,12 @@ export const AuthContextProvider = ({ children }) => {
     localStorage.setItem("relatedUserId", "");
     localStorage.setItem("userType", "");
     localStorage.setItem("authContext", "");
+    localStorage.setItem("rtcToken", "");
     updateViewer({
       isLoggedIn: false,
       user: { userType: "UnAuthedViewer" },
       jwtExpiresIn: null,
-      rtcExpiresIn: null,
+      rtcTokenExpireIn: null,
       rootUserId: "",
       relatedUserId: "",
       jwtToken: "",
@@ -72,6 +74,7 @@ export const AuthContextProvider = ({ children }) => {
   }
 
   const readFromLocalStorage = () => {
+    localStorage.removeItem("socketId")
     const jwtToken = localStorage.getItem("jwtToken");
     if (jwtToken) {
       if (parseInt(localStorage.getItem("jwtExpiresIn")) > Date.now()) {
@@ -102,11 +105,11 @@ export const AuthContextProvider = ({ children }) => {
         updateViewer({ loadedFromLocalStorage: true })
       }
       localStorage.setItem("rtcToken", "");
-      localStorage.setItem("rtcExpiresIn", "");
+      localStorage.setItem("rtcTokenExpireIn", "");
     } else {
       updateViewer({ loadedFromLocalStorage: true })
       localStorage.setItem("rtcToken", "");
-      localStorage.setItem("rtcExpiresIn", "");
+      localStorage.setItem("rtcTokenExpireIn", "");
     }
   };
 

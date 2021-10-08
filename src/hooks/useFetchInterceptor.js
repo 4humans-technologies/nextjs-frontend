@@ -2,6 +2,7 @@
 import useSpinnerContext from "../app/Loading/SpinnerContext";
 import fetchIntercept from "fetch-intercept";
 import { useEffect } from "react";
+import io from "../socket/socket"
 const useFetchInterceptor = (isAlreadyIntercepted) => {
     /**
      * if all i need is the access to the functions in the context(s) than,
@@ -31,6 +32,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                             baseUrl = "https://dreamgirl.live"
                         }
                         let finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem("socketId")}&unAuthedUserId=`;
+                        // let finalUrl = `${baseUrl}${url}?socketId=${io.getSocketId()}&unAuthedUserId=`;
 
                         if (typeof config === "undefined") {
                             /* get request */
@@ -41,6 +43,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                             finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem(
                                 "socketId"
                             )}&unAuthedUserId=${latestCtx.unAuthedUserId}`;
+                            // finalUrl = `${baseUrl}${url}?socketId=${io.getSocketId()}&unAuthedUserId=${latestCtx.unAuthedUserId}`;
                         }
                         /* attach jwtToken in the header */
                         let finalConfig;
@@ -50,14 +53,14 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                                     ...config,
                                     headers: {
                                         ...config.headers,
-                                        Authorization: `Bearer ${latestCtx.jwtToken}`,
+                                        Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")}`,
                                     },
                                 }
                             } else {
                                 finalConfig = {
                                     ...config,
                                     headers: {
-                                        Authorization: `Bearer ${latestCtx.jwtToken}`,
+                                        Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")}`,
                                     },
                                 }
                             }
@@ -81,14 +84,16 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                     if (response.url.includes("/api/website/")) {
                         debugger
                         spinnerCtx.setShowSpinner(false)
-                        // if (!response.ok) {
-                        //     return response.json()
-                        //         .then(data => Promise.reject(data))
-                        // }
-                        // if ((response.status <= 500 && response.status >= 300)) {
-                        //     return response.json()
-                        //         .then(data => Promise.reject(data))
-                        // }
+                        if (!response.ok) {
+                            return response.json()
+                                .then(data => Promise.reject(data))
+                            // return Promise.reject(response)
+                        }
+                        if ((response.status <= 500 && response.status >= 300)) {
+                            return response.json()
+                                .then(data => Promise.reject(data))
+                            // return Promise.reject(response)
+                        }
                         return response
                     }
                     spinnerCtx.setShowSpinner(false)
