@@ -24,7 +24,7 @@ let token;
 let rtcTokenExpireIn;
 function Videocall(props) {
   const ctx = useAuthContext();
-  const updateCtx = useAuthUpdateContext()
+  const updateCtx = useAuthUpdateContext();
   // console.log(">>>", window.location.pathname.split("/").reverse()[0]);
   const {
     joinState,
@@ -39,21 +39,18 @@ function Videocall(props) {
         /**
          * if logged in then fetch RTC token as loggedIn user
          */
-        fetch(
-          "/api/website/token-builder/authed-viewer-join-stream",
-          {
-            method: "POST",
-            cors: "include",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-            },
-            body: JSON.stringify({
-              viewerId: ctx.relatedUserId,
-              modelId: window.location.pathname.split("/").reverse()[0],
-            }),
-          }
-        )
+        fetch("/api/website/token-builder/authed-viewer-join-stream", {
+          method: "POST",
+          cors: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+          body: JSON.stringify({
+            viewerId: ctx.relatedUserId,
+            modelId: window.location.pathname.split("/").reverse()[0],
+          }),
+        })
           .then((resp) => resp.json())
           .then((data) => {
             token = data.rtcToken
@@ -69,6 +66,11 @@ function Videocall(props) {
         /**
          * fetch RTC token as a un-authenticated user
          */
+        let newSession = false;
+        if (!sessionStorage.getItem(newSession)) {
+          sessionStorage.setItem("newSession", "false");
+          newSession = true;
+        }
         const payload = {
           /* which models's stream to join */
           modelId: window.location.pathname.split("/").reverse()[0],

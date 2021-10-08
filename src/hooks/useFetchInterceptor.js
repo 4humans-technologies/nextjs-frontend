@@ -1,16 +1,15 @@
 /* eslint-disable no-debugger */
-import useSpinnerContext from "../app/Loading/SpinnerContext"
-import fetchIntercept from 'fetch-intercept';
+import useSpinnerContext from "../app/Loading/SpinnerContext";
+import fetchIntercept from "fetch-intercept";
 import { useEffect } from "react";
 const useFetchInterceptor = (isAlreadyIntercepted) => {
     /**
      * if all i need is the access to the functions in the context(s) than,
-     * I can skip the check for "fetchIntercepted" in every component because 
+     * I can skip the check for "fetchIntercepted" in every component because
      * functions are available any time they are just references, and locking
      * in closure will have no effect (no matter if "stale function")
      */
-    const spinnerCtx = useSpinnerContext()
-
+    const spinnerCtx = useSpinnerContext();
     useEffect(() => {
         debugger
         if (!isAlreadyIntercepted) {
@@ -33,15 +32,16 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                         }
                         let finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem("socketId")}&unAuthedUserId=`;
 
-                        if (typeof (config) === "undefined") {
+                        if (typeof config === "undefined") {
                             /* get request */
-                            config = {}
+                            config = {};
                         }
 
                         if (latestCtx.unAuthedUserId) {
-                            finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem("socketId")}&unAuthedUserId=${latestCtx.unAuthedUserId}`
+                            finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem(
+                                "socketId"
+                            )}&unAuthedUserId=${latestCtx.unAuthedUserId}`;
                         }
-
                         /* attach jwtToken in the header */
                         let finalConfig;
                         if (latestCtx.isLoggedIn) {
@@ -107,4 +107,4 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
     }, [isAlreadyIntercepted])
 }
 
-export default useFetchInterceptor
+export default useFetchInterceptor;

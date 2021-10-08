@@ -11,11 +11,12 @@ import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext";
 import useSetupSocket from "../socket/useSetupSocket";
 import socket from "../socket/socket";
 import Link from "next/link";
+
 /**
  * just for development not for production 👇👇
  */
 const data = Array(8).fill("").map(_empty => ({
-  _id: "615eaeea12a4fc1f2c4d29ea",
+  _id: "614849fb4e489436f8670b0f",
   onCall: [true, false][Math.floor(Math.random() * 10) % 2],
   isStreaming: [true, false][Math.floor(Math.random() * 10) % 2],
   name: "Vikas Kumawat",
@@ -25,7 +26,7 @@ const data = Array(8).fill("").map(_empty => ({
   languages: ["Marwadi"],
   rating: 5,
   profileImage: "https://png.pngtree.com/png-clipart/20190614/original/pngtree-female-avatar-vector-icon-png-image_3725439.jpg",
-  rootUserId: "615eaeea12a4fc1f2c4d29ec",
+  rootUserId: "614849fb4e489436f8670b11",
   userName: "rohitkumar9133@gmail.com",
   userType: "Model"
 }))
@@ -103,14 +104,20 @@ const Home = () => {
         <title>DreamGirl Live Online Video Vhat</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="tw-h-32"></div>
+      <div className="tw-h-20"></div>
       <Header />
       <SecondHeader />
       <div className="tw-flex">
         <Sidebar />
         <div className="">
           {boxGroupsData.map((data, index) => {
-            return <Boxgroup groupTitle={data.title} data={data.data} key={`${index}_boxGroup_&^HJK`} />
+            return (
+              <Boxgroup
+                groupTitle={data.title}
+                data={data.data}
+                key={`${index}_boxGroup_&^HJK`}
+              />
+            );
           })}
         </div>
       </div>

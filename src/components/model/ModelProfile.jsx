@@ -3,9 +3,14 @@ import { useEffect } from "react";
 import Neeraj from "../../../public/brandikaran.jpg";
 import Image from "next/image";
 import { PlayCircleFilled } from "@material-ui/icons";
-import CallDetailsPopUp from "../Call/CallDetailsPopUp";
+// import CallDetailsPopUp from "../Call/CallDetailsPopUp";
 import Modal from "../Call/Modal";
 import useModalContext from "../../app/ModalContext";
+import dynamic from "next/dynamic";
+
+const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
+  ssr: false,
+});
 
 function ChipArea(props) {
   return (

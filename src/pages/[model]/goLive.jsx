@@ -9,6 +9,7 @@ const LiveComponent = dynamic(
   () => import("../../components/model/Live"),
   { ssr: false }
 )
+
 let fetchIntercepted = null;
 function GoLive() {
   const ctx = useAuthContext();

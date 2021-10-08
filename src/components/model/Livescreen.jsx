@@ -40,7 +40,7 @@ const reducer = (state = initState, action) => {
 
 function Livescreen() {
   const [state, dispatch] = useReducer(reducer, initState);
-  const ctx = useModalContext()
+  const ctx = useModalContext();
   return (
     <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
       <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-7/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
@@ -50,7 +50,9 @@ function Livescreen() {
           <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">
             <div className="tw-col-span-1 tw-row-span-1 tw-flex tw-items-center tw-justify-start">
               <FavoriteIcon className="tw-text-red-600" />
-              <p className="tw-pl-2 tw-text-white-color tw-font-semibold">33.k</p>
+              <p className="tw-pl-2 tw-text-white-color tw-font-semibold">
+                33.k
+              </p>
             </div>
             <div className="tw-col-span-1 tw-row-span-1 tw-justify-self-end">
               <Button
@@ -78,7 +80,9 @@ function Livescreen() {
                 onClick={ctx.toggleCallModal}
               >
                 <PhoneInTalkIcon fontSize="small" />
-                <span className="tw-pl-1 tw-tracking-tight">Private Audio call</span>
+                <span className="tw-pl-1 tw-tracking-tight">
+                  Private Audio call
+                </span>
               </Button>
             </div>
           </div>
@@ -94,7 +98,9 @@ function Livescreen() {
                 onClick={ctx.toggleCallModal}
               >
                 <PhoneInTalkIcon fontSize="small" />
-                <span className="tw-pl-1 tw-tracking-tight">Private Audio call</span>
+                <span className="tw-pl-1 tw-tracking-tight">
+                  Private Audio call
+                </span>
               </Button>
               <Button
                 className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
@@ -156,7 +162,9 @@ function Livescreen() {
           {/* ------------------------------------------------------------------------------------- */}
         </div>
         <div className="tw-absolute tw-h-[90%] tw-bottom-0 tw-w-full chat-box-container tw-overflow-y-scroll">
-          <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18">{state.val}</div>
+          <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18">
+            {state.val}
+          </div>
         </div>
 
         <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">

@@ -4,11 +4,14 @@ import dynamic from "next/dynamic";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { Fragment } from "react";
 import useAgora from "../../hooks/useAgora";
-import CallDetailsPopUp from "../Call/CallDetailsPopUp";
+
+const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
+  ssr: false,
+});
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =
-  "006ae3edf155f1a4e78a544d125c8f53137IAA4ze43oWh0XrC7//IY2poJJEE1dBlIevpXopSrNbv77GLMzZAAAAAAEACI9+ReKB9GYQEAAQAnH0Zh";
+  "006ae3edf155f1a4e78a544d125c8f53137IACbg6y63Xr5Q4v/QXAJmmFejHW6hFqNZNN1B3cwXveDImLMzZAAAAAAEAAh3GK8FZxNYQEAAQATnE1h";
 const channel = "test-channel";
 let client;
 const role = "host";
@@ -46,7 +49,7 @@ function Audio() {
           playAudio={true}
         >
           <button
-            onClick={join}
+            onClick={join(channel, token, "12345")}
             className="tw-rounded-full tw-bg-green-400 tw-px-2 tw-py-1 tw-mx-4"
           >
             Join

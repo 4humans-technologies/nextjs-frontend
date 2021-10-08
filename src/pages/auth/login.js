@@ -2,6 +2,7 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
 import LoginComponent from "../../components/model/Login"
 import PageHoc from "../../components/PageHoc";
 import useFetchInterceptor from "../../hooks/useFetchInterceptor";
+import { useRouter } from "next/router"
 
 // export default Login
 let fetchIntercepted = false;
@@ -10,6 +11,12 @@ const Login = () => {
     const updateCtx = useAuthUpdateContext()
     useFetchInterceptor(fetchIntercepted)
     fetchIntercepted = true
+    const router = useRouter()
+
+    if (ctx.isLoggedIn) {
+        router.back()
+    }
+
     return (!ctx.isLoggedIn ? < LoginComponent /> : (
         <div className="tw-min-h-screen tw-grid tw-place-items-center">
             <div className="tw-p-3 tw-text-center">

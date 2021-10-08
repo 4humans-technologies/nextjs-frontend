@@ -5,7 +5,7 @@ function useSetupSocket(url) {
     useEffect(() => {
         debugger
         /* Init socket */
-        console.log("Initing socket, status");
+        console.log("Initializing socket, status");
         const socket = io.connect(url)
 
         socket.on("connect_failed", () => {

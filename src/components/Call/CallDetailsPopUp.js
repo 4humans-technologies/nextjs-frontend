@@ -1,21 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
-import useModalContext from '../../app/ModalContext';
-import { VideoCall, Audiotrack, Favorite, Security, FlashOn, Cancel } from "@material-ui/icons"
-import Image from "next/image"
-import neeraj from "../../../public/brandikaran.jpg"
+import useModalContext from "../../app/ModalContext";
+import {
+  VideoCall,
+  Audiotrack,
+  Favorite,
+  Security,
+  FlashOn,
+  Cancel,
+} from "@material-ui/icons";
+import Image from "next/image";
+import neeraj from "../../../public/brandikaran.jpg";
 import { useRouter } from "next/router";
+import useAgora from "../../hooks/useAgora";
+import AgoraRTC from "agora-rtc-sdk-ng";
+import Videocall from "../model/VideoCall"; // Replace with your App ID.
+
+let token;
+let channel;
 
 function CallDetailsPopUp(props) {
   const router = useRouter();
   const ctx = useModalContext();
+
+  useEffect(() => {
+    // debugger;
+    fetch(
+      // "http://localhost:8080/api/website/token-builder/create-stream-and-gen-token", //for model class
+      "http://localhost:8080/api/website/token-builder/authed-viewer-join-stream",
+      {
+        method: "POST",
+        cors: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("jwtTokenViewer")}`,
+        },
+      }
+    )
+      .then((resp) => resp.json())
+      .then((data) => {
+        debugger;
+        updateCtx.updateViewer({
+          rtcToken: data.rtcToken,
+        });
+        token = data.rtcToken;
+        channel = data.modelId;
+        // join();
+        console.log(`${data.actionStatus}`);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
   const callDirect = (e) => {
     e.preventDefault();
     router.push("/ravi/call");
   };
   const videoDirect = (e) => {
     e.preventDefault();
-    // router.push("/ravi/call");
+    (
+      <Videocall
+        token={token}
+        channel={channel}
+        role="host"
+        uid={channel}
+        callType="videoCall"
+      />
+    ),
+      router.push("/ravi/videocall");
   };
 
   return (
@@ -148,4 +199,4 @@ function CallDetailsPopUp(props) {
   );
 }
 
-export default CallDetailsPopUp
+export default CallDetailsPopUp;
