@@ -25,14 +25,14 @@ const initialState = {
   loginSuccessUrl: "/",
   loadedFromLocalStorage: false,
   fetchIntercepted: false,
-  socketSetup: false
+  socketSetup: false,
 };
 
 const AuthContext = createContext(initialState);
 const AuthUpdateContext = createContext({
-  logout: () => { },
-  updateViewer: () => { },
-  readFromLocalStorage: () => { },
+  logout: () => {},
+  updateViewer: () => {},
+  readFromLocalStorage: () => {},
 });
 
 let numberOfInits = 0;
@@ -69,12 +69,12 @@ export const AuthContextProvider = ({ children }) => {
       rootUserId: "",
       relatedUserId: "",
       jwtToken: "",
-      rtcToken: ""
-    })
-  }
+      rtcToken: "",
+    });
+  };
 
   const readFromLocalStorage = () => {
-    localStorage.removeItem("socketId")
+    localStorage.removeItem("socketId");
     const jwtToken = localStorage.getItem("jwtToken");
     if (jwtToken) {
       if (parseInt(localStorage.getItem("jwtExpiresIn")) > Date.now()) {
@@ -86,14 +86,17 @@ export const AuthContextProvider = ({ children }) => {
           relatedUserId: localStorage.getItem("relatedUserId"),
           jwtToken: jwtToken,
           unAuthedUserId: localStorage.getItem("unAuthedUserId"),
-          loadedFromLocalStorage: true
-        })
-        localStorage.setItem("authContext", JSON.stringify({
-          isLoggedIn: authState.isLoggedIn,
-          jwtToken: authState.jwtToken,
-          userType: authState.user.userType,
-          unAuthedUserId: authState.unAuthedUserId
-        }))
+          loadedFromLocalStorage: true,
+        });
+        localStorage.setItem(
+          "authContext",
+          JSON.stringify({
+            isLoggedIn: authState.isLoggedIn,
+            jwtToken: authState.jwtToken,
+            userType: authState.user.userType,
+            unAuthedUserId: authState.unAuthedUserId,
+          })
+        );
       } else {
         localStorage.setItem("jwtToken", "");
         localStorage.setItem("jwtExpiresIn", "");
@@ -102,12 +105,12 @@ export const AuthContextProvider = ({ children }) => {
         localStorage.setItem("userType", "");
         localStorage.setItem("authContext", "");
         localStorage.setItem("unAuthedUserId", "");
-        updateViewer({ loadedFromLocalStorage: true })
+        updateViewer({ loadedFromLocalStorage: true });
       }
       localStorage.setItem("rtcToken", "");
       localStorage.setItem("rtcTokenExpireIn", "");
     } else {
-      updateViewer({ loadedFromLocalStorage: true })
+      updateViewer({ loadedFromLocalStorage: true });
       localStorage.setItem("rtcToken", "");
       localStorage.setItem("rtcTokenExpireIn", "");
     }
@@ -142,7 +145,7 @@ export const AuthContextProvider = ({ children }) => {
         value={{
           updateViewer,
           readFromLocalStorage,
-          logout
+          logout,
         }}
       >
         {children}

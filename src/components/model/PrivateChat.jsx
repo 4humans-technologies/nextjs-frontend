@@ -90,29 +90,27 @@ function PrivateChat() {
   ];
 
   return (
-      <div className="tw-font-sans chat-box">
-        {data.map((item, index) => {
-          return (
-            <div>
-              <div
-                key={index}
-                className="tw-flex tw-bg-second-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans"
-              >
-                <div className="tw-flex">
-                  <div className="md:tw-mx-2 tw-font-bold tw-text-red-500 tw-text-base">
-                    {item.name} :
-                  </div>
-                  <div className="tw-text-sm">{item.message}</div>
+    <div className="tw-font-sans chat-box">
+      {data.map((item, index) => {
+        return (
+          <div>
+            <div
+              key={index}
+              className="tw-flex tw-bg-second-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans"
+            >
+              <div className="tw-flex">
+                <div className="md:tw-mx-2 tw-font-bold tw-text-red-500 tw-text-base">
+                  {item.name} :
                 </div>
-                <div className="tw-text-yellow-400 tw-pr-6">
-                  {item.id} Coins
-                </div>
+                <div className="tw-text-sm">{item.message}</div>
               </div>
-              <hr className="tw-bg-dark-black" />
+              <div className="tw-text-yellow-400 tw-pr-6">{item.id} Coins</div>
             </div>
-          );
-        })}
-      </div>
+            <hr className="tw-bg-dark-black" />
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

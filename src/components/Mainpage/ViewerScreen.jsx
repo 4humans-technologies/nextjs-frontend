@@ -24,21 +24,23 @@ let token;
 function Videocall(props) {
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
-  const {
-    joinState,
-    leave,
-    join,
-    remoteUsers
-  } = useAgora(client, "audience", props.callType || "");
+  const { joinState, leave, join, remoteUsers } = useAgora(
+    client,
+    "audience",
+    props.callType || ""
+  );
 
   useEffect(() => {
-    debugger
+    debugger;
     if (ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === true) {
         /**
          * if logged in then fetch RTC token as loggedIn user
          */
-        if (!localStorage.getItem("rtcToken") && +localStorage.getItem("rtcTokenExpireIn") < Date.now()) {
+        if (
+          !localStorage.getItem("rtcToken") &&
+          +localStorage.getItem("rtcTokenExpireIn") < Date.now()
+        ) {
           /* make new request as their is no token or expired token */
           fetch("/api/website/token-builder/authed-viewer-join-stream", {
             method: "POST",
@@ -52,86 +54,100 @@ function Videocall(props) {
           })
             .then((resp) => resp.json())
             .then((data) => {
-              token = data.rtcToken
-              localStorage.setItem("rtcToken", data.rtcToken)
-              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
-              const channel = window.location.pathname.split("/").reverse()[0]
-              join(channel, data.rtcToken, ctx.relatedUserId)
+              token = data.rtcToken;
+              localStorage.setItem("rtcToken", data.rtcToken);
+              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs);
+              const channel = window.location.pathname.split("/").reverse()[0];
+              join(channel, data.rtcToken, ctx.relatedUserId);
               updateCtx.updateViewer({
-                rtcToken: data.rtcToken
-              })
+                rtcToken: data.rtcToken,
+              });
             });
         } else {
           /* get token  from local storage */
-          const channel = window.location.pathname.split("/").reverse()[0]
-          join(channel, localStorage.getItem("rtcToken"), ctx.relatedUserId)
+          const channel = window.location.pathname.split("/").reverse()[0];
+          join(channel, localStorage.getItem("rtcToken"), ctx.relatedUserId);
         }
       } else {
-        if (!localStorage.getItem("rtcToken") && localStorage.getItem("rtcTokenExpireIn") < Date.now()) {
+        if (
+          !localStorage.getItem("rtcToken") &&
+          localStorage.getItem("rtcTokenExpireIn") < Date.now()
+        ) {
           /**
-         * fetch RTC token as a un-authenticated user
-         */
+           * fetch RTC token as a un-authenticated user
+           */
           const payload = {
             /* which models's stream to join */
             modelId: window.location.pathname.split("/").reverse()[0],
-          }
-          fetch(
-            "/api/website/token-builder/unauthed-viewer-join-stream",
-            {
-              method: "POST",
-              cors: "include",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(payload),
-            }
-          )
+          };
+          fetch("/api/website/token-builder/unauthed-viewer-join-stream", {
+            method: "POST",
+            cors: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          })
             .then((resp) => resp.json())
             .then((data) => {
-              debugger
+              debugger;
               /* 🤩🤩🔥🔥 join stream */
-              localStorage.setItem("rtcToken", data.rtcToken)
-              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
-              const channel = window.location.pathname.split("/").reverse()[0]
-              join(channel, data.rtcToken, data.unAuthedUserId)
+              localStorage.setItem("rtcToken", data.rtcToken);
+              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs);
+              const channel = window.location.pathname.split("/").reverse()[0];
+              join(channel, data.rtcToken, data.unAuthedUserId);
               if (data.newUnAuthedUserCreated) {
                 /* if new viewer was created save the _id in localstorage */
-                localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
+                localStorage.setItem("unAuthedUserId", data.unAuthedUserId);
                 updateCtx.updateViewer({
                   unAuthedUserId: data.unAuthedUserId,
-                  rtcToken: data.rtcToken
-                })
+                  rtcToken: data.rtcToken,
+                });
               } else {
                 updateCtx.updateViewer({
-                  rtcToken: data.rtcToken
-                })
+                  rtcToken: data.rtcToken,
+                });
               }
             })
-            .catch(err => alert(err.message))
+            .catch((err) => alert(err.message));
         } else {
-          const channel = window.location.pathname.split("/").reverse()[0]
-          join(channel, localStorage.getItem("rtcToken"), localStorage.getItem("unAuthedUserId"))
+          const channel = window.location.pathname.split("/").reverse()[0];
+          join(
+            channel,
+            localStorage.getItem("rtcToken"),
+            localStorage.getItem("unAuthedUserId")
+          );
         }
       }
     }
-  }, [ctx.isLoggedIn, ctx.socketSetup, ctx.relatedUserId, window.location.pathname, ctx.loadedFromLocalStorage]);
+  }, [
+    ctx.isLoggedIn,
+    ctx.socketSetup,
+    ctx.relatedUserId,
+    window.location.pathname,
+    ctx.loadedFromLocalStorage,
+  ]);
 
   return (
     <div className="sm:tw-h-[70vh] ">
-      {token && <div className="tw-flex tw-py-2 tw-justify-between tw-items-center">
-        <Button variant="primary" onClick={join}>
-          Join
-        </Button>
-        <Button variant="danger" onClick={leave}>
-          Leave
-        </Button>
-      </div>}
-      {token ? (joinState ? (
-        <p className="tw-text-white">Connected</p>
-      ) : (
-        <p className="tw-text-white">Disconnected</p>
-      )) : null}
-      {(remoteUsers.length > 0 &&
+      {token && (
+        <div className="tw-flex tw-py-2 tw-justify-between tw-items-center">
+          <Button variant="primary" onClick={join}>
+            Join
+          </Button>
+          <Button variant="danger" onClick={leave}>
+            Leave
+          </Button>
+        </div>
+      )}
+      {token ? (
+        joinState ? (
+          <p className="tw-text-white">Connected</p>
+        ) : (
+          <p className="tw-text-white">Disconnected</p>
+        )
+      ) : null}
+      {remoteUsers.length > 0 &&
         remoteUsers.map((user) => {
           return (
             <VideoPlayer
@@ -142,7 +158,7 @@ function Videocall(props) {
               playAudio={true}
             />
           );
-        }))}
+        })}
     </div>
   );
 }

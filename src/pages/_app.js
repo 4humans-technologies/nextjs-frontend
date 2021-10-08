@@ -3,13 +3,13 @@
 import { ContextProvider } from "../app/Context";
 import { SidebarContextProvider } from "../app/Sidebarcontext";
 import { AuthContextProvider } from "../app/AuthContext";
-import { ModalContextProvider } from "../app/ModalContext"
+import { ModalContextProvider } from "../app/ModalContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/globals.css";
-import { ErrorContextProvider } from '../app/Error/ErrorContext';
-import { useEffect } from 'react';
-import { SpinnerContextProvider } from '../app/Loading/SpinnerContext';
-import { SocketContextProvider } from "../app/socket/SocketContext"
+import { ErrorContextProvider } from "../app/Error/ErrorContext";
+import { useEffect } from "react";
+import { SpinnerContextProvider } from "../app/Loading/SpinnerContext";
+import { SocketContextProvider } from "../app/socket/SocketContext";
 import io from "../socket/socket";
 import useSetupSocket from "../socket/useSetupSocket";
 // import dynamic from "next/dynamic";
@@ -18,7 +18,7 @@ import useSetupSocket from "../socket/useSetupSocket";
 /**
  * RULES OF HOOKS
  * react hooks must be called in the same order in every render
- * hence implement all the hooks in the start of the compoent and 
+ * hence implement all the hooks in the start of the compoent and
  * then think about rendering
  * ---------
  * do not mutate state in between of a rendering of a component,
@@ -28,7 +28,7 @@ import useSetupSocket from "../socket/useSetupSocket";
 const MyApp = ({ Component, pageProps }) => {
   console.log("rendering MyApp");
   // useSetupSocket("http://192.168.43.85:8080")
-  useSetupSocket("http://192.168.1.104:8080")
+  useSetupSocket("http://192.168.1.104:8080");
   return (
     // <Provider store={store}>
     <AuthContextProvider>
@@ -50,4 +50,4 @@ const MyApp = ({ Component, pageProps }) => {
   );
 };
 
-export default MyApp
+export default MyApp;

@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import router, { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import StarIcon from "@material-ui/icons/Star";
-import Link from "next/link"
+import Link from "next/link";
 
 const DynamicComponent = dynamic(() => import("./ViewerScreen"), {
   ssr: false,
@@ -23,9 +23,7 @@ function Mainbox(props) {
   // }
 
   return (
-    <div
-      className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full"
-    >
+    <div className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full">
       <div className="tw-relative tw-font-sans parent_transition tw-m-0">
         {/* <Image
           src={props.photo}
@@ -36,11 +34,15 @@ function Mainbox(props) {
           objectPosition="top left"
           className="tw-max-h-full tw-max-w-full"
         /> */}
-        <img src={props.photo} className="tw-object-cover tw-object-center" alt="" />
+        <img
+          src={props.photo}
+          className="tw-object-cover tw-object-center"
+          alt=""
+        />
         <div className="tw-absolute tw-z-[2]  child_transition after"></div>
         {/*  Real*/}
         <div className="tw-absolute tw-z-10  child_transition_1 after tw-top-0">
-          <ul className="tw-pl-4 tw-text-white tw-z-10" >
+          <ul className="tw-pl-4 tw-text-white tw-z-10">
             <li className="tw-font-extrabold tw-text-xl tw-py-1">
               {`${props.name} | @${props.userName}`}
             </li>
@@ -61,7 +63,9 @@ function Mainbox(props) {
           {/* <div className="tw-absolute tw-bottom-0 tw-w-full tw-align-middle tw-flex "> */}
           <Link href={`/view-stream/${props.modelId}`}>
             <a
-              className={`${props.onCall ? "tw-bg-purple-600" : "tw-bg-green-color"} tw-w-full tw-text-center tw-opacity-100 tw-text-white tw-bottom-0 tw-absolute tw-z-50 hover:tw-text-white`}
+              className={`${
+                props.onCall ? "tw-bg-purple-600" : "tw-bg-green-color"
+              } tw-w-full tw-text-center tw-opacity-100 tw-text-white tw-bottom-0 tw-absolute tw-z-50 hover:tw-text-white`}
             >
               {props.onCall ? "onCall" : "streaming"}
             </a>

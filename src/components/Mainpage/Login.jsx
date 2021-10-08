@@ -2,10 +2,7 @@ import React from "react";
 import { useState } from "react";
 import CloseIcon from "@material-ui/icons/Close";
 import { useRouter } from "next/router";
-import {
-  useAuthContext,
-  useAuthUpdateContext,
-} from "../../app/AuthContext";
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
 import useModalContext from "../../app/ModalContext";
 
 function Login() {

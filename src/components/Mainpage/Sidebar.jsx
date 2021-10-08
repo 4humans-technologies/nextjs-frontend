@@ -4,8 +4,7 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import HistoryIcon from "@material-ui/icons/History";
 import { useSidebarStatus } from "../../app/Sidebarcontext";
-import { Button } from 'react-bootstrap'
-
+import { Button } from "react-bootstrap";
 
 const data = [
   {
@@ -16,7 +15,7 @@ const data = [
   {
     name: "Neeraj Rai",
     icon: <FavoriteIcon className="tw-mr-2" />,
-    number: '05',
+    number: "05",
   },
   {
     name: "Motu bhai",
@@ -25,22 +24,15 @@ const data = [
   },
 ];
 
-
-
-
-
-
 function Sidebar(props) {
   const sidebarStatus = useSidebarStatus();
 
-  const top = `${props.top}rem` || "32rem"
+  const top = `${props.top}rem` || "32rem";
   const showStyle = {
     left: "0",
-
   };
   const hideStyle = {
     left: "-240px",
-
   };
   return (
     <div

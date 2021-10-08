@@ -15,7 +15,7 @@ function Login() {
   const [formsubmit, SetFormsubmit] = useState(false);
   const [username, setuserName] = useState("");
   const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState(null)
+  const [loginError, setLoginError] = useState(null);
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
 
@@ -55,15 +55,15 @@ function Login() {
             },
             jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
           });
-          debugger
+          debugger;
           io.getSocket().close();
           io.getSocket().open();
           router.push(ctx.loginSuccessUrl);
         }
       })
       .catch((err) => {
-        debugger
-        setLoginError(err.message)
+        debugger;
+        setLoginError(err.message);
       });
   };
 
@@ -76,7 +76,10 @@ function Login() {
               {" "}
               Login
             </h1>
-            <form onSubmit={handleSubmit} className="tw-mb-4 tw-flex tw-flex-col tw-justify-center">
+            <form
+              onSubmit={handleSubmit}
+              className="tw-mb-4 tw-flex tw-flex-col tw-justify-center"
+            >
               <div className="tw-flex-grow tw-py-2 tw-px-2">
                 <input
                   type="text"
@@ -101,7 +104,9 @@ function Login() {
               </div>
               {loginError && (
                 <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3">
-                  <div className="tw-text-white-color tw-font-semibold">{loginError}</div>
+                  <div className="tw-text-white-color tw-font-semibold">
+                    {loginError}
+                  </div>
                 </div>
               )}
               <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-3">
