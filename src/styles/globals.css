@@ -271,9 +271,10 @@
 
 /* Grid in document.jsx in model folder */
 
-.document_grid {
-  grid-template-rows: 100px, auto, auto;
-}
+/* .document_grid {
+  grid-template-rows: 400px, 400px;
+  grid-template-columns: 100px,100px;
+} */
 
 /* help overlay */
 .help_1:hover .help_text_1 {

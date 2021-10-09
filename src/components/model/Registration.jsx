@@ -4,53 +4,55 @@ import { validPassword, validEmail, validatePhone } from "../UI/Regex";
 import loginBg from "../../../public/dreamgirl-bg-3.jpg";
 import { Money, Person, VerifiedUser } from "@material-ui/icons";
 import useFetchInterceptor from "../../hooks/useFetchInterceptor";
+import { useRouter } from "next/router"
 
 //Validation is still left in this
 // I did blunder using multiple state ,rather than using single to create it
-let fetchItercepted;
+let fetchItercepted
 function Registration() {
-  useFetchInterceptor(fetchItercepted);
-  fetchItercepted = true;
-  const [formsubmit, SetFormsubmit] = useState(false);
-  const [name, setName] = useState("");
-  const [username, setuserName] = useState("");
-  const [age, setAge] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [gender, setGender] = useState("");
-  const [profile, setProfile] = useState("");
+  useFetchInterceptor(fetchItercepted)
+  fetchItercepted = true
+  const router = useRouter()
+  const [formsubmit, SetFormsubmit] = useState(false)
+  const [name, setName] = useState("")
+  const [username, setuserName] = useState("")
+  const [age, setAge] = useState("")
+  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+  const [gender, setGender] = useState("")
+  const [profile, setProfile] = useState()
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(email, gender);
+    e.preventDefault()
+    const formData = new FormData()
+    formData.append("name", name)
+    formData.append("username", username)
+    formData.append("age", age)
+    formData.append("password", password)
+    formData.append("email", email)
+    formData.append("phone", phone)
+    formData.append("gender", gender)
+    formData.append("profileImage", profile)
+    formData.append("languages", "marwadi")
+
+    // model Creation -------------- //////////////
     fetch("/api/website/register/model/create", {
       method: "POST",
       cors: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-        age,
-        email,
-        password,
-        username,
-        phone,
-        gender,
-        profile,
-      }),
+      body: formData,
     })
       .then((resp) => resp.json())
       .then((data) => {
-        console.log(data.message);
-        console.log(data);
+        console.log(data.message)
+        console.log(data)
         console.log(name, age, email, password, username, phone, gender),
           SetFormsubmit(true),
-          console.log(formsubmit);
+          console.log(formsubmit)
+        router.push("/document")
       })
-      .catch((err) => console.log(err));
-  };
+      .catch((err) => console.log(err))
+  }
 
   return (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen tw-bg-third-color tw-w-[100vw] sm:tw-w-auto ">
@@ -61,7 +63,11 @@ function Registration() {
               {" "}
               Registration Model
             </h1>
-            <form onSubmit={handleSubmit} className="tw-mb-4">
+            <form
+              onSubmit={handleSubmit}
+              className="tw-mb-4"
+              encType="multipart/form-data"
+            >
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
                 <input
                   type="text"
@@ -132,12 +138,12 @@ function Registration() {
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
                 <input
                   type="file"
-                  name="image"
+                  name="profileImage"
                   id="image"
                   accept="image/*"
                   placeholder="Profile"
-                  value={profile}
-                  onChange={(e) => setProfile(e.target.value)}
+                  // value={profile}
+                  onChange={(e) => setProfile(e.target.files[0])}
                   className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-py-2 tw-px-2 tw-flex-grow file-input__input "
                 />
                 <label
@@ -161,8 +167,8 @@ function Registration() {
                   >
                     Choose Gender
                   </option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
                 </select>
               </div>
 
@@ -210,7 +216,7 @@ function Registration() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default Registration;

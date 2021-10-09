@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CreateIcon from "@material-ui/icons/Create";
 import HelpIcon from "@material-ui/icons/Help";
 import ToggleOffIcon from "@material-ui/icons/ToggleOff";
@@ -12,26 +12,13 @@ import Card from "../UI/Card";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-const Data = [
-  {
-    id: 1,
-    Name: "Vikas Kumawat",
-    Age: 22,
-    From: "Rajsthan",
-    Language: "Marwadi",
-    Body: "Sexy",
-    Specifics: "Shaven",
-    Hair: "Blonde",
-    Eye: "Brown",
-    Subculture: "Romantic",
-    profile: "/pp.jpg",
-  },
-];
+import useFetch from "../../hooks/useFetch";
 
 function Profile() {
   const [checked, setChecked] = useState(false);
   const [infoedited, setInfoedited] = useState(false);
   const [dynamicData, setDynamicData] = useState([2]);
+  const [modelData, setModelData] = useState([]);
   const [modelState, setModelState] = useState({
     images: [],
     videos: [],
@@ -40,6 +27,14 @@ function Profile() {
     profile: "",
     header_image: "",
   });
+
+  useEffect(() => {
+    fetch("/model.json")
+      .then((res) => res.json())
+      .then((data) => setModelData(data.models));
+  }, []);
+
+  console.log(modelData);
 
   const toggleChecked = () => {
     setChecked((prev) => !prev);
@@ -98,7 +93,11 @@ function Profile() {
                 <p>Eye color</p>
                 <p>SubCulture</p>
               </div>
-              <div className="md:tw-col-span-5 tw-col-span-4 ">
+
+              <div
+                className="md:tw-col-span-5 tw-col-span-4 "
+                onChange={console.log("changed")}
+              >
                 <p
                   onInput={
                     ((e) => e.currentTarget.textContent,
@@ -115,16 +114,15 @@ function Profile() {
                   }
                   contentEditable="true"
                 >
-                  From
+                  {modelData[0].Name}
                 </p>
-                <p>Language</p>
-                <p>Age</p>
+                <p>{modelData[0].Language}</p>
+                <p>{modelData[0].Age}</p>
                 <p>Body type</p>
                 <p>Specifiv</p>
                 <p>Hair</p>
                 <p>Eye color</p>
                 <p>SubCulture</p>
-
                 <br />
                 {infoedited && (
                   <Button type="submit" onClick={() => setInfoedited(false)}>
@@ -277,7 +275,7 @@ function Profile() {
             </div>
             {/* Call History */}
             {/* give width and apply scroll-y this is still not implimented */}
-            <table className="tw-border-solid tw-bg-dark-black tw-border-4 tw-text-center tw-mt-8 tw-w-full tw-bg-first-color">
+            <table className="tw-border-solid  tw-border-4 tw-text-center tw-mt-8 tw-w-full tw-bg-first-color">
               <tr className="tw-border-solid tw-bg-dark-black tw-border-4 tw-px-2">
                 <th className="tw-border-solid tw-bg-dark-black tw-border-4  ">
                   No
@@ -492,12 +490,10 @@ function Profile() {
                     key={index}
                   >
                     <input
-                      // id={`action-${index}`}
                       className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-md"
                       placeholder="ravi"
                     />
                     <input
-                      // id={`action-value-${index}`}
                       className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-md"
                       placeholder="name"
                     />

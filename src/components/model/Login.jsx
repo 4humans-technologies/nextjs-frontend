@@ -7,7 +7,6 @@ import { Money, Person, VerifiedUser } from "@material-ui/icons";
 import loginBg from "../../../public/dreamgirl-bg-3.jpg";
 import { useRouter } from "next/router";
 import io from "../../socket/socket";
-import { useFetchInterceptor } from "../../hooks/useFetchInterceptor";
 
 //Validation is still left in this
 function Login() {
@@ -15,7 +14,6 @@ function Login() {
   const [formsubmit, SetFormsubmit] = useState(false);
   const [username, setuserName] = useState("");
   const [password, setPassword] = useState("");
-  useFetchInterceptor();
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
 
