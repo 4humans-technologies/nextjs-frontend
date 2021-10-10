@@ -23,7 +23,7 @@ function GoLive() {
     if (ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === false && ctx.user.userType !== "Model") {
         updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname });
-        return router.push("/auth/login");
+        return router.replace("/auth/login");
       }
     }
   }, [ctx.loadedFromLocalStorage, ctx.isLoggedIn, ctx.user.userType]);

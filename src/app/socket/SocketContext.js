@@ -1,22 +1,23 @@
 import { createContext, useContext, useState } from "react";
 
 const SocketContext = createContext({
-  triedConnecting: false,
+  socketInstance: null,
   isConnected: false,
-  setTriedConnecting: () => {},
+  setSocketInstance: () => {},
   setIsConnected: () => {},
 });
 
+let socketSetup = false;
 export const SocketContextProvider = ({ children }) => {
-  const [triedConnecting, setTriedConnecting] = useState(false);
+  const [socketInstance, setSocketInstance] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
 
   return (
     <SocketContext.Provider
       value={{
-        triedConnecting,
+        socketInstance,
         isConnected,
-        setTriedConnecting,
+        setSocketInstance,
         setIsConnected,
       }}
     >

@@ -37,20 +37,22 @@ export default {
     return socketConnectionInstance;
   },
   getSocket: () => {
-    if (!socketConnectionInstance) {
-      throw Error("Socket is not initialized!");
-    }
+    // if (!socketConnectionInstance) {
+    //   throw Error("Socket is not initialized!");
+    // }
     return socketConnectionInstance;
   },
   getSocketId: () => {
     if (!socketConnectionInstance) {
       // throw Error("Socket is not initialized!")
-      return "socket not init";
+      // return "socket not init";
+      return
     }
     return socketConnectionInstance.id;
   },
   globalListeners: (socket) => {
     socket.on("new-model-started-stream", (data) => {
+      /*  */
       alert("New Model Started Streaming...");
       const model = JSON.parse(data);
       const dataObj = {

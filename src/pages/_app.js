@@ -4,14 +4,12 @@ import { ContextProvider } from "../app/Context";
 import { SidebarContextProvider } from "../app/Sidebarcontext";
 import { AuthContextProvider } from "../app/AuthContext";
 import { ModalContextProvider } from "../app/ModalContext";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/globals.css";
 import { ErrorContextProvider } from "../app/Error/ErrorContext";
-import { useEffect } from "react";
 import { SpinnerContextProvider } from "../app/Loading/SpinnerContext";
 import { SocketContextProvider } from "../app/socket/SocketContext";
-import io from "../socket/socket";
-import useSetupSocket from "../socket/useSetupSocket";
+import TestComponent from "./text";
+import "bootstrap/dist/css/bootstrap.min.css"
+import "../styles/globals.css"
 // import dynamic from "next/dynamic";
 // const io = dynamic(() => import("../socket/socket"), { ssr: false })
 
@@ -26,9 +24,7 @@ import useSetupSocket from "../socket/useSetupSocket";
  */
 
 const MyApp = ({ Component, pageProps }) => {
-  console.log("rendering MyApp");
-  // useSetupSocket("http://192.168.43.85:8080")
-  useSetupSocket("http://192.168.1.104:8080");
+
   return (
     // <Provider store={store}>
     <AuthContextProvider>
@@ -38,6 +34,7 @@ const MyApp = ({ Component, pageProps }) => {
             <ErrorContextProvider>
               <SpinnerContextProvider>
                 <SocketContextProvider>
+                  <TestComponent />
                   <Component {...pageProps} />
                 </SocketContextProvider>
               </SpinnerContextProvider>
@@ -47,7 +44,7 @@ const MyApp = ({ Component, pageProps }) => {
       </SidebarContextProvider>
     </AuthContextProvider>
     // </Provider>
-  );
-};
+  )
+}
 
-export default MyApp;
+export default MyApp

@@ -1,162 +1,301 @@
-import React from "react";
+import React, { useState, useEffect } from "react"
+import Image from "next/image"
+import flowerImage from "../../../public/flower-rose-png.jpg"
+import coinsImage from "../../../public/coins.png"
+import io from "../../socket/socket"
+import { useSocketContext } from "../../app/socket/SocketContext"
 
-function Publicchat() {
-  const data = [
-    {
-      id: 1,
-      name: "Neeraj Bhai Brandikaran ",
-      age: 18,
-      message: "I love silicon Valley",
-    },
-    {
-      id: 2,
-      name: "Neeraj Rai",
-      age: 19,
-      message: "I love My India",
-    },
-    {
-      id: 3,
-      name: "Neeraj",
-      age: 20,
-      message: "我是王五",
-    },
+/* 
+  if normal message
+  {
+    type:"normal-public-message"
+    timeStamp:324234,
+    username/uid:xxxxxxxx,
+    message:xxxxxx
+  }
+  if model message
+  {
+    type:"model-public-message",
+    timeStamp:3423432,
+    message:xxxxxxxxxx
+  },
+  if gift-superChat
+  {
+    type:"gift-superchat-public",
+    username:xxxxxxxxx,
+    timestamp:3121212,
+    message:xxxxxxxxx
+  }
+  if coins superchat
+  {
+    type:"coin-superchat-public",
+    username:xxxxxxxxx,
+    timestamp:23123123,
+    message:xxxxxxxxx
+  }
+*/
 
-    {
-      id: 4,
-      name: "Ravi Bhai",
-      age: 21,
-      message: "I am The Hero",
-    },
-    {
-      id: 5,
-      name: "Ravi shankar",
-      age: 22,
-      message: "I am Ravi",
-    },
-    {
-      id: 6,
-      name: "Ravi ji",
-      age: 23,
-      message: "我是Ravi",
-    },
-    {
-      id: 7,
-      name: "Ravi",
-      age: 24,
-      message: "我是Ravi",
-    },
-    {
-      id: 8,
-      name: "Ravi",
-      age: 25,
-      message: "我是Ravi",
-    },
-    {
-      id: 9,
-      name: "Ravi",
-      age: 26,
-      message: "我是Ravi",
-    },
-    {
-      id: 10,
-      name: "Ravi",
-      age: 27,
-      message: "我是Ravi",
-    },
-    {
-      id: 11,
-      name: "Ravi",
-      age: 28,
-      message: "我是Ravi ----",
-    },
-    {
-      id: 12,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 13,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 14,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 15,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 15,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 15,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 15,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 15,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 15,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 15,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-    {
-      id: 15,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi",
-    },
-  ];
-
+function NormalChatMessage(props) {
   return (
-    <div className="tw-font-sans chat-box">
-      {data.map((item, index) => {
-        return (
-          <div key={index}>
-            <div className="tw-flex tw-bg-first-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans">
-              <div className="tw-flex">
-                <div className="md:tw-mx-2 tw-font-bold tw-text-gray-400 tw-text-base">
-                  {item.name} :
-                </div>
-                <div className="tw-text-sm">{item.message}</div>
-              </div>
-              <div className="tw-text-yellow-400 tw-pr-6">{item.id} Coins</div>
-            </div>
-            <hr className="tw-bg-dark-black" />
-          </div>
-        );
-      })}
+    <div className="tw-flex tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tw-bg-first-color tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
+      <div className="tw-flex-grow tw-pr-2">
+        <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
+          {props.displayName}:
+        </span>
+        <span className="user-message tw-text-sm tw-font-normal">
+          {props.message}
+        </span>
+      </div>
+      <div className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2">
+        {props.walletCoins}
+      </div>
     </div>
-  );
+  )
 }
 
-export default Publicchat;
+function ModelChatMessage(props) {
+  return (
+    <div className="tw-flex tw-flex-grow tw-flex-shrink-0 tw-w-full tw-bg-first-color tw-text-white-color tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tw-justify-between">
+      <div className="tw-flex-grow tw-flex-shrink-0">
+        <h2 className="tw-font-semibold tw-text-sm tw-mb-1 tw-bg-second-color tw-px-1.5 tw-rounded tw-inline-block tw-py-1 tw-tracking-wider">
+          Message By Model
+        </h2>
+        <p className="tw-mt-1">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo,
+          esse?
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function GiftSuperChat(props) {
+  return (
+    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 gift-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
+      <div className="tw-flex-grow-0 tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-bg-second-color tw-mr-auto">
+        <Image
+          src={props.giftImageUrl}
+          width={90}
+          height={90}
+          objectFit="contain"
+          objectPosition="center"
+          className="tw-rounded tw-mr-auto"
+        />
+      </div>
+      <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
+        <div className="tw-flex-grow tw-pr-2">
+          <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
+            {props.displayName}:
+          </span>
+          <span className="user-message tw-text-sm tw-font-normal">
+            {props.message}
+          </span>
+        </div>
+        <p className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2 tw-text-yellow-400 tw-font-medium">
+          {props.walletCoins}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function CoinSuperChat(props) {
+  return (
+    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 coin-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
+      <div className="tw-flex-grow-0 tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-mr-auto">
+        <Image
+          src={coinsImage}
+          width={90}
+          height={90}
+          objectFit="contain"
+          objectPosition="center"
+          className="tw-rounded tw-mr-auto"
+        />
+        <p className="tw-mt-1 tw-font-semibold tw-text-yellow-400">
+          <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
+            {props.displayName}:
+          </span>
+          {props.amountGiven}
+        </p>
+      </div>
+      <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
+        <div className="tw-flex-grow tw-pr-2">
+          <span className="user-message tw-text-sm tw-font-normal">
+            {props.message}
+          </span>
+        </div>
+        <p className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2 tw-text-yellow-400">
+          {props.walletCoins}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+const initialMessages = [
+  {
+    type: "normal-public-message",
+    index: 1,
+    username: "ravi",
+    message: "Hello how is every one, feel very good here",
+    walletCoins: 100,
+  },
+  {
+    type: "model-public-message",
+    index: 2,
+    message: "Hello how is every one, feel very good here",
+  },
+  {
+    type: "gift-superchat-public",
+    index: 3,
+    username: "Neeraj rai",
+    giftImageUrl: flowerImage,
+    message: "Hello how is every one, feel very good here",
+    walletCoins: 100,
+  },
+  {
+    type: "gift-superchat-public",
+    username: "Neeraj rai",
+    index: 4,
+    walletCoins: 100,
+    giftImageUrl: flowerImage,
+    message: "Hello how is every one, feel very good here",
+  },
+  {
+    type: "coin-superchat-public",
+    username: "Vikas kumawat",
+    index: 5,
+    amountGiven: 40,
+    message: "Hello how is every one, feel very good here",
+    walletCoins: 100,
+  },
+  {
+    type: "coin-superchat-public",
+    username: "Vikas kumawat",
+    index: 6,
+    amountGiven: 100,
+    message: "Hello how is every one, feel very good here",
+    walletCoins: 50,
+  },
+]
+
+let chatIndex = 0
+let socketListenersSetup = false
+function PublicChatBox() {
+  const [chatMessages, setChatMessage] = useState(initialMessages)
+
+  const ctx = useSocketContext()
+  useEffect(() => {
+    if (localStorage.getItem("socketId") && !socketListenersSetup) {
+      const socketId = io.getSocketId()
+      const socket = io.getSocket()
+      socketListenersSetup = true
+      const doSetup = () => {
+        socket.on("viewer-message-public-received", (data) => {
+          setChatMessage((prevChats) => {
+            const newChats = [
+              ...prevChats,
+              {
+                type: "normal-public-message",
+                index: chatIndex,
+                username: data.username,
+                message: data.message,
+                walletCoins: data.walletCoins,
+              },
+            ]
+            return newChats
+          })
+        })
+        socket.on("model-message-public-received", (data) => {
+          setChatMessage((prevChats) => {
+            const newChats = [
+              ...prevChats,
+              {
+                type: "model-public-message",
+                index: chatIndex,
+                message: data.message,
+              },
+            ]
+          })
+        })
+        socket.on("viewer_super_message_pubic-received", (data) => {
+          let chat
+          if (data.chatType === "gift-superchat-public") {
+            chat = {
+              type: data.chatType,
+              index: chatIndex,
+              username: data.username,
+              giftImageUrl: data.giftImageUrl,
+              message: data.message,
+              walletCoins: data.walletCoins,
+            }
+          } else if (data.chatType === "coin-superchat-public") {
+            chat = {
+              type: data.chatType,
+              index: chatIndex,
+              username: data.username,
+              amountGiven: data.amountGiven,
+              message: data.message,
+              walletCoins: data.walletCoins,
+            }
+          }
+          setChatMessage((prevChats) => {
+            return [...prevChats, chat]
+          })
+        })
+      }
+      doSetup()
+      return () => {
+        io.getSocket().off("viewer-message-public-received")
+        io.getSocket().off("model-message-public-received")
+        io.getSocket().off("viewer_super_message_pubic-received")
+      }
+    }
+  }, [ctx.isConnected, io.getSocketId(), io.getSocket(), socketListenersSetup])
+
+  return (
+    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14">
+      {chatMessages.map((chat, index) => {
+        switch (chat.type) {
+          case "normal-public-message":
+            return (
+              <NormalChatMessage
+                index={chat.index}
+                displayName={chat.username}
+                message={chat.message}
+                walletCoins={chat.walletCoins}
+              />
+            )
+          case "model-public-message":
+            return (
+              <ModelChatMessage index={chat.index} message={chat.message} />
+            )
+          case "gift-superchat-public":
+            return (
+              <GiftSuperChat
+                index={chat.index}
+                displayName={chat.username}
+                message={chat.message}
+                giftImageUrl={chat.giftImageUrl}
+                walletCoins={chat.walletCoins}
+              />
+            )
+          case "coin-superchat-public":
+            return (
+              <CoinSuperChat
+                index={chat.index}
+                displayName={chat.username}
+                message={chat.message}
+                amountGiven={chat.amountGiven}
+                walletCoins={chat.walletCoins}
+              />
+            )
+          default:
+            break
+        }
+      })}
+    </div>
+  )
+}
+
+export default PublicChatBox

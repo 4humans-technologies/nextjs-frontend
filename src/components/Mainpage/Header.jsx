@@ -150,14 +150,14 @@ function Header(props) {
               <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
                 <button
                   className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2"
-                  onClick={() => router.push("user/registration")}
+                  onClick={() => router.push("/user/registration")}
                 >
                   Create account
                 </button>
 
                 <button
                   className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black"
-                  onClick={() => router.push("auth/login")}
+                  onClick={() => router.push("/auth/login")}
                 >
                   Login
                 </button>
