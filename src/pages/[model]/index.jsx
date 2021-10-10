@@ -13,12 +13,24 @@ function index() {
       <SecondHeader />
       <Sidebar />
       <Livescreen />
-      <ModelProfile profileData={{
-        name: "Neeraj Rai",
-        age: 42,
-        tags: ['Black', "White", "Artist", "Intelligent", 'Black', "White", "Artist", 'Black', "White", "Artist"],
-        categories: ["America", "India", "Bhutan", "USA"]
-      }}
+      <ModelProfile
+        profileData={{
+          name: "Neeraj Rai",
+          age: 42,
+          tags: [
+            "Black",
+            "White",
+            "Artist",
+            "Intelligent",
+            "Black",
+            "White",
+            "Artist",
+            "Black",
+            "White",
+            "Artist",
+          ],
+          categories: ["America", "India", "Bhutan", "USA"],
+        }}
         dynamicFields={[
           { title: "Language", value: ["hindi", "english"] },
           { title: "body type", value: "curvy" },

@@ -83,7 +83,7 @@ function LivePeople() {
     },
   ];
   return (
-    <div className='tw-font-sans chat-box'>
+    <div className="tw-font-sans chat-box">
       {data.map((item, index) => {
         return (
           <div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 import dynamic from "next/dynamic";
 
@@ -8,12 +8,12 @@ const DynamicComponent = dynamic(
 );
 
 function videocall() {
-    return (
-      <div>
-        <h1>Video call</h1>
-        <DynamicComponent />
-      </div>
-    );
+  return (
+    <div>
+      <h1>Video call</h1>
+      <DynamicComponent />
+    </div>
+  );
 }
 
-export default videocall
+export default videocall;

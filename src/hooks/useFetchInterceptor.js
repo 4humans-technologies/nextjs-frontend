@@ -2,6 +2,7 @@
 import useSpinnerContext from "../app/Loading/SpinnerContext";
 import fetchIntercept from "fetch-intercept";
 import { useEffect } from "react";
+import io from "../socket/socket";
 const useFetchInterceptor = (isAlreadyIntercepted) => {
   /**
    * if all i need is the access to the functions in the context(s) than,
@@ -10,7 +11,6 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
    * in closure will have no effect (no matter if "stale function")
    */
   const spinnerCtx = useSpinnerContext();
-
   useEffect(() => {
     debugger;
     if (!isAlreadyIntercepted) {
@@ -26,13 +26,15 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             debugger;
             const latestCtx = JSON.parse(localStorage.getItem("authContext"));
             /* for GET requests when there is no config */
-            let baseUrl = "http://192.168.1.104:8080";
+            let baseUrl = "http://192.168.1.104:8080"; /* vishalprajapati */
+            // let baseUrl = "http://192.168.43.85:8080"; /* 👉 asus */
             if (window.location.hostname !== "localhost") {
               baseUrl = "https://dreamgirl.live";
             }
             let finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem(
               "socketId"
             )}&unAuthedUserId=`;
+            // let finalUrl = `${baseUrl}${url}?socketId=${io.getSocketId()}&unAuthedUserId=`;
 
             if (typeof config === "undefined") {
               /* get request */
@@ -43,8 +45,8 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
               finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem(
                 "socketId"
               )}&unAuthedUserId=${latestCtx.unAuthedUserId}`;
+              // finalUrl = `${baseUrl}${url}?socketId=${io.getSocketId()}&unAuthedUserId=${latestCtx.unAuthedUserId}`;
             }
-
             /* attach jwtToken in the header */
             let finalConfig;
             if (latestCtx.isLoggedIn) {
@@ -53,14 +55,18 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                   ...config,
                   headers: {
                     ...config.headers,
-                    Authorization: `Bearer ${latestCtx.jwtToken}`,
+                    Authorization: `Bearer ${
+                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                    }`,
                   },
                 };
               } else {
                 finalConfig = {
                   ...config,
                   headers: {
-                    Authorization: `Bearer ${latestCtx.jwtToken}`,
+                    Authorization: `Bearer ${
+                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                    }`,
                   },
                 };
               }
@@ -86,9 +92,11 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             spinnerCtx.setShowSpinner(false);
             if (!response.ok) {
               return response.json().then((data) => Promise.reject(data));
+              // return Promise.reject(response)
             }
             if (response.status <= 500 && response.status >= 300) {
               return response.json().then((data) => Promise.reject(data));
+              // return Promise.reject(response)
             }
             return response;
           }

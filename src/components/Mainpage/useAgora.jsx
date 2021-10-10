@@ -12,7 +12,7 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     if (role === "host") {
       if (callType === "audioCall") {
         const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack();
-        tracks.push(microphoneTrack)
+        tracks.push(microphoneTrack);
         setLocalAudioTrack(microphoneTrack);
       }
       if (callType === "videoCall") {
@@ -47,8 +47,7 @@ function useAgora(client, appId, token, channel, role, uid, callType) {
     }
     // if client
     await client.join(appId, channel, token, uid);
-    return setJoinState(true)
-
+    return setJoinState(true);
   }
 
   async function leave() {

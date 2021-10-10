@@ -1,25 +1,26 @@
-import React, { useState, useRef } from "react";
-import { Button } from "react-bootstrap";
-import { validPassword, validEmail, validatePhone } from "../UI/Regex";
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
+import React, { useState, useRef } from "react"
+import { Button } from "react-bootstrap"
+import { validPassword, validEmail, validatePhone } from "../UI/Regex"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
-import { Money, Person, VerifiedUser } from "@material-ui/icons";
-import loginBg from "../../../public/dreamgirl-bg-3.jpg";
-import { useRouter } from "next/router";
-import io from "../../socket/socket";
+import { Money, Person, VerifiedUser } from "@material-ui/icons"
+import loginBg from "../../../public/dreamgirl-bg-3.jpg"
+import { useRouter } from "next/router"
+import io from "../../socket/socket"
 
 //Validation is still left in this
 function Login() {
-  const router = useRouter();
-  const [formsubmit, SetFormsubmit] = useState(false);
-  const [username, setuserName] = useState("");
-  const [password, setPassword] = useState("");
-  const ctx = useAuthContext();
-  const updateCtx = useAuthUpdateContext();
+  const router = useRouter()
+  const [formsubmit, SetFormsubmit] = useState(false)
+  const [username, setuserName] = useState("")
+  const [password, setPassword] = useState("")
+  const [loginError, setLoginError] = useState(null)
+  const ctx = useAuthContext()
+  const updateCtx = useAuthUpdateContext()
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(password, username);
+    e.preventDefault()
+    console.log(password, username)
     fetch("/api/website/login", {
       method: "POST",
       cors: "include",
@@ -33,17 +34,16 @@ function Login() {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        debugger;
+        debugger
         if (data.actionStatus === "success") {
-          console.log("Data", data);
-          localStorage.setItem("jwtToken", data.token);
+          localStorage.setItem("jwtToken", data.token)
           localStorage.setItem(
             "jwtExpiresIn",
             Date.now() + data.expiresIn * 60 * 60 * 1000
-          );
-          localStorage.setItem("rootUserId", data.rootUserId);
-          localStorage.setItem("relatedUserId", data.relatedUserId);
-          localStorage.setItem("userType", data.userType);
+          )
+          localStorage.setItem("rootUserId", data.rootUserId)
+          localStorage.setItem("relatedUserId", data.relatedUserId)
+          localStorage.setItem("userType", data.userType)
           updateCtx.updateViewer({
             rootUserId: data.userId,
             relatedUserId: data.relatedUserId,
@@ -53,16 +53,18 @@ function Login() {
               userType: data.userType,
             },
             jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
-          });
-          io.connect();
-          router.push(ctx.loginSuccessUrl);
+          })
+          debugger
+          io.getSocket().close()
+          io.getSocket().open()
+          router.push(ctx.loginSuccessUrl)
         }
       })
       .catch((err) => {
-        alert(err.message);
-        console.log(err);
-      });
-  };
+        debugger
+        setLoginError(err.message)
+      })
+  }
 
   return (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen tw-bg-third-color tw-w-[100vw] sm:tw-w-auto ">
@@ -73,8 +75,11 @@ function Login() {
               {" "}
               Login
             </h1>
-            <form onSubmit={handleSubmit} className="tw-mb-4">
-              <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+            <form
+              onSubmit={handleSubmit}
+              className="tw-mb-4 tw-flex tw-flex-col tw-justify-center"
+            >
+              <div className="tw-flex-grow tw-py-2 tw-px-2">
                 <input
                   type="text"
                   name="Username"
@@ -82,11 +87,10 @@ function Login() {
                   placeholder="UserName"
                   value={username}
                   onChange={(e) => setuserName(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg tw-w-full"
                 />
               </div>
-
-              <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+              <div className="tw-flex-grow tw-py-2 tw-px-2">
                 <input
                   type="Password"
                   name="Password"
@@ -94,11 +98,17 @@ function Login() {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                  className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg tw-w-full"
                 />
               </div>
-
-              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-6">
+              {loginError && (
+                <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3">
+                  <div className="tw-text-white-color tw-font-semibold">
+                    {loginError}
+                  </div>
+                </div>
+              )}
+              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-3">
                 <Button
                   variant="danger"
                   className="tw-rounded-full tw-inline-block tw-w-11/12"
@@ -142,7 +152,7 @@ function Login() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

@@ -10,13 +10,14 @@ import logo from "../../../public/logo.png";
 import ChatIcon from "@material-ui/icons/Chat";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn"
 
-import { useWidth } from "../../app/Context";
-import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext";
-import Login from "./Login";
-import Signup from "./Signup";
-import useModalContext from "../../app/ModalContext";
-import Link from "next/link";
+import { useWidth } from "../../app/Context"
+import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
+import Login from "./Login"
+import Signup from "./Signup"
+import useModalContext from "../../app/ModalContext"
+import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
 function Header(props) {
@@ -47,8 +48,9 @@ function Header(props) {
         return resp.json()
       })
       .then((data) => setSearchData(data.products))
-    // filterData.push(setSearchData.filter((rec) => rec.name === query));
   }, [query])
+
+  // need for
 
   return (
     <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[102]">
@@ -117,36 +119,73 @@ function Header(props) {
       </span>
 
       {/* ------------- experiment----------- */}
+      {/* usertype viwer and unauth  */}
 
       {isLogin
         ? [
-            screenWidth < 600 ? (
-              <div className="">
-                <div className="tw-flex tw-self-center">
-                  <div>
-                    <ChatIcon />
-                  </div>
-                  <div className=" tw-ml-6">
-                    <NotificationsIcon />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
-                <div>
-                  <ChatIcon />
-                </div>
-                <div className="tw-mx-8">
-                  <NotificationsIcon />
-                </div>
-                <div className="tw-mr-4">
-                  <img
-                    className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
-                    src="/pp.jpg"
-                  ></img>
-                </div>
-              </div>
-            ),
+            screenWidth < 600
+              ? [
+                  authContext.user.userType == "viewer" ? (
+                    <div className="">
+                      <div className="tw-flex tw-self-center">
+                        <div>
+                          <ChatIcon />
+                        </div>
+                        <div className=" tw-ml-6">
+                          <NotificationsIcon />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="">
+                      <div className="tw-flex tw-self-center">
+                        <div>
+                          <ChatIcon />
+                        </div>
+                        <div className=" tw-ml-6">
+                          <Link href="/rohit/goLive">
+                            <a>Go live</a>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ),
+                ]
+              : [
+                  authContext.user.userType == "viewer" ? (
+                    <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
+                      <div>
+                        <ChatIcon />
+                      </div>
+                      <div className="tw-mx-8">
+                        <NotificationsIcon />
+                      </div>
+                      <div className="tw-mr-4">
+                        <img
+                          className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
+                          src="/pp.jpg"
+                        ></img>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
+                      <div>
+                        <MonetizationOnIcon />
+                      </div>
+                      <div className="tw-mx-8">
+                        <Link href="/rohit/goLive">
+                          <a>Start Broadcasting</a>
+                        </Link>
+                      </div>
+                      <div className="tw-mr-4">
+                        <img
+                          className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
+                          src="/pp.jpg"
+                        ></img>
+                      </div>
+                    </div>
+                  ),
+                ],
           ]
         : [
             screenWidth < 600 ? (
@@ -201,7 +240,10 @@ function Header(props) {
             ),
           ]}
       {/* --------------------------------------------------------------*/}
-      <div className="sm:tw-hidden tw-mr-4" onClick={() => setMenu(!menu)}>
+      <div
+        className={`sm:tw-hidden tw-mr-4 ${isLogin ? "tw-hidden" : null}`}
+        onClick={() => setMenu(!menu)}
+      >
         <MoreVertIcon />
       </div>
     </div>

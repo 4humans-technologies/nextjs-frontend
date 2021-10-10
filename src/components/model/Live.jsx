@@ -39,22 +39,32 @@ const reducer = (state = initState, action) => {
 
 // /api/website/token-builder/create-stream-and-gen-token
 
-const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
+// Replace with your App ID.
 let token;
-let channel;
 let client;
-const role = "host";
+let rtcTokenExpireIn;
 const callType =
   "videoCall"; /* to tell useAgora if want to create videoTrack/audioTrack */
 
 /**
  * CREATING AGORA CLIENT
  */
+const createAgoraClient = (extraOptions) => {
+  if (!extraOptions) {
+    extraOptions = {};
+  }
+  const clientOptions = { codec: "h264", mode: "live", ...extraOptions };
+  client = AgoraRTC.createClient(clientOptions);
+  client.setClientRole("host");
+};
+/* Init Client */
+createAgoraClient();
 
-function Live(props) {
+function Live() {
   const ctx = useAuthContext();
   const updateCtx = useAuthUpdateContext();
   const [state, dispatch] = useReducer(reducer, initState);
+  const [reRender, causeReRender] = useState(false);
   // const [rejoin, setRejoin] = useState(true)
 
   const {
@@ -65,24 +75,20 @@ function Live(props) {
     join,
     remoteUsers,
     startLocalCameraPreview,
-  } = useAgora(client, appId, token, channel, role, null, callType);
-
-  const createAgoraClient = (extraOptions) => {
-    if (!extraOptions) {
-      extraOptions = {};
-    }
-    const clientOptions = { codec: "h264", mode: "live", ...extraOptions };
-    client = AgoraRTC.createClient(clientOptions);
-    client.setClientRole("host");
-  };
+  } = useAgora(client, "host", callType);
 
   useEffect(() => {
     startLocalCameraPreview();
-  }, [startLocalCameraPreview]);
+  }, []);
 
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = () => {
-    if (ctx.loadedFromLocalStorage) {
+    debugger;
+    if (
+      !localStorage.getItem("rtcToken") &&
+      localStorage.getItem("rtcTokenExpireIn") <= Date.now() &&
+      ctx.loadedFromLocalStorage
+    ) {
       if (ctx.isLoggedIn === true && ctx.user.userType === "Model") {
         fetch("/api/website/token-builder/create-stream-and-gen-token", {
           method: "POST",
@@ -97,24 +103,26 @@ function Live(props) {
           })
           .then((data) => {
             debugger;
-            console.log(ctx);
-            updateCtx.updateViewer({
-              rtcToken: data.rtcToken,
-            });
             token = data.rtcToken;
-            channel = data.modelId;
-            join(channel, token, ctx.relatedUserId || ctx.unAuthedUserId);
+            rtcTokenExpireIn = data.privilegeExpiredTs;
+            localStorage.setItem("rtcToken", data.rtcToken);
+            localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs);
+            join(ctx.relatedUserId, token, ctx.relatedUserId);
           })
           .catch((error) => console.log(error));
       }
+    } else {
+      join(
+        ctx.relatedUserId,
+        localStorage.getItem("rtcToken"),
+        ctx.relatedUserId
+      );
     }
   };
 
   const endStream = () => {
+    debugger;
     leave();
-    updateCtx.updateViewer({
-      rtcToken: "",
-    });
   };
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
@@ -128,7 +136,7 @@ function Live(props) {
             <VideoPlayer
               videoTrack={localVideoTrack}
               audioTrack={localAudioTrack}
-              uid={ctx.relatedUserId || ctx.unAuthedUserId}
+              uid={ctx.relatedUserId}
               playAudio={false}
             />
             <div className="tw-text-center tw-mt-1 tw-flex tw-ml-[40%]">

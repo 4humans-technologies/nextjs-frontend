@@ -1,24 +1,28 @@
 import React, { useContext, createContext, useState } from "react";
 import Modal from "../components/Call/Modal";
 
-import GlobalModalContent, { SetGlobalModalContent } from "../app/GlobalModalContent"
+import GlobalModalContent, {
+  SetGlobalModalContent,
+} from "../app/GlobalModalContent";
 
 const ModalContext = createContext({
   isOpen: false,
   modalContent: <></>,
-  showModal: () => { },
-  showModalWithContent: () => { },
-  clearModalWithContent: () => { },
-  hideModal: () => { },
+  showModal: () => {},
+  showModalWithContent: () => {},
+  clearModalWithContent: () => {},
+  hideModal: () => {},
 });
 
 export function ModalContextProvider(props) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [modalContent, setModalContent] = useState(<h1>Modal Content Not Set</h1>)
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(
+    <h1>Modal Content Not Set</h1>
+  );
 
   const showModal = () => {
-    setIsOpen(true)
-  }
+    setIsOpen(true);
+  };
 
   const showModalWithContent = (content) => {
     /**
@@ -54,7 +58,11 @@ export function ModalContextProvider(props) {
         hideModal,
       }}
     >
-      {isOpen && <Modal isOpen={isOpen} onRequestClose={() => setIsOpen(false)}>{modalContent}</Modal>}
+      {isOpen && (
+        <Modal isOpen={isOpen} onRequestClose={() => setIsOpen(false)}>
+          {modalContent}
+        </Modal>
+      )}
       {props.children}
     </ModalContext.Provider>
   );
