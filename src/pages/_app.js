@@ -1,13 +1,13 @@
 // import { store } from "../app/store";
 // import { Provider } from 'react-redux'
-import { ContextProvider } from "../app/Context";
-import { SidebarContextProvider } from "../app/Sidebarcontext";
-import { AuthContextProvider } from "../app/AuthContext";
-import { ModalContextProvider } from "../app/ModalContext";
-import { ErrorContextProvider } from "../app/Error/ErrorContext";
-import { SpinnerContextProvider } from "../app/Loading/SpinnerContext";
-import { SocketContextProvider } from "../app/socket/SocketContext";
-import TestComponent from "./text";
+import { ContextProvider } from "../app/Context"
+import { SidebarContextProvider } from "../app/Sidebarcontext"
+import { AuthContextProvider } from "../app/AuthContext"
+import { ModalContextProvider } from "../app/ModalContext"
+import { ErrorContextProvider } from "../app/Error/ErrorContext"
+import { SpinnerContextProvider } from "../app/Loading/SpinnerContext"
+import { SocketContextProvider } from "../app/socket/SocketContext"
+import TestComponent from "./text"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../styles/globals.css"
 // import dynamic from "next/dynamic";
@@ -24,7 +24,6 @@ import "../styles/globals.css"
  */
 
 const MyApp = ({ Component, pageProps }) => {
-
   return (
     // <Provider store={store}>
     <AuthContextProvider>

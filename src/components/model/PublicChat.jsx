@@ -180,19 +180,17 @@ const initialMessages = [
 ]
 
 let chatIndex = 0
-let socketListenersSetup = false
+let socketSetup = false
 function PublicChatBox() {
-  const [chatMessages, setChatMessage] = useState(initialMessages)
-
+  const [chatMessages, setChatMessages] = useState(initialMessages)
   const ctx = useSocketContext()
   useEffect(() => {
-    if (localStorage.getItem("socketId") && !socketListenersSetup) {
-      const socketId = io.getSocketId()
+    if (ctx.isConnected && !socketSetup) {
+      socketSetup = true
       const socket = io.getSocket()
-      socketListenersSetup = true
       const doSetup = () => {
         socket.on("viewer-message-public-received", (data) => {
-          setChatMessage((prevChats) => {
+          setChatMessages((prevChats) => {
             const newChats = [
               ...prevChats,
               {
@@ -203,11 +201,12 @@ function PublicChatBox() {
                 walletCoins: data.walletCoins,
               },
             ]
+            chatIndex++
             return newChats
           })
         })
         socket.on("model-message-public-received", (data) => {
-          setChatMessage((prevChats) => {
+          setChatMessages((prevChats) => {
             const newChats = [
               ...prevChats,
               {
@@ -216,6 +215,8 @@ function PublicChatBox() {
                 message: data.message,
               },
             ]
+            chatIndex++
+            return newChats
           })
         })
         socket.on("viewer_super_message_pubic-received", (data) => {
@@ -225,7 +226,7 @@ function PublicChatBox() {
               type: data.chatType,
               index: chatIndex,
               username: data.username,
-              giftImageUrl: data.giftImageUrl,
+              giftImageUrl: data.gift.giftImageUrl,
               message: data.message,
               walletCoins: data.walletCoins,
             }
@@ -239,19 +240,20 @@ function PublicChatBox() {
               walletCoins: data.walletCoins,
             }
           }
-          setChatMessage((prevChats) => {
+          setChatMessages((prevChats) => {
             return [...prevChats, chat]
           })
         })
       }
       doSetup()
       return () => {
-        io.getSocket().off("viewer-message-public-received")
-        io.getSocket().off("model-message-public-received")
-        io.getSocket().off("viewer_super_message_pubic-received")
+        socket.off("viewer-message-public-received")
+        socket.off("model-message-public-received")
+        socket.off("viewer_super_message_pubic-received")
+        socket.emit("take-me-out-of-these-rooms", authCtx.streamRoom)
       }
     }
-  }, [ctx.isConnected, io.getSocketId(), io.getSocket(), socketListenersSetup])
+  }, [socketSetup, ctx.isConnected])
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14">

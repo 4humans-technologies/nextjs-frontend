@@ -1,27 +1,27 @@
-import React, { useState, useRef } from "react";
-import { Button } from "react-bootstrap";
-import { validPassword, validEmail, validatePhone } from "../UI/Regex";
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
+import React, { useState, useRef } from "react"
+import { Button } from "react-bootstrap"
+import { validPassword, validEmail, validatePhone } from "../UI/Regex"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
-import { Money, Person, VerifiedUser } from "@material-ui/icons";
-import loginBg from "../../../public/dreamgirl-bg-3.jpg";
-import { useRouter } from "next/router";
-import io from "../../socket/socket";
-import { useFetchInterceptor } from "../../hooks/useFetchInterceptor";
+import { Money, Person, VerifiedUser } from "@material-ui/icons"
+import loginBg from "../../../public/dreamgirl-bg-3.jpg"
+import { useRouter } from "next/router"
+import io from "../../socket/socket"
+import { useFetchInterceptor } from "../../hooks/useFetchInterceptor"
 
 //Validation is still left in this
 function Login() {
-  const router = useRouter();
-  const [formsubmit, SetFormsubmit] = useState(false);
-  const [username, setuserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState(null);
-  const ctx = useAuthContext();
-  const updateCtx = useAuthUpdateContext();
+  const router = useRouter()
+  const [formsubmit, SetFormsubmit] = useState(false)
+  const [username, setuserName] = useState("")
+  const [password, setPassword] = useState("")
+  const [loginError, setLoginError] = useState(null)
+  const ctx = useAuthContext()
+  const updateCtx = useAuthUpdateContext()
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(password, username);
+    e.preventDefault()
+    console.log(password, username)
     fetch("/api/website/login", {
       method: "POST",
       cors: "include",
@@ -35,16 +35,17 @@ function Login() {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        debugger;
+        debugger
         if (data.actionStatus === "success") {
-          localStorage.setItem("jwtToken", data.token);
+          localStorage.setItem("jwtToken", data.token)
           localStorage.setItem(
             "jwtExpiresIn",
             Date.now() + data.expiresIn * 60 * 60 * 1000
-          );
-          localStorage.setItem("rootUserId", data.rootUserId);
-          localStorage.setItem("relatedUserId", data.relatedUserId);
-          localStorage.setItem("userType", data.userType);
+          )
+          localStorage.setItem("rootUserId", data.rootUserId)
+          localStorage.setItem("relatedUserId", data.relatedUserId)
+          localStorage.setItem("userType", data.userType)
+          localStorage.setItem("user", JSON.stringify(data.user))
           updateCtx.updateViewer({
             rootUserId: data.userId,
             relatedUserId: data.relatedUserId,
@@ -52,20 +53,22 @@ function Login() {
             isLoggedIn: true,
             user: {
               userType: data.userType,
+              user: data.user,
             },
             jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
-          });
-          debugger;
-          io.getSocket().close();
-          io.getSocket().open();
-          router.push(ctx.loginSuccessUrl);
+            streamRoom: data.streamRoom,
+          })
+          debugger
+          io.getSocket().close()
+          io.getSocket().open()
+          router.push(ctx.loginSuccessUrl)
         }
       })
       .catch((err) => {
-        debugger;
-        setLoginError(err.message);
-      });
-  };
+        debugger
+        setLoginError(err.message)
+      })
+  }
 
   return (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen tw-bg-third-color tw-w-[100vw] sm:tw-w-auto ">
@@ -153,7 +156,7 @@ function Login() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

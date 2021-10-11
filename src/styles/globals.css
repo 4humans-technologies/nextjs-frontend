@@ -11,6 +11,21 @@
   flex-basis: 50%;
 }
 
+.gift-container::-webkit-scrollbar {
+  height: 8px;
+  /* width of the entire scrollbar */
+}
+
+.gift-container::-webkit-scrollbar-track {
+  background: transparent;
+  /* color of the tracking area */
+}
+
+.gift-container::-webkit-scrollbar-thumb {
+  background-color: rgb(88, 56, 0);
+  /* color of the scroll thumb */
+}
+
 .coin-superchat-bg {
   background: rgb(255, 226, 0);
   background: linear-gradient(

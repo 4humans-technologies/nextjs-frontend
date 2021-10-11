@@ -1,11 +1,11 @@
 import React, { useEffect } from "react"
 import useSetupSocket from "../socket/useSetupSocket"
+import useFetchInterceptor from "../hooks/useFetchInterceptor"
 
+let fetchIntercepted = false
 function TestComponent() {
-  useEffect(() => {
-    console.log("Running effect of test component 😎😎😎")
-  }, [])
-  useSetupSocket("http://192.168.1.104:8080")
+  useFetchInterceptor(fetchIntercepted)
+  fetchIntercepted = true
   return <div className="tw-hidden">I'm a test component</div>
 }
 
