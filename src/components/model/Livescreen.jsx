@@ -1,4 +1,10 @@
-import React, { createRef, useReducer, useState } from "react"
+import React, {
+  createRef,
+  useReducer,
+  useState,
+  useCallback,
+  useEffect,
+} from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
 import PersonIcon from "@material-ui/icons/Person"
@@ -111,7 +117,46 @@ const giftData = [
   },
 ]
 
+const unAuthedUserEmojis = [
+  "🎈",
+  "✨",
+  "🎉",
+  "🎃",
+  "🎁",
+  "👓",
+  "👔",
+  "🎨",
+  "⚽",
+  "💎",
+  "🥇",
+  "♥",
+  "🎵",
+  "🧲",
+  "💰",
+  "🍺",
+  "🥂",
+  "🍎",
+  "🌼",
+  "🚩",
+  "🌞",
+  "🌈",
+  "⚡",
+  "🐬",
+  "🦄",
+]
+
 function Livescreen() {
+  // if (ctx.userType !== "UnAuthedViewer" || ctx.userType !== "Viewer") {
+  //   alert("Only Viewers Can Join Stream, Not Models Or Admin/Staff")
+  //   return (
+  //     <div className="tw-min-h-screen tw-place-items-center">
+  //       <h1 className="tw-font-mono tw-font-bold tw-text-xl tw-text-red-600">
+  //         Only Viewers Can Join Stream, Not Models Or Admin/Staff
+  //       </h1>
+  //     </div>
+  //   )
+  // }
+
   const ctx = useModalContext()
   const authCtx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
@@ -120,6 +165,22 @@ function Livescreen() {
   const [gifts, setGifts] = useState(giftData)
 
   const chatInputRef = createRef()
+  const chatBoxContainer = createRef()
+
+  const scrollHandler = useCallback(
+    (e) => {
+      chatBoxContainer.current.scrollBy({
+        top: 400,
+        behavior: "smooth",
+      })
+    },
+    [chatBoxContainer.current]
+  )
+
+  useEffect(() => {
+    document.addEventListener("scroll-chat", scrollHandler)
+    return () => document.removeEventListener("scroll-chat", scrollHandler)
+  }, [chatBoxContainer.current])
 
   const sendChatMessage = () => {
     debugger
@@ -127,13 +188,27 @@ function Livescreen() {
       alert("ref not created !!")
       return
     }
+    let payLoad
     const message = chatInputRef.current.value
-    io.getSocket().emit("viewer-message-public-emitted", {
-      room: authCtx.streamRoom,
-      message: message,
-      username: authCtx.user.user.username,
-      walletCoins: authCtx.user.user.wallet.currentAmount,
-    })
+    if (authCtx.isLoggedIn) {
+      payLoad = {
+        room: authCtx.streamRoom,
+        message: message,
+        username: authCtx.user.user.username,
+        walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+      }
+    } else {
+      /* un-authed user */
+      payLoad = {
+        room: authCtx.streamRoom,
+        message: message,
+        username: `Guest User ${
+          unAuthedUserEmojis[(Math.random() * 100) % 25]
+        }`,
+        walletCoins: 0,
+      }
+    }
+    io.getSocket().emit("viewer-message-public-emitted", payLoad)
     chatInputRef.current.value = ""
   }
 
@@ -295,7 +370,10 @@ function Livescreen() {
               </span>
             </button>
           </div>
-          <div className="tw-absolute tw-h-[90%] tw-bottom-0 tw-w-full chat-box-container tw-overflow-y-scroll">
+          <div
+            ref={chatBoxContainer}
+            className="tw-absolute tw-h-[90%] tw-bottom-0 tw-w-full chat-box-container tw-overflow-y-scroll"
+          >
             <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18">
               <Publicchat />
             </div>

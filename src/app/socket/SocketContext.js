@@ -54,19 +54,19 @@ export const SocketContextProvider = ({ children }) => {
     /* Global Listeners */
     io.globalListeners(socket)
 
-    // 👇👇 the localstorage is not read from hence no authContext is available hence have to move listners somewhere else
-    // if (JSON.parse(localStorage.getItem("authContext")).userType === "Model") {
-    //   // io.modelListners
-    // } else if (
-    //   JSON.parse(localStorage.getItem("authContext")).userType === "Viewer"
-    // ) {
-    //   // io.viewerListners()
-    // } else if (
-    //   JSON.parse(localStorage.getItem("authContext")).userType ===
-    //   ("UnAuthedViewer" || "unAuthedViewer")
-    // ) {
-    //   // io.unAuthedViewerListners()
-    // }
+    /* 👇👇 the localstorage is not read from hence no authContext is available hence have to move listners somewhere else
+    if (JSON.parse(localStorage.getItem("authContext")).userType === "Model") {
+      // io.modelListners
+    } else if (
+      JSON.parse(localStorage.getItem("authContext")).userType === "Viewer"
+    ) {
+      // io.viewerListners()
+    } else if (
+      JSON.parse(localStorage.getItem("authContext")).userType ===
+      ("UnAuthedViewer" || "unAuthedViewer")
+    ) {
+      // io.unAuthedViewerListners()
+    } */
   }
 
   if (!socketSetup && typeof window !== "undefined") {

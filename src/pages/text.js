@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import useSetupSocket from "../socket/useSetupSocket"
 import useFetchInterceptor from "../hooks/useFetchInterceptor"
 

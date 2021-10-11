@@ -131,7 +131,7 @@ function Live() {
         <div
           className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28 "}
         >
-          <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2">
+          <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[30rem]  sm:tw-mt-4 tw-mt-2">
             <VideoPlayer
               videoTrack={localVideoTrack}
               audioTrack={localAudioTrack}

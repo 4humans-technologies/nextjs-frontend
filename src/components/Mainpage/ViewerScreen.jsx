@@ -148,23 +148,11 @@ function Videocall(props) {
 
   return (
     <div className="sm:tw-h-[82vh] ">
-      {token && (
-        <div className="tw-flex tw-py-2 tw-justify-between tw-items-center">
-          <Button variant="primary" onClick={join}>
-            Join
-          </Button>
-          <Button variant="danger" onClick={leave}>
-            Leave
-          </Button>
-        </div>
+      {!joinState ? (
+        <div className="tw-w-full tw-bg-red-600 tw-h-[2px]"></div>
+      ) : (
+        <div className="tw-w-full tw-bg-green-color tw-h-[2px]"></div>
       )}
-      {token ? (
-        joinState ? (
-          <p className="tw-text-white">Connected</p>
-        ) : (
-          <p className="tw-text-white">Disconnected</p>
-        )
-      ) : null}
       {remoteUsers.length > 0 &&
         remoteUsers.map((user) => {
           return (
@@ -172,7 +160,6 @@ function Videocall(props) {
               className="w-[50vh]"
               key={user.uid}
               videoTrack={user.videoTrack}
-              audioTrack={user.audioTrack.setVolume(200)}
               playAudio={true}
             />
           )
