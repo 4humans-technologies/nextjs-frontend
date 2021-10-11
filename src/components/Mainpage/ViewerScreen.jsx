@@ -129,7 +129,7 @@ function Videocall(props) {
   ]);
 
   return (
-    <div className="sm:tw-h-[70vh] ">
+    <div className="sm:tw-h-[82vh] ">
       {token && (
         <div className="tw-flex tw-py-2 tw-justify-between tw-items-center">
           <Button variant="primary" onClick={join}>
@@ -157,10 +157,10 @@ function Videocall(props) {
               audioTrack={user.audioTrack}
               playAudio={true}
             />
-          );
+          )
         })}
     </div>
-  );
+  )
 }
 
 export default Videocall;

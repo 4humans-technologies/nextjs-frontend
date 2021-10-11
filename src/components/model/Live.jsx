@@ -1,71 +1,65 @@
 /* eslint-disable no-debugger */
-import Header from "../Mainpage/Header";
-import SecondHeader from "../Mainpage/SecondHeader";
-import photo from "../../../public/brandikaran.jpg";
-import Image from "next/image";
-import Sidebar from "../Mainpage/Sidebar";
-import React, { useReducer, useEffect, useState } from "react";
-import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import Publicchat from "./PublicChat";
-import PrivateChat from "./PrivateChat";
-import LivePeople from "./LivePeople";
-import AgoraRTC from "agora-rtc-sdk-ng";
-import useAgora from "../../hooks/useAgora"; //using agora from Hooks
-import VideoPlayer from "../UI/VideoPlayer";
-import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions";
+import Header from "../Mainpage/Header"
+import SecondHeader from "../Mainpage/SecondHeader"
+import Sidebar from "../Mainpage/Sidebar"
+import React, { useReducer, useEffect, useState } from "react"
+import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
+import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
+import { Button } from "react-bootstrap"
 
-// import { useTokenContext } from "../../app/Tokencontext";
-// import { useUpdateContext } from "../../app/Tokencontext";
-
-import { useAuthContext } from "../../app/AuthContext";
-import { useAuthUpdateContext } from "../../app/AuthContext";
-import { useRouter } from "next/router";
-
-const initState = { val: <Publicchat /> };
+import Publicchat from "./PublicChat"
+import PrivateChat from "./PrivateChat"
+import LivePeople from "./LivePeople"
+import AgoraRTC from "agora-rtc-sdk-ng"
+import useAgora from "../../hooks/useAgora" //using agora from Hooks
+import VideoPlayer from "../UI/VideoPlayer"
+import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
+import { useAuthContext } from "../../app/AuthContext"
+import { useAuthUpdateContext } from "../../app/AuthContext"
+import { useRouter } from "next/router"
+const initState = { val: <Publicchat /> }
 
 const reducer = (state = initState, action) => {
   switch (action.type) {
     case "PUBLIC":
-      return { val: <Publicchat /> };
+      return { val: <Publicchat /> }
     case "PRIVATE":
-      return { val: <PrivateChat /> };
+      return { val: <PrivateChat /> }
     case "PERSON":
-      return { val: <LivePeople /> };
+      return { val: <LivePeople /> }
     default:
-      return state;
+      return state
   }
-};
+}
 
 // /api/website/token-builder/create-stream-and-gen-token
 
 // Replace with your App ID.
-let token;
-let client;
-let rtcTokenExpireIn;
+let token
+let client
+let rtcTokenExpireIn
 const callType =
-  "videoCall"; /* to tell useAgora if want to create videoTrack/audioTrack */
+  "videoCall" /* to tell useAgora if want to create videoTrack/audioTrack */
 
 /**
  * CREATING AGORA CLIENT
  */
 const createAgoraClient = (extraOptions) => {
   if (!extraOptions) {
-    extraOptions = {};
+    extraOptions = {}
   }
-  const clientOptions = { codec: "h264", mode: "live", ...extraOptions };
-  client = AgoraRTC.createClient(clientOptions);
-  client.setClientRole("host");
-};
+  const clientOptions = { codec: "h264", mode: "live", ...extraOptions }
+  client = AgoraRTC.createClient(clientOptions)
+  client.setClientRole("host")
+}
 /* Init Client */
-createAgoraClient();
+createAgoraClient()
 
 function Live() {
-  const ctx = useAuthContext();
-  const updateCtx = useAuthUpdateContext();
-  const [state, dispatch] = useReducer(reducer, initState);
-  const [reRender, causeReRender] = useState(false);
-  // const [rejoin, setRejoin] = useState(true)
+  const ctx = useAuthContext()
+  const updateCtx = useAuthUpdateContext()
+  const [state, dispatch] = useReducer(reducer, initState)
+  const [fullScreen, setFullScreen] = useState(false)
 
   const {
     localAudioTrack,
@@ -75,15 +69,17 @@ function Live() {
     join,
     remoteUsers,
     startLocalCameraPreview,
-  } = useAgora(client, "host", callType);
+    leaveAndCloseTracks,
+  } = useAgora(client, "host", callType)
 
   useEffect(() => {
-    startLocalCameraPreview();
-  }, []);
+    startLocalCameraPreview()
+    return () => leaveAndCloseTracks()
+  }, [])
 
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = () => {
-    debugger;
+    debugger
     if (
       !localStorage.getItem("rtcToken") &&
       localStorage.getItem("rtcTokenExpireIn") <= Date.now() &&
@@ -98,63 +94,79 @@ function Live() {
           },
         })
           .then((resp) => {
-            debugger;
-            return resp.json();
+            debugger
+            return resp.json()
           })
           .then((data) => {
-            debugger;
-            token = data.rtcToken;
-            rtcTokenExpireIn = data.privilegeExpiredTs;
-            localStorage.setItem("rtcToken", data.rtcToken);
-            localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs);
-            join(ctx.relatedUserId, token, ctx.relatedUserId);
+            debugger
+            token = data.rtcToken
+            rtcTokenExpireIn = data.privilegeExpiredTs
+            localStorage.setItem("rtcToken", data.rtcToken)
+            localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+            join(ctx.relatedUserId, token, ctx.relatedUserId)
           })
-          .catch((error) => console.log(error));
+          .catch((error) => console.log(error))
       }
     } else {
       join(
         ctx.relatedUserId,
         localStorage.getItem("rtcToken"),
         ctx.relatedUserId
-      );
+      )
     }
-  };
+  }
 
   const endStream = () => {
-    debugger;
-    leave();
-  };
+    debugger
+    leave()
+  }
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div>
-      <Header />
-      <SecondHeader />
+      {fullScreen ? (
+        ""
+      ) : (
+        <div>
+          <Header />
+          <SecondHeader />
+        </div>
+      )}
       <div className="tw-flex">
         <Sidebar />
-        <div className="sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28">
+        <div
+          className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28 "}
+        >
           <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2">
             <VideoPlayer
               videoTrack={localVideoTrack}
               audioTrack={localAudioTrack}
               uid={ctx.relatedUserId}
               playAudio={false}
+              fullScreen={false}
             />
+
+            {/* <FullscreenIcon
+              className="tw-bg-green-400 tw-z-10 tw-absolute tw-bottom-16"
+              onClick={() => setFullScreen((prev) => !prev)}
+            /> */}
             <div className="tw-text-center tw-mt-1 tw-flex tw-ml-[40%]">
               {joinState ? (
-                <button
+                <Button
+                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx-4"
+                  variant="danger"
                   onClick={endStream}
-                  className="tw-rounded-full sm:tw-px-2 tw-px-0 sm:tw-py-1 tw-py-0 tw-bg-yellow-300 tw-mx-2 tw-capitalize"
                 >
                   end streaming
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button
+                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx-4"
+                  variant="success"
                   onClick={startStreamingAndGoLive}
                   // disabled={joinState}
-                  className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-yellow-300 mx-2"
                 >
                   Go live
-                </button>
+                </Button>
               )}
 
               <button
@@ -215,7 +227,7 @@ function Live() {
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">
       <h1 className="tw-font-semibold tw-text-xl">You are not a Model</h1>
     </div>
-  );
+  )
 }
 
-export default Live;
+export default Live

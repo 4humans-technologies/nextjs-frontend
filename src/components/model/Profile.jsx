@@ -13,12 +13,13 @@ import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import useFetch from "../../hooks/useFetch";
+import Callhistory from "./CallHistory"
 
 function Profile() {
-  const [checked, setChecked] = useState(false);
-  const [infoedited, setInfoedited] = useState(false);
-  const [dynamicData, setDynamicData] = useState([2]);
-  const [modelData, setModelData] = useState([]);
+  const [checked, setChecked] = useState(false)
+  const [infoedited, setInfoedited] = useState(false)
+  const [dynamicData, setDynamicData] = useState([2])
+  const [modelData, setModelData] = useState([])
   const [modelState, setModelState] = useState({
     images: [],
     videos: [],
@@ -26,29 +27,29 @@ function Profile() {
     audioCall: 100,
     profile: "",
     header_image: "",
-  });
+  })
 
   useEffect(() => {
     fetch("/model.json")
       .then((res) => res.json())
-      .then((data) => setModelData(data.models));
-  }, []);
+      .then((data) => setModelData(data.models))
+  }, [])
 
-  console.log(modelData);
+  console.log(modelData)
 
   const toggleChecked = () => {
-    setChecked((prev) => !prev);
-  };
+    setChecked((prev) => !prev)
+  }
 
   const saveData = () => {
-    const allInputs = document.querySelectorAll("#action-form input");
-    const actionArray = [];
+    const allInputs = document.querySelectorAll("#action-form input")
+    const actionArray = []
     for (let index = 0; index < allInputs.length; index += 2) {
-      const action = allInputs[index].value;
-      const actionValue = allInputs[index + 1].value;
-      actionArray.push({ [action]: actionValue });
+      const action = allInputs[index].value
+      const actionValue = allInputs[index + 1].value
+      actionArray.push({ [action]: actionValue })
     }
-  };
+  }
 
   // Data fetching which make things possible
   return (
@@ -114,10 +115,10 @@ function Profile() {
                   }
                   contentEditable="true"
                 >
-                  {modelData[0].Name}
+                  mName
                 </p>
-                <p>{modelData[0].Language}</p>
-                <p>{modelData[0].Age}</p>
+                <p>Language</p>
+                <p>Age</p>
                 <p>Body type</p>
                 <p>Specifiv</p>
                 <p>Hair</p>
@@ -336,6 +337,7 @@ function Profile() {
                   6
                 </td>
               </tr>
+              😂😂😊
               <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
                 <td className="tw-border-solid tw-bg-dark-black tw-border-4">
                   1
@@ -498,7 +500,7 @@ function Profile() {
                       placeholder="name"
                     />
                   </div>
-                );
+                )
               })}
             </form>
             <Button onClick={() => setDynamicData((prev) => [...prev, 1])}>
@@ -508,10 +510,13 @@ function Profile() {
               Save
             </Button>
           </div>
+          <div>
+            <Callhistory />
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default Profile;

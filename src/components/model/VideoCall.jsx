@@ -34,7 +34,7 @@ function VideoCall(props) {
     join,
     remoteUsers,
     startLocalCameraPreview,
-  } = useAgora(client, appId, token, channel, role, null, callType)
+  } = useAgora(client, "host", "videoCall")
 
   useEffect(() => {
     startLocalCameraPreview()

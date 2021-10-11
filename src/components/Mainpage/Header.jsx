@@ -8,14 +8,12 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import logo from "../../../public/logo.png";
 import ChatIcon from "@material-ui/icons/Chat";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import NotificationsIcon from "@material-ui/icons/Notifications"
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn"
 
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
-import Login from "./Login"
-import Signup from "./Signup"
+
 import useModalContext from "../../app/ModalContext"
 import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
@@ -32,15 +30,15 @@ function Header(props) {
   const sidebarStatus = useSidebarStatus()
   const sidebarUpdate = useSidebarUpdate()
   const authContext = useAuthContext()
-  const [isLogin, setLogin] = useState(false)
+  const [hide, setHide] = useState()
 
   // Checking login and logout -----------------
 
   useEffect(() => {
-    if (authContext.isLoggedIn == true) {
-      setLogin(false)
+    if (window.location.pathname.includes("goLive") == true) {
+      setHide(true)
     }
-  }, [isLogin])
+  }, [])
 
   useEffect(() => {
     fetch("/data.json")
@@ -121,11 +119,12 @@ function Header(props) {
       {/* ------------- experiment----------- */}
       {/* usertype viwer and unauth  */}
 
-      {isLogin
+      {authContext.isLoggedIn
         ? [
             screenWidth < 600
               ? [
-                  authContext.user.userType == "viewer" ? (
+                  // login and at small screen and viwer
+                  authContext.user.userType == "Viewer" ? (
                     <div className="">
                       <div className="tw-flex tw-self-center">
                         <div>
@@ -137,6 +136,7 @@ function Header(props) {
                       </div>
                     </div>
                   ) : (
+                    // login at large screen and model
                     <div className="">
                       <div className="tw-flex tw-self-center">
                         <div>
@@ -152,7 +152,8 @@ function Header(props) {
                   ),
                 ]
               : [
-                  authContext.user.userType == "viewer" ? (
+                  // login at large screen viwer
+                  authContext.user.userType == "Viewer" ? (
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
                       <div>
                         <ChatIcon />
@@ -168,15 +169,22 @@ function Header(props) {
                       </div>
                     </div>
                   ) : (
+                    // login at large screen viewer
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
                       <div>
                         <MonetizationOnIcon />
                       </div>
-                      <div className="tw-mx-8">
-                        <Link href="/rohit/goLive">
-                          <a>Start Broadcasting</a>
-                        </Link>
-                      </div>
+                      <button className="tw-mx-8 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full">
+                        {hide ? (
+                          <Link href="/">
+                            <a>stop Broadcasting</a>
+                          </Link>
+                        ) : (
+                          <Link href="/rohit/goLive">
+                            <a>Start Broadcasting</a>
+                          </Link>
+                        )}
+                      </button>
                       <div className="tw-mr-4">
                         <img
                           className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
@@ -187,7 +195,8 @@ function Header(props) {
                   ),
                 ],
           ]
-        : [
+        : // if not sign in is below
+          [
             screenWidth < 600 ? (
               [
                 menu === true ? (
@@ -206,7 +215,7 @@ function Header(props) {
                     </div>
                     <button
                       className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-text-black sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-my-4"
-                      onClick={() => router.push("user/registration")}
+                      onClick={() => router.push("/auth/viewerRegistration")}
                     >
                       Create account
                     </button>
@@ -225,7 +234,7 @@ function Header(props) {
               <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
                 <button
                   className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2"
-                  onClick={() => router.push("user/registration")}
+                  onClick={() => router.push("/auth/viewerRegistration")}
                 >
                   Create account
                 </button>
@@ -241,7 +250,9 @@ function Header(props) {
           ]}
       {/* --------------------------------------------------------------*/}
       <div
-        className={`sm:tw-hidden tw-mr-4 ${isLogin ? "tw-hidden" : null}`}
+        className={`sm:tw-hidden tw-mr-4 ${
+          authContext.isLoggedIn ? "tw-hidden" : null
+        }`}
         onClick={() => setMenu(!menu)}
       >
         <MoreVertIcon />
