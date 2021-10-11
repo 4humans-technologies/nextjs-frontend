@@ -7,12 +7,12 @@ import FavoriteIcon from "@material-ui/icons/Favorite"
 import useAgora from "../../hooks/useAgora"
 import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import { useSocketContext } from "../../app/socket/SocketContext"
 
 /**
  * If this screen is being mounted then it is understood by default that,
  * role will of be viewer.
  */
-
 const clientOptions = { codec: "h264", mode: "live" }
 let client = AgoraRTC.createClient(clientOptions)
 client.setClientRole("audience")
@@ -21,8 +21,10 @@ client.setClientRole("audience")
  * APPID can in feature be dynamic also
  */
 let token
+let tokenRequestDoneOnce = false
 function Videocall(props) {
   const ctx = useAuthContext()
+  const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
   const { joinState, leave, join, remoteUsers } = useAgora(
     client,
@@ -33,6 +35,19 @@ function Videocall(props) {
   useEffect(() => {
     debugger
     if (ctx.loadedFromLocalStorage) {
+      return () => {
+        tokenRequestDoneOnce = false
+        localStorage.removeItem("rtcToken")
+        localStorage.removeItem("rtcTokenExpireIn")
+        leave()
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    debugger
+    if (socketCtx.isConnected && !tokenRequestDoneOnce) {
+      tokenRequestDoneOnce = true
       if (ctx.isLoggedIn === true) {
         /**
          * if logged in then fetch RTC token as loggedIn user
@@ -61,6 +76,7 @@ function Videocall(props) {
               join(channel, data.rtcToken, ctx.relatedUserId)
               updateCtx.updateViewer({
                 rtcToken: data.rtcToken,
+                streamRoom: data.streamRoom,
               })
             })
         } else {
@@ -102,10 +118,12 @@ function Videocall(props) {
                 updateCtx.updateViewer({
                   unAuthedUserId: data.unAuthedUserId,
                   rtcToken: data.rtcToken,
+                  streamRoom: data.streamRoom,
                 })
               } else {
                 updateCtx.updateViewer({
                   rtcToken: data.rtcToken,
+                  streamRoom: data.streamRoom,
                 })
               }
             })
@@ -122,10 +140,10 @@ function Videocall(props) {
     }
   }, [
     ctx.isLoggedIn,
-    ctx.socketSetup,
     ctx.relatedUserId,
     window.location.pathname,
-    ctx.loadedFromLocalStorage,
+    socketCtx.isConnected,
+    tokenRequestDoneOnce,
   ])
 
   return (

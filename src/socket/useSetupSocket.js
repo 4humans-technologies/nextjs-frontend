@@ -1,41 +1,43 @@
-import { useEffect } from "react";
-import { useAuthUpdateContext, useAuthContext } from "../app/AuthContext";
-import io from "../socket/socket";
+import { useEffect } from "react"
+import io from "../socket/socket"
+import { useSocketContext } from "../app/socket/SocketContext"
 
 function useSetupSocket(url) {
-  const updateCtx = useAuthUpdateContext();
-  const ctx = useAuthContext();
+  const ctx = useSocketContext()
   useEffect(() => {
-    debugger;
+    debugger
     /* Init socket */
-    console.log("Initializing socket, status");
-    const socket = io.connect(url);
+    console.log("Initializing socket, status")
+    const socket = io.connect(url)
 
     socket.on("connect_failed", () => {
-      console.log("socket connected!");
-    });
+      console.log("socket connected!")
+    })
 
     socket.on("connect_error ", (err) => {
-      alert("Error! from server " + err.message);
-    });
+      alert("Error! from server " + err.message)
+    })
 
     socket.on("connect", () => {
-      console.log("socket connected!");
-      localStorage.setItem("socketId", socket.id);
-      if (!ctx.socketSetup) {
-        updateCtx.updateViewer({
-          socketSetup: true,
-        });
-      }
-    });
+      /* on connection 😀😀😀 */
+      console.log("socket connected!")
+      localStorage.setItem("socketId", socket.id)
+      ctx.setIsConnected(true)
+      // sessionStorage.setItem("socket:now-connected", "true")
+      // const socketConnectEvt = new CustomEvent("socket:now-connected", {
+      //   socketId: socket.id,
+      // })
+      // document.dispatchEvent(socketConnectEvt)
+    })
 
     socket.on("disconnect", (reason) => {
-      console.log("socket disconnected! due to >>>", reason);
-      localStorage.removeItem("socketId");
-    });
+      console.log("socket disconnected! due to >>>", reason)
+      localStorage.removeItem("socketId")
+      ctx.setIsConnected(false)
+    })
 
     /* Global Listeners */
-    io.globalListeners(socket);
+    io.globalListeners(socket)
 
     if (JSON.parse(localStorage.getItem("authContext")).userType === "Model") {
       // io.modelListners
@@ -49,7 +51,7 @@ function useSetupSocket(url) {
     ) {
       // io.unAuthedViewerListners()
     }
-  }, [url]);
+  }, [])
 }
 
-export default useSetupSocket;
+export default useSetupSocket

@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
-import MenuIcon from "@material-ui/icons/Menu";
-import SearchIcon from "@material-ui/icons/Search";
-import BarChartIcon from "@material-ui/icons/BarChart";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import ClearIcon from "@material-ui/icons/Clear";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import logo from "../../../public/logo.png";
-import ChatIcon from "@material-ui/icons/Chat";
+import React, { useState, useEffect, useContext } from "react"
+import MenuIcon from "@material-ui/icons/Menu"
+import SearchIcon from "@material-ui/icons/Search"
+import BarChartIcon from "@material-ui/icons/BarChart"
+import MoreVertIcon from "@material-ui/icons/MoreVert"
+import ClearIcon from "@material-ui/icons/Clear"
+import Image from "next/image"
+import { useRouter } from "next/router"
+import logo from "../../../public/logo.png"
+import ChatIcon from "@material-ui/icons/Chat"
 import NotificationsIcon from "@material-ui/icons/Notifications"
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn"
-
 
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
@@ -258,7 +257,7 @@ function Header(props) {
 
                 <button
                   className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black"
-                  onClick={() => router.push("auth/login")}
+                  onClick={() => router.push("/auth/login")}
                 >
                   Login
                 </button>
@@ -278,4 +277,4 @@ function Header(props) {
   )
 }
 
-export default Header;
+export default Header

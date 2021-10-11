@@ -11,6 +11,40 @@
   flex-basis: 50%;
 }
 
+.gift-container::-webkit-scrollbar {
+  height: 8px;
+  /* width of the entire scrollbar */
+}
+
+.gift-container::-webkit-scrollbar-track {
+  background: transparent;
+  /* color of the tracking area */
+}
+
+.gift-container::-webkit-scrollbar-thumb {
+  background-color: rgb(88, 56, 0);
+  /* color of the scroll thumb */
+}
+
+.coin-superchat-bg {
+  background: rgb(255, 226, 0);
+  background: linear-gradient(
+    45deg,
+    rgba(255, 226, 0, 0.06486344537815125) 64%,
+    rgba(252, 182, 0, 0.3925945378151261) 83%,
+    rgba(250, 62, 0, 0.4374124649859944) 96%
+  );
+}
+
+.gift-superchat-bg {
+  background: rgb(255, 51, 0);
+  background: linear-gradient(
+    45deg,
+    rgba(255, 51, 0, 0.1) 73%,
+    rgba(195, 48, 0, 0.4374124649859944) 92%
+  );
+}
+
 .tw-spinner {
   border-top: 16px solid blue;
   border-right: 16px solid green;

@@ -1,17 +1,16 @@
-import { useRouter } from "next/router";
-import React from "react";
-import Footer from "../../components/Mainpage/Footer";
-import Header from "../../components/Mainpage/Header";
-import SecondHeader from "../../components/Mainpage/SecondHeader";
-import Sidebar from "../../components/Mainpage/Sidebar";
-import LiveScreen from "../../components/model/LiveScreen";
-import ModelProfile from "../../components/model/ModelProfile";
-import useFetchInterceptor from "../../hooks/useFetchInterceptor";
+import { useRouter } from "next/router"
+import React, { useState } from "react"
+import Footer from "../../components/Mainpage/Footer"
+import Header from "../../components/Mainpage/Header"
+import SecondHeader from "../../components/Mainpage/SecondHeader"
+import Sidebar from "../../components/Mainpage/Sidebar"
+import LiveScreen from "../../components/model/LiveScreen"
+import ModelProfile from "../../components/model/ModelProfile"
+import useFetchInterceptor from "../../hooks/useFetchInterceptor"
 
-let fetchIntercepted;
 function ViewModelStream() {
-  useFetchInterceptor(fetchIntercepted);
-  fetchIntercepted = true;
+  // 👇👇👇 store the models profile value in a state here
+  const [modelProfileData, setModelProfileData] = useState(null)
   return (
     <>
       <Header />
@@ -48,7 +47,7 @@ function ViewModelStream() {
       />
       <Footer />
     </>
-  );
+  )
 }
 
-export default ViewModelStream;
+export default ViewModelStream

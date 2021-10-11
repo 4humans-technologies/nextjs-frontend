@@ -44,6 +44,7 @@ function Login() {
           localStorage.setItem("rootUserId", data.rootUserId)
           localStorage.setItem("relatedUserId", data.relatedUserId)
           localStorage.setItem("userType", data.userType)
+          localStorage.setItem("user", JSON.stringify(data.user))
           updateCtx.updateViewer({
             rootUserId: data.userId,
             relatedUserId: data.relatedUserId,
@@ -51,8 +52,10 @@ function Login() {
             isLoggedIn: true,
             user: {
               userType: data.userType,
+              user: data.user,
             },
             jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
+            streamRoom: data.streamRoom,
           })
           debugger
           io.getSocket().close()
