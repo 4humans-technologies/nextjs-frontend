@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react"
 
+
 function VideoPlayer({ videoTrack, audioTrack, uid, playAudio }) {
   const container = useRef()
   const [full, setFull] = useState(false)
@@ -15,6 +16,7 @@ function VideoPlayer({ videoTrack, audioTrack, uid, playAudio }) {
       audioTrack?.stop()
     }
   }, [videoTrack, container, audioTrack])
+
   return (
     <div className="tw-h-full video-player">
       <div ref={container} className="tw-h-[100%]"></div>
