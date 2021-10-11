@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CreateIcon from "@material-ui/icons/Create";
 import HelpIcon from "@material-ui/icons/Help";
 import ToggleOffIcon from "@material-ui/icons/ToggleOff";
@@ -12,26 +12,14 @@ import Card from "../UI/Card";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-const Data = [
-  {
-    id: 1,
-    Name: "Vikas Kumawat",
-    Age: 22,
-    From: "Rajsthan",
-    Language: "Marwadi",
-    Body: "Sexy",
-    Specifics: "Shaven",
-    Hair: "Blonde",
-    Eye: "Brown",
-    Subculture: "Romantic",
-    profile: "/pp.jpg",
-  },
-];
+import useFetch from "../../hooks/useFetch";
+import Callhistory from "./CallHistory"
 
 function Profile() {
-  const [checked, setChecked] = useState(false);
-  const [infoedited, setInfoedited] = useState(false);
-  const [dynamicData, setDynamicData] = useState([2]);
+  const [checked, setChecked] = useState(false)
+  const [infoedited, setInfoedited] = useState(false)
+  const [dynamicData, setDynamicData] = useState([2])
+  const [modelData, setModelData] = useState([])
   const [modelState, setModelState] = useState({
     images: [],
     videos: [],
@@ -39,21 +27,29 @@ function Profile() {
     audioCall: 100,
     profile: "",
     header_image: "",
-  });
+  })
+
+  useEffect(() => {
+    fetch("/model.json")
+      .then((res) => res.json())
+      .then((data) => setModelData(data.models))
+  }, [])
+
+  console.log(modelData)
 
   const toggleChecked = () => {
-    setChecked((prev) => !prev);
-  };
+    setChecked((prev) => !prev)
+  }
 
   const saveData = () => {
-    const allInputs = document.querySelectorAll("#action-form input");
-    const actionArray = [];
+    const allInputs = document.querySelectorAll("#action-form input")
+    const actionArray = []
     for (let index = 0; index < allInputs.length; index += 2) {
-      const action = allInputs[index].value;
-      const actionValue = allInputs[index + 1].value;
-      actionArray.push({ [action]: actionValue });
+      const action = allInputs[index].value
+      const actionValue = allInputs[index + 1].value
+      actionArray.push({ [action]: actionValue })
     }
-  };
+  }
 
   // Data fetching which make things possible
   return (
@@ -98,7 +94,11 @@ function Profile() {
                 <p>Eye color</p>
                 <p>SubCulture</p>
               </div>
-              <div className="md:tw-col-span-5 tw-col-span-4 ">
+
+              <div
+                className="md:tw-col-span-5 tw-col-span-4 "
+                onChange={console.log("changed")}
+              >
                 <p
                   onInput={
                     ((e) => e.currentTarget.textContent,
@@ -115,7 +115,7 @@ function Profile() {
                   }
                   contentEditable="true"
                 >
-                  From
+                  mName
                 </p>
                 <p>Language</p>
                 <p>Age</p>
@@ -124,7 +124,6 @@ function Profile() {
                 <p>Hair</p>
                 <p>Eye color</p>
                 <p>SubCulture</p>
-
                 <br />
                 {infoedited && (
                   <Button type="submit" onClick={() => setInfoedited(false)}>
@@ -277,7 +276,7 @@ function Profile() {
             </div>
             {/* Call History */}
             {/* give width and apply scroll-y this is still not implimented */}
-            <table className="tw-border-solid tw-bg-dark-black tw-border-4 tw-text-center tw-mt-8 tw-w-full tw-bg-first-color">
+            <table className="tw-border-solid  tw-border-4 tw-text-center tw-mt-8 tw-w-full tw-bg-first-color">
               <tr className="tw-border-solid tw-bg-dark-black tw-border-4 tw-px-2">
                 <th className="tw-border-solid tw-bg-dark-black tw-border-4  ">
                   No
@@ -338,6 +337,7 @@ function Profile() {
                   6
                 </td>
               </tr>
+              😂😂😊
               <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
                 <td className="tw-border-solid tw-bg-dark-black tw-border-4">
                   1
@@ -492,17 +492,15 @@ function Profile() {
                     key={index}
                   >
                     <input
-                      // id={`action-${index}`}
                       className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-md"
                       placeholder="ravi"
                     />
                     <input
-                      // id={`action-value-${index}`}
                       className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-md"
                       placeholder="name"
                     />
                   </div>
-                );
+                )
               })}
             </form>
             <Button onClick={() => setDynamicData((prev) => [...prev, 1])}>
@@ -512,10 +510,13 @@ function Profile() {
               Save
             </Button>
           </div>
+          <div>
+            <Callhistory />
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default Profile;

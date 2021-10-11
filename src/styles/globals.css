@@ -305,10 +305,19 @@
 
 /* Grid in document.jsx in model folder */
 
-.document_grid {
-  grid-template-rows: 100px, auto, auto;
+/* .document_grid {
+  grid-template-rows: 400px, 400px;
+  grid-template-columns: 100px,100px;
+} */
+
+.video-player-root .video-player-controls {
+  display: none;
 }
 
+.video-player-root:hover .video-player-controls {
+  display: absolute;
+  border-color: rgba(60, 60, 60, 0.3);
+}
 /* help overlay */
 .help_1:hover .help_text_1 {
   display: block;
@@ -493,3 +502,10 @@
     left: calc(100% - 22px);
   }
 }
+
+/* card grid  */
+.card_grid{
+  grid-template-rows: 1fr,2fr,2fr;
+}
+
+/* card grid */

@@ -25,15 +25,6 @@ function Mainbox(props) {
   return (
     <div className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full">
       <div className="tw-relative tw-font-sans parent_transition tw-m-0">
-        {/* <Image
-          src={props.photo}
-          height={256 * 2}
-          width={352 * 2}
-          alt="Dream Girl"
-          objectFit="cover"
-          objectPosition="top left"
-          className="tw-max-h-full tw-max-w-full"
-        /> */}
         <img
           src={props.photo}
           className="tw-object-cover tw-object-center"
@@ -75,7 +66,7 @@ function Mainbox(props) {
         {/* ral code */}
       </div>
     </div>
-  );
+  )
 }
 
 export default Mainbox;

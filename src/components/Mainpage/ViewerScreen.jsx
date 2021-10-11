@@ -33,11 +33,14 @@ function Videocall(props) {
   )
 
   useEffect(() => {
-    return () => {
-      tokenRequestDoneOnce = false
-      localStorage.removeItem("rtcToken")
-      localStorage.removeItem("rtcTokenExpireIn")
-      leave()
+    debugger
+    if (ctx.loadedFromLocalStorage) {
+      return () => {
+        tokenRequestDoneOnce = false
+        localStorage.removeItem("rtcToken")
+        localStorage.removeItem("rtcTokenExpireIn")
+        leave()
+      }
     }
   }, [])
 
@@ -144,7 +147,7 @@ function Videocall(props) {
   ])
 
   return (
-    <div className="sm:tw-h-[70vh] ">
+    <div className="sm:tw-h-[82vh] ">
       {token && (
         <div className="tw-flex tw-py-2 tw-justify-between tw-items-center">
           <Button variant="primary" onClick={join}>
@@ -169,7 +172,7 @@ function Videocall(props) {
               className="w-[50vh]"
               key={user.uid}
               videoTrack={user.videoTrack}
-              audioTrack={user.audioTrack}
+              audioTrack={user.audioTrack.setVolume(200)}
               playAudio={true}
             />
           )

@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import Image from "next/image"
 
 function SingleGift({ imageUrl, price, name, _id, selectHandler, selected }) {
-  const finalImageUrl = "http://localhost:8080" + imageUrl
+  const finalImageUrl = "http://192.168.1.104:8080" + imageUrl
   return (
     <div
       className={`tw-mx-2 tw-py-2 tw-px-6 ${

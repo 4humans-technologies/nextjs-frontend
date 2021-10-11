@@ -5,6 +5,8 @@ import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import HistoryIcon from "@material-ui/icons/History";
 import { useSidebarStatus } from "../../app/Sidebarcontext";
 import { Button } from "react-bootstrap";
+import { useRouter } from "next/router"
+import ExitToAppIcon from "@material-ui/icons/ExitToApp"
 
 const data = [
   {
@@ -22,18 +24,19 @@ const data = [
     icon: <FavoriteIcon className="tw-mr-2" />,
     number: 153,
   },
-];
+]
 
 function Sidebar(props) {
-  const sidebarStatus = useSidebarStatus();
+  const sidebarStatus = useSidebarStatus()
+  const route = useRouter()
 
-  const top = `${props.top}rem` || "32rem";
+  const top = `${props.top}rem` || "32rem"
   const showStyle = {
     left: "0",
-  };
+  }
   const hideStyle = {
     left: "-240px",
-  };
+  }
   return (
     <div
       className={`tw-bg-gray-800 tw-w-[240px] tw-min-h-screen tw-flex tw-flex-col tw-fixed tw-font-sans tw-transition-all tw-bottom-0 tw-top-32 tw-z-[110]`}
@@ -61,10 +64,34 @@ function Sidebar(props) {
               {item.number}
             </p>
           </div>
-        );
+        )
       })}
+      {/* register as model */}
+      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
+        <ExitToAppIcon className="tw-mr-4" />
+        <p
+          id="sidebar_item_name"
+          onClick={() => route.push("/auth/modelregisteration")}
+          className="tw-cursor-pointer"
+        >
+          Model signup
+        </p>
+      </div>
+      {/* register as model */}
+      {/* Modle login  */}
+      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
+        <ExitToAppIcon className="tw-mr-4" />
+        <p
+          id="sidebar_item_name"
+          onClick={() => route.push("/auth/login")}
+          className="tw-cursor-pointer"
+        >
+          Model Login
+        </p>
+      </div>
+      {/* Modle login  */}
     </div>
-  );
+  )
 }
 
 export default Sidebar;

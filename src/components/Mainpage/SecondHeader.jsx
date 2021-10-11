@@ -3,6 +3,9 @@ import { useWidth } from "../../app/Context";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 
+// Pending list
+// 1) Search list 
+
 function SecondHeader() {
   const [search, setSearch] = useState(false);
   let screenWidth = useWidth();
@@ -63,17 +66,6 @@ function SecondHeader() {
             </div>
           </div>
         )}
-
-        {/* <div className="tw-pr-3  ">
-          {screenWidth < 600 && (
-            <div className="tw-border-l-2">
-              <SearchIcon
-                className="tw-outline-none tw-ml-2 "
-                onClick={() => setSearch((prevState) => !prevState)}
-              />
-            </div>
-          )}
-        </div> */}
       </div>
     </div>
   );
