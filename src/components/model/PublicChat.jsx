@@ -282,13 +282,7 @@ function PublicChatBox() {
         }
       }
     }
-  }, [
-    socketSetup,
-    ctx.isConnected,
-    authCtx.streamRoom,
-    io.getSocket(),
-    sessionStorage.getItem("socket-rooms"),
-  ])
+  }, [socketSetup, ctx.isConnected, authCtx.streamRoom, io.getSocket()])
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14">
