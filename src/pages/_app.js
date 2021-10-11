@@ -1,5 +1,6 @@
 // import { store } from "../app/store";
 // import { Provider } from 'react-redux'
+import React, { useEffect } from "react"
 import { ContextProvider } from "../app/Context"
 import { SidebarContextProvider } from "../app/Sidebarcontext"
 import { AuthContextProvider } from "../app/AuthContext"
@@ -24,6 +25,11 @@ import "../styles/globals.css"
  */
 
 const MyApp = ({ Component, pageProps }) => {
+  useEffect(() => {
+    window.onunload = function () {
+      sessionStorage.clear()
+    }
+  }, [])
   return (
     // <Provider store={store}>
     <AuthContextProvider>

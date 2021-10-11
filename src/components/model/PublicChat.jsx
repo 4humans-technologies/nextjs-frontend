@@ -188,8 +188,10 @@ function PublicChatBox() {
   const authCtx = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
   useEffect(() => {
+    debugger
     let socket
     if (ctx.isConnected && !socketSetup) {
+      const chatScrollEvent = new Event("scroll-chat")
       socket = io.getSocket()
       socketSetup = true
       const doSetup = () => {
@@ -208,6 +210,7 @@ function PublicChatBox() {
             chatIndex++
             return newChats
           })
+          document.dispatchEvent(chatScrollEvent)
         })
         socket.on("model-message-public-received", (data) => {
           setChatMessages((prevChats) => {
@@ -222,6 +225,7 @@ function PublicChatBox() {
             chatIndex++
             return newChats
           })
+          document.dispatchEvent(chatScrollEvent)
         })
         socket.on("viewer_super_message_pubic-received", (data) => {
           let chat
@@ -245,11 +249,12 @@ function PublicChatBox() {
             }
           }
           setChatMessages((prevChats) => {
+            document.dispatchEvent(chatScrollEvent)
             return [...prevChats, chat]
           })
+          document.dispatchEvent(chatScrollEvent)
         })
       }
-
       doSetup()
     }
     if (ctx.isConnected) {
@@ -282,13 +287,7 @@ function PublicChatBox() {
         }
       }
     }
-  }, [
-    socketSetup,
-    ctx.isConnected,
-    authCtx.streamRoom,
-    io.getSocket(),
-    sessionStorage.getItem("socket-rooms"),
-  ])
+  }, [socketSetup, ctx.isConnected, authCtx.streamRoom, io.getSocket()])
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14">

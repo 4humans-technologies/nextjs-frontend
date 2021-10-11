@@ -171,13 +171,6 @@ function Videocall(props) {
           </Button>
         </div>
       )}
-      {token ? (
-        joinState ? (
-          <p className="tw-text-white">Connected</p>
-        ) : (
-          <p className="tw-text-white">Disconnected</p>
-        )
-      ) : null}
       {remoteUsers.length > 0 &&
         remoteUsers.map((user) => {
           return (
@@ -186,7 +179,7 @@ function Videocall(props) {
                 className="w-[50vh]"
                 key={user.uid}
                 videoTrack={user.videoTrack}
-                audioTrack={user.audioTrack.setVolume(value)}
+                audioTrack={user.audioTrack} //error of seesion storage is going
                 playAudio={true}
               />
               {/* volume increase decrease */}
