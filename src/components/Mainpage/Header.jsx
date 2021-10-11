@@ -11,6 +11,7 @@ import ChatIcon from "@material-ui/icons/Chat";
 import NotificationsIcon from "@material-ui/icons/Notifications"
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn"
 
+
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
 
@@ -30,6 +31,7 @@ function Header(props) {
   const sidebarStatus = useSidebarStatus()
   const sidebarUpdate = useSidebarUpdate()
   const authContext = useAuthContext()
+  const updateAuthContext = useAuthUpdateContext()
   const [hide, setHide] = useState()
 
   // Checking login and logout -----------------
@@ -127,9 +129,12 @@ function Header(props) {
                   authContext.user.userType == "Viewer" ? (
                     <div className="">
                       <div className="tw-flex tw-self-center">
-                        <div>
-                          <ChatIcon />
-                        </div>
+                        <button
+                          className="tw-mx-4 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full"
+                          onClick={updateAuthContext.logout}
+                        >
+                          logout
+                        </button>
                         <div className=" tw-ml-6">
                           <NotificationsIcon />
                         </div>
@@ -139,9 +144,12 @@ function Header(props) {
                     // login at large screen and model
                     <div className="">
                       <div className="tw-flex tw-self-center">
-                        <div>
-                          <ChatIcon />
-                        </div>
+                        <button
+                          className="tw-mx-4 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full"
+                          onClick={updateAuthContext.logout}
+                        >
+                          logout
+                        </button>
                         <div className=" tw-ml-6">
                           <Link href="/rohit/goLive">
                             <a>Go live</a>
@@ -155,9 +163,12 @@ function Header(props) {
                   // login at large screen viwer
                   authContext.user.userType == "Viewer" ? (
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
-                      <div>
-                        <ChatIcon />
-                      </div>
+                      <button
+                        className="tw-mx-4 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full"
+                        onClick={updateAuthContext.logout}
+                      >
+                        logout
+                      </button>
                       <div className="tw-mx-8">
                         <NotificationsIcon />
                       </div>
@@ -171,6 +182,12 @@ function Header(props) {
                   ) : (
                     // login at large screen viewer
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
+                      <button
+                        className="tw-mx-4 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full"
+                        onClick={updateAuthContext.logout}
+                      >
+                        logout
+                      </button>
                       <div>
                         <MonetizationOnIcon />
                       </div>

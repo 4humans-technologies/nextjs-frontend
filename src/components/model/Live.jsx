@@ -123,14 +123,9 @@ function Live() {
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div>
-      {fullScreen ? (
-        ""
-      ) : (
-        <div>
-          <Header />
-          <SecondHeader />
-        </div>
-      )}
+      <Header />
+      <SecondHeader />
+
       <div className="tw-flex">
         <Sidebar />
         <div
@@ -142,9 +137,15 @@ function Live() {
               audioTrack={localAudioTrack}
               uid={ctx.relatedUserId}
               playAudio={false}
-              fullScreen={false}
             />
-
+            <button
+              onClick={() => {
+                document.documentElement.requestFullscreen()
+              }}
+              className="tw-bg-red-500"
+            >
+              hello
+            </button>
             {/* <FullscreenIcon
               className="tw-bg-green-400 tw-z-10 tw-absolute tw-bottom-16"
               onClick={() => setFullScreen((prev) => !prev)}

@@ -1,37 +1,37 @@
-import React, { useState, useEffect } from "react";
-import AgoraRTC from "agora-rtc-sdk-ng";
-import { Button } from "react-bootstrap";
-import MediaPlayer from "../UI/MediaPlayer";
-import VideoPlayer from "../UI/VideoPlayer";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import useAgora from "../../hooks/useAgora";
-import { useRouter } from "next/router";
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
+import React, { useState, useEffect } from "react"
+import AgoraRTC from "agora-rtc-sdk-ng"
+import { Button } from "react-bootstrap"
+import MediaPlayer from "../UI/MediaPlayer"
+import VideoPlayer from "../UI/VideoPlayer"
+import FavoriteIcon from "@material-ui/icons/Favorite"
+import useAgora from "../../hooks/useAgora"
+import { useRouter } from "next/router"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
 /**
  * If this screen is being mounted then it is understood by default that,
  * role will of be viewer.
  */
 
-const clientOptions = { codec: "h264", mode: "live" };
-let client = AgoraRTC.createClient(clientOptions);
-client.setClientRole("audience");
+const clientOptions = { codec: "h264", mode: "live" }
+let client = AgoraRTC.createClient(clientOptions)
+client.setClientRole("audience")
 
 /**
  * APPID can in feature be dynamic also
  */
-let token;
+let token
 function Videocall(props) {
-  const ctx = useAuthContext();
-  const updateCtx = useAuthUpdateContext();
+  const ctx = useAuthContext()
+  const updateCtx = useAuthUpdateContext()
   const { joinState, leave, join, remoteUsers } = useAgora(
     client,
     "audience",
     props.callType || ""
-  );
+  )
 
   useEffect(() => {
-    debugger;
+    debugger
     if (ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === true) {
         /**
@@ -54,19 +54,19 @@ function Videocall(props) {
           })
             .then((resp) => resp.json())
             .then((data) => {
-              token = data.rtcToken;
-              localStorage.setItem("rtcToken", data.rtcToken);
-              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs);
-              const channel = window.location.pathname.split("/").reverse()[0];
-              join(channel, data.rtcToken, ctx.relatedUserId);
+              token = data.rtcToken
+              localStorage.setItem("rtcToken", data.rtcToken)
+              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+              const channel = window.location.pathname.split("/").reverse()[0]
+              join(channel, data.rtcToken, ctx.relatedUserId)
               updateCtx.updateViewer({
                 rtcToken: data.rtcToken,
-              });
-            });
+              })
+            })
         } else {
           /* get token  from local storage */
-          const channel = window.location.pathname.split("/").reverse()[0];
-          join(channel, localStorage.getItem("rtcToken"), ctx.relatedUserId);
+          const channel = window.location.pathname.split("/").reverse()[0]
+          join(channel, localStorage.getItem("rtcToken"), ctx.relatedUserId)
         }
       } else {
         if (
@@ -79,7 +79,7 @@ function Videocall(props) {
           const payload = {
             /* which models's stream to join */
             modelId: window.location.pathname.split("/").reverse()[0],
-          };
+          }
           fetch("/api/website/token-builder/unauthed-viewer-join-stream", {
             method: "POST",
             cors: "include",
@@ -90,33 +90,33 @@ function Videocall(props) {
           })
             .then((resp) => resp.json())
             .then((data) => {
-              debugger;
+              debugger
               /* 🤩🤩🔥🔥 join stream */
-              localStorage.setItem("rtcToken", data.rtcToken);
-              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs);
-              const channel = window.location.pathname.split("/").reverse()[0];
-              join(channel, data.rtcToken, data.unAuthedUserId);
+              localStorage.setItem("rtcToken", data.rtcToken)
+              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+              const channel = window.location.pathname.split("/").reverse()[0]
+              join(channel, data.rtcToken, data.unAuthedUserId)
               if (data.newUnAuthedUserCreated) {
                 /* if new viewer was created save the _id in localstorage */
-                localStorage.setItem("unAuthedUserId", data.unAuthedUserId);
+                localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
                 updateCtx.updateViewer({
                   unAuthedUserId: data.unAuthedUserId,
                   rtcToken: data.rtcToken,
-                });
+                })
               } else {
                 updateCtx.updateViewer({
                   rtcToken: data.rtcToken,
-                });
+                })
               }
             })
-            .catch((err) => alert(err.message));
+            .catch((err) => alert(err.message))
         } else {
-          const channel = window.location.pathname.split("/").reverse()[0];
+          const channel = window.location.pathname.split("/").reverse()[0]
           join(
             channel,
             localStorage.getItem("rtcToken"),
             localStorage.getItem("unAuthedUserId")
-          );
+          )
         }
       }
     }
@@ -126,7 +126,7 @@ function Videocall(props) {
     ctx.relatedUserId,
     window.location.pathname,
     ctx.loadedFromLocalStorage,
-  ]);
+  ])
 
   return (
     <div className="sm:tw-h-[82vh] ">
@@ -154,7 +154,7 @@ function Videocall(props) {
               className="w-[50vh]"
               key={user.uid}
               videoTrack={user.videoTrack}
-              audioTrack={user.audioTrack}
+              audioTrack={user.audioTrack.setVolume(200)}
               playAudio={true}
             />
           )
@@ -163,4 +163,4 @@ function Videocall(props) {
   )
 }
 
-export default Videocall;
+export default Videocall
