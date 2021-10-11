@@ -21,11 +21,18 @@ export const SocketContextProvider = ({ children }) => {
     console.log("Initial socket id 🔴🔴", socket.id)
 
     socket.on("connect", () => {
-      console.log("socket connected!")
       localStorage.setItem("socketId", socket.id)
-      const socketRooms = JSON.parse(sessionStorage.getItem("socket-rooms"))
-      if (socketRooms.length !== 0) {
-        socket.emit("putting-me-in-these-rooms", socketRooms)
+      const socketRooms =
+        JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      if (socketRooms.length > 0) {
+        alert("put me in room")
+        socket.emit("putting-me-in-these-rooms", socketRooms, (response) => {
+          if (response.status === "ok") {
+            setIsConnected(true)
+          }
+        })
+      } else {
+        /* if no rooms join beforehand */
         setIsConnected(true)
       }
     })

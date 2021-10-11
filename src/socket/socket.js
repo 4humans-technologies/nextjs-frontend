@@ -52,16 +52,23 @@ export default {
   },
   globalListeners: (socket) => {
     socket.on("you-joined-a-room", (room) => {
-      const prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms"))
-      sessionStorage.setItem(
-        "socket-rooms",
-        JSON.stringify([...prevRooms, room])
-      )
+      if (room.includes("-public") || room.includes("-socket-room")) {
+        /* dont't join the self rooms 😎😎 */
+        const prevRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        if (!prevRooms.includes(room)) {
+          /* add unique rooms only */
+          sessionStorage.setItem(
+            "socket-rooms",
+            JSON.stringify([...prevRooms, room])
+          )
+        }
+      }
     })
 
     socket.on("you-left-a-room", (roomToLeave) => {
-      const prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms"))
-      const newRooms = prevRooms.filter((room) => room !== roomToLeave)
+      const prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      const newRooms = prevRooms.filter((room) => room !== roomToLeave) || []
       sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
     })
 

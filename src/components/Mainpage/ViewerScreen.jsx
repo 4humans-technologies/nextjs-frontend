@@ -120,6 +120,7 @@ function Videocall(props) {
               } else {
                 updateCtx.updateViewer({
                   rtcToken: data.rtcToken,
+                  streamRoom: data.streamRoom,
                 })
               }
             })

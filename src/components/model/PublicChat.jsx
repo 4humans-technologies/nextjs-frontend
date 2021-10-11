@@ -4,6 +4,7 @@ import flowerImage from "../../../public/flower-rose-png.jpg"
 import coinsImage from "../../../public/coins.png"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
 /* 
   if normal message
@@ -184,10 +185,13 @@ let socketSetup = false
 function PublicChatBox() {
   const [chatMessages, setChatMessages] = useState(initialMessages)
   const ctx = useSocketContext()
+  const authCtx = useAuthContext()
+  const authUpdateCtx = useAuthUpdateContext()
   useEffect(() => {
+    let socket
     if (ctx.isConnected && !socketSetup) {
+      socket = io.getSocket()
       socketSetup = true
-      const socket = io.getSocket()
       const doSetup = () => {
         socket.on("viewer-message-public-received", (data) => {
           setChatMessages((prevChats) => {
@@ -245,15 +249,46 @@ function PublicChatBox() {
           })
         })
       }
+
       doSetup()
+    }
+    if (ctx.isConnected) {
+      if (!socket) {
+        socket = io.getSocket()
+      }
       return () => {
-        socket.off("viewer-message-public-received")
-        socket.off("model-message-public-received")
-        socket.off("viewer_super_message_pubic-received")
-        socket.emit("take-me-out-of-these-rooms", authCtx.streamRoom)
+        if (authCtx.streamRoom) {
+          socket.off("viewer-message-public-received")
+          socket.off("model-message-public-received")
+          socket.off("viewer_super_message_pubic-received")
+          socket.emit(
+            "take-me-out-of-these-rooms",
+            [authCtx.streamRoom],
+            (response) => {
+              if (response.status === "ok") {
+                /* remove this room from session storage also */
+                const rooms =
+                  JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+                sessionStorage.setItem(
+                  "socket-rooms",
+                  JSON.stringify(
+                    rooms.filter((room) => room !== authCtx.streamRoom)
+                  )
+                )
+                authUpdateCtx.updateViewer({ streamRoom: null })
+              }
+            }
+          )
+        }
       }
     }
-  }, [socketSetup, ctx.isConnected])
+  }, [
+    socketSetup,
+    ctx.isConnected,
+    authCtx.streamRoom,
+    io.getSocket(),
+    sessionStorage.getItem("socket-rooms"),
+  ])
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14">
