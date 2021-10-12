@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react"
 import io from "../../socket/socket"
+import { imageDomainURL } from "../../../dreamgirl.config"
 
 const SocketContext = createContext({
   socketInstance: null,
@@ -16,7 +17,7 @@ export const SocketContextProvider = ({ children }) => {
   const initSocket = () => {
     debugger
     console.log("Initializing socket, status")
-    const url = "http://192.168.1.104:8080"
+    const url = imageDomainURL
     const socket = io.connect(url)
     console.log("Initial socket id 🔴🔴", socket.id)
 

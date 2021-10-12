@@ -182,80 +182,90 @@ const initialMessages = [
 
 let chatIndex = 0
 let socketSetup = false
-function PublicChatBox() {
-  const [chatMessages, setChatMessages] = useState(initialMessages)
+function PublicChatBox(props) {
+  const [chatMessages, setChatMessages] = useState([
+    {
+      type: "normal-public-message",
+      index: 1,
+      username: "ADMIN",
+      message: "Start chatting 👇👇",
+      walletCoins: "You are live",
+    },
+  ])
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
+
   useEffect(() => {
     debugger
     let socket
+    const chatEvent = new Event("new-chat")
     if (ctx.isConnected && !socketSetup) {
-      const chatScrollEvent = new Event("scroll-chat")
       socket = io.getSocket()
       socketSetup = true
-      const doSetup = () => {
-        socket.on("viewer-message-public-received", (data) => {
-          setChatMessages((prevChats) => {
-            const newChats = [
-              ...prevChats,
-              {
-                type: "normal-public-message",
-                index: chatIndex,
-                username: data.username,
-                message: data.message,
-                walletCoins: data.walletCoins,
-              },
-            ]
-            chatIndex++
-            return newChats
-          })
-          document.dispatchEvent(chatScrollEvent)
-        })
-        socket.on("model-message-public-received", (data) => {
-          setChatMessages((prevChats) => {
-            const newChats = [
-              ...prevChats,
-              {
-                type: "model-public-message",
-                index: chatIndex,
-                message: data.message,
-              },
-            ]
-            chatIndex++
-            return newChats
-          })
-          document.dispatchEvent(chatScrollEvent)
-        })
-        socket.on("viewer_super_message_pubic-received", (data) => {
-          let chat
-          if (data.chatType === "gift-superchat-public") {
-            chat = {
-              type: data.chatType,
+      socket.on("viewer-message-public-received", (data) => {
+        setChatMessages((prevChats) => {
+          const newChats = [
+            ...prevChats,
+            {
+              type: "normal-public-message",
               index: chatIndex,
               username: data.username,
-              giftImageUrl: data.gift.giftImageUrl,
               message: data.message,
               walletCoins: data.walletCoins,
-            }
-          } else if (data.chatType === "coin-superchat-public") {
-            chat = {
-              type: data.chatType,
+            },
+          ]
+          chatIndex++
+          return newChats
+        })
+        // props.scrollOnChat()
+        // document.dispatchEvent(chatEvent)
+      })
+      socket.on("model-message-public-received", (data) => {
+        setChatMessages((prevChats) => {
+          // document.dispatchEvent(chatScrollEvent)
+          const newChats = [
+            ...prevChats,
+            {
+              type: "model-public-message",
               index: chatIndex,
-              username: data.username,
-              amountGiven: data.amountGiven,
               message: data.message,
-              walletCoins: data.walletCoins,
-            }
+            },
+          ]
+          chatIndex++
+          return newChats
+        })
+        // props.scrollOnChat()
+        // document.dispatchEvent(chatEvent)
+      })
+      socket.on("viewer_super_message_pubic-received", (data) => {
+        let chat
+        if (data.chatType === "gift-superchat-public") {
+          chat = {
+            type: data.chatType,
+            index: chatIndex,
+            username: data.username,
+            giftImageUrl: data.gift.giftImageUrl,
+            message: data.message,
+            walletCoins: data.walletCoins,
           }
-          setChatMessages((prevChats) => {
-            document.dispatchEvent(chatScrollEvent)
-            return [...prevChats, chat]
-          })
-          document.dispatchEvent(chatScrollEvent)
+        } else if (data.chatType === "coin-superchat-public") {
+          chat = {
+            type: data.chatType,
+            index: chatIndex,
+            username: data.username,
+            amountGiven: data.amountGiven,
+            message: data.message,
+            walletCoins: data.walletCoins,
+          }
+        }
+        setChatMessages((prevChats) => {
+          // document.dispatchEvent(chatScrollEvent)
+          return [...prevChats, chat]
         })
-      }
-      doSetup()
+        // props.scrollOnChat()
+        // document.dispatchEvent(chatEvent)
+      })
     }
     if (ctx.isConnected) {
       if (!socket) {
@@ -263,6 +273,7 @@ function PublicChatBox() {
       }
       return () => {
         if (authCtx.streamRoom) {
+          socketSetup = false
           socket.off("viewer-message-public-received")
           socket.off("model-message-public-received")
           socket.off("viewer_super_message_pubic-received")
@@ -287,7 +298,7 @@ function PublicChatBox() {
         }
       }
     }
-  }, [socketSetup, ctx.isConnected, authCtx.streamRoom, io.getSocket()])
+  }, [socketSetup, ctx.isConnected, io.getSocket(), authCtx.streamRoom])
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14">
