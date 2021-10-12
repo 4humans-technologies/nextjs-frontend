@@ -3,6 +3,8 @@ import useSpinnerContext from "../app/Loading/SpinnerContext"
 import fetchIntercept from "fetch-intercept"
 import { useEffect } from "react"
 import io from "../socket/socket"
+import { imageDomainHost, imageDomainURL } from "../../dreamgirl.config"
+
 const useFetchInterceptor = (isAlreadyIntercepted) => {
   /**
    * if all i need is the access to the functions in the context(s) than,
@@ -27,11 +29,12 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             debugger
             const latestCtx = JSON.parse(localStorage.getItem("authContext"))
             /* for GET requests when there is no config */
-            let baseUrl = "http://192.168.1.104:8080" /* vishalprajapati */
+            let baseUrl = imageDomainURL /* vishalprajapati */
             // let baseUrl = "http://192.168.43.85:8080"; /* 👉 asus */
+
             if (
               window.location.hostname !== "localhost" &&
-              window.location.hostname !== "192.168.1.104"
+              window.location.hostname !== imageDomainHost
             ) {
               baseUrl = "https://dreamgirl.live"
             }
