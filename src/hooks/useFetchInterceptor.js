@@ -30,6 +30,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             /* for GET requests when there is no config */
             let baseUrl = imageDomainURL /* vishalprajapati */
             // let baseUrl = "http://192.168.43.85:8080"; /* 👉 asus */
+
             if (
               window.location.hostname !== "localhost" &&
               window.location.hostname !== imageDomainHost

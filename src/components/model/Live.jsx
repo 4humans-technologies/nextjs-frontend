@@ -2,10 +2,11 @@
 import Header from "../Mainpage/Header"
 import SecondHeader from "../Mainpage/SecondHeader"
 import Sidebar from "../Mainpage/Sidebar"
-import React, { useReducer, useEffect, useState } from "react"
+import React, { useReducer, useEffect, useState, useRef } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
 import { Button } from "react-bootstrap"
+import Footer from "../Mainpage/Footer"
 
 import Publicchat from "./PublicChat"
 import PrivateChat from "./PrivateChat"
@@ -16,6 +17,8 @@ import VideoPlayer from "../UI/VideoPlayer"
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
 import { useAuthContext } from "../../app/AuthContext"
 import { useAuthUpdateContext } from "../../app/AuthContext"
+import Slider from "@material-ui/core/Slider"
+import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { useRouter } from "next/router"
 const initState = { val: <Publicchat /> }
 
@@ -55,11 +58,22 @@ const createAgoraClient = (extraOptions) => {
 /* Init Client */
 createAgoraClient()
 
+// Slide to show the things
+function valuetext(value) {
+  return `${value}°C`
+}
+
 function Live() {
   const ctx = useAuthContext()
+  const container = useRef()
   const updateCtx = useAuthUpdateContext()
   const [state, dispatch] = useReducer(reducer, initState)
   const [fullScreen, setFullScreen] = useState(false)
+  const [value, setValue] = React.useState(30)
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue)
+  }
 
   const {
     localAudioTrack,
@@ -131,26 +145,33 @@ function Live() {
         <div
           className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28 "}
         >
-          <div className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[30rem]  sm:tw-mt-4 tw-mt-2">
+          <div
+            className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2"
+            ref={container}
+          >
             <VideoPlayer
               videoTrack={localVideoTrack}
               audioTrack={localAudioTrack}
               uid={ctx.relatedUserId}
               playAudio={false}
             />
-            <button
-              onClick={() => {
-                document.documentElement.requestFullscreen()
-              }}
-              className="tw-bg-red-500"
-            >
-              hello
-            </button>
-            {/* <FullscreenIcon
-              className="tw-bg-green-400 tw-z-10 tw-absolute tw-bottom-16"
-              onClick={() => setFullScreen((prev) => !prev)}
-            /> */}
-            <div className="tw-text-center tw-mt-1 tw-flex tw-ml-[40%]">
+            <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-32px] ">
+              <VolumeUpIcon className="tw-text-white" fontSize="large" />
+              <Slider
+                defaultValue={30}
+                getAriaValueText={valuetext}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="auto"
+                step={10}
+                marks
+                min={10}
+                max={110}
+                onChange={handleChange}
+                className="tw-self-center tw-ml-2"
+              />
+            </div>
+
+            <div className="tw-text-center tw-mt-3 tw-flex tw-ml-[40%]">
               {joinState ? (
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx-4"
@@ -223,6 +244,7 @@ function Live() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   ) : (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">
