@@ -179,11 +179,11 @@ function Videocall(props) {
                 className="w-[50vh]"
                 key={user.uid}
                 videoTrack={user.videoTrack}
-                audioTrack={user.audioTrack} //error of seesion storage is going
+                audioTrack={user.audioTrack.setVolume(110)} //error of seesion storage is going
                 playAudio={true}
               />
               {/* volume increase decrease */}
-              <div className="tw-w-32 tw-absolute tw-z-20 tw-flex">
+              <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-32px]">
                 <VolumeUpIcon className="tw-text-white" fontSize="large" />
                 <Slider
                   defaultValue={30}

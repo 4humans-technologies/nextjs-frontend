@@ -6,29 +6,30 @@ function useAgora(client, role, callType) {
   console.log("running useAgora!");
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
-  const [joinState, setJoinState] = useState(false);
-  const [remoteUsers, setRemoteUsers] = useState([]);
+  const [vol, setVol] = useState(100)
+  const [joinState, setJoinState] = useState(false)
+  const [remoteUsers, setRemoteUsers] = useState([])
 
   async function createLocalTracks() {
-    const tracks = [];
+    const tracks = []
     if (role === "host") {
       if (callType === "audioCall") {
-        const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack();
-        tracks.push(microphoneTrack);
-        setLocalAudioTrack(microphoneTrack);
+        const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+        tracks.push(microphoneTrack)
+        setLocalAudioTrack(microphoneTrack)
       }
       if (callType === "videoCall") {
-        const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack();
-        const cameraTrack = await AgoraRTC.createCameraVideoTrack();
-        tracks.push(microphoneTrack);
-        tracks.push(cameraTrack);
-        setLocalAudioTrack(microphoneTrack);
-        setLocalVideoTrack(cameraTrack);
+        const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+        const cameraTrack = await AgoraRTC.createCameraVideoTrack()
+        tracks.push(microphoneTrack)
+        tracks.push(cameraTrack)
+        setLocalAudioTrack(microphoneTrack)
+        setLocalVideoTrack(cameraTrack)
       }
-      return tracks;
+      return tracks
     }
     // if client, no local track
-    return null;
+    return null
   }
 
   async function join(channel, token, uid) {

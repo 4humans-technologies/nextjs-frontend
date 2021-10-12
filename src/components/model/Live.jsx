@@ -155,7 +155,7 @@ function Live() {
               uid={ctx.relatedUserId}
               playAudio={false}
             />
-            <div className="tw-w-32 tw-absolute tw-z-20 tw-flex">
+            <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-32px] ">
               <VolumeUpIcon className="tw-text-white" fontSize="large" />
               <Slider
                 defaultValue={30}

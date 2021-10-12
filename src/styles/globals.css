@@ -504,8 +504,19 @@
 }
 
 /* card grid  */
-.card_grid{
-  grid-template-rows: 1fr,2fr,2fr;
+.card_grid {
+  grid-template-rows: 1fr, 2fr, 2fr;
 }
 
 /* card grid */
+
+/* document */
+.document_rows {
+  grid-template-rows: 14rem 14rem;
+}
+.document_rows_main {
+  display: grid;
+  grid-template-rows: 14rem 14rem 3rem;
+}
+
+/*  */

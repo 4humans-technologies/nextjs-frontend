@@ -129,7 +129,7 @@ function Header(props) {
                     <div className="">
                       <div className="tw-flex tw-self-center">
                         <button
-                          className="tw-mx-4 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full"
+                          className="tw-mx-4 tw-bg-dreamgirl-red tw-px-2 tw-rounded-full"
                           onClick={updateAuthContext.logout}
                         >
                           logout
@@ -144,16 +144,16 @@ function Header(props) {
                     <div className="">
                       <div className="tw-flex tw-self-center">
                         <button
-                          className="tw-mx-4 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full"
+                          className="tw-mx-4 tw-bg-dreamgirl-red tw-px-4 tw-rounded-full"
                           onClick={updateAuthContext.logout}
                         >
                           logout
                         </button>
-                        <div className=" tw-ml-6">
+                        <button className="tw-mx-4 tw-bg-dreamgirl-red tw-px-4 tw-rounded-full">
                           <Link href="/rohit/goLive">
-                            <a>Go live</a>
+                            <a>live</a>
                           </Link>
-                        </div>
+                        </button>
                       </div>
                     </div>
                   ),
@@ -171,7 +171,10 @@ function Header(props) {
                       <div className="tw-mx-8">
                         <NotificationsIcon />
                       </div>
-                      <div className="tw-mr-4">
+                      <div
+                        className="tw-mr-4"
+                        onClick={() => router.push("/user/name")}
+                      >
                         <img
                           className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
                           src="/pp.jpg"
@@ -201,7 +204,10 @@ function Header(props) {
                           </Link>
                         )}
                       </button>
-                      <div className="tw-mr-4">
+                      <div
+                        className="tw-mr-4 tw-cursor-pointer"
+                        onClick={() => router.push("/model/profile")}
+                      >
                         <img
                           className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
                           src="/pp.jpg"

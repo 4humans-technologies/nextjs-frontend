@@ -12,13 +12,13 @@ function ProtectedHOC(WrappedComponent) {
       //   checks whether on windows or on server
       if (!ctx.isLoggedIn && ctx.user.userType == "model") {
         alert("Beta Jaao, Login karo pahle")
+        router.push("/")
       }
 
       return <WrappedComponent {...props} />
     }
   }
-  return null
-  //   const router = useRouter();
+ 
 }
 
 export default ProtectedHOC

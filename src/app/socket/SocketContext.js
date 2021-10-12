@@ -16,7 +16,7 @@ export const SocketContextProvider = ({ children }) => {
   const initSocket = () => {
     debugger
     console.log("Initializing socket, status")
-    const url = "http://192.168.1.104:8080"
+    const url = "http://192.168.0.180:8080"
     const socket = io.connect(url)
     console.log("Initial socket id 🔴🔴", socket.id)
 

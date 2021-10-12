@@ -27,8 +27,10 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             debugger
             const latestCtx = JSON.parse(localStorage.getItem("authContext"))
             /* for GET requests when there is no config */
-            let baseUrl = "http://192.168.1.104:8080" /* vishalprajapati */
+            // let baseUrl = "http://192.168.1.104:8080" /* vishalprajapati */
+            let baseUrl = "http://192.168.0.180:8080/" /* neeraj */
             // let baseUrl = "http://192.168.43.85:8080"; /* 👉 asus */
+
             if (
               window.location.hostname !== "localhost" &&
               window.location.hostname !== "192.168.1.104"
