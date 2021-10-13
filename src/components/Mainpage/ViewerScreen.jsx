@@ -179,7 +179,7 @@ function Videocall(props) {
                 className="w-[50vh]"
                 key={user.uid}
                 videoTrack={user.videoTrack}
-                audioTrack={user.audioTrack.setVolume(110)} //error of seesion storage is going
+                audioTrack={user.audioTrack} //error of seesion storage is going
                 playAudio={true}
               />
               {/* volume increase decrease */}

@@ -71,7 +71,7 @@ function Sidebar(props) {
         <ExitToAppIcon className="tw-mr-4" />
         <p
           id="sidebar_item_name"
-          onClick={() => route.push("/auth/modelregisteration")}
+          onClick={() => route.push("/auth/modelRegisteration")}
           className="tw-cursor-pointer"
         >
           Model signup
