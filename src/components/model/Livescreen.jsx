@@ -156,6 +156,8 @@ function Livescreen() {
   //     </div>
   //   )
   // }
+  const chatInputRef = createRef()
+  const chatBoxContainer = createRef()
 
   const ctx = useModalContext()
   const authCtx = useAuthContext()
@@ -164,22 +166,26 @@ function Livescreen() {
   const [showBrowseGifts, setShowBrowseGifts] = useState(true)
   const [gifts, setGifts] = useState(giftData)
 
-  const chatInputRef = createRef()
-  const chatBoxContainer = createRef()
-
-  const scrollHandler = useCallback(
-    (e) => {
+  useEffect(() => {
+    document.addEventListener("new-chat", () => {
+      alert("scrolling chat")
+      console.log(chatBoxContainer.current)
       chatBoxContainer.current.scrollBy({
         top: 400,
         behavior: "smooth",
       })
-    },
-    [chatBoxContainer.current]
-  )
+    })
+  }, [chatBoxContainer.current])
 
-  useEffect(() => {
-    document.addEventListener("scroll-chat", scrollHandler)
-    return () => document.removeEventListener("scroll-chat", scrollHandler)
+  console.log("chat box ref ⚡⚡⚡", chatBoxContainer.current)
+
+  const scrollOnChat = useCallback(() => {
+    alert("scrolling chat")
+    console.log(chatBoxContainer.current)
+    chatBoxContainer.current.scrollBy({
+      top: 400,
+      behavior: "smooth",
+    })
   }, [chatBoxContainer.current])
 
   const sendChatMessage = () => {
@@ -190,9 +196,15 @@ function Livescreen() {
     }
     let payLoad
     const message = chatInputRef.current.value
+    console.log(
+      "sent message to room >>>",
+      JSON.parse(sessionStorage.getItem("socket-rooms"))[0]
+    )
     if (authCtx.isLoggedIn) {
       payLoad = {
-        room: authCtx.streamRoom,
+        room:
+          authCtx.streamRoom ||
+          JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
         message: message,
         username: authCtx.user.user.username,
         walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
@@ -200,10 +212,12 @@ function Livescreen() {
     } else {
       /* un-authed user */
       payLoad = {
-        room: authCtx.streamRoom,
+        room:
+          authCtx.streamRoom ||
+          JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
         message: message,
         username: `Guest User ${
-          unAuthedUserEmojis[(Math.random() * 100) % 25]
+          unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
         }`,
         walletCoins: 0,
       }
@@ -375,7 +389,7 @@ function Livescreen() {
             className="tw-absolute tw-h-[90%] tw-bottom-0 tw-w-full chat-box-container tw-overflow-y-scroll"
           >
             <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18">
-              <Publicchat />
+              <Publicchat scrollOnChat={scrollOnChat} />
             </div>
           </div>
 

@@ -1,8 +1,9 @@
 import React, { useState } from "react"
 import Image from "next/image"
+import {imageDomainURL} from "../../../dreamgirl.config"
 
 function SingleGift({ imageUrl, price, name, _id, selectHandler, selected }) {
-  const finalImageUrl = "http://192.168.1.104:8080" + imageUrl
+  const finalImageUrl = imageDomainURL + imageUrl
   return (
     <div
       className={`tw-mx-2 tw-py-2 tw-px-6 ${
@@ -30,7 +31,7 @@ function SingleGift({ imageUrl, price, name, _id, selectHandler, selected }) {
   )
 }
 
-function BrowseGifts({ closeBrowseGiftsSection, gifts, buyGifts }) {
+function BrowseGifts({ closeBrowseGiftsSection, gifts, buyGift }) {
   const [selectedGift, setSelectedGift] = useState(null)
   const [showBuyButton, setShowBuyButton] = useState(false)
 
@@ -40,7 +41,7 @@ function BrowseGifts({ closeBrowseGiftsSection, gifts, buyGifts }) {
   }
 
   const initBuy = () => {
-    buyGifts(selectedGift)
+    buyGift(selectedGift)
   }
   return (
     <div className="tw-relative tw-bg-dark-black tw-pb-4">
