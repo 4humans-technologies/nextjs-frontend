@@ -33,24 +33,6 @@ function Mainbox(props) {
         <div className="tw-absolute tw-z-[2]  child_transition after"></div>
         {/*  Real*/}
         <div className="tw-absolute tw-z-10  child_transition_1 after tw-top-0">
-          <ul className="tw-pl-4 tw-text-white tw-z-10">
-            <li className="tw-font-extrabold tw-text-xl tw-py-1">
-              {`${props.name} | @${props.userName}`}
-            </li>
-            <li className="tw-py-1">
-              {props.age}Yrs <span className="tw-ml-2">{props.gender}</span>
-            </li>
-            <li className="tw-py-1 ">Rating : {props.rating}</li>
-            <li className="tw-py-1">
-              <span>Public</span>: Not-set Coins/min
-            </li>
-            <li className="tw-py-1">
-              <span>Private</span>: Not-set Coins/min
-            </li>
-            <li className="tw-py-1">
-              <span>I Speak</span>: {props.languages}
-            </li>
-          </ul>
           {/* <div className="tw-absolute tw-bottom-0 tw-w-full tw-align-middle tw-flex "> */}
           <Link href={`/view-stream/${props.modelId}`}>
             <a

@@ -5,8 +5,7 @@ import useAgora from "../../hooks/useAgora"
 import AgoraRTC from "agora-rtc-sdk-ng"
 import { Button } from "react-bootstrap"
 
-import MediaPlayer from "../UI/MediaPlayer"
-import VideoPlayer from "../UI/VideoPlayer"
+
 let client
 const createClient = (role) => {
   const clientOptions = { codec: "h264", mode: "live" }
