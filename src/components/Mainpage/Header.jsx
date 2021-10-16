@@ -17,10 +17,12 @@ import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
 import useModalContext from "../../app/ModalContext"
 import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import Headerprofile from "./Header/Headerprofile"
 
 function Header(props) {
   const [menu, setMenu] = useState(false)
   const [searchShow, setSearchShow] = useState(false)
+  const [headerProfileShow, setHeaderProfileShow] = useState(false)
   const [query, setQuery] = useState("")
   const [searchData, setSearchData] = useState([])
   // need to add search parmeters
@@ -79,8 +81,8 @@ function Header(props) {
         </div>
       </div>
       {/* --------------search text---------- */}
-      <span className="tw-hidden sm:tw-inline-block ">
-        <div className="tw-rounded-full tw-p-0 tw-relative">
+      <span className="tw-hidden sm:tw-inline-block tw-relative">
+        <div className="tw-rounded-full tw-p-0 tw-relative ">
           <button className="tw-absolute tw-right-4 tw-top-[50%] tw-translate-y-[-50%]">
             <SearchIcon className="tw-text-text-black" />
           </button>
@@ -140,7 +142,7 @@ function Header(props) {
                       </div>
                     </div>
                   ) : (
-                    // login at large screen and model
+                    // login at smaller screen and model
                     <div className="">
                       <div className="tw-flex tw-self-center">
                         <button
@@ -169,7 +171,11 @@ function Header(props) {
                         logout
                       </button>
                       <div className="tw-mx-8">
-                        <NotificationsIcon />
+                        <img
+                          src="/token.png"
+                          alt=""
+                          className="tw-w-12 tw-h-14 tw-text-white"
+                        />
                       </div>
                       <div
                         className="tw-mr-4"
@@ -182,16 +188,16 @@ function Header(props) {
                       </div>
                     </div>
                   ) : (
-                    // login at large screen viewer
+                    // login at large screen model
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
                       <button
-                        className="tw-mx-4 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full"
+                        className="tw-mx-4 tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-rounded-full"
                         onClick={updateAuthContext.logout}
                       >
                         logout
                       </button>
-                      <div>
-                        <MonetizationOnIcon />
+                      <div className="tw-mx-4">
+                        <NotificationsIcon />
                       </div>
                       <button className="tw-mx-8 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full">
                         {hide ? (
@@ -206,12 +212,21 @@ function Header(props) {
                       </button>
                       <div
                         className="tw-mr-4 tw-cursor-pointer"
-                        onClick={() => router.push("/model/profile")}
+                        onClick={() => setHeaderProfileShow((prev) => !prev)}
                       >
                         <img
                           className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
                           src="/pp.jpg"
                         ></img>
+                        {/* Profile  */}
+                        <div
+                          className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-right-4 ${
+                            headerProfileShow ? "" : "tw-hidden"
+                          }`}
+                        >
+                          <Headerprofile />
+                        </div>
+                        {/* Profile  */}
                       </div>
                     </div>
                   ),

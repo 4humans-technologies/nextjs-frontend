@@ -114,9 +114,9 @@ const Home = () => {
       <div className="tw-h-20"></div>
       <Header />
       <SecondHeader />
-      <div className="tw-flex">
+      <div className="tw-flex tw-flex-grow-1 tw-flex-shrink-0">
         <Sidebar />
-        <div className="">
+        <div>
           {boxGroupsData.map((data, index) => {
             return (
               <Boxgroup
@@ -124,7 +124,7 @@ const Home = () => {
                 data={data.data}
                 key={`${index}_boxGroup_&^HJK`}
               />
-            );
+            )
           })}
         </div>
       </div>
@@ -143,7 +143,7 @@ const Home = () => {
       </div>
       <Footer />
     </div>
-  );
+  )
 };
 
 export default Home;

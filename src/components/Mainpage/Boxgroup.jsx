@@ -12,7 +12,7 @@ function Boxgroup(props) {
   }, []);
 
   return (
-    <div className="tw-bg-first-color tw-w-full tw-px-3 tw-py-4 tw-border-b tw-border-second-color">
+    <div className="tw-bg-first-color tw-w-full tw-px-3 tw-py-4 tw-border-b tw-border-second-color tw-min-w-[100vw]">
       <h1 className="tw-text-xl tw-font-bold tw-text-white tw-mb-4 tw-mt-6">
         {props.groupTitle}
       </h1>
