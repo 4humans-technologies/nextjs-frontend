@@ -6,36 +6,6 @@ import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
-/* 
-  if normal message
-  {
-    type:"normal-public-message"
-    timeStamp:324234,
-    username/uid:xxxxxxxx,
-    message:xxxxxx
-  }
-  if model message
-  {
-    type:"model-public-message",
-    timeStamp:3423432,
-    message:xxxxxxxxxx
-  },
-  if gift-superChat
-  {
-    type:"gift-superchat-public",
-    username:xxxxxxxxx,
-    timestamp:3121212,
-    message:xxxxxxxxx
-  }
-  if coins superchat
-  {
-    type:"coin-superchat-public",
-    username:xxxxxxxxx,
-    timestamp:23123123,
-    message:xxxxxxxxx
-  }
-*/
-
 function NormalChatMessage(props) {
   return (
     <div className="tw-flex tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tw-bg-first-color tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
@@ -187,10 +157,11 @@ function PublicChatBox(props) {
     {
       type: "normal-public-message",
       index: 1,
-      username: "ADMIN",
-      message: "Start chatting 👇👇",
+      username: "Model",
+      message: "Start chatting with  me 💌💌🥰",
       walletCoins: "You are live",
     },
+    ...initialMessages,
   ])
   const ctx = useSocketContext()
   const authCtx = useAuthContext()

@@ -145,6 +145,12 @@ const unAuthedUserEmojis = [
   "🦄",
 ]
 
+const chatWindowOptions = {
+  PRIVATE: "private",
+  PUBLIC: "public",
+  USERS: "users",
+}
+
 function Livescreen() {
   // if (ctx.userType !== "UnAuthedViewer" || ctx.userType !== "Viewer") {
   //   alert("Only Viewers Can Join Stream, Not Models Or Admin/Staff")
@@ -156,6 +162,7 @@ function Livescreen() {
   //     </div>
   //   )
   // }
+
   const chatInputRef = createRef()
   const chatBoxContainer = createRef()
 
@@ -163,8 +170,19 @@ function Livescreen() {
   const authCtx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
   const router = useRouter()
+
+  const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [showBrowseGifts, setShowBrowseGifts] = useState(true)
   const [gifts, setGifts] = useState(giftData)
+
+  const chatComponent = useCallback(() => {
+    switch (chatWindow) {
+      case chatWindowOptions.PUBLIC:
+        return <Publicchat scrollOnChat={scrollOnChat} />
+      default:
+        break
+    }
+  }, [chatWindow])
 
   useEffect(() => {
     document.addEventListener("new-chat", () => {
@@ -389,7 +407,7 @@ function Livescreen() {
             className="tw-absolute tw-h-[90%] tw-bottom-0 tw-w-full chat-box-container tw-overflow-y-scroll"
           >
             <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18">
-              <Publicchat scrollOnChat={scrollOnChat} />
+              {chatComponent}
             </div>
           </div>
 
@@ -404,7 +422,7 @@ function Livescreen() {
                 onClick={sendChatMessage}
                 className="sm:tw-py-3 tw-py-2 tw-px-0 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-tr-full tw-rounded-br-full"
               >
-                Send Message
+                Send
               </button>
             </div>
           </div>

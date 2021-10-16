@@ -1,16 +1,16 @@
-import Head from "next/head";
-import Header from "../components/Mainpage/Header";
-import SecondHeader from "../components/Mainpage/SecondHeader";
-import Sidebar from "../components/Mainpage/Sidebar";
-import Boxgroup from "../components/Mainpage/Boxgroup";
-import { useState, useEffect } from "react";
+import Head from "next/head"
+import Header from "../components/Mainpage/Header"
+import SecondHeader from "../components/Mainpage/SecondHeader"
+import Sidebar from "../components/Mainpage/Sidebar"
+import Boxgroup from "../components/Mainpage/Boxgroup"
+import { useState, useEffect } from "react"
 // import Mainbox from "../components/Mainbox";
-import Footer from "../components/Mainpage/Footer";
-import useFetchInterceptor from "../hooks/useFetchInterceptor";
-import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext";
-import useSetupSocket from "../socket/useSetupSocket";
-import socket from "../socket/socket";
-import Link from "next/link";
+import Footer from "../components/Mainpage/Footer"
+import useFetchInterceptor from "../hooks/useFetchInterceptor"
+import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
+import useSetupSocket from "../socket/useSetupSocket"
+import socket from "../socket/socket"
+import Link from "next/link"
 
 /**
  * just for development not for production 👇👇
@@ -32,49 +32,46 @@ const data = Array(8)
     rootUserId: "615eaeea12a4fc1f2c4d29ec",
     userName: "rohitkumar9133@gmail.com",
     userType: "Model",
-  }));
+  }))
 
-let fetchIntercepted;
 const Home = () => {
-  console.log("rendering home");
-  const ctx = useAuthContext();
-  useFetchInterceptor(fetchIntercepted);
-  fetchIntercepted = true;
+  console.log("rendering home")
+  const ctx = useAuthContext()
 
   const [boxGroupsData, setBoxGroupData] = useState([
     {
       title: "Test Webcams",
-      data: data,
+      data: data.slice(0, 6),
     },
     {
       title: "Category Two",
-      data: data.slice(0, 4),
+      data: data.slice(0, 6),
     },
     {
       title: "Category Three",
-      data: data.slice(0, 4),
+      data: data.slice(0, 6),
     },
-  ]);
+  ])
 
   const doRequest = () => {
-    debugger;
-    const id = socket.getSocketId();
-    console.log(`${socket.getSocketId()}`);
+    debugger
+    const id = socket.getSocketId()
+    console.log(`${socket.getSocketId()}`)
     fetch("/api/website/compose-ui/get-ranking-online-models")
       .then((res) => res.json())
       .then((data) => {
-        console.log("request completed!");
-      });
-  };
+        console.log("request completed!")
+      })
+  }
 
   useEffect(() => {
     // fetch all live streams
-    debugger;
+    debugger
     if (ctx.loadedFromLocalStorage) {
       fetch("/api/website/compose-ui/get-ranking-online-models")
         .then((res) => res.json())
         .then((data) => {
-          debugger;
+          debugger
           const transformedData = data.resultDocs.map((model) => {
             return {
               ...model,
@@ -86,8 +83,8 @@ const Home = () => {
               userName: model.rootUser.username,
               userType: model.rootUser.userType,
               // currentStream: model.rootUser.currentStream || 1 /*🤔🤔 why did i put currentStream??  */
-            };
-          });
+            }
+          })
           setBoxGroupData((prev) => {
             return [
               ...prev,
@@ -95,15 +92,15 @@ const Home = () => {
                 title: "Online Models | Either onCall or onStream",
                 data: transformedData,
               },
-            ];
-          });
+            ]
+          })
         })
         .catch((error) => {
-          console.error(error);
-          alert(error);
-        });
+          console.error(error)
+          alert(error)
+        })
     }
-  }, [ctx.loadedFromLocalStorage]);
+  }, [ctx.loadedFromLocalStorage])
 
   return (
     <div className="tw-min-h-screen">
@@ -124,7 +121,7 @@ const Home = () => {
                 data={data.data}
                 key={`${index}_boxGroup_&^HJK`}
               />
-            );
+            )
           })}
         </div>
       </div>
@@ -143,7 +140,7 @@ const Home = () => {
       </div>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
