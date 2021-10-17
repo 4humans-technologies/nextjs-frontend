@@ -14,7 +14,7 @@ const Login = () => {
   const router = useRouter();
 
   if (ctx.isLoggedIn) {
-    router.push("/");
+    router.replace("/");
   }
 
   return !ctx.isLoggedIn ? (

@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react"
 
-
 function VideoPlayer({ videoTrack, audioTrack, uid, playAudio }) {
   const container = useRef()
   const [full, setFull] = useState(false)
@@ -19,7 +18,7 @@ function VideoPlayer({ videoTrack, audioTrack, uid, playAudio }) {
 
   return (
     <div className="tw-h-full video-player">
-      <div ref={container} className="tw-h-[100%]"></div>
+      <div ref={container} className="tw-h-full"></div>
       <p>{uid && uid}</p>
     </div>
   )
