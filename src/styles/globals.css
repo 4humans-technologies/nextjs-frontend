@@ -540,3 +540,8 @@ body,html{
 }
 
 /*  */
+/* Profile Tabs */
+.profile_tabs:focus{
+  background-color: #f8673b;
+}
+/* Profile Tabs */

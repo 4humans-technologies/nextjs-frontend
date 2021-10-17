@@ -3,6 +3,7 @@ import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
 import submitFile from "../Notifications/submitFile"
 import Header from "../Mainpage/Header"
+import Headermodel from "./Headermodel"
 
 function Documents() {
   const imageRef = useRef("")
@@ -11,6 +12,7 @@ function Documents() {
   const [source, setSource] = useState("/pp.jpg")
   const [videoSource, setVideoSource] = useState("/pp.jpg")
 
+  // multiple file uplode and formdata
   return (
     <div className="tw-bg-black  tw-h-[100vh] tw-text-white tw-text-center ">
       <Header />
@@ -22,7 +24,7 @@ function Documents() {
               {/* file input */}
               <input
                 type="file"
-                name="file-input"
+                name="document_1"
                 id="file-input"
                 className="file-input__input"
                 onChange={(e) =>
@@ -70,7 +72,7 @@ function Documents() {
             <div className=" tw-min-h-full tw-relative tw-pt-4 ">
               <input
                 type="file"
-                name="file-input"
+                name="document_2"
                 id="file-input_1"
                 className="file-input__input"
                 onChange={(e) =>
