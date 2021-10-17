@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import useModalContext from "../../app/ModalContext";
+import React, { useState, useEffect } from "react"
+import Modal from "react-modal"
+import useModalContext from "../../app/ModalContext"
 import {
   VideoCall,
   Audiotrack,
@@ -8,20 +8,20 @@ import {
   Security,
   FlashOn,
   Cancel,
-} from "@material-ui/icons";
-import Image from "next/image";
-import neeraj from "../../../public/brandikaran.jpg";
-import { useRouter } from "next/router";
-import useAgora from "../../hooks/useAgora";
-import AgoraRTC from "agora-rtc-sdk-ng";
-import Videocall from "../model/VideoCall"; // Replace with your App ID.
+} from "@material-ui/icons"
+import Image from "next/image"
+import neeraj from "../../../public/brandikaran.jpg"
+import { useRouter } from "next/router"
+import useAgora from "../../hooks/useAgora"
+import AgoraRTC from "agora-rtc-sdk-ng"
+import Videocall from "../model/VideoCall" // Replace with your App ID.
+import { FastForward } from "@material-ui/icons"
 
-let token;
-let channel;
+let token
+let channel
 
 function CallDetailsPopUp(props) {
-  const router = useRouter();
-  const ctx = useModalContext();
+  const router = useRouter()
 
   useEffect(() => {
     // debugger;
@@ -39,25 +39,25 @@ function CallDetailsPopUp(props) {
     )
       .then((resp) => resp.json())
       .then((data) => {
-        debugger;
+        debugger
         updateCtx.updateViewer({
           rtcToken: data.rtcToken,
-        });
-        token = data.rtcToken;
-        channel = data.modelId;
+        })
+        token = data.rtcToken
+        channel = data.modelId
         // join();
-        console.log(`${data.actionStatus}`);
+        console.log(`${data.actionStatus}`)
       })
-      .catch((error) => console.log(error));
-  }, []);
+      .catch((error) => console.log(error))
+  }, [])
 
   const callDirect = (e) => {
-    e.preventDefault();
-    router.push("/ravi/call");
-  };
+    e.preventDefault()
+    router.push("/ravi/call")
+  }
   const videoDirect = (e) => {
-    e.preventDefault();
-    (
+    e.preventDefault()
+    ;(
       <Videocall
         token={token}
         channel={channel}
@@ -66,8 +66,8 @@ function CallDetailsPopUp(props) {
         callType="videoCall"
       />
     ),
-      router.push("/ravi/videocall");
-  };
+      router.push("/ravi/videocall")
+  }
 
   return (
     <>
@@ -190,13 +190,13 @@ function CallDetailsPopUp(props) {
         </div>
         <button
           className="tw-text-white-color hover:tw-text-dreamgirl-red tw-absolute tw-top-0 tw-left-0"
-          onClick={ctx.toggleCallModal}
+          onClick={props.closeModal}
         >
           <Cancel fontSize="large" />
         </button>
       </div>
     </>
-  );
+  )
 }
 
-export default CallDetailsPopUp;
+export default CallDetailsPopUp

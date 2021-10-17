@@ -28,7 +28,7 @@ import useModalContext from "../../app/ModalContext"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 import io from "../../socket/socket"
-import next from "next"
+import CallDetailsPopUp from "../Call/CallDetailsPopUp"
 
 const ViewerScreen = dynamic(() => import("../Mainpage/ViewerScreen"), {
   ssr: false,
@@ -286,10 +286,14 @@ function Livescreen() {
             })
           }
         })
-        .catch((err) => next(err))
+        .catch((err) => alert(err))
     }
   }
 
+  const showCallDetailPopUp = useCallback(
+    () => ctx.showModalWithContent(<CallDetailsPopUp />),
+    [ctx.showModalWithContent]
+  )
   return (
     <>
       <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
@@ -320,7 +324,7 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                   variant="primary"
-                  onClick={ctx.toggleCallModal}
+                  onClick={showCallDetailPopUp}
                 >
                   <VideocamIcon fontSize="small" />
                   <p className="tw-pl-1 tw-tracking-tight">
@@ -332,7 +336,7 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                   variant="success"
-                  onClick={ctx.toggleCallModal}
+                  onClick={showCallDetailPopUp}
                 >
                   <PhoneInTalkIcon fontSize="small" />
                   <span className="tw-pl-1 tw-tracking-tight">
@@ -350,7 +354,7 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                   variant="success"
-                  onClick={ctx.toggleCallModal}
+                  onClick={() => ctx.showModalWithContent(<CallDetailsPopUp />)}
                 >
                   <PhoneInTalkIcon fontSize="small" />
                   <span className="tw-pl-1 tw-tracking-tight">
@@ -360,7 +364,7 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                   variant="primary"
-                  onClick={ctx.toggleCallModal}
+                  onClick={() => ctx.showModalWithContent(<CallDetailsPopUp />)}
                 >
                   <VideocamIcon fontSize="small" />
                   <p className="tw-pl-1 tw-tracking-tight">

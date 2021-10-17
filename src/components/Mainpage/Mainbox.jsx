@@ -29,11 +29,19 @@ function Mainbox(props) {
           href={`/view-stream/${props.modelId}`}
           className="tw-cursor-pointer"
         >
-          <img
-            src={props.photo}
-            className="tw-object-cover tw-object-center tw-cursor-pointer tw-rounded"
-            alt=""
-          />
+          <span className="tw-cursor-pointer">
+            <img
+              src={props.photo}
+              className="tw-object-cover tw-object-center tw-rounded-t"
+              alt=""
+            />
+            <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-purple-600">
+              Busy
+            </p>
+            {/* <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color">
+              Streaming
+            </p> */}
+          </span>
         </Link>
       </div>
     </div>
