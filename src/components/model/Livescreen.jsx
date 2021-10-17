@@ -17,6 +17,8 @@ import LivePeople from "./LivePeople"
 import dynamic from "next/dynamic"
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
 import BrowseGifts from "../Gift/BrowseGifts"
+import CallDetailsPopUp from "../Call/CallDetailsPopUp"
+import Token from "../model/Token"
 
 // for audio video call
 import PhoneInTalkIcon from "@material-ui/icons/PhoneInTalk"
@@ -146,11 +148,10 @@ const unAuthedUserEmojis = [
 ]
 
 function Livescreen() {
-
   const chatInputRef = createRef()
   const chatBoxContainer = createRef()
 
-  const ctx = useModalContext()
+  const modalCtx = useModalContext()
   const authCtx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
   const router = useRouter()
@@ -304,7 +305,9 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                   variant="primary"
-                  onClick={ctx.toggleCallModal}
+                  onClick={() => {
+                    modalCtx.showModalWithContent(<CallDetailsPopUp />)
+                  }}
                 >
                   <VideocamIcon fontSize="small" />
                   <p className="tw-pl-1 tw-tracking-tight">
@@ -316,7 +319,10 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                   variant="success"
-                  onClick={ctx.toggleCallModal}
+                  // onClick={ctx.toggleCallModal}
+                  onClick={() => {
+                    modalCtx.showModalWithContent(<CallDetailsPopUp />)
+                  }}
                 >
                   <PhoneInTalkIcon fontSize="small" />
                   <span className="tw-pl-1 tw-tracking-tight">
@@ -334,7 +340,10 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                   variant="success"
-                  onClick={ctx.toggleCallModal}
+                  // onClick={ctx.toggleCallModal}
+                  onClick={() => {
+                    modalCtx.showModalWithContent(<CallDetailsPopUp />)
+                  }}
                 >
                   <PhoneInTalkIcon fontSize="small" />
                   <span className="tw-pl-1 tw-tracking-tight">
@@ -344,7 +353,9 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                   variant="primary"
-                  onClick={ctx.toggleCallModal}
+                  onClick={() => {
+                    modalCtx.showModalWithContent(<CallDetailsPopUp />)
+                  }}
                 >
                   <VideocamIcon fontSize="small" />
                   <p className="tw-pl-1 tw-tracking-tight">
@@ -355,7 +366,7 @@ function Livescreen() {
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                   variant="danger"
                   onClick={() => {
-                    setShowBrowseGifts((prev) => !prev)
+                    modalCtx.showModalWithContent(<Token />)
                   }}
                 >
                   <CardGiftcardIcon fontSize="small" />

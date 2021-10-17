@@ -6,9 +6,7 @@ import dynamic from "next/dynamic";
 import StarIcon from "@material-ui/icons/Star";
 import Link from "next/link";
 
-const DynamicComponent = dynamic(() => import("./ViewerScreen"), {
-  ssr: false,
-});
+
 
 function Mainbox(props) {
   const watch = () => {
