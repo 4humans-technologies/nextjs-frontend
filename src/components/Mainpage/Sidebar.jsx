@@ -1,15 +1,15 @@
-import React from "react";
-import HomeIcon from "@material-ui/icons/Home";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
-import HistoryIcon from "@material-ui/icons/History";
-import { useSidebarStatus } from "../../app/Sidebarcontext";
-import { Button } from "react-bootstrap";
+import React from "react"
+import HomeIcon from "@material-ui/icons/Home"
+import FavoriteIcon from "@material-ui/icons/Favorite"
+import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt"
+import HistoryIcon from "@material-ui/icons/History"
+import { useSidebarStatus } from "../../app/Sidebarcontext"
+import { Button } from "react-bootstrap"
 import { useRouter } from "next/router"
 import ExitToAppIcon from "@material-ui/icons/ExitToApp"
 
 const data = [
-  {
+  /* {
     name: "Home",
     icon: <FavoriteIcon className="tw-mr-2" />,
     number: 56,
@@ -23,7 +23,7 @@ const data = [
     name: "Motu bhai",
     icon: <FavoriteIcon className="tw-mr-2" />,
     number: 153,
-  },
+  }, */
 ]
 
 function Sidebar(props) {
@@ -94,4 +94,4 @@ function Sidebar(props) {
   )
 }
 
-export default Sidebar;
+export default Sidebar
