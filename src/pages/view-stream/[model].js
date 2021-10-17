@@ -6,8 +6,7 @@ import SecondHeader from "../../components/Mainpage/SecondHeader"
 import Sidebar from "../../components/Mainpage/Sidebar"
 import LiveScreen from "../../components/model/LiveScreen"
 import ModelProfile from "../../components/model/ModelProfile"
-import useFetchInterceptor from "../../hooks/useFetchInterceptor"
-
+import Recommendation from "../../components/ViewerScreen/Recommendation"
 function ViewModelStream() {
   // 👇👇👇 store the models profile value in a state here
   const [modelProfileData, setModelProfileData] = useState(null)
@@ -45,6 +44,7 @@ function ViewModelStream() {
           { title: "features", value: ["nice", "artist", "fast"] },
         ]}
       />
+      <Recommendation />
       <Footer />
     </>
   )

@@ -1,4 +1,5 @@
-import React from "react";
+import React from "react"
+import { FastForward } from "@material-ui/icons"
 
 function Notification() {
   return (
@@ -70,7 +71,7 @@ function Notification() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Notification;
+export default Notification

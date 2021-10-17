@@ -12,6 +12,10 @@ body,html{
   height: 100%;
 }
 
+.box-group:first-of-type {
+  margin-top: 2rem;
+}
+
 .tw-footer_1 {
   flex-basis: 50%;
 }

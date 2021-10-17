@@ -1,9 +1,9 @@
-import React, { useContext, createContext, useState } from "react";
-import Modal from "../components/Call/Modal";
+import React, { useContext, createContext, useState, useCallback } from "react"
+import Modal from "../components/Call/Modal"
 
 import GlobalModalContent, {
   SetGlobalModalContent,
-} from "../app/GlobalModalContent";
+} from "../app/GlobalModalContent"
 
 const ModalContext = createContext({
   isOpen: false,
@@ -12,41 +12,41 @@ const ModalContext = createContext({
   showModalWithContent: () => {},
   clearModalWithContent: () => {},
   hideModal: () => {},
-});
+})
 
 export function ModalContextProvider(props) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
   const [modalContent, setModalContent] = useState(
     <h1>Modal Content Not Set</h1>
-  );
+  )
 
-  const showModal = () => {
-    setIsOpen(true);
-  };
+  const showModal = useCallback(() => {
+    setIsOpen(true)
+  }, [])
 
-  const showModalWithContent = (content) => {
+  const showModalWithContent = useCallback((content) => {
     /**
      * set content and show modal
      */
-    debugger
-    setModalContent(content);
-    setIsOpen(true);
-  };
+    // debugger
+    setModalContent(content)
+    setIsOpen(true)
+  }, [])
 
-  const clearModalWithContent = () => {
+  const clearModalWithContent = useCallback(() => {
     /**
      * Hide the modal and clear the content
      */
     setModalContent(
       <h1 className="tw-text-center tw-text-lg">Modal Content Not Set</h1>
-    );
-    setIsOpen(false);
-  };
+    )
+    setIsOpen(false)
+  }, [])
 
-  const hideModal = () => {
-    debugger;
-    setIsOpen(false);
-  };
+  const hideModal = useCallback(() => {
+    debugger
+    setIsOpen(false)
+  }, [])
 
   return (
     <ModalContext.Provider
@@ -65,9 +65,9 @@ export function ModalContextProvider(props) {
       )}
       {props.children}
     </ModalContext.Provider>
-  );
+  )
 }
 
 export default function useModalContext() {
-  return useContext(ModalContext);
+  return useContext(ModalContext)
 }
