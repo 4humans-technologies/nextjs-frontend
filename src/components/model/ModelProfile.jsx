@@ -3,13 +3,7 @@ import Neeraj from "../../../public/brandikaran.jpg"
 import Image from "next/image"
 import { PlayCircleFilled } from "@material-ui/icons"
 // import CallDetailsPopUp from "../Call/CallDetailsPopUp";
-import Modal from "../Call/Modal"
 import useModalContext from "../../app/ModalContext"
-import dynamic from "next/dynamic"
-
-const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
-  ssr: false,
-})
 
 function ChipArea(props) {
   return (
@@ -24,13 +18,15 @@ function ProfileRow(props) {
    * ment for use in here only
    */
   return (
-    <div className="tw-grid tw-w-full tw-grid-cols-4 tw-mb-2">
+    <div className="tw-grid tw-w-full tw-grid-cols-4 tw-mb-3">
       <h4 className="tw-grid-cols-1">
-        <span className="tw-font-semibold tw-text-lg tw-pr-1 tw-capitalize">
+        <span className="tw-font-semibold tw-pr-1 tw-capitalize">
           {props.title}
         </span>
       </h4>
-      <div className="tw-col-span-3 tw-capitalize">{props.data}</div>
+      <div className="tw-col-span-3 tw-capitalize tw-text-sm tw-font-light">
+        {props.data}
+      </div>
     </div>
   )
 }
@@ -341,7 +337,7 @@ function ModelProfile(props) {
   }
   const [state, dispatch] = useReducer(reducer, intiState)
   return (
-    <div className=" tw-bg-first-color tw-pt-16 tw-pb-20 tw-px-3 md:tw-px-4">
+    <div className=" tw-bg-first-color tw-pt-16 tw-pb-8 tw-px-3 md:tw-px-4">
       <div className="">
         {/* checking for tabs */}
         <div className="tw-inline-flex tw-bg-black tw-text-white   tw-rounded-t-2xl">
@@ -375,13 +371,6 @@ function ModelProfile(props) {
           {state.val}
         </div>
       </div>
-      {/* modal setup */}
-      <Modal
-        isOpen={modalContext.callDetailsOpen}
-        onRequestClose={modalContext.toggleCallModal}
-      >
-        <CallDetailsPopUp />
-      </Modal>
       {/* <button onClick={ctx.toggleModal} className="tw-px-3 tw-py-2 tw-text-white-color">Close</button> */}
     </div>
   )

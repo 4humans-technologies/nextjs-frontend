@@ -75,8 +75,6 @@ const Home = () => {
           const transformedData = data.resultDocs.map((model) => {
             return {
               ...model,
-              profileImage:
-                "https://png.pngtree.com/png-clipart/20190614/original/pngtree-female-avatar-vector-icon-png-image_3725439.jpg",
               age: new Date().getFullYear() - new Date(model.dob).getFullYear(),
               languages: model.languages.join(","),
               rootUserId: model.rootUser._id,

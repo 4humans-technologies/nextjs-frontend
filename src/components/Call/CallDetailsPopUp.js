@@ -107,7 +107,7 @@ function CallDetailsPopUp(props) {
                 />
               </div>
               <h2 className="tw-text-lg tw-font-bold tw-mb-2 tw-text-white-color tw-uppercase">
-                video call
+                private video call
               </h2>
               <hr className="tw-w-8/12 tw-my-4 tw-text-white-color tw-mx-auto" />
               <div className="mt-2">
@@ -148,7 +148,7 @@ function CallDetailsPopUp(props) {
                 />
               </div>
               <h2 className="tw-text-lg tw-font-bold tw-mb-2 tw-text-white-color tw-uppercase">
-                Audio call
+                private Audio call
               </h2>
               <hr className="tw-w-8/12 tw-my-4 tw-text-white-color tw-mx-auto" />
               <div className="mt-2">

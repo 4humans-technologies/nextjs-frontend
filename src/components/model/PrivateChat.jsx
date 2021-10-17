@@ -1,117 +1,99 @@
-import React from "react";
+import React, { useState } from "react"
+import {
+  Stars,
+  StarOutline,
+  ChatBubble,
+  CheckCircle,
+  SupervisedUserCircle,
+  ExitToApp,
+} from "@material-ui/icons"
+
+const data = []
+const noPlanBanner = (
+  <div className="tw-mt-6 tw-py-20">
+    <div className="tw-text-center">
+      <span className="tw-rounded-full tw-bg-dreamgirl-red tw-inline-grid tw-place-items-center tw-p-3 tw-mx-auto video-call-button">
+        <StarOutline
+          className="tw-text-white-color"
+          style={{ fontSize: "50px" }}
+        />
+      </span>
+      <p className="tw-font-semibold tw-text-red-500 tw-capitalize tw-mt-3">
+        go ultimate
+      </p>
+      <p className="tw-text-text-black">to chat privately with any model</p>
+    </div>
+    <div className="tw-my-6 tw-rounded tw-bg-first-color tw-text-text-black tw-p-3">
+      <p className="tw-mx-2 tw-my-1">
+        <span className="tw-pr-2">
+          <ChatBubble fontSize="small" />
+        </span>
+        Unlimited Private Messages
+      </p>
+      <p className="tw-mx-2 tw-my-1">
+        <span className="tw-pr-2">
+          <SupervisedUserCircle fontSize="small" />
+        </span>
+        Chat With Any Model
+      </p>
+      <p className="tw-mx-2 tw-my-1">
+        <span className="tw-pr-2">
+          <CheckCircle fontSize="small" />
+        </span>
+        Model Can Focus On You More
+      </p>
+    </div>
+    <div className="tw-mt-3 tw-text-center">
+      <button className="tw-capitalize tw-bg-dreamgirl-red tw-text-white tw-py-2 tw-px-4 tw-rounded-full tw-font-medium video-call-button">
+        <Stars className="tw-text-white-color" fontSize="small" />
+        <span className="tw-pl-2">Get Pro Chat Plan</span>
+      </button>
+    </div>
+  </div>
+)
+
+const notLoggedInBanner = (
+  <div className="tw-mt-6 tw-py-20">
+    <div className="tw-text-center">
+      <span className="tw-rounded-full tw-bg-dreamgirl-red tw-inline-grid tw-place-items-center tw-p-3 tw-mx-auto video-call-button">
+        <StarOutline
+          className="tw-text-white-color"
+          style={{ fontSize: "50px" }}
+        />
+      </span>
+      <p className="tw-capitalize tw-text-red-600 tw-font-semibold tw-mt-4">
+        Exclusive Private Chat
+      </p>
+      <p className="tw-text-text-black tw-capitalize tw-mt-4">
+        Please login to chat <br /> privately with the model
+      </p>
+    </div>
+    <div className="tw-text-center tw-mt-4">
+      <button className="tw-capitalize tw-bg-dreamgirl-red tw-text-white tw-py-2 tw-px-8 tw-rounded-full tw-font-medium">
+        <ExitToApp className="tw-text-white-color" fontSize="small" /> Login
+      </button>
+    </div>
+  </div>
+)
 
 function PrivateChat() {
-  const data = [
+  const [hasPlan, setHasPlan] = useState(false)
+  const [privateChatMessages, setPrivateChatMessages] = useState([
     {
-      id: 1,
-      name: "Neeraj Bhai Brandikaran ",
-      age: 18,
-      message: "I love silicon Valley",
+      type: "normal-public-message",
+      index: 1,
+      username: "Model",
+      message: "Start chatting with  me 💌💌🥰",
+      walletCoins: "You are live",
     },
-    {
-      id: 2,
-      name: "Neeraj Rai",
-      age: 19,
-      message: "I love My India",
-    },
-    {
-      id: 3,
-      name: "Neeraj",
-      age: 20,
-      message: "我是王五",
-    },
-
-    {
-      id: 4,
-      name: "Ravi Bhai",
-      age: 21,
-      message: "I am The Hero",
-    },
-    {
-      id: 5,
-      name: "Ravi shankar",
-      age: 22,
-      message: "I am Ravi",
-    },
-    {
-      id: 6,
-      name: "Ravi ji",
-      age: 23,
-      message: "我是Ravi",
-    },
-    {
-      id: 7,
-      name: "Ravi",
-      age: 24,
-      message: "我是Ravi",
-    },
-    {
-      id: 8,
-      name: "Ravi",
-      age: 25,
-      message: "我是Ravi",
-    },
-    {
-      id: 9,
-      name: "Ravi",
-      age: 26,
-      message: "我是Ravi",
-    },
-    {
-      id: 10,
-      name: "Ravi",
-      age: 27,
-      message: "我是Ravi",
-    },
-    {
-      id: 11,
-      name: "Ravi",
-      age: 28,
-      message: "我是Ravi ----",
-    },
-    {
-      id: 12,
-      name: "Ravi shankar singh",
-      age: 29,
-      message: "我是Ravi======================",
-    },
-    {
-      id: 13,
-      name: "Ravi",
-      age: 30,
-      message: "我是Ravi ji",
-    },
-    {
-      id: 14,
-      name: "Ravi shankar",
-      age: 30,
-      message: "Nrj is Bro ",
-    },
-  ];
+  ])
 
   return (
-    <div className="tw-font-sans chat-box">
-      {data.map((item, index) => {
-        return (
-          <div>
-            <div
-              key={index}
-              className="tw-flex tw-bg-second-color tw-justify-between tw-text-white tw-py-1 tw-px-1  tw-font-sans"
-            >
-              <div className="tw-flex">
-                <div className="md:tw-mx-2 tw-font-bold tw-text-red-500 tw-text-base">
-                  {item.name} :
-                </div>
-                <div className="tw-text-sm">{item.message}</div>
-              </div>
-              <div className="tw-text-yellow-400 tw-pr-6">{item.id} Coins</div>
-            </div>
-            <hr className="tw-bg-dark-black" />
-          </div>
-        );
-      })}
+    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 tw-h-full tw-bg-dark-black tw-ml-1">
+      {noPlanBanner}
+      {notLoggedInBanner}
     </div>
-  );
+  )
 }
 
-export default PrivateChat;
+export default PrivateChat

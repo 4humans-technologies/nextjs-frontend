@@ -5,6 +5,7 @@ import router, { useRouter } from "next/router"
 import dynamic from "next/dynamic"
 import StarIcon from "@material-ui/icons/Star"
 import Link from "next/link"
+import { imageDomainURL } from "../../../dreamgirl.config"
 
 const DynamicComponent = dynamic(() => import("./ViewerScreen"), {
   ssr: false,
@@ -22,6 +23,13 @@ function Mainbox(props) {
   //   star.push(<StarIcon className="tw-text-yellow-300 " />);
   // }
 
+  let imageUrl
+  if (props.photo.startsWith("http")) {
+    imageUrl = props.photo
+  } else {
+    imageUrl = `${imageDomainURL}${props.photo}`
+  }
+
   return (
     <div className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full">
       <div className="tw-relative tw-font-sans parent_transition tw-m-0">
@@ -31,7 +39,7 @@ function Mainbox(props) {
         >
           <span className="tw-cursor-pointer">
             <img
-              src={props.photo}
+              src={imageUrl}
               className="tw-object-cover tw-object-center tw-rounded-t"
               alt=""
             />

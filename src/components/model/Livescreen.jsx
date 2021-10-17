@@ -4,6 +4,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  useMemo,
 } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
@@ -11,12 +12,13 @@ import PersonIcon from "@material-ui/icons/Person"
 import MoreVertIcon from "@material-ui/icons/MoreVert"
 import AccountCircleIcon from "@material-ui/icons/AccountCircle"
 import FlareIcon from "@material-ui/icons/Flare"
-import Publicchat from "./PublicChat"
+import PublicChat from "./PublicChat"
 import PrivateChat from "./PrivateChat"
 import LivePeople from "./LivePeople"
 import dynamic from "next/dynamic"
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
 import BrowseGifts from "../Gift/BrowseGifts"
+import MarkChatReadIcon from "@material-ui/icons/Markunread"
 
 // for audio video call
 import PhoneInTalkIcon from "@material-ui/icons/PhoneInTalk"
@@ -28,7 +30,10 @@ import useModalContext from "../../app/ModalContext"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 import io from "../../socket/socket"
-import CallDetailsPopUp from "../Call/CallDetailsPopUp"
+
+const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
+  ssr: false,
+})
 
 const ViewerScreen = dynamic(() => import("../Mainpage/ViewerScreen"), {
   ssr: false,
@@ -151,7 +156,7 @@ const chatWindowOptions = {
   USERS: "users",
 }
 
-function Livescreen() {
+function LiveScreen() {
   const chatInputRef = createRef()
   const chatBoxContainer = createRef()
 
@@ -163,15 +168,6 @@ function Livescreen() {
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [showBrowseGifts, setShowBrowseGifts] = useState(true)
   const [gifts, setGifts] = useState(giftData)
-
-  const chatComponent = useCallback(() => {
-    switch (chatWindow) {
-      case chatWindowOptions.PUBLIC:
-        return <Publicchat scrollOnChat={scrollOnChat} />
-      default:
-        break
-    }
-  }, [chatWindow])
 
   useEffect(() => {
     document.addEventListener("new-chat", () => {
@@ -195,12 +191,28 @@ function Livescreen() {
     })
   }, [chatBoxContainer.current])
 
+  const chatComponent = useMemo(() => {
+    switch (chatWindow) {
+      case chatWindowOptions.PUBLIC:
+        return <PublicChat scrollOnChat={scrollOnChat} />
+      case chatWindowOptions.PRIVATE:
+        return <PrivateChat scrollOnChat={scrollOnChat} />
+      default:
+        break
+    }
+  }, [chatWindow, scrollOnChat, chatWindowOptions])
+
   const sendChatMessage = () => {
     debugger
     if (!chatInputRef.current) {
-      alert("ref not created !!")
+      alert("ref not created, updated")
       return
     }
+
+    if (!chatInputRef.current?.value) {
+      return
+    }
+
     let payLoad
     const message = chatInputRef.current.value
     console.log(
@@ -232,6 +244,18 @@ function Livescreen() {
     io.getSocket().emit("viewer-message-public-emitted", payLoad)
     chatInputRef.current.value = ""
   }
+
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.keyCode === 13) {
+        sendChatMessage()
+      }
+    }
+    document.addEventListener("keydown", handleKeyPress)
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress)
+    }
+  }, [sendChatMessage])
 
   const fetchGifts = () => {
     if (gifts.length === 0) {
@@ -291,8 +315,9 @@ function Livescreen() {
   }
 
   const showCallDetailPopUp = useCallback(
-    () => ctx.showModalWithContent(<CallDetailsPopUp />),
-    [ctx.showModalWithContent]
+    () =>
+      ctx.showModalWithContent(<CallDetailsPopUp closeModal={ctx.hideModal} />),
+    [ctx.showModalWithContent, ctx.hideModal]
   )
   return (
     <>
@@ -354,7 +379,7 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                   variant="success"
-                  onClick={() => ctx.showModalWithContent(<CallDetailsPopUp />)}
+                  onClick={showCallDetailPopUp}
                 >
                   <PhoneInTalkIcon fontSize="small" />
                   <span className="tw-pl-1 tw-tracking-tight">
@@ -364,7 +389,7 @@ function Livescreen() {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
                   variant="primary"
-                  onClick={() => ctx.showModalWithContent(<CallDetailsPopUp />)}
+                  onClick={showCallDetailPopUp}
                 >
                   <VideocamIcon fontSize="small" />
                   <p className="tw-pl-1 tw-tracking-tight">
@@ -388,18 +413,41 @@ function Livescreen() {
 
         <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-6/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
           <div className="tw-flex tw-justify-between tw-text-white tw-pt-3 sm:tw-py-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
-            <button className="tw-inline-flex tw-items-center tw-content-center tw-py-2">
+            <button
+              className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+              onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
+            >
               <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
-              <span className="tw-font-semibold tw-text-lg tw-pl-2 tw-my-auto">
+              <span className="tw-font-medium tw-text-lg tw-pl-2 tw-my-auto">
                 Live Chat
               </span>
             </button>
+            <button
+              className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+              onClick={() => setChatWindow(chatWindowOptions.PRIVATE)}
+            >
+              <MarkChatReadIcon className="tw-mr-2 tw-my-auto" />
+              <span className="tw-font-medium tw-text-lg tw-pl-2 tw-my-auto">
+                Private Chat
+              </span>
+            </button>
+            {authCtx.user.userType === "Model" ? (
+              <button
+                className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                onClick={() => setChatWindow(chatWindowOptions.USERS)}
+              >
+                <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
+                <span className="tw-font-medium tw-text-lg tw-pl-2 tw-my-auto">
+                  Users
+                </span>
+              </button>
+            ) : null}
           </div>
           <div
             ref={chatBoxContainer}
             className="tw-absolute tw-h-[90%] tw-bottom-0 tw-w-full chat-box-container tw-overflow-y-scroll"
           >
-            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18">
+            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-h-full">
               {chatComponent}
             </div>
           </div>
@@ -413,7 +461,7 @@ function Livescreen() {
               ></input>
               <button
                 onClick={sendChatMessage}
-                className="sm:tw-py-3 tw-py-2 tw-px-0 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-tr-full tw-rounded-br-full"
+                className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-tr-full tw-rounded-br-full"
               >
                 Send
               </button>
@@ -421,15 +469,8 @@ function Livescreen() {
           </div>
         </div>
       </div>
-      {showBrowseGifts ? (
-        <BrowseGifts
-          closeBrowseGiftsSection={setShowBrowseGifts}
-          buyGift={buyGift}
-          gifts={gifts}
-        />
-      ) : null}
     </>
   )
 }
 
-export default Livescreen
+export default LiveScreen
