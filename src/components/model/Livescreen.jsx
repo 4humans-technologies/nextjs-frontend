@@ -152,17 +152,6 @@ const chatWindowOptions = {
 }
 
 function Livescreen() {
-  // if (ctx.userType !== "UnAuthedViewer" || ctx.userType !== "Viewer") {
-  //   alert("Only Viewers Can Join Stream, Not Models Or Admin/Staff")
-  //   return (
-  //     <div className="tw-min-h-screen tw-place-items-center">
-  //       <h1 className="tw-font-mono tw-font-bold tw-text-xl tw-text-red-600">
-  //         Only Viewers Can Join Stream, Not Models Or Admin/Staff
-  //       </h1>
-  //     </div>
-  //   )
-  // }
-
   const chatInputRef = createRef()
   const chatBoxContainer = createRef()
 

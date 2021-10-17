@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CreateIcon from "@material-ui/icons/Create";
-import HelpIcon from "@material-ui/icons/Help";
-import ToggleOffIcon from "@material-ui/icons/ToggleOff";
-import ToggleOnIcon from "@material-ui/icons/ToggleOn";
+import HelpIcon from "@material-ui/icons/Help"
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";

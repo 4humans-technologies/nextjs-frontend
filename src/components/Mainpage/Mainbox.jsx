@@ -25,7 +25,10 @@ function Mainbox(props) {
   return (
     <div className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full">
       <div className="tw-relative tw-font-sans parent_transition tw-m-0">
-        <Link href={`/view-stream/${props.modelId}`} className="tw-cursor-pointer">
+        <Link
+          href={`/view-stream/${props.modelId}`}
+          className="tw-cursor-pointer"
+        >
           <img
             src={props.photo}
             className="tw-object-cover tw-object-center tw-cursor-pointer tw-rounded"

@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from "react"
 import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
 import submitFile from "../Notifications/submitFile"
+import Header from "../Mainpage/Header"
+import Headermodel from "./Headermodel"
 
 function Documents() {
   const imageRef = useRef("")
@@ -10,16 +12,19 @@ function Documents() {
   const [source, setSource] = useState("/pp.jpg")
   const [videoSource, setVideoSource] = useState("/pp.jpg")
 
+  // multiple file uplode and formdata
   return (
     <div className="tw-bg-black  tw-h-[100vh] tw-text-white tw-text-center ">
-      <div className="tw-bg-red-400 md:tw-w-1/2 tw-gap-2 md:tw-ml-[28%] md:tw-top-[20%] tw-absolute  document_rows_main">
-        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 ">
+      <Header />
+
+      <div className="tw-bg-third-color md:tw-w-1/2 tw-gap-2 md:tw-ml-[28%] tw-ml-0 md:tw-top-[20%] tw-mt-0 md:tw-absolute  document_rows_main tw-rounded-t-2xl tw-rounded-b-2xl">
+        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0 tw-bg-second-color tw-m-4  ">
           <div className="tw-bg-gray-400 ">
-            <div className="tw-bg-gray-500 tw-min-h-full tw-relative  ">
+            <div className=" tw-min-h-full tw-relative tw-pt-4">
               {/* file input */}
               <input
                 type="file"
-                name="file-input"
+                name="document_1"
                 id="file-input"
                 className="file-input__input"
                 onChange={(e) =>
@@ -28,7 +33,7 @@ function Documents() {
                 ref={videoRef}
               />
               <label
-                className="file-input__label tw-absolute tw-top-1/3 tw-left-1/3"
+                className="file-input__label md:tw-absolute md:tw-top-1/3 md:tw-left-1/3 "
                 htmlFor="file-input"
               >
                 <svg
@@ -48,27 +53,26 @@ function Documents() {
                 </svg>
                 <span>Upload file</span>
               </label>
-              <p className="tw-absolute tw-top-1/2 tw-left-1/4">
-                Uplode photo with document
+              <p className="md:tw-absolute md:tw-top-1/2 md:tw-left-1/4 ">
+                Uplode Your Id card
               </p>
             </div>
           </div>
-          <div className="tw-bg-gray-400">
+          <div className="tw-bg-gray-400 ">
             <img
               id="output"
               src={videoSource}
-              className=" tw-w-full tw-h-full "
+              className=" tw-w-full tw-h-full md:tw-px-4 md:tw-py-8"
             />
           </div>
         </div>
         {/* change of department */}
-        <div className="tw-grid tw-grid-cols-2 document_rows tw-gap-2 ">
+        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0 tw-bg-second-color tw-m-4 ">
           <div className="tw-bg-gray-400  ">
-            <div className="tw-bg-gray-500 tw-min-h-full tw-relative  ">
-              {/* file input */}
+            <div className=" tw-min-h-full tw-relative tw-pt-4 ">
               <input
                 type="file"
-                name="file-input"
+                name="document_2"
                 id="file-input_1"
                 className="file-input__input"
                 onChange={(e) =>
@@ -77,7 +81,7 @@ function Documents() {
                 ref={imageRef}
               />
               <label
-                className="file-input__label tw-absolute tw-top-1/3 tw-left-1/3"
+                className="file-input__label md:tw-absolute md:tw-top-1/3 md:tw-left-1/3"
                 htmlFor="file-input_1"
               >
                 <svg
@@ -97,21 +101,25 @@ function Documents() {
                 </svg>
                 <span>Upload file</span>
               </label>
-              <p className="tw-absolute tw-top-1/2 tw-left-1/4">
-                Uplode your Document
+              <p className="md:tw-absolute md:tw-top-1/2 md:tw-left-1/4">
+                Uplode self with Id card
               </p>
             </div>
           </div>
           <div className="tw-bg-gray-400">
-            <img id="output" src={source} className=" tw-w-full tw-h-full " />
+            <img
+              id="output"
+              src={source}
+              className=" tw-w-full tw-h-full md:tw-px-4 md:tw-py-8"
+            />
           </div>
         </div>
         <div className='tw-justify-center"'>
           <Button
-            className="tw-w-1/6 tw-justify-center"
+            className="tw-w-1/3 tw-justify-center tw-mt-4 "
             onClick={() => modalCtx.showModalWithContent(submitFile)}
           >
-            Submit
+            submit request
           </Button>
         </div>
       </div>

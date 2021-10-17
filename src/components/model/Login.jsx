@@ -23,7 +23,7 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log(password, username)
+    // console.log(password, username)
     fetch("/api/website/login", {
       method: "POST",
       cors: "include",

@@ -1,23 +1,22 @@
-import React from "react";
-import { useEffect } from "react";
-import Neeraj from "../../../public/brandikaran.jpg";
-import Image from "next/image";
-import { PlayCircleFilled } from "@material-ui/icons";
+import React, { useReducer } from "react"
+import Neeraj from "../../../public/brandikaran.jpg"
+import Image from "next/image"
+import { PlayCircleFilled } from "@material-ui/icons"
 // import CallDetailsPopUp from "../Call/CallDetailsPopUp";
-import Modal from "../Call/Modal";
-import useModalContext from "../../app/ModalContext";
-import dynamic from "next/dynamic";
+import Modal from "../Call/Modal"
+import useModalContext from "../../app/ModalContext"
+import dynamic from "next/dynamic"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,
-});
+})
 
 function ChipArea(props) {
   return (
     <p className="tw-text-xs tw-rounded-lg tw-py-1 tw-text-text-black tw-bg-second-color tw-flex-shrink-0 tw-flex-grow-0 tw-inline-block tw-m-1">
       {props.children}
     </p>
-  );
+  )
 }
 
 function ProfileRow(props) {
@@ -33,15 +32,15 @@ function ProfileRow(props) {
       </h4>
       <div className="tw-col-span-3 tw-capitalize">{props.data}</div>
     </div>
-  );
+  )
 }
 
 function ModelProfile(props) {
   /**
    * ment for use in here only
    */
-  const { name, age } = props.profileData;
-  const modalContext = useModalContext();
+  const { name, age } = props.profileData
+  const modalContext = useModalContext()
 
   const tags = props.profileData.tags.map((tag, index) => (
     <ChipArea key={`tag-chip${index}`}>
@@ -49,7 +48,7 @@ function ModelProfile(props) {
         {tag}
       </a>
     </ChipArea>
-  ));
+  ))
 
   const categories = props.profileData.categories.map((category, index) => (
     <ChipArea key={`category-chip${index}`}>
@@ -57,14 +56,12 @@ function ModelProfile(props) {
         {category}
       </a>
     </ChipArea>
-  ));
+  ))
 
-  return (
-    <div className=" tw-bg-first-color tw-pt-16 tw-pb-20 tw-px-3 md:tw-px-4">
-      <div className="">
-        <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-10">
-          My Profile
-        </h2>
+  const Profile = () => {
+    return (
+      <>
+        {/* <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6"></h2> */}
         <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-text-text-black tw-pl-0 md:tw-pl-1 tw-gap-x-4 tw-gap-y-4">
           <div className="tw-col-span-1">
             <div
@@ -76,11 +73,11 @@ function ModelProfile(props) {
             ></div>
             <div className="tw-mt-5">
               {props.dynamicFields.map((field, index) => {
-                let value;
+                let value
                 if (Array.isArray(field.value)) {
-                  value = field.value.join(" , ");
+                  value = field.value.join(" , ")
                 } else {
-                  value = field.value;
+                  value = field.value
                 }
                 return (
                   <ProfileRow
@@ -88,11 +85,11 @@ function ModelProfile(props) {
                     data={<p>{value}</p>}
                     key={`${index}-profrow`}
                   />
-                );
+                )
               })}
             </div>
           </div>
-          <div className="tw-col-span-1">
+          <div className="tw-col-span-1 tw-self-end">
             <ProfileRow title="Name: " data={<p>{name}</p>} />
             <ProfileRow title="Age: " data={<p>{age}</p>} />
             <ProfileRow title="Tags: " data={tags} />
@@ -110,10 +107,14 @@ function ModelProfile(props) {
             />
           </div>
         </div>
-        <br />
-        <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6">
-          My Images
-        </h2>
+      </>
+    )
+  }
+
+  const Images = () => {
+    return (
+      <>
+        {/* <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6"></h2> */}
         <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3">
           <div className="tw-col-span-1 tw-row-span-1">
             <Image
@@ -171,10 +172,14 @@ function ModelProfile(props) {
             <div className="tw-h-1 tw-bg-second-color tw-ml-2 tw-flex-grow tw-rounded-sm"></div>
           </div>
         </div>
-        <br />
-        <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6">
-          My Videos
-        </h2>
+      </>
+    )
+  }
+
+  const Videos = () => {
+    return (
+      <div>
+        {/* <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6"></h2> */}
         <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3">
           <div className="tw-col-span-1 tw-row-span-1 tw-relative">
             <Image
@@ -317,6 +322,59 @@ function ModelProfile(props) {
           </div>
         </div>
       </div>
+    )
+  }
+
+  const intiState = { val: <Profile /> }
+
+  const reducer = (state = intiState, action) => {
+    switch (action.type) {
+      case "Profile":
+        return { val: <Profile /> }
+      case "Image":
+        return { val: <Images /> }
+      case "Videos":
+        return { val: <Videos /> }
+      default:
+        return state
+    }
+  }
+  const [state, dispatch] = useReducer(reducer, intiState)
+  return (
+    <div className=" tw-bg-first-color tw-pt-16 tw-pb-20 tw-px-3 md:tw-px-4">
+      <div className="">
+        {/* checking for tabs */}
+        <div className="tw-inline-flex tw-bg-black tw-text-white   tw-rounded-t-2xl">
+          <button
+            className="tw-px-4 focus:tw-bg-second-color   tw-rounded-t-xl tw-py-1"
+            onClick={() => {
+              dispatch({ type: "Profile" })
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            <div>Profile</div>
+            {/* <Profile /> */}
+          </button>
+          <button
+            className="tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl"
+            onClick={() => dispatch({ type: "Image" })}
+            style={{ cursor: "pointer" }}
+          >
+            Images
+          </button>
+          <button
+            className="tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl"
+            onClick={() => dispatch({ type: "Videos" })}
+            style={{ cursor: "pointer" }}
+          >
+            Videos
+          </button>
+        </div>
+        {/* checking for tabs */}
+        <div className="tw-border-t-[3px] tw-border-second-color">
+          {state.val}
+        </div>
+      </div>
       {/* modal setup */}
       <Modal
         isOpen={modalContext.callDetailsOpen}
@@ -326,7 +384,7 @@ function ModelProfile(props) {
       </Modal>
       {/* <button onClick={ctx.toggleModal} className="tw-px-3 tw-py-2 tw-text-white-color">Close</button> */}
     </div>
-  );
+  )
 }
 
-export default ModelProfile;
+export default ModelProfile

@@ -5,7 +5,7 @@ import Image from "next/image";
 
 function Footer() {
   return (
-    <div className="tw-pt-10 tw-bg-dark-black">
+    <div className="tw-pt-10 tw-bg-dark-black ">
       <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 lg:tw-grid-cols-6  tw-auto-rows-auto tw-px-2 tw-gap-y-4 tw-gap-x-3 md:tw-px-6 tw-py-6 sm:tw-gap-x-3 tw-tracking-wide">
         <div className="tw-col-span-1 md:tw-col-span-3 lg:tw-col-span-2 flex tw-flex-col tw-items-center tw-justify-between">
           <div className="flex tw-items-center tw-justify-start tw-mb-10">
@@ -103,7 +103,7 @@ function Footer() {
         </p>
       </div>
     </div>
-  );
+  )
 }
 
 export default Footer;

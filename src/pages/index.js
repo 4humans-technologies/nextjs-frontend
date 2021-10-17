@@ -111,9 +111,9 @@ const Home = () => {
       <div className="tw-h-20"></div>
       <Header />
       <SecondHeader />
-      <div className="tw-flex">
+      <div className="tw-flex tw-flex-grow-1 tw-flex-shrink-0">
         <Sidebar />
-        <div className="">
+        <div>
           {boxGroupsData.map((data, index) => {
             return (
               <Boxgroup
