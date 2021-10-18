@@ -54,7 +54,7 @@ const Home = () => {
   ])
 
   const doRequest = () => {
-    debugger
+    //debugger
     const id = socket.getSocketId()
     console.log(`${socket.getSocketId()}`)
     fetch("/api/website/compose-ui/get-ranking-online-models")
@@ -66,12 +66,12 @@ const Home = () => {
 
   useEffect(() => {
     // fetch all live streams
-    debugger
+    //debugger
     if (ctx.loadedFromLocalStorage) {
       fetch("/api/website/compose-ui/get-ranking-online-models")
         .then((res) => res.json())
         .then((data) => {
-          debugger
+          //debugger
           const transformedData = data.resultDocs.map((model) => {
             return {
               ...model,

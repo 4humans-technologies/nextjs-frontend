@@ -5,7 +5,7 @@ import { useSocketContext } from "../app/socket/SocketContext"
 function useSetupSocket(url) {
   const ctx = useSocketContext()
   useEffect(() => {
-    debugger
+    //debugger
     /* Init socket */
     console.log("Initializing socket, status")
     const socket = io.connect(url)

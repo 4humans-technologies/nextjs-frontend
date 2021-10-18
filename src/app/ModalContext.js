@@ -28,7 +28,7 @@ export function ModalContextProvider(props) {
     /**
      * set content and show modal
      */
-    // debugger
+    // //debugger
     setModalContent(content)
     setIsOpen(true)
   }, [])
@@ -44,7 +44,7 @@ export function ModalContextProvider(props) {
   }, [])
 
   const hideModal = useCallback(() => {
-    debugger
+    //debugger
     setIsOpen(false)
   }, [])
 

@@ -37,7 +37,7 @@ function Login() {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        debugger
+        //debugger
         if (data.actionStatus === "success") {
           localStorage.setItem("jwtToken", data.token)
           localStorage.setItem(
@@ -60,14 +60,14 @@ function Login() {
             jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
             streamRoom: data.streamRoom,
           })
-          debugger
+          //debugger
           io.getSocket().close()
           io.getSocket().open()
           router.push(ctx.loginSuccessUrl)
         }
       })
       .catch((err) => {
-        debugger
+        //debugger
         setLoginError(err.message)
       })
   }

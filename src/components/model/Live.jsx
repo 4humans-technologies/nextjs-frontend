@@ -1,4 +1,4 @@
-/* eslint-disable no-debugger */
+/* eslint-disable no-//debugger */
 import Header from "../Mainpage/Header"
 import SecondHeader from "../Mainpage/SecondHeader"
 import Sidebar from "../Mainpage/Sidebar"
@@ -93,7 +93,7 @@ function Live() {
 
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = () => {
-    debugger
+    //debugger
     if (
       !localStorage.getItem("rtcToken") &&
       localStorage.getItem("rtcTokenExpireIn") <= Date.now() &&
@@ -108,11 +108,11 @@ function Live() {
           },
         })
           .then((resp) => {
-            debugger
+            //debugger
             return resp.json()
           })
           .then((data) => {
-            debugger
+            //debugger
             token = data.rtcToken
             rtcTokenExpireIn = data.privilegeExpiredTs
             localStorage.setItem("rtcToken", data.rtcToken)
@@ -131,7 +131,7 @@ function Live() {
   }
 
   const endStream = () => {
-    debugger
+    //debugger
     leave()
   }
 

@@ -168,7 +168,7 @@ function PublicChatBox(props) {
   const authUpdateCtx = useAuthUpdateContext()
 
   useEffect(() => {
-    debugger
+    //debugger
     let socket
     const chatEvent = new Event("new-chat")
     if (ctx.isConnected && !socketSetup) {

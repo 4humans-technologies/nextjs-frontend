@@ -15,7 +15,7 @@ export const SocketContextProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false)
 
   const initSocket = () => {
-    debugger
+    //debugger
     console.log("Initializing socket, status")
     const url = imageDomainURL
     const socket = io.connect(url)

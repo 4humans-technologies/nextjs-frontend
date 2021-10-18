@@ -204,7 +204,7 @@ function LiveScreen() {
   }, [chatWindow, scrollOnChat, chatWindowOptions])
 
   const sendChatMessage = () => {
-    debugger
+    //debugger
     if (!chatInputRef.current) {
       alert("ref not created, updated")
       return

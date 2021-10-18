@@ -32,37 +32,37 @@ function useAgora(client, role, callType) {
   }
 
   async function join(channel, token, uid) {
-    debugger;
+    //debugger;
     /* relatedUserId Will Be the > uid */
-    console.log("join running..");
+    console.log("join running..")
 
     if (!client) {
-      return;
+      return
     }
     if (role === "host") {
       let track = await createLocalTracks(null, {
         optimizationMode: "detail",
         facingMode: "user",
         encoderConfig: { height: 720, width: 720, frameRate: 23 },
-      });
-      debugger;
-      await client.join(appId, channel, token, uid);
-      await client.publish(track);
-      return setJoinState(true);
+      })
+      //debugger;
+      await client.join(appId, channel, token, uid)
+      await client.publish(track)
+      return setJoinState(true)
     }
     // if client
-    await client.join(appId, channel, token, uid);
+    await client.join(appId, channel, token, uid)
   }
 
   async function startLocalCameraPreview() {
-    debugger;
+    //debugger;
     if (!client) {
-      return;
+      return
     }
     if (role === "host") {
       if (!localAudioTrack || !localVideoTrack) {
-        let track = await createLocalTracks();
-        return track;
+        let track = await createLocalTracks()
+        return track
       }
     }
   }

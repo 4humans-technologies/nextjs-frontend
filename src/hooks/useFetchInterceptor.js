@@ -1,4 +1,4 @@
-/* eslint-disable no-debugger */
+/* eslint-disable no-//debugger */
 import useSpinnerContext from "../app/Loading/SpinnerContext"
 import fetchIntercept from "fetch-intercept"
 import { useEffect } from "react"
@@ -13,10 +13,10 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
    */
   const spinnerCtx = useSpinnerContext()
   useEffect(() => {
-    debugger
+    //debugger
     if (!isAlreadyIntercepted) {
       console.log("Intercepting 🔴🔴🔴")
-      debugger
+      //debugger
       /* when new page is mounted */
       fetchIntercept.clear()
       fetchIntercept.register({
@@ -25,7 +25,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
           if (url.startsWith("/api/website/")) {
             /* SHOW SPINNER */
             spinnerCtx.setShowSpinner(true)
-            debugger
+            //debugger
             const latestCtx = JSON.parse(localStorage.getItem("authContext"))
             /* for GET requests when there is no config */
             let baseUrl = imageDomainURL /* vishalprajapati */
@@ -81,20 +81,20 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                 finalConfig = config
               }
             }
-            debugger
+            //debugger
             return [finalUrl, finalConfig]
           }
           return [url, config]
         },
         requestError: function (error) {
-          debugger
+          //debugger
           spinnerCtx.setShowSpinner(false)
           return Promise.reject(error)
         },
         response: function (response) {
           /* Modify the response object */
           if (response.url.includes("/api/website/")) {
-            debugger
+            //debugger
             spinnerCtx.setShowSpinner(false)
             if (!response.ok) {
               return response.json().then((data) => Promise.reject(data))
@@ -111,13 +111,13 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
         },
         responseError: function (error) {
           // Handle an fetch error
-          debugger
+          //debugger
           console.error(error)
           spinnerCtx.setShowSpinner(false)
           return Promise.reject(error)
         },
       })
-      debugger
+      //debugger
     }
   }, [isAlreadyIntercepted])
 }
