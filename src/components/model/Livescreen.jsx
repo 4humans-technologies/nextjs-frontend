@@ -18,6 +18,7 @@ import LivePeople from "./LivePeople"
 import dynamic from "next/dynamic"
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
 import BrowseGifts from "../Gift/BrowseGifts"
+import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
 
 // for audio video call
@@ -30,6 +31,7 @@ import useModalContext from "../../app/ModalContext"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 import io from "../../socket/socket"
+import TipMenuActions from "../ViewerScreen/TipMenuActions"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,
@@ -154,9 +156,15 @@ const chatWindowOptions = {
   PRIVATE: "private",
   PUBLIC: "public",
   USERS: "users",
+  TIP_MENU: "TIP_MENU",
 }
 
-function LiveScreen() {
+let messageStorage = {
+  publicChatMessages: [],
+  privateChatMessages: [],
+}
+
+function LiveScreen(props) {
   const chatInputRef = createRef()
   const chatBoxContainer = createRef()
 
@@ -168,6 +176,28 @@ function LiveScreen() {
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [showBrowseGifts, setShowBrowseGifts] = useState(true)
   const [gifts, setGifts] = useState(giftData)
+
+  useEffect(() => {
+    return () => {
+      messageStorage = {
+        publicChatMessages: [],
+        privateChatMessages: [],
+      }
+    }
+  }, [])
+
+  const persistPublicChat = useCallback(
+    (messagesToPersist) => {
+      messageStorage.publicChatMessages = [...messagesToPersist]
+    },
+    [messageStorage.publicChatMessages]
+  )
+  const persistPrivateChat = useCallback(
+    (messagesToPersist) => {
+      messageStorage.privateChatMessages = [...messagesToPersist]
+    },
+    [messageStorage.privateChatMessages]
+  )
 
   useEffect(() => {
     document.addEventListener("new-chat", () => {
@@ -194,13 +224,34 @@ function LiveScreen() {
   const chatComponent = useMemo(() => {
     switch (chatWindow) {
       case chatWindowOptions.PUBLIC:
-        return <PublicChat scrollOnChat={scrollOnChat} />
+        return (
+          <PublicChat
+            scrollOnChat={scrollOnChat}
+            persistPublicChat={persistPublicChat}
+            prevMessages={messageStorage.publicChatMessages}
+          />
+        )
       case chatWindowOptions.PRIVATE:
-        return <PrivateChat scrollOnChat={scrollOnChat} />
+        return (
+          <PrivateChat
+            scrollOnChat={scrollOnChat}
+            persistPrivateChat={persistPrivateChat}
+            prevMessages={messageStorage.privateChatMessages}
+            // hasActivePlan={authCtx.user.relatedUser.isChatPlanActive}
+          />
+        )
+      case chatWindowOptions.TIP_MENU:
+        return <TipMenuActions modalCtx={ctx} />
       default:
         break
     }
-  }, [chatWindow, scrollOnChat, chatWindowOptions])
+  }, [
+    chatWindow,
+    scrollOnChat,
+    chatWindowOptions,
+    persistPublicChat,
+    persistPrivateChat,
+  ])
 
   const sendChatMessage = () => {
     debugger
@@ -324,7 +375,7 @@ function LiveScreen() {
       <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
         <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-6/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
-          <ViewerScreen />
+          <ViewerScreen setModelProfileData={props.setModelProfileData} />
           <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-0 tw-py-3 tw-px-2">
             <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">
               <div className="tw-col-span-1 tw-row-span-1 tw-flex tw-items-center tw-justify-start">
@@ -412,13 +463,13 @@ function LiveScreen() {
         </div>
 
         <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-6/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-          <div className="tw-flex tw-justify-between tw-text-white tw-pt-3 sm:tw-py-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
+          <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
             <button
               className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
               onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
             >
               <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
-              <span className="tw-font-medium tw-text-lg tw-pl-2 tw-my-auto">
+              <span className="tw-font-normal sm:-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
                 Live Chat
               </span>
             </button>
@@ -427,17 +478,28 @@ function LiveScreen() {
               onClick={() => setChatWindow(chatWindowOptions.PRIVATE)}
             >
               <MarkChatReadIcon className="tw-mr-2 tw-my-auto" />
-              <span className="tw-font-medium tw-text-lg tw-pl-2 tw-my-auto">
+              <span className="tw-font-normal sm:-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
                 Private Chat
               </span>
             </button>
+            {authCtx.user.userType !== "Model" && (
+              <button
+                className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
+              >
+                <LocalActivityIcon className="tw-mr-2 tw-my-auto" />
+                <span className="tw-font-normal sm:tw-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+                  Tip Menu
+                </span>
+              </button>
+            )}
             {authCtx.user.userType === "Model" ? (
               <button
                 className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
                 onClick={() => setChatWindow(chatWindowOptions.USERS)}
               >
                 <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
-                <span className="tw-font-medium tw-text-lg tw-pl-2 tw-my-auto">
+                <span className="tw-font-normal sm:tw-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
                   Users
                 </span>
               </button>
@@ -445,10 +507,46 @@ function LiveScreen() {
           </div>
           <div
             ref={chatBoxContainer}
-            className="tw-absolute tw-h-[90%] tw-bottom-0 tw-w-full chat-box-container tw-overflow-y-scroll"
+            className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
           >
-            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-h-full">
-              {chatComponent}
+            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color">
+              <div
+                className=""
+                style={{
+                  display:
+                    chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
+                }}
+              >
+                <PublicChat
+                  scrollOnChat={scrollOnChat}
+                  persistPublicChat={persistPublicChat}
+                  prevMessages={messageStorage.publicChatMessages}
+                />
+              </div>
+              <div
+                className=""
+                style={{
+                  display:
+                    chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
+                }}
+              >
+                <PrivateChat
+                  scrollOnChat={scrollOnChat}
+                  persistPrivateChat={persistPrivateChat}
+                  prevMessages={messageStorage.privateChatMessages}
+                />
+              </div>
+              <div
+                className=""
+                style={{
+                  display:
+                    chatWindow === chatWindowOptions.TIP_MENU
+                      ? "block"
+                      : "none",
+                }}
+              >
+                <TipMenuActions modalCtx={ctx} />
+              </div>
             </div>
           </div>
 

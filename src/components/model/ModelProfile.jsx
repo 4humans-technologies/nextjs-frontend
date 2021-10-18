@@ -4,6 +4,7 @@ import Image from "next/image"
 import { PlayCircleFilled } from "@material-ui/icons"
 // import CallDetailsPopUp from "../Call/CallDetailsPopUp";
 import useModalContext from "../../app/ModalContext"
+import { imageDomainURL } from "../../../dreamgirl.config"
 
 function ChipArea(props) {
   return (
@@ -35,7 +36,7 @@ function ModelProfile(props) {
   /**
    * ment for use in here only
    */
-  const { name, age } = props.profileData
+  const { name, age, profileImage } = props.profileData
   const modalContext = useModalContext()
 
   const tags = props.profileData.tags.map((tag, index) => (
@@ -63,7 +64,7 @@ function ModelProfile(props) {
             <div
               className="tw-w-44 tw-h-44 tw-rounded-full tw-border-second-color tw-border-4"
               style={{
-                backgroundImage: `url(${"/brandikaran.jpg"})`,
+                backgroundImage: `url(${imageDomainURL}${profileImage})`,
                 backgroundSize: "cover",
               }}
             ></div>

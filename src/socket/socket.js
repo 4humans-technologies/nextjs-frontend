@@ -52,7 +52,11 @@ export default {
   },
   globalListeners: (socket) => {
     socket.on("you-joined-a-room", (room) => {
-      if (room.includes("-public") || room.includes("-socket-room")) {
+      if (
+        room.includes("-public") ||
+        room.includes("-socket-room") ||
+        room.includes("-private")
+      ) {
         /* dont't join the self rooms 😎😎 */
         const prevRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []

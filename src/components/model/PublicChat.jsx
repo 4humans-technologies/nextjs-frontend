@@ -116,30 +116,30 @@ const initialMessages = [
     index: 2,
     message: "Hello how is every one, feel very good here",
   },
-  {
-    type: "gift-superchat-public",
-    index: 3,
-    username: "Neeraj rai",
-    giftImageUrl: flowerImage,
-    message: "Hello how is every one, feel very good here",
-    walletCoins: 100,
-  },
-  {
-    type: "gift-superchat-public",
-    username: "Neeraj rai",
-    index: 4,
-    walletCoins: 100,
-    giftImageUrl: flowerImage,
-    message: "Hello how is every one, feel very good here",
-  },
-  {
-    type: "coin-superchat-public",
-    username: "Vikas kumawat",
-    index: 5,
-    amountGiven: 40,
-    message: "Hello how is every one, feel very good here",
-    walletCoins: 100,
-  },
+  // {
+  //   type: "gift-superchat-public",
+  //   index: 3,
+  //   username: "Neeraj rai",
+  //   giftImageUrl: flowerImage,
+  //   message: "Hello how is every one, feel very good here",
+  //   walletCoins: 100,
+  // },
+  // {
+  //   type: "gift-superchat-public",
+  //   username: "Neeraj rai",
+  //   index: 4,
+  //   walletCoins: 100,
+  //   giftImageUrl: flowerImage,
+  //   message: "Hello how is every one, feel very good here",
+  // },
+  // {
+  //   type: "coin-superchat-public",
+  //   username: "Vikas kumawat",
+  //   index: 5,
+  //   amountGiven: 40,
+  //   message: "Hello how is every one, feel very good here",
+  //   walletCoins: 100,
+  // },
   {
     type: "coin-superchat-public",
     username: "Vikas kumawat",
@@ -153,16 +153,7 @@ const initialMessages = [
 let chatIndex = 0
 let socketSetup = false
 function PublicChatBox(props) {
-  const [chatMessages, setChatMessages] = useState([
-    {
-      type: "normal-public-message",
-      index: 1,
-      username: "Model",
-      message: "Start chatting with  me 💌💌🥰",
-      walletCoins: "You are live",
-    },
-    ...initialMessages,
-  ])
+  const [chatMessages, setChatMessages] = useState([...props.prevMessages])
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
@@ -174,6 +165,7 @@ function PublicChatBox(props) {
     if (ctx.isConnected && !socketSetup) {
       socket = io.getSocket()
       socketSetup = true
+      /* before joining to new room clear previous public & private room connection */
       socket.on("viewer-message-public-received", (data) => {
         setChatMessages((prevChats) => {
           const newChats = [
@@ -189,6 +181,7 @@ function PublicChatBox(props) {
           chatIndex++
           return newChats
         })
+        props.persistPublicChat(chatMessages)
         // props.scrollOnChat()
         // document.dispatchEvent(chatEvent)
       })
@@ -206,6 +199,7 @@ function PublicChatBox(props) {
           chatIndex++
           return newChats
         })
+        props.persistPublicChat(chatMessages)
         // props.scrollOnChat()
         // document.dispatchEvent(chatEvent)
       })
@@ -234,6 +228,7 @@ function PublicChatBox(props) {
           // document.dispatchEvent(chatScrollEvent)
           return [...prevChats, chat]
         })
+        props.persistPublicChat(chatMessages)
         // props.scrollOnChat()
         // document.dispatchEvent(chatEvent)
       })
@@ -248,31 +243,37 @@ function PublicChatBox(props) {
           socket.off("viewer-message-public-received")
           socket.off("model-message-public-received")
           socket.off("viewer_super_message_pubic-received")
-          socket.emit(
-            "take-me-out-of-these-rooms",
-            [authCtx.streamRoom],
-            (response) => {
-              if (response.status === "ok") {
-                /* remove this room from session storage also */
-                const rooms =
-                  JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-                sessionStorage.setItem(
-                  "socket-rooms",
-                  JSON.stringify(
-                    rooms.filter((room) => room !== authCtx.streamRoom)
-                  )
-                )
-                authUpdateCtx.updateViewer({ streamRoom: null })
-              }
-            }
-          )
+          // socket.emit(
+          //   "take-me-out-of-these-rooms",
+          //   [authCtx.streamRoom],
+          //   (response) => {
+          //     if (response.status === "ok") {
+          //       /* remove this room from session storage also */
+          //       const rooms =
+          //         JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+          //       sessionStorage.setItem(
+          //         "socket-rooms",
+          //         JSON.stringify(
+          //           rooms.filter((room) => room !== authCtx.streamRoom)
+          //         )
+          //       )
+          //       authUpdateCtx.updateViewer({ streamRoom: null })
+          //     }
+          //   }
+          // )
         }
       }
     }
   }, [socketSetup, ctx.isConnected, io.getSocket(), authCtx.streamRoom])
 
   return (
-    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14">
+    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 max-w-[100vw] md:tw-max-w-[49vw]">
+      <NormalChatMessage
+        index={0}
+        displayName={"Model"}
+        message={"Start chatting with  me 💌💌🥰"}
+        walletCoins={"You are live"}
+      />
       {chatMessages.map((chat, index) => {
         switch (chat.type) {
           case "normal-public-message":

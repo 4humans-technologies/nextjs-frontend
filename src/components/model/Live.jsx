@@ -117,7 +117,11 @@ function Live() {
             rtcTokenExpireIn = data.privilegeExpiredTs
             localStorage.setItem("rtcToken", data.rtcToken)
             localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
-            join(ctx.relatedUserId, token, ctx.relatedUserId)
+            return join(ctx.relatedUserId, token, ctx.relatedUserId)
+          })
+          .then((_result) => {
+            /* successfully joined the channel */
+            
           })
           .catch((error) => console.log(error))
       }
