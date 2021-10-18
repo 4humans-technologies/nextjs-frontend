@@ -5,6 +5,7 @@ import submitFile from "../Notifications/submitFile"
 import Header from "../Mainpage/Header"
 import Headermodel from "./Headermodel"
 
+let data = new FormData()
 function Documents() {
   const imageRef = useRef("")
   const videoRef = useRef("")
@@ -12,11 +13,26 @@ function Documents() {
   const [source, setSource] = useState("/pp.jpg")
   const [videoSource, setVideoSource] = useState("/pp.jpg")
 
-  // multiple file uplode and formdata
+  //submit handler to send data
+
+  const submitHandler = async () => {
+    data.append("document_1", source)
+    data.append("document_2", videoSource)
+    let respose = await fetch("url", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+    let result = await respose.json()
+    return result
+  }
+  submitHandler().then((data) => console.log(data))
+
   return (
     <div className="tw-bg-black  tw-h-[100vh] tw-text-white tw-text-center ">
       <Header />
-
       <div className="tw-bg-third-color md:tw-w-1/2 tw-gap-2 md:tw-ml-[28%] tw-ml-0 md:tw-top-[20%] tw-mt-0 md:tw-absolute  document_rows_main tw-rounded-t-2xl tw-rounded-b-2xl">
         <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0 tw-bg-second-color tw-m-4  ">
           <div className="tw-bg-gray-400 ">
@@ -117,7 +133,7 @@ function Documents() {
         <div className='tw-justify-center"'>
           <Button
             className="tw-w-1/3 tw-justify-center tw-mt-4 "
-            onClick={() => modalCtx.showModalWithContent(submitFile)}
+            onClick={() => submitHandler}
           >
             submit request
           </Button>

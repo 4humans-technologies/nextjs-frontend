@@ -160,7 +160,7 @@ function Videocall(props) {
   ])
 
   return (
-    <div className="sm:tw-h-[82vh] " ref={container}>
+    <div className=" " ref={container}>
       {token && (
         <div className="tw-flex tw-py-2 tw-justify-between tw-items-center">
           <Button variant="primary" onClick={join}>
@@ -175,6 +175,7 @@ function Videocall(props) {
         remoteUsers.map((user) => {
           return (
             <div className="tw-min-h-full">
+              {/* below controll the size viseo player*/}
               <div className="tw-h-[82vh]">
                 <VideoPlayer
                   key={user.uid}
@@ -184,7 +185,7 @@ function Videocall(props) {
                 />
               </div>
               {/* volume increase decrease */}
-              <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-32px]">
+              <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-100px]">
                 <VolumeUpIcon className="tw-text-white" fontSize="large" />
                 <Slider
                   defaultValue={30}

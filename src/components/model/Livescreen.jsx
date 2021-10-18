@@ -317,8 +317,10 @@ function LiveScreen() {
 
   const showCallDetailPopUp = useCallback(
     () =>
-      ctx.showModalWithContent(<CallDetailsPopUp closeModal={ctx.hideModal} />),
-    [ctx.showModalWithContent, ctx.hideModal]
+      modalCtx.showModalWithContent(
+        <CallDetailsPopUp closeModal={modalCtx.hideModal} />
+      ),
+    [modalCtx.showModalWithContent, modalCtx.hideModal]
   )
   return (
     <>
