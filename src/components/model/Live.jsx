@@ -64,7 +64,7 @@ const chatWindowOptions = {
   USERS: "users",
   TIP_MENU: "TIP_MENU",
 }
-
+let streamId
 function Live() {
   const ctx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
@@ -99,9 +99,34 @@ function Live() {
     leaveAndCloseTracks,
   } = useAgora(client, "host", callType)
 
+  const requestStreamEnd = () => {
+    fetch("/api/website/stream/handle-stream-end", {
+      method: "POST",
+      cors: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        streamId: streamId,
+        reason: "Manual",
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message)
+      })
+      .catch((err) => alert("Stream was not ended successfully!"))
+  }
+
   useEffect(() => {
     startLocalCameraPreview()
-    return () => leaveAndCloseTracks()
+    localStorage.removeItem("rtcToken")
+    localStorage.removeItem("rtcTokenExpireIn")
+    return () => {
+      debugger
+      requestStreamEnd()
+      leaveAndCloseTracks()
+    }
   }, [])
 
   /* Will Not Go Live When The Component Mounts */
@@ -109,7 +134,7 @@ function Live() {
     //debugger
     if (
       !localStorage.getItem("rtcToken") &&
-      localStorage.getItem("rtcTokenExpireIn") <= Date.now() &&
+      localStorage.getItem("rtcTokenExpireIn") <= Date.now() + 10000 &&
       ctx.loadedFromLocalStorage
     ) {
       if (ctx.isLoggedIn === true && ctx.user.userType === "Model") {
@@ -130,6 +155,7 @@ function Live() {
             rtcTokenExpireIn = data.privilegeExpiredTs
             localStorage.setItem("rtcToken", data.rtcToken)
             localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+            streamId = data.streamId
             return join(ctx.relatedUserId, token, ctx.relatedUserId)
           })
           .then((_result) => {
@@ -138,11 +164,21 @@ function Live() {
           .catch((error) => console.log(error))
       }
     } else {
-      join(
-        ctx.relatedUserId,
-        localStorage.getItem("rtcToken"),
-        ctx.relatedUserId
-      )
+      /* fetch request for status update not for rtc token */
+      fetch("/api/website/stream/create-stream-without-token")
+        .then((resp) => {
+          return resp.json()
+        })
+        .then((data) => {
+          //debugger
+          streamId = data.streamId
+          join(
+            ctx.relatedUserId,
+            localStorage.getItem("rtcToken"),
+            ctx.relatedUserId
+          )
+        })
+        .catch((error) => console.log(error))
     }
   }
 
@@ -192,9 +228,10 @@ function Live() {
     }
   }
 
-  const endStream = () => {
+  const endStream = async () => {
     //debugger
-    leave()
+    await leave()
+    requestStreamEnd()
   }
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
@@ -258,9 +295,9 @@ function Live() {
                 disabled={joinState}
                 className={`${
                   joinState ? "tw-bg-green-500" : "tw-bg-red-500"
-                } tw-rounded-full tw-px-2 tw-py-1`}
+                } tw-rounded-full tw-px-2 tw-py-1 tw-capitalize`}
               >
-                {`${joinState ? "joined" : "disconnected"}`}
+                {`${joinState ? "connected to RTC servers" : "disconnected"}`}
               </button>
             </div>
           </div>

@@ -10,7 +10,6 @@ import PrivateChat from "./PrivateChat"
 import LivePeople from "./LivePeople"
 import dynamic from "next/dynamic"
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
-import BrowseGifts from "../Gift/BrowseGifts"
 import Token from "../model/Token"
 import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
@@ -120,34 +119,6 @@ const giftData = [
   },
 ]
 
-const unAuthedUserEmojis = [
-  "🎈",
-  "✨",
-  "🎉",
-  "🎃",
-  "🎁",
-  "👓",
-  "👔",
-  "🎨",
-  "⚽",
-  "💎",
-  "🥇",
-  "♥",
-  "🎵",
-  "🧲",
-  "💰",
-  "🍺",
-  "🥂",
-  "🍎",
-  "🌼",
-  "🚩",
-  "🌞",
-  "🌈",
-  "⚡",
-  "🐬",
-  "🦄",
-]
-
 const chatWindowOptions = {
   PRIVATE: "private",
   PUBLIC: "public",
@@ -219,9 +190,7 @@ function LiveScreen(props) {
           authCtx.streamRoom ||
           JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
         message: message,
-        username: `Guest User ${
-          unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
-        }`,
+        username: localStorage.getItem("unAuthed-user-chat-name"),
         walletCoins: 0,
       }
     }
@@ -240,63 +209,6 @@ function LiveScreen(props) {
       document.removeEventListener("keydown", handleKeyPress)
     }
   }, [sendChatMessage])
-
-  const fetchGifts = () => {
-    if (gifts.length === 0) {
-      if (!authCtx.isLoggedIn) {
-        router.replace("/auth/login")
-        updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname })
-      } else {
-        /* fetch gifts from server */
-        const giftUrl = "/api/website/gifts/get-gifts"
-        fetch(giftUrl)
-          .then((res) => res.json())
-          .then((data) => {
-            /* render gift component and mount */
-            setGifts(data.results)
-            showBrowseGifts(true)
-          })
-          .catch((err) => {
-            /* call error modal */
-            alert("Error fetching gifts" + err.message)
-          })
-      }
-    }
-  }
-
-  const buyGift = (id) => {
-    if (!authCtx.isLoggedIn) {
-      alert("How you dare to buy gifts without logging in 😡😡😠😠😡😡")
-      router.replace("/auth/login")
-      updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname })
-    } else {
-      const theGift = gifts.find((gift) => gift._id === id)
-      /* fetch request buy gift _id to buy, deduct the money also */
-      fetch("/api/website/gifts/purchase-gift", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          giftId: id,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.actionStatus === "success") {
-            io.getSocket().emit("viewer_super_message_public_emitted", {
-              username: authCtx.user.user.username,
-              name: authCtx.user.user.relatedUser.name,
-              walletCoins: authCtx.user.user.wallet.currentAmount,
-              chatType: "gift-message-public",
-              theGift: { ...theGift },
-              room: authCtx.streamRoom,
-            })
-          }
-        })
-        .catch((err) => alert(err))
-    }
-  }
 
   const showCallDetailPopUp = useCallback(
     () =>
