@@ -28,6 +28,7 @@ import { useRouter } from "next/router"
 import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
+import io from "../../socket/socket"
 
 // /api/website/token-builder/create-stream-and-gen-token
 
@@ -80,8 +81,6 @@ function Live() {
   }
 
   const scrollOnChat = useCallback(() => {
-    alert("scrolling chat")
-    console.log(chatBoxContainer.current)
     chatBoxContainer.current.scrollBy({
       top: 400,
       behavior: "smooth",
@@ -147,13 +146,13 @@ function Live() {
   }
 
   const sendChatMessage = () => {
-    //debugger
+    debugger
     if (!chatInputRef.current) {
       alert("ref not created, updated")
       return
     }
 
-    if (!chatInputRef.current?.value) {
+    if (!chatInputRef.current.value) {
       return
     }
 
@@ -161,32 +160,35 @@ function Live() {
     const message = chatInputRef.current.value
     console.log(
       "sent message to room >>>",
-      JSON.parse(sessionStorage.getItem("socket-rooms"))[0]
+      JSON.parse(sessionStorage.getItem("socket-rooms"))
     )
-    if (ctx.isLoggedIn) {
+    if (ctx.isLoggedIn && ctx.user.userType === "Model") {
+      let finalRoom
+      if (chatWindow === chatWindowOptions.PUBLIC) {
+        JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
+          if (room.includes("-public")) {
+            finalRoom = room
+          }
+        })
+      } else if (chatWindow === chatWindowOptions.PRIVATE) {
+        JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
+          if (room.includes("-private")) {
+            finalRoom = room
+          }
+        })
+      }
       payLoad = {
-        room:
-          ctx.streamRoom ||
-          JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
+        room: finalRoom,
         message: message,
         username: ctx.user.user.username,
-        walletCoins: ctx.user.user.relatedUser.wallet.currentAmount,
       }
-    } else {
-      /* un-authed user */
-      payLoad = {
-        room:
-          ctx.streamRoom ||
-          JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
-        message: message,
-        username: `Guest User ${
-          unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
-        }`,
-        walletCoins: 0,
+      if (chatWindow === chatWindowOptions.PUBLIC) {
+        io.getSocket().emit("model-message-public-emitted", payLoad)
+      } else if (chatWindow === chatWindowOptions.PRIVATE) {
+        io.getSocket().emit("model-message-private-emitted", payLoad)
       }
+      chatInputRef.current.value = ""
     }
-    io.getSocket().emit("viewer-message-public-emitted", payLoad)
-    chatInputRef.current.value = ""
   }
 
   const endStream = () => {

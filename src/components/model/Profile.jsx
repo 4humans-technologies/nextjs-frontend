@@ -10,7 +10,6 @@ import Card from "../UI/Card";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import useFetch from "../../hooks/useFetch";
 import Callhistory from "./CallHistory"
 
 function Profile() {

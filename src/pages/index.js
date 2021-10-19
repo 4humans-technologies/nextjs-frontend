@@ -6,7 +6,6 @@ import Boxgroup from "../components/Mainpage/Boxgroup"
 import { useState, useEffect } from "react"
 // import Mainbox from "../components/Mainbox";
 import Footer from "../components/Mainpage/Footer"
-import useFetchInterceptor from "../hooks/useFetchInterceptor"
 import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
 import useSetupSocket from "../socket/useSetupSocket"
 import socket from "../socket/socket"

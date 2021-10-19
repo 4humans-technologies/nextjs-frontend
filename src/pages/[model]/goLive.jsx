@@ -3,17 +3,13 @@ import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useEffect } from "react"
-import useFetchInterceptor from "../../hooks/useFetchInterceptor"
 
 const LiveComponent = dynamic(() => import("../../components/model/Live"), {
   ssr: false,
 })
 
-let fetchIntercepted = null
 function GoLive() {
   const ctx = useAuthContext()
-  useFetchInterceptor(fetchIntercepted)
-  fetchIntercepted = true
   const updateCtx = useAuthUpdateContext()
   const router = useRouter()
 

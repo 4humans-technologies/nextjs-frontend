@@ -1,4 +1,3 @@
-/* eslint-disable no-//debugger */
 import useSpinnerContext from "../app/Loading/SpinnerContext"
 import fetchIntercept from "fetch-intercept"
 import { useEffect } from "react"

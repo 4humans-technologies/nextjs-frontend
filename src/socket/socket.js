@@ -25,7 +25,10 @@ export default {
         // will get userType from localStorage
         // if nothing in local storage default to UnAuthedViewer
         // no worries if user provides wrong info, we have token we can validate
-        userType: localStorage.getItem("userType") || "UnAuthedViewer",
+        userType:
+          localStorage.getItem("userType") ||
+          JSON.parse(localStorage.getItem("authContext")).userType ||
+          "UnAuthedViewer",
         hasAudioCall:
           Object.keys(pendingCalls.audioCall).length > 0 ? true : false,
         hasVideoCall:

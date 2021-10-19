@@ -31,10 +31,7 @@ function ModelChatMessage(props) {
         <h2 className="tw-font-semibold tw-text-sm tw-mb-1 tw-bg-second-color tw-px-1.5 tw-rounded tw-inline-block tw-py-1 tw-tracking-wider">
           Message By Model
         </h2>
-        <p className="tw-mt-1">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo,
-          esse?
-        </p>
+        <p className="tw-mt-1">{props.message}</p>
       </div>
     </div>
   )
@@ -224,8 +221,8 @@ function PublicChatBox(props) {
     /* why you have to remove the event listners any way */
     debugger
     if (ctx.socketSetupDone) {
-      socket = io.getSocket()
       return () => {
+        socket = io.getSocket()
         debugger
         if (socket.hasListeners("viewer-message-public-received")) {
           socket.off("viewer-message-public-received")
@@ -245,8 +242,8 @@ function PublicChatBox(props) {
     debugger
     if (ctx.socketSetupDone) {
       return () => {
-        socket = io.getSocket()
         debugger
+        socket = io.getSocket()
         const socketRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
         const roomsToLeave = []
@@ -278,12 +275,21 @@ function PublicChatBox(props) {
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 max-w-[100vw] md:tw-max-w-[49vw]">
-      <NormalChatMessage
-        index={0}
-        displayName={"Model"}
-        message={"Start chatting with  me 💌💌🥰"}
-        walletCoins={"You are live"}
-      />
+      {authCtx.user.userType === "Model" ? (
+        <NormalChatMessage
+          index={0}
+          displayName={"Model"}
+          message={"Click on Go Live Button To Go "}
+          walletCoins={"Not live"}
+        />
+      ) : (
+        <NormalChatMessage
+          index={0}
+          displayName={"Model"}
+          message={"Start chatting with  me 💌💌🥰"}
+          walletCoins={"You are live"}
+        />
+      )}
       {chatMessages.map((chat, index) => {
         switch (chat.type) {
           case "normal-public-message":
@@ -298,7 +304,11 @@ function PublicChatBox(props) {
             )
           case "model-public-message":
             return (
-              <ModelChatMessage index={chat.index} message={chat.message} />
+              <ModelChatMessage
+                key={"*(78jhk7" + chat.index}
+                index={chat.index}
+                message={chat.message}
+              />
             )
           case "gift-superchat-public":
             return (
