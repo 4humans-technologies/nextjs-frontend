@@ -169,9 +169,9 @@ function Header(props) {
                       </button>
                       <div className="tw-mx-8">
                         <img
-                          src="/token.png"
+                          src="/coins.png"
                           alt=""
-                          className="tw-w-12 tw-h-14 tw-text-white"
+                          className="tw-w-10 tw-h-10 tw-text-white"
                         />
                       </div>
                       <div

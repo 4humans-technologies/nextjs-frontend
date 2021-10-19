@@ -11,6 +11,7 @@ import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
 import useSetupSocket from "../socket/useSetupSocket"
 import socket from "../socket/socket"
 import Link from "next/link"
+import io from "../socket/socket"
 
 /**
  * just for development not for production 👇👇
@@ -37,6 +38,43 @@ const data = Array(8)
 const Home = () => {
   console.log("rendering home")
   const ctx = useAuthContext()
+  const authUpdateCtx = useAuthUpdateContext()
+
+  useEffect(() => {
+    if (JSON.parse(sessionStorage.getItem("socket-rooms"))) {
+      try {
+        const socket = io.getSocket()
+        const socketRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        const roomsToLeave = []
+        socketRooms.forEach((room) => {
+          if (room.includes("-public") || room.includes("-private")) {
+            roomsToLeave.push(room)
+          }
+        })
+        socket.emit(
+          "take-me-out-of-these-rooms",
+          [...roomsToLeave],
+          (response) => {
+            if (response.status === "ok") {
+              /* remove this room from session storage also */
+              const rooms =
+                JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+              sessionStorage.setItem(
+                "socket-rooms",
+                JSON.stringify(
+                  rooms.filter((room) => room !== authCtx.streamRoom)
+                )
+              )
+              authUpdateCtx.updateViewer({ streamRoom: null })
+            }
+          }
+        )
+      } catch (error) {
+        console.log("Client not in any room!")
+      }
+    }
+  }, [authUpdateCtx.updateViewer])
 
   const [boxGroupsData, setBoxGroupData] = useState([
     {

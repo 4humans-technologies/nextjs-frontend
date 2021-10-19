@@ -85,6 +85,8 @@ function Videocall(props) {
               token = data.rtcToken
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+              console.log("model profile 👉👉 ", data.theModel)
+              props.setModelProfileData(data.theModel)
               const channel = window.location.pathname.split("/").reverse()[0]
               join(channel, data.rtcToken, ctx.relatedUserId)
               updateCtx.updateViewer({
@@ -123,6 +125,8 @@ function Videocall(props) {
               /* 🤩🤩🔥🔥 join stream */
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+              console.log("model profile 👉👉 ", data.theModel)
+              props.setModelProfileData(data.theModel)
               const channel = window.location.pathname.split("/").reverse()[0]
               join(channel, data.rtcToken, data.unAuthedUserId)
               if (data.newUnAuthedUserCreated) {
@@ -160,17 +164,8 @@ function Videocall(props) {
   ])
 
   return (
-    <div className=" " ref={container}>
-      {token && (
-        <div className="tw-flex tw-py-2 tw-justify-between tw-items-center">
-          <Button variant="primary" onClick={join}>
-            Join
-          </Button>
-          <Button variant="danger" onClick={leave}>
-            Leave
-          </Button>
-        </div>
-      )}
+    // 82 vh has no signifcate impact
+    <div className="sm:tw-h-[82vh] " ref={container}>
       {remoteUsers.length > 0 &&
         remoteUsers.map((user) => {
           return (
@@ -199,7 +194,6 @@ function Videocall(props) {
                   className="tw-self-center tw-ml-2"
                 />
               </div>
-              {/*  */}
             </div>
           )
         })}

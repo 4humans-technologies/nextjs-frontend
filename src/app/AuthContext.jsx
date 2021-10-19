@@ -1,5 +1,5 @@
-/* eslint-disable no-//debugger */
-import React from "react"
+/* eslint-disable no-debugger */
+import React, { useCallback } from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 
 const initialState = {
@@ -41,18 +41,21 @@ export const AuthContextProvider = ({ children }) => {
   console.log("Again initializing AUTHCONTEXT => ", numberOfInits)
   const [authState, setAuthState] = useState(initialState)
 
-  const updateViewer = (newViewer) => {
-    setAuthState((prevValue) => {
-      //debugger
-      let newState
-      if (newViewer.user) {
-        newState = { ...prevValue, ...newViewer, user: { ...newViewer.user } }
-      } else {
-        newState = { ...prevValue, ...newViewer, user: { ...prevValue.user } }
-      }
-      return newState
-    })
-  }
+  const updateViewer = useCallback(
+    (newViewer) => {
+      setAuthState((prevValue) => {
+        debugger
+        let newState
+        if (newViewer.user) {
+          newState = { ...prevValue, ...newViewer, user: { ...newViewer.user } }
+        } else {
+          newState = { ...prevValue, ...newViewer, user: { ...prevValue.user } }
+        }
+        return newState
+      })
+    },
+    [setAuthState]
+  )
 
   const logout = () => {
     localStorage.removeItem("jwtToken")
