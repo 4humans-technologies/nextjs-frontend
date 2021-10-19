@@ -242,7 +242,7 @@ function LiveScreen(props) {
           />
         )
       case chatWindowOptions.TIP_MENU:
-        return <TipMenuActions modalCtx={ctx} />
+        return <TipMenuActions modalCtx={modalCtx} />
       default:
         break
     }
@@ -548,7 +548,7 @@ function LiveScreen(props) {
                       : "none",
                 }}
               >
-                <TipMenuActions modalCtx={ctx} />
+                <TipMenuActions modalCtx={modalCtx} />
               </div>
             </div>
           </div>

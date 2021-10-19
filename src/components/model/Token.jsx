@@ -1,24 +1,41 @@
 import React, { useEffect, useState } from "react"
 import CancelIcon from "@material-ui/icons/Cancel"
 import useModalContext from "../../app/ModalContext"
+import { useAuthContext } from "../../app/AuthContext"
 
 function Token() {
   const [token, setToken] = useState("")
   const modalCtx = useModalContext()
-  const [btnClick, setBtnClicked] = useState(false)
+  const authContext = useAuthContext()
+  const [isExcess, setIsExess] = useState(false)
 
-  useEffect(() => {
-    fetch("url", {
+  const handleBuyToken = () => {
+    fetch("/api/website/stream/process-token-gift", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(token),
+      body: JSON.stringify({
+        modlelId: window.location.pathname.split("/").reverse()[0],
+        tokenAmount: token,
+      }),
     })
       .then((resp) => resp.json())
-      .then((mesg) => console.log(mesg))
+      .then((mesg) => alert(mesg))
       .catch((err) => console.log(err))
-  }, [btnClick])
+  }
+
+  const handleAmountInput = (amount) => {
+    if (amount > authContext.user.user.relatedUser.wallet.currentAmount) {
+      // error
+      setIsExess(true)
+    } else {
+      setToken(amount)
+      if (isExcess) {
+        setIsExess(false)
+      }
+    }
+  }
 
   return (
     <div className="tw-w-96 tw-place-items-center tw-text-white tw-mx-auto">
@@ -40,7 +57,7 @@ function Token() {
               name="selected_token"
               id="Twenty"
               value="50"
-              onClick={() => setToken(20)}
+              onClick={() => handleAmountInput(20)}
             />
             <label htmlFor="Twenty" className="tw-ml-2 ">
               20 <span>Tokens</span>
@@ -56,7 +73,7 @@ function Token() {
               name="selected_token"
               id="fifty"
               value="50"
-              onClick={() => setToken(50)}
+              onClick={() => handleAmountInput(50)}
             />
             <label htmlFor="fifty" className="tw-ml-2 ">
               50 <span>Tokens</span>
@@ -72,7 +89,7 @@ function Token() {
               name="selected_token"
               id="hundred"
               value="100"
-              onClick={() => setToken(100)}
+              onClick={() => handleAmountInput(100)}
             />
             <label htmlFor="hundred" className="tw-ml-2 ">
               100 <span>Tokens</span>
@@ -88,7 +105,7 @@ function Token() {
               name="selected_token"
               id="twohundred"
               value="200"
-              onClick={() => setToken(200)}
+              onClick={() => handleAmountInput(200)}
             />
             <label htmlFor="twohundred" className="tw-ml-2 ">
               200 <span>Tokens</span>
@@ -103,7 +120,6 @@ function Token() {
               name="selected_token"
               id="twohundred"
               value={token}
-              onClick={() => setToken(token)}
             />
             <label htmlFor="twohundred" className="tw-ml-2 ">
               Custom
@@ -112,15 +128,22 @@ function Token() {
           <input
             type="text"
             className="tw-rounded-full tw-w-48 tw-h-8 tw-bg-black tw-outline-none tw-px-2"
-            onChange={(e) => setToken(e.target.value)}
+            onChange={(e) => handleAmountInput(e.target.value)}
           />
         </div>
+        {isExcess && (
+          <div className="">
+            <p className="tw-text-left tw-text-red-400 tw-text-sm">
+              {`Oh Bhai !!!!! ${authContext.user.user.relatedUser.wallet.currentAmount} coins in your wallet!`}
+            </p>
+          </div>
+        )}
       </form>
       <div className="tw-mx-auto tw-mt-4">
         <button
           type="submit"
           className="tw-rounded-full tw-bg-green-color tw-px-4 tw-py-2"
-          onClick={() => setBtnClicked((prev) => !prev)}
+          onClick={() => handleBuyToken()}
         >
           Buy Token
         </button>

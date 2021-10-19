@@ -5,8 +5,8 @@ export const imageDomainHost = "192.168.0.180"
 
 /* ====================================================== */
 /* Vishal prajapati network */
-export const imageDomainURL = "http://192.168.1.104:8080"
-export const imageDomainHost = "192.168.1.104"
+// export const imageDomainURL = "http://192.168.1.104:8080"
+// export const imageDomainHost = "192.168.1.104"
 /* ====================================================== */
 /* ====================================================== */
 /* Airtel asuz network */
@@ -14,8 +14,8 @@ export const imageDomainHost = "192.168.1.104"
 // export const imageDomainHost = "192.168.1.104"
 /* ====================================================== */
 /* Airtel asuz network */
-// export const imageDomainURL = "http://4c7a-103-238-106-157.ngrok.io/"
-// export const imageDomainHost = "4c7a-103-238-106-157.ngrok.io"
+export const imageDomainURL = "http://4c7a-103-238-106-157.ngrok.io"
+export const imageDomainHost = "4c7a-103-238-106-157.ngrok.io"
 /* ====================================================== */
 
 /* ====================================================== */
