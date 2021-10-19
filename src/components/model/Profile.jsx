@@ -42,7 +42,6 @@ function Profile() {
       .then((data) => {
         setModelData(data.Personal), setCallData(data.Charges)
       })
-    debugger
   }, [])
 
   // useEffect to make  button appear when change in information takes place

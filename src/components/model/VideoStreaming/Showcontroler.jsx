@@ -13,8 +13,8 @@ function Showcontroler() {
   )
 
   return (
-    <div>
-      <div className="tw-grid tw-grid-cols-2">
+    <div className="tw-bg-second-color">
+      <div className="tw-grid tw-grid-cols-2 tw-pb-8">
         <div>
           <Topic topicSetter={topicSet} />
         </div>

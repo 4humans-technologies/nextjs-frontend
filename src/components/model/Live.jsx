@@ -20,6 +20,8 @@ import { useAuthUpdateContext } from "../../app/AuthContext"
 import Slider from "@material-ui/core/Slider"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { useRouter } from "next/router"
+import Showcontroler from "./VideoStreaming/Showcontroler"
+import Videoshowcontroller from "./VideoStreaming/Videoshowcontroller"
 const initState = { val: <Publicchat /> }
 
 const reducer = (state = initState, action) => {
@@ -244,6 +246,7 @@ function Live() {
           </div>
         </div>
       </div>
+      <Videoshowcontroller />
       <Footer />
     </div>
   ) : (

@@ -32,7 +32,6 @@ function GoLive() {
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div>
       <LiveComponent />
-      <Showcontroler />
     </div>
   ) : (
     <div className="tw-grid tw-place-items-center tw-min-h-screen">

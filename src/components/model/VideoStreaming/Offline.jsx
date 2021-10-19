@@ -3,12 +3,12 @@ import VolumeMuteIcon from "@material-ui/icons/VolumeMute"
 
 function Topic(props) {
   const [childState, setChildState] = useState([])
- 
+
   return (
     <div className="tw-bg-first-color tw-text-white tw-mt-6 tw-pl-4 tw-mx-4 tw-rounded-t-xl tw-rounded-b-xl">
       <div>
         <div className="tw-border-b-[1px] tw-border-text-black tw-mb-4 tw-py-2">
-          <VolumeMuteIcon /> Topic
+          <VolumeMuteIcon /> Offline Status
         </div>
         <div className="tw-border-b-[1px] tw-border-text-black tw-w-[90%]">
           <input
@@ -27,7 +27,7 @@ function Topic(props) {
           </div>
         </div>
         <br />
-        <p>Some Bakwas Here</p>
+        <p>Neeraj Rai's ex-girlfreind has 3 children</p>
       </div>
     </div>
   )
