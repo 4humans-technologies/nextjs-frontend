@@ -58,7 +58,7 @@ function Signup() {
               user: data.user,
             },
             () => {
-              router.push("/ravi/live")
+              router.replace("/")
             }
           )
         //redirect to home page

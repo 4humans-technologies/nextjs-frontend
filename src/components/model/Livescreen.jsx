@@ -1,11 +1,4 @@
-import React, {
-  createRef,
-  useReducer,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-} from "react"
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
 import PersonIcon from "@material-ui/icons/Person"
@@ -32,6 +25,8 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 import io from "../../socket/socket"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
+import Image from "next/image"
+import TipMenuIcon from "../../../public/tips.png"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,
@@ -159,14 +154,9 @@ const chatWindowOptions = {
   TIP_MENU: "TIP_MENU",
 }
 
-let messageStorage = {
-  publicChatMessages: [],
-  privateChatMessages: [],
-}
-
 function LiveScreen(props) {
-  const chatInputRef = createRef()
-  const chatBoxContainer = createRef()
+  const chatInputRef = useRef()
+  const chatBoxContainer = useRef()
 
   const ctx = useModalContext()
   const authCtx = useAuthContext()
@@ -177,84 +167,26 @@ function LiveScreen(props) {
   const [showBrowseGifts, setShowBrowseGifts] = useState(true)
   const [gifts, setGifts] = useState(giftData)
 
-  useEffect(() => {
-    return () => {
-      messageStorage = {
-        publicChatMessages: [],
-        privateChatMessages: [],
-      }
-    }
-  }, [])
-
-  const persistPublicChat = useCallback(
-    (messagesToPersist) => {
-      messageStorage.publicChatMessages = [...messagesToPersist]
-    },
-    [messageStorage.publicChatMessages]
-  )
-  const persistPrivateChat = useCallback(
-    (messagesToPersist) => {
-      messageStorage.privateChatMessages = [...messagesToPersist]
-    },
-    [messageStorage.privateChatMessages]
-  )
-
-  useEffect(() => {
-    document.addEventListener("new-chat", () => {
-      alert("scrolling chat")
-      console.log(chatBoxContainer.current)
-      chatBoxContainer.current.scrollBy({
-        top: 400,
-        behavior: "smooth",
-      })
-    })
-  }, [chatBoxContainer.current])
-
-  console.log("chat box ref ⚡⚡⚡", chatBoxContainer.current)
+  // useEffect(() => {
+  //   document.addEventListener("new-chat", () => {
+  //     alert("scrolling chat")
+  //     console.log(chatBoxContainer.current)
+  //     chatBoxContainer.current.scrollBy({
+  //       top: 400,
+  //       behavior: "smooth",
+  //     })
+  //   })
+  // }, [chatBoxContainer.current])
 
   const scrollOnChat = useCallback(() => {
-    alert("scrolling chat")
-    console.log(chatBoxContainer.current)
     chatBoxContainer.current.scrollBy({
       top: 400,
       behavior: "smooth",
     })
   }, [chatBoxContainer.current])
 
-  const chatComponent = useMemo(() => {
-    switch (chatWindow) {
-      case chatWindowOptions.PUBLIC:
-        return (
-          <PublicChat
-            scrollOnChat={scrollOnChat}
-            persistPublicChat={persistPublicChat}
-            prevMessages={messageStorage.publicChatMessages}
-          />
-        )
-      case chatWindowOptions.PRIVATE:
-        return (
-          <PrivateChat
-            scrollOnChat={scrollOnChat}
-            persistPrivateChat={persistPrivateChat}
-            prevMessages={messageStorage.privateChatMessages}
-            // hasActivePlan={authCtx.user.relatedUser.isChatPlanActive}
-          />
-        )
-      case chatWindowOptions.TIP_MENU:
-        return <TipMenuActions modalCtx={ctx} />
-      default:
-        break
-    }
-  }, [
-    chatWindow,
-    scrollOnChat,
-    chatWindowOptions,
-    persistPublicChat,
-    persistPrivateChat,
-  ])
-
   const sendChatMessage = () => {
-    debugger
+    //debugger
     if (!chatInputRef.current) {
       alert("ref not created, updated")
       return
@@ -517,11 +449,7 @@ function LiveScreen(props) {
                     chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
                 }}
               >
-                <PublicChat
-                  scrollOnChat={scrollOnChat}
-                  persistPublicChat={persistPublicChat}
-                  prevMessages={messageStorage.publicChatMessages}
-                />
+                <PublicChat scrollOnChat={scrollOnChat} />
               </div>
               <div
                 className=""
@@ -530,11 +458,7 @@ function LiveScreen(props) {
                     chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
                 }}
               >
-                <PrivateChat
-                  scrollOnChat={scrollOnChat}
-                  persistPrivateChat={persistPrivateChat}
-                  prevMessages={messageStorage.privateChatMessages}
-                />
+                <PrivateChat scrollOnChat={scrollOnChat} />
               </div>
               <div
                 className=""
@@ -547,11 +471,23 @@ function LiveScreen(props) {
               >
                 <TipMenuActions modalCtx={ctx} />
               </div>
+              <div
+                className=""
+                style={{
+                  display:
+                    chatWindow === chatWindowOptions.USERS ? "block" : "none",
+                }}
+              >
+                <div className="">USERS</div>
+              </div>
             </div>
           </div>
 
           <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">
-            <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full">
+            <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
+              {/* <button className="tw-absolute tw-top-[50%] tw-left-[5%] tw-translate-x-[-50%] tw-translate-y-[-50%] tw-rounded-full tw-px-2 tw-py-1 tw-bg-dreamgirl-red">
+                <Image height={25} width={25} src={TipMenuIcon} />
+              </button> */}
               <input
                 className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                 placeholder="Enter your message here"
@@ -559,7 +495,7 @@ function LiveScreen(props) {
               ></input>
               <button
                 onClick={sendChatMessage}
-                className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-tr-full tw-rounded-br-full"
+                className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-full"
               >
                 Send
               </button>

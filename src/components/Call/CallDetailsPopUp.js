@@ -24,7 +24,7 @@ function CallDetailsPopUp(props) {
   const router = useRouter()
 
   useEffect(() => {
-    // debugger;
+    // //debugger;
     fetch(
       // "http://localhost:8080/api/website/token-builder/create-stream-and-gen-token", //for model class
       "http://localhost:8080/api/website/token-builder/authed-viewer-join-stream",
@@ -39,7 +39,7 @@ function CallDetailsPopUp(props) {
     )
       .then((resp) => resp.json())
       .then((data) => {
-        debugger
+        //debugger
         updateCtx.updateViewer({
           rtcToken: data.rtcToken,
         })

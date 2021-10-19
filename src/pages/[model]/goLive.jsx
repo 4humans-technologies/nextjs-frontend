@@ -18,8 +18,7 @@ function GoLive() {
   const router = useRouter()
 
   useEffect(() => {
-    // eslint-disable-next-line no-debugger
-    debugger
+    //debugger
     if (ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === false && ctx.user.userType !== "Model") {
         updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname })
@@ -32,7 +31,7 @@ function GoLive() {
   ) : (
     <div className="tw-grid tw-place-items-center tw-min-h-screen">
       <h1 className="tw-text-lg tw-font-medium tw-font-mono">
-        Redirecting To The Login Screen...
+        You Not LoggedIn As Model, Redirecting To The Login Screen...
       </h1>
     </div>
   )

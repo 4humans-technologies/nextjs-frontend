@@ -15,7 +15,7 @@ export default {
       )
       pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
     }
-    debugger
+    //debugger
     socketConnectionInstance = io(url || "http://localhost:8080", {
       auth: {
         // token will be fetched from local storage

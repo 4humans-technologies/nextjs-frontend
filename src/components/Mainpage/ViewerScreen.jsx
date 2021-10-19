@@ -46,7 +46,7 @@ function Videocall(props) {
   )
 
   useEffect(() => {
-    debugger
+    //debugger
     if (ctx.loadedFromLocalStorage) {
       return () => {
         tokenRequestDoneOnce = false
@@ -58,7 +58,7 @@ function Videocall(props) {
   }, [])
 
   useEffect(() => {
-    debugger
+    //debugger
     if (socketCtx.isConnected && !tokenRequestDoneOnce) {
       tokenRequestDoneOnce = true
       if (ctx.isLoggedIn === true) {
@@ -121,7 +121,7 @@ function Videocall(props) {
           })
             .then((resp) => resp.json())
             .then((data) => {
-              debugger
+              //debugger
               /* 🤩🤩🔥🔥 join stream */
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)

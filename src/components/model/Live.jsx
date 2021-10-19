@@ -1,14 +1,19 @@
-/* eslint-disable no-debugger */
 import Header from "../Mainpage/Header"
 import SecondHeader from "../Mainpage/SecondHeader"
 import Sidebar from "../Mainpage/Sidebar"
-import React, { useReducer, useEffect, useState, useRef } from "react"
+import React, {
+  useReducer,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
 import { Button } from "react-bootstrap"
 import Footer from "../Mainpage/Footer"
 
-import Publicchat from "./PublicChat"
+import PublicChat from "./PublicChat"
 import PrivateChat from "./PrivateChat"
 import LivePeople from "./LivePeople"
 import AgoraRTC from "agora-rtc-sdk-ng"
@@ -20,20 +25,9 @@ import { useAuthUpdateContext } from "../../app/AuthContext"
 import Slider from "@material-ui/core/Slider"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { useRouter } from "next/router"
-const initState = { val: <Publicchat /> }
-
-const reducer = (state = initState, action) => {
-  switch (action.type) {
-    case "PUBLIC":
-      return { val: <Publicchat /> }
-    case "PRIVATE":
-      return { val: <PrivateChat /> }
-    case "PERSON":
-      return { val: <LivePeople /> }
-    default:
-      return state
-  }
-}
+import LocalActivityIcon from "@material-ui/icons/LocalActivity"
+import MarkChatReadIcon from "@material-ui/icons/Markunread"
+import TipMenuActions from "../ViewerScreen/TipMenuActions"
 
 // /api/website/token-builder/create-stream-and-gen-token
 
@@ -62,18 +56,37 @@ createAgoraClient()
 function valuetext(value) {
   return `${value}°C`
 }
+const chatWindowOptions = {
+  PRIVATE: "private",
+  PUBLIC: "public",
+  USERS: "users",
+  TIP_MENU: "TIP_MENU",
+}
 
 function Live() {
   const ctx = useAuthContext()
-  const container = useRef()
   const updateCtx = useAuthUpdateContext()
-  const [state, dispatch] = useReducer(reducer, initState)
   const [fullScreen, setFullScreen] = useState(false)
   const [value, setValue] = React.useState(30)
+  const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
+
+  /* Ref's */
+  const container = useRef()
+  const chatInputRef = useRef()
+  const chatBoxContainer = useRef()
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
+
+  const scrollOnChat = useCallback(() => {
+    alert("scrolling chat")
+    console.log(chatBoxContainer.current)
+    chatBoxContainer.current.scrollBy({
+      top: 400,
+      behavior: "smooth",
+    })
+  }, [chatBoxContainer.current])
 
   const {
     localAudioTrack,
@@ -93,7 +106,7 @@ function Live() {
 
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = () => {
-    debugger
+    //debugger
     if (
       !localStorage.getItem("rtcToken") &&
       localStorage.getItem("rtcTokenExpireIn") <= Date.now() &&
@@ -108,11 +121,11 @@ function Live() {
           },
         })
           .then((resp) => {
-            debugger
+            //debugger
             return resp.json()
           })
           .then((data) => {
-            debugger
+            //debugger
             token = data.rtcToken
             rtcTokenExpireIn = data.privilegeExpiredTs
             localStorage.setItem("rtcToken", data.rtcToken)
@@ -121,7 +134,6 @@ function Live() {
           })
           .then((_result) => {
             /* successfully joined the channel */
-            
           })
           .catch((error) => console.log(error))
       }
@@ -134,8 +146,51 @@ function Live() {
     }
   }
 
+  const sendChatMessage = () => {
+    //debugger
+    if (!chatInputRef.current) {
+      alert("ref not created, updated")
+      return
+    }
+
+    if (!chatInputRef.current?.value) {
+      return
+    }
+
+    let payLoad
+    const message = chatInputRef.current.value
+    console.log(
+      "sent message to room >>>",
+      JSON.parse(sessionStorage.getItem("socket-rooms"))[0]
+    )
+    if (ctx.isLoggedIn) {
+      payLoad = {
+        room:
+          ctx.streamRoom ||
+          JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
+        message: message,
+        username: ctx.user.user.username,
+        walletCoins: ctx.user.user.relatedUser.wallet.currentAmount,
+      }
+    } else {
+      /* un-authed user */
+      payLoad = {
+        room:
+          ctx.streamRoom ||
+          JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
+        message: message,
+        username: `Guest User ${
+          unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
+        }`,
+        walletCoins: 0,
+      }
+    }
+    io.getSocket().emit("viewer-message-public-emitted", payLoad)
+    chatInputRef.current.value = ""
+  }
+
   const endStream = () => {
-    debugger
+    //debugger
     leave()
   }
 
@@ -178,7 +233,7 @@ function Live() {
             <div className="tw-text-center tw-mt-3 tw-flex tw-ml-[40%]">
               {joinState ? (
                 <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx-4"
+                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx-4 tw-capitalize"
                   variant="danger"
                   onClick={endStream}
                 >
@@ -186,7 +241,7 @@ function Live() {
                 </Button>
               ) : (
                 <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx-4"
+                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx- tw-capitalize"
                   variant="success"
                   onClick={startStreamingAndGoLive}
                   // disabled={joinState}
@@ -206,43 +261,118 @@ function Live() {
               </button>
             </div>
           </div>
-          <div className="tw-flex-[5] sm:tw-ml-4 sm:tw-mt-4 tw-mt-2 tw-bg-gray-400 sm:tw-w-7/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-            <div className="tw-flex tw-bg-gray-700 tw-justify-between tw-text-white sm:tw-py-4 sm:tw-px-4 tw-text-center tw-content-center ">
-              <div
-                className="tw-flex tw-text-center tw-content-center"
-                onClick={() => dispatch({ type: "PUBLIC" })}
-                style={{ cursor: "pointer" }}
+
+          {/* chat site | ex right side */}
+          <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-6/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+            <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
+              <button
+                className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
               >
-                <ChatBubbleIcon className="tw-mr-2" />
-                <p>Public </p>
-              </div>
-              {/* ------------------------------------------------------------------------------------- */}
-              <div
-                className="tw-flex tw-text-center tw-content-center"
-                onClick={() => dispatch({ type: "PRIVATE" })}
-                style={{ cursor: "pointer" }}
+                <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
+                <span className="tw-font-normal sm:-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+                  Live Chat
+                </span>
+              </button>
+              <button
+                className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                onClick={() => setChatWindow(chatWindowOptions.PRIVATE)}
               >
-                <QuestionAnswerIcon className="tw-mr-2" />
-                <p>Private</p>
-              </div>
+                <MarkChatReadIcon className="tw-mr-2 tw-my-auto" />
+                <span className="tw-font-normal sm:-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+                  Private Chat
+                </span>
+              </button>
+              {ctx.user.userType !== "Model" && (
+                <button
+                  className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                  onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
+                >
+                  <LocalActivityIcon className="tw-mr-2 tw-my-auto" />
+                  <span className="tw-font-normal sm:tw-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+                    Tip Menu
+                  </span>
+                </button>
+              )}
+              {ctx.user.userType === "Model" ? (
+                <button
+                  className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                  onClick={() => setChatWindow(chatWindowOptions.USERS)}
+                >
+                  <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
+                  <span className="tw-font-normal sm:tw-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+                    Users
+                  </span>
+                </button>
+              ) : null}
             </div>
 
-            <div className="tw-absolute tw-overflow-y-scroll tw-h-[90%] tw-bottom-4 tw-w-full">
-              <div className="tw-bottom-0 tw-relative tw-w-full">
-                {state.val}
-              </div>
-            </div>
-
-            <div className="tw-flex tw-py-2 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-[100%]">
-              <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full">
-                <input
-                  className="tw-flex tw-flex-1  tw-rounded-full tw-py-3 tw-pl-2 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
-                  placeholder="Public Chat  ....."
-                ></input>
-                <EmojiEmotionsIcon className="tw-mr-2" />
-                <div className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-4 sm:tw-px-4 tw-bg-blue-500 sm:tw-mx-1 tw-mx-0">
-                  Send
+            <div
+              ref={chatBoxContainer}
+              className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
+            >
+              <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color">
+                <div
+                  className=""
+                  style={{
+                    display:
+                      chatWindow === chatWindowOptions.PUBLIC
+                        ? "block"
+                        : "none",
+                  }}
+                >
+                  <PublicChat scrollOnChat={scrollOnChat} />
                 </div>
+                <div
+                  className=""
+                  style={{
+                    display:
+                      chatWindow === chatWindowOptions.PRIVATE
+                        ? "block"
+                        : "none",
+                  }}
+                >
+                  <PrivateChat scrollOnChat={scrollOnChat} />
+                </div>
+                <div
+                  className=""
+                  style={{
+                    display:
+                      chatWindow === chatWindowOptions.TIP_MENU
+                        ? "block"
+                        : "none",
+                  }}
+                >
+                  <TipMenuActions modalCtx={ctx} />
+                </div>
+                <div
+                  className=""
+                  style={{
+                    display:
+                      chatWindow === chatWindowOptions.USERS ? "block" : "none",
+                  }}
+                >
+                  <div className="">USERS</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">
+              <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
+                {/* <button className="tw-absolute tw-top-[50%] tw-left-[5%] tw-translate-x-[-50%] tw-translate-y-[-50%] tw-rounded-full tw-px-2 tw-py-1 tw-bg-dreamgirl-red">
+                <Image height={25} width={25} src={TipMenuIcon} />
+              </button> */}
+                <input
+                  className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
+                  placeholder="Enter your message here"
+                  ref={chatInputRef}
+                ></input>
+                <button
+                  onClick={sendChatMessage}
+                  className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-full"
+                >
+                  Send
+                </button>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ let GlobalModalContent = (
 );
 
 export const SetGlobalModalContent = (newContent) => {
-  debugger;
+  //debugger;
   GlobalModalContent = newContent;
   return GlobalModalContent;
 };

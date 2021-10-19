@@ -28,7 +28,7 @@ const PageHoc = (WrappedComponent) => {
                         }
                         const finalUrl = `${baseUrl}${url}`
                         let finalConfig;
-                        debugger
+                        //debugger
                         if (ctx.isLoggedIn) {
                             /**
                              * 
@@ -80,7 +80,7 @@ const PageHoc = (WrappedComponent) => {
                 },
                 response: function (response) {
                     // Modify the reponse object
-                    debugger
+                    //debugger
                     if (!response.ok) {
                         spinnerCtx.setShowSpinner(false)
                         return response.json()

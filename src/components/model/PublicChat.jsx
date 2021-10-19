@@ -116,30 +116,14 @@ const initialMessages = [
     index: 2,
     message: "Hello how is every one, feel very good here",
   },
-  // {
-  //   type: "gift-superchat-public",
-  //   index: 3,
-  //   username: "Neeraj rai",
-  //   giftImageUrl: flowerImage,
-  //   message: "Hello how is every one, feel very good here",
-  //   walletCoins: 100,
-  // },
-  // {
-  //   type: "gift-superchat-public",
-  //   username: "Neeraj rai",
-  //   index: 4,
-  //   walletCoins: 100,
-  //   giftImageUrl: flowerImage,
-  //   message: "Hello how is every one, feel very good here",
-  // },
-  // {
-  //   type: "coin-superchat-public",
-  //   username: "Vikas kumawat",
-  //   index: 5,
-  //   amountGiven: 40,
-  //   message: "Hello how is every one, feel very good here",
-  //   walletCoins: 100,
-  // },
+  {
+    type: "gift-superchat-public",
+    index: 3,
+    username: "Neeraj rai",
+    giftImageUrl: flowerImage,
+    message: "Hello how is every one, feel very good here",
+    walletCoins: 100,
+  },
   {
     type: "coin-superchat-public",
     username: "Vikas kumawat",
@@ -151,120 +135,146 @@ const initialMessages = [
 ]
 
 let chatIndex = 0
-let socketSetup = false
 function PublicChatBox(props) {
-  const [chatMessages, setChatMessages] = useState([...props.prevMessages])
+  const [chatMessages, setChatMessages] = useState([])
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
 
   useEffect(() => {
     debugger
-    let socket
-    const chatEvent = new Event("new-chat")
-    if (ctx.isConnected && !socketSetup) {
-      socket = io.getSocket()
-      socketSetup = true
-      /* before joining to new room clear previous public & private room connection */
-      socket.on("viewer-message-public-received", (data) => {
-        setChatMessages((prevChats) => {
-          const newChats = [
-            ...prevChats,
-            {
-              type: "normal-public-message",
+    if (ctx.socketSetupDone) {
+      debugger
+      /* 🟥 will it cause problem if i click on recommendation list */
+      const socket = io.getSocket()
+      if (!socket.hasListeners("viewer_super_message_pubic-received")) {
+        alert("init socket listners")
+        socket.on("viewer_super_message_pubic-received", (data) => {
+          let chat
+          if (data.chatType === "gift-superchat-public") {
+            chat = {
+              type: data.chatType,
               index: chatIndex,
               username: data.username,
+              giftImageUrl: data.gift.giftImageUrl,
               message: data.message,
               walletCoins: data.walletCoins,
-            },
-          ]
-          chatIndex++
-          return newChats
-        })
-        props.persistPublicChat(chatMessages)
-        // props.scrollOnChat()
-        // document.dispatchEvent(chatEvent)
-      })
-      socket.on("model-message-public-received", (data) => {
-        setChatMessages((prevChats) => {
-          // document.dispatchEvent(chatScrollEvent)
-          const newChats = [
-            ...prevChats,
-            {
-              type: "model-public-message",
+            }
+          } else if (data.chatType === "coin-superchat-public") {
+            chat = {
+              type: data.chatType,
               index: chatIndex,
+              username: data.username,
+              amountGiven: data.amountGiven,
               message: data.message,
-            },
-          ]
-          chatIndex++
-          return newChats
-        })
-        props.persistPublicChat(chatMessages)
-        // props.scrollOnChat()
-        // document.dispatchEvent(chatEvent)
-      })
-      socket.on("viewer_super_message_pubic-received", (data) => {
-        let chat
-        if (data.chatType === "gift-superchat-public") {
-          chat = {
-            type: data.chatType,
-            index: chatIndex,
-            username: data.username,
-            giftImageUrl: data.gift.giftImageUrl,
-            message: data.message,
-            walletCoins: data.walletCoins,
+              walletCoins: data.walletCoins,
+            }
           }
-        } else if (data.chatType === "coin-superchat-public") {
-          chat = {
-            type: data.chatType,
-            index: chatIndex,
-            username: data.username,
-            amountGiven: data.amountGiven,
-            message: data.message,
-            walletCoins: data.walletCoins,
-          }
-        }
-        setChatMessages((prevChats) => {
-          // document.dispatchEvent(chatScrollEvent)
-          return [...prevChats, chat]
+          setChatMessages((prevChats) => {
+            // document.dispatchEvent(chatScrollEvent)
+            return [...prevChats, chat]
+          })
+          props.scrollOnChat()
+          // document.dispatchEvent(chatEvent)
         })
-        props.persistPublicChat(chatMessages)
-        // props.scrollOnChat()
-        // document.dispatchEvent(chatEvent)
-      })
-    }
-    if (ctx.isConnected) {
-      if (!socket) {
-        socket = io.getSocket()
       }
+      if (!socket.hasListeners("model-message-public-received")) {
+        socket.on("model-message-public-received", (data) => {
+          setChatMessages((prevChats) => {
+            // document.dispatchEvent(chatScrollEvent)
+            const newChats = [
+              ...prevChats,
+              {
+                type: "model-public-message",
+                index: chatIndex,
+                message: data.message,
+              },
+            ]
+            chatIndex++
+            return newChats
+          })
+          props.scrollOnChat()
+          // document.dispatchEvent(chatEvent)
+        })
+      }
+      if (!socket.hasListeners("viewer-message-public-received")) {
+        socket.on("viewer-message-public-received", (data) => {
+          setChatMessages((prevChats) => {
+            const newChats = [
+              ...prevChats,
+              {
+                type: "normal-public-message",
+                index: chatIndex,
+                username: data.username,
+                message: data.message,
+                walletCoins: data.walletCoins,
+              },
+            ]
+            chatIndex++
+            return newChats
+          })
+          props.scrollOnChat()
+          // document.dispatchEvent(chatEvent)
+        })
+      }
+    }
+  }, [ctx.socketSetupDone, io.getSocket()])
+
+  useEffect(() => {
+    /* why you have to remove the event listners any way */
+    debugger
+    if (ctx.socketSetupDone) {
+      socket = io.getSocket()
       return () => {
-        if (authCtx.streamRoom) {
-          socketSetup = false
+        debugger
+        if (socket.hasListeners("viewer-message-public-received")) {
           socket.off("viewer-message-public-received")
+        }
+        if (socket.hasListeners("model-message-public-received")) {
           socket.off("model-message-public-received")
+        }
+        if (socket.hasListeners("viewer_super_message_pubic-received")) {
           socket.off("viewer_super_message_pubic-received")
-          // socket.emit(
-          //   "take-me-out-of-these-rooms",
-          //   [authCtx.streamRoom],
-          //   (response) => {
-          //     if (response.status === "ok") {
-          //       /* remove this room from session storage also */
-          //       const rooms =
-          //         JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-          //       sessionStorage.setItem(
-          //         "socket-rooms",
-          //         JSON.stringify(
-          //           rooms.filter((room) => room !== authCtx.streamRoom)
-          //         )
-          //       )
-          //       authUpdateCtx.updateViewer({ streamRoom: null })
-          //     }
-          //   }
-          // )
         }
       }
     }
-  }, [socketSetup, ctx.isConnected, io.getSocket(), authCtx.streamRoom])
+  }, [ctx.socketSetupDone, io.getSocket()])
+
+  useEffect(() => {
+    /* when the viwerscreen component un-mounts leave the public/private stream specific rooms */
+    debugger
+    if (ctx.socketSetupDone) {
+      return () => {
+        socket = io.getSocket()
+        debugger
+        const socketRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        const roomsToLeave = []
+        socketRooms.forEach((room) => {
+          if (room.includes("-public") || room.includes("-private")) {
+            roomsToLeave.push(room)
+          }
+        })
+        socket.emit(
+          "take-me-out-of-these-rooms",
+          [...roomsToLeave],
+          (response) => {
+            if (response.status === "ok") {
+              /* remove this room from session storage also */
+
+              sessionStorage.setItem(
+                "socket-rooms",
+                JSON.stringify(
+                  socketRooms.filter((room) => !roomsToLeave.includes(room))
+                )
+              )
+              authUpdateCtx.updateViewer({ streamRoom: null })
+            }
+          }
+        )
+      }
+    }
+  }, [ctx.socketSetupDone, io.getSocket()])
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 max-w-[100vw] md:tw-max-w-[49vw]">
@@ -279,6 +289,7 @@ function PublicChatBox(props) {
           case "normal-public-message":
             return (
               <NormalChatMessage
+                key={"dsfsdf324" + chat.index}
                 index={chat.index}
                 displayName={chat.username}
                 message={chat.message}

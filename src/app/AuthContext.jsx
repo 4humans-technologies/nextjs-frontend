@@ -1,4 +1,4 @@
-/* eslint-disable no-debugger */
+/* eslint-disable no-//debugger */
 import React, { useCallback } from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 
@@ -44,7 +44,7 @@ export const AuthContextProvider = ({ children }) => {
   const updateViewer = useCallback(
     (newViewer) => {
       setAuthState((prevValue) => {
-        debugger
+        //debugger
         let newState
         if (newViewer.user) {
           newState = { ...prevValue, ...newViewer, user: { ...newViewer.user } }
@@ -137,7 +137,7 @@ export const AuthContextProvider = ({ children }) => {
   }
 
   if (!authState.loadedFromLocalStorage && typeof window !== "undefined") {
-    debugger
+    //debugger
     readFromLocalStorage()
   }
 
