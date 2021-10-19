@@ -11,6 +11,7 @@ import LivePeople from "./LivePeople"
 import dynamic from "next/dynamic"
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
 import BrowseGifts from "../Gift/BrowseGifts"
+import Token from "../model/Token"
 import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
 
@@ -158,7 +159,7 @@ function LiveScreen(props) {
   const chatInputRef = useRef()
   const chatBoxContainer = useRef()
 
-  const ctx = useModalContext()
+  const modalCtx = useModalContext()
   const authCtx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
   const router = useRouter()
@@ -299,8 +300,10 @@ function LiveScreen(props) {
 
   const showCallDetailPopUp = useCallback(
     () =>
-      ctx.showModalWithContent(<CallDetailsPopUp closeModal={ctx.hideModal} />),
-    [ctx.showModalWithContent, ctx.hideModal]
+      modalCtx.showModalWithContent(
+        <CallDetailsPopUp closeModal={modalCtx.hideModal} />
+      ),
+    [modalCtx.showModalWithContent, modalCtx.hideModal]
   )
   return (
     <>
@@ -383,7 +386,7 @@ function LiveScreen(props) {
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                   variant="danger"
                   onClick={() => {
-                    setShowBrowseGifts((prev) => !prev)
+                    modalCtx.showModalWithContent(<Token />)
                   }}
                 >
                   <CardGiftcardIcon fontSize="small" />
@@ -469,7 +472,7 @@ function LiveScreen(props) {
                       : "none",
                 }}
               >
-                <TipMenuActions modalCtx={ctx} />
+                <TipMenuActions modalCtx={modalCtx} />
               </div>
               <div
                 className=""

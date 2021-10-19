@@ -7,9 +7,7 @@ import ClearIcon from "@material-ui/icons/Clear"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import logo from "../../../public/logo.png"
-import ChatIcon from "@material-ui/icons/Chat"
 import NotificationsIcon from "@material-ui/icons/Notifications"
-import MonetizationOnIcon from "@material-ui/icons/MonetizationOn"
 
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
@@ -18,6 +16,7 @@ import useModalContext from "../../app/ModalContext"
 import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
+import userHeaderprofile from "./Header/UserHeaderProfile"
 
 function Header(props) {
   const [menu, setMenu] = useState(false)
@@ -43,6 +42,7 @@ function Header(props) {
     }
   }, [])
 
+  // data for serch result
   useEffect(() => {
     fetch("/data.json")
       .then((resp) => {
@@ -50,8 +50,6 @@ function Header(props) {
       })
       .then((data) => setSearchData(data.products))
   }, [query])
-
-  // need for
 
   return (
     <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[102]">
@@ -118,7 +116,6 @@ function Header(props) {
           </ul>
         </div>
       </span>
-
       {/* ------------- experiment----------- */}
       {/* usertype viwer and unauth  */}
 
@@ -165,7 +162,7 @@ function Header(props) {
                   authContext.user.userType == "Viewer" ? (
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
                       <button
-                        className="tw-mx-4 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full"
+                        className="tw-mx-4  tw-p-2 tw-rounded-full"
                         onClick={updateAuthContext.logout}
                       >
                         logout
@@ -185,13 +182,22 @@ function Header(props) {
                           className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
                           src="/pp.jpg"
                         ></img>
+                        {/* profile */}
+                        <div
+                          className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-right-4 ${
+                            headerProfileShow ? "" : "tw-hidden"
+                          }`}
+                        >
+                          <userHeaderprofile />
+                        </div>
+                        {/* profile */}
                       </div>
                     </div>
                   ) : (
                     // login at large screen model
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
                       <button
-                        className="tw-mx-4 tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-rounded-full"
+                        className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full"
                         onClick={updateAuthContext.logout}
                       >
                         logout

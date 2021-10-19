@@ -79,15 +79,15 @@ const Home = () => {
   const [boxGroupsData, setBoxGroupData] = useState([
     {
       title: "Test Webcams",
-      data: data.slice(0, 6),
+      data: data.slice(0, 7),
     },
     {
       title: "Category Two",
-      data: data.slice(0, 6),
+      data: data.slice(0, 7),
     },
     {
       title: "Category Three",
-      data: data.slice(0, 6),
+      data: data.slice(0, 7),
     },
   ])
 

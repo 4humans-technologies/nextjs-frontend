@@ -51,7 +51,7 @@ function useAgora(client, role, callType) {
       return setJoinState(true)
     }
     // if client
-    return await client.join(appId, channel, token, uid)
+    await client.join(appId, channel, token, uid)
   }
 
   async function startLocalCameraPreview() {

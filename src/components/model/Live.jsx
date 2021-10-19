@@ -29,7 +29,8 @@ import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
 import io from "../../socket/socket"
-
+import Showcontroler from "./VideoStreaming/Showcontroler"
+import Videoshowcontroller from "./VideoStreaming/Videoshowcontroller"
 // /api/website/token-builder/create-stream-and-gen-token
 
 // Replace with your App ID.
@@ -380,6 +381,7 @@ function Live() {
           </div>
         </div>
       </div>
+      <Videoshowcontroller />
       <Footer />
     </div>
   ) : (

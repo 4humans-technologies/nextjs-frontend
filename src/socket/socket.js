@@ -27,7 +27,7 @@ export default {
         // no worries if user provides wrong info, we have token we can validate
         userType:
           localStorage.getItem("userType") ||
-          JSON.parse(localStorage.getItem("authContext")).userType ||
+          JSON.parse(localStorage.getItem("authContext"))?.userType ||
           "UnAuthedViewer",
         hasAudioCall:
           Object.keys(pendingCalls.audioCall).length > 0 ? true : false,

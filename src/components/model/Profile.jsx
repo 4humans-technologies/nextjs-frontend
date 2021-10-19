@@ -7,16 +7,16 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import AddIcon from "@material-ui/icons/Add";
 import { Button } from "react-bootstrap";
 import Card from "../UI/Card";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
 import Callhistory from "./CallHistory"
 
+let firstRenderHappened = false
 function Profile() {
   const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
   const [dynamicData, setDynamicData] = useState([2])
-  const [modelData, setModelData] = useState([])
+  const [modelData, setModelData] = useState()
+  const [callData, setCallData] = useState()
   const [modelState, setModelState] = useState({
     images: [],
     videos: [],
@@ -25,15 +25,40 @@ function Profile() {
     profile: "",
     header_image: "",
   })
-
+  const [information, setInformation] = useState({
+    Interest: "Every One",
+    From: "",
+    Language: "",
+    Age: 18,
+    Body: "",
+    Specific: "",
+    Hair: "",
+    Eye: "Black",
+    Subculture: "",
+  })
   useEffect(() => {
     fetch("/model.json")
       .then((res) => res.json())
-      .then((data) => setModelData(data.models))
+      .then((data) => {
+        setModelData(data.Personal), setCallData(data.Charges)
+      })
   }, [])
 
-  console.log(modelData)
+  // useEffect to make  button appear when change in information takes place
+  let audio = []
+  let video = []
 
+  useEffect(() => {
+    if (callData) {
+      for (let index = 1; index < 5; index++) {
+        audio.push(callData.Audio * index)
+        video.push(callData.Video * index)
+      }
+    }
+  }, [callData])
+
+  console.log(audio)
+  console.log(video)
   const toggleChecked = () => {
     setChecked((prev) => !prev)
   }
@@ -92,127 +117,134 @@ function Profile() {
                 <p>SubCulture</p>
               </div>
 
-              <div
-                className="md:tw-col-span-5 tw-col-span-4 "
-                onChange={console.log("changed")}
-              >
-                <p
-                  onInput={
-                    ((e) => e.currentTarget.textContent,
-                    () => setInfoedited(true))
-                  }
-                  contentEditable="true"
-                >
-                  Intrested in
-                </p>
-                <p
-                  onInput={
-                    ((e) => e.currentTarget.textContent,
-                    () => setInfoedited(true))
-                  }
-                  contentEditable="true"
-                >
-                  mName
-                </p>
-                <p>Language</p>
-                <p>Age</p>
-                <p>Body type</p>
-                <p>Specifiv</p>
-                <p>Hair</p>
-                <p>Eye color</p>
-                <p>SubCulture</p>
-                <br />
-                {infoedited && (
-                  <Button type="submit" onClick={() => setInfoedited(false)}>
-                    Save
-                  </Button>
-                )}
-              </div>
+              {modelData
+                ? modelData.map((item) => (
+                    <div
+                      className="md:tw-col-span-5 tw-col-span-4 "
+                      onChange={console.log("changed")}
+                    >
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.Interest}
+                      </p>
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.From}
+                      </p>
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.Language}
+                      </p>
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.Age}
+                      </p>
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.Body}
+                      </p>
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.Hair}
+                      </p>
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.Eye}
+                      </p>
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.Call}
+                      </p>
+                      <p
+                        onInput={(e) => e.currentTarget.textContent}
+                        contentEditable="true"
+                      >
+                        {item.Call}
+                      </p>
+                    </div>
+                  ))
+                : null}
+
+              <br />
+              {infoedited && (
+                <Button type="submit" onClick={() => setInfoedited(false)}>
+                  Save
+                </Button>
+              )}
             </div>
-            <div className="tw-bg-first-color tw-my-4 tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-px-4 tw-py-2 ">
-              <div className="tw-flex tw-justify-between">
-                <p>
-                  Epic Goal <HelpIcon />
-                </p>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      size="small"
-                      checked={checked}
-                      onChange={toggleChecked}
-                    />
-                  }
-                />
-              </div>
-              <div className="tw-flex tw-justify-between ">
-                <p className="tw-font-extrabold tw-text-purple-500">
-                  Neeraj is My Passion ,We live with It.
-                </p>
-                <p>0 Contributor</p>
-              </div>
-              <div className="tw-flex tw-justify-between ">
-                <p>0 tk/2500 tk</p>
-                <p className="tw-right-2">0%</p>
-              </div>
-            </div>
-            <div className=" tw-bg-first-color tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-px-4 tw-py-2">
-              <p className="tw-flex tw-justify-between">
-                <p>
-                  <CalendarTodayIcon /> Broadcast Schedule
-                </p>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      size="small"
-                      color="primary"
-                      checked={checked}
-                      onChange={toggleChecked}
-                    />
-                  }
-                />
-              </p>
-              <p>
-                Let you Viewer know when the broadcast You see all times in tour
-                current time zone -GMT +5.30 Feel free to change it. User see
-                all times in their local time zones
-              </p>
-            </div>
+            {/* removed epic goal and Broadcast shedule */}
+
             {/* Pricing */}
             <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
               <div className="tw-col-span-1">
-                <p>Private Show</p>
-                <p className="tw-my-2">Exclusive Show</p>
+                <p>Private Audio Call</p>
+                <p className="tw-my-2">Private video Call</p>
               </div>
               <div className="tw-col-span-2">
-                <div className="tw-flex  ">
+                <div className="tw-flex ">
                   <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
+                    {audio.length > 0
+                      ? audio.map((item) => (
+                          <option value={item}>
+                            {item} <span>tk</span>
+                          </option>
+                        ))
+                      : null}
+                  </select>
+                  {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
                     <option value="200tk">200tk </option>
                     <option value="300tk">300tk </option>
                     <option value="400tk">400tk </option>
                     <option value="500tk">500tk </option>
-                  </select>
+                  </select> */}
 
                   <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4">
-                    <option value="200tk">200tk </option>
-                    <option value="300tk">300tk </option>
-                    <option value="400tk">400tk </option>
-                    <option value="500tk">500tk </option>
+                    <option value="1"> 1 minute </option>
+                    <option value="2"> 2 minute </option>
+                    <option value="3"> 3 minute </option>
+                    <option value="4"> 4 minute </option>
                   </select>
                 </div>
                 {/*  */}
-                <div className="tw-flex  tw-my-2">
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center ">
-                    <option value="200tk">200tk </option>
-                    <option value="300tk">300tk </option>
-                    <option value="400tk">400tk </option>
-                    <option value="500tk">500tk </option>
-                  </select>
 
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2 tw-ml-4">
+                <div className="tw-flex  tw-my-2">
+                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
+                    {video.length > 0
+                      ? video.map((item) => (
+                          <option value={item}>
+                            {item} <span>tk</span>
+                          </option>
+                        ))
+                      : null}
+                  </select>
+                  {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-py-2 ">
                     <option value="200tk">200tk </option>
                     <option value="300tk">300tk </option>
                     <option value="400tk">400tk </option>
                     <option value="500tk">500tk </option>
+                  </select> */}
+
+                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4 tw-py-2">
+                    <option value="1"> 1 minute </option>
+                    <option value="2"> 2 minute </option>
+                    <option value="3"> 3 minute </option>
+                    <option value="4"> 4 minute </option>
                   </select>
                 </div>
               </div>

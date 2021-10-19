@@ -164,11 +164,13 @@ function Videocall(props) {
   ])
 
   return (
+    // 82 vh has no signifcate impact
     <div className="sm:tw-h-[82vh] " ref={container}>
       {remoteUsers.length > 0 &&
         remoteUsers.map((user) => {
           return (
             <div className="tw-min-h-full">
+              {/* below controll the size viseo player*/}
               <div className="tw-h-[82vh]">
                 <VideoPlayer
                   key={user.uid}
@@ -178,7 +180,7 @@ function Videocall(props) {
                 />
               </div>
               {/* volume increase decrease */}
-              <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-32px]">
+              <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-100px]">
                 <VolumeUpIcon className="tw-text-white" fontSize="large" />
                 <Slider
                   defaultValue={30}

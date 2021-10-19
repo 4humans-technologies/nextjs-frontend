@@ -30,12 +30,12 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             let baseUrl = imageDomainURL /* vishalprajapati */
             // let baseUrl = "http://192.168.43.85:8080"; /* 👉 asus */
 
-            if (
-              window.location.hostname !== "localhost" &&
-              window.location.hostname !== imageDomainHost
-            ) {
-              baseUrl = "https://dreamgirl.live"
-            }
+            // if (
+            //   window.location.hostname !== "localhost" &&
+            //   window.location.hostname !== imageDomainHost
+            // ) {
+            //   baseUrl = "https://dreamgirl.live"
+            // }
             let finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem(
               "socketId"
             )}&unAuthedUserId=`

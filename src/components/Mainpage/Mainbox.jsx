@@ -7,9 +7,6 @@ import StarIcon from "@material-ui/icons/Star"
 import Link from "next/link"
 import { imageDomainURL } from "../../../dreamgirl.config"
 
-const DynamicComponent = dynamic(() => import("./ViewerScreen"), {
-  ssr: false,
-})
 
 function Mainbox(props) {
   const watch = () => {
