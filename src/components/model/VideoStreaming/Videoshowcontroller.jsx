@@ -6,7 +6,7 @@ import Showcontroler from "./Showcontroler"
 function Videoshowcontroller() {
   const [key, setKey] = useState("home")
   return (
-    <div className="tw-bg-second-color tw-pt-4">
+    <div className="tw-bg-second-color tw-pt-4 tw-text-xs tw-font-normal sm:-font-medium">
       <Tabs
         id="controlled-tab-example"
         activeKey={key}

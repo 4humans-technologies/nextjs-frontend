@@ -7,7 +7,6 @@ import useModalContext from "../../app/ModalContext"
 import loginBg from "../../../public/dreamgirl-bg-3.jpg"
 import { Money, Person, VerifiedUser } from "@material-ui/icons"
 import { Button } from "react-bootstrap"
-import useFetchInterceptor from "../../hooks/useFetchInterceptor"
 import Logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
@@ -58,7 +57,7 @@ function Signup() {
               user: data.user,
             },
             () => {
-              router.push("/ravi/live")
+              router.replace("/")
             }
           )
         //redirect to home page

@@ -8,6 +8,7 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import logo from "../../../public/logo.png"
 import NotificationsIcon from "@material-ui/icons/Notifications"
+import { Button } from "react-bootstrap"
 
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
@@ -128,7 +129,7 @@ function Header(props) {
                     <div className="">
                       <div className="tw-flex tw-self-center">
                         <button
-                          className="tw-mx-4 tw-bg-dreamgirl-red tw-px-2 tw-rounded-full"
+                          className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-px-2 tw-rounded-full"
                           onClick={updateAuthContext.logout}
                         >
                           logout
@@ -143,12 +144,12 @@ function Header(props) {
                     <div className="">
                       <div className="tw-flex tw-self-center">
                         <button
-                          className="tw-mx-4 tw-bg-dreamgirl-red tw-px-4 tw-rounded-full"
+                          className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-rounded-full tw-capitalize tw-px-4 tw-py-2"
                           onClick={updateAuthContext.logout}
                         >
                           logout
                         </button>
-                        <button className="tw-mx-4 tw-bg-dreamgirl-red tw-px-4 tw-rounded-full">
+                        <button className="tw-mx-4  tw-rounded-full tw-capitalize tw-px-4 tw-py-2 tw-bg-white-color tw-text-black">
                           <Link href="/rohit/goLive">
                             <a>live</a>
                           </Link>
@@ -162,7 +163,7 @@ function Header(props) {
                   authContext.user.userType == "Viewer" ? (
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
                       <button
-                        className="tw-mx-4  tw-p-2 tw-rounded-full"
+                        className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                         onClick={updateAuthContext.logout}
                       >
                         logout
@@ -197,7 +198,7 @@ function Header(props) {
                     // login at large screen model
                     <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
                       <button
-                        className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full"
+                        className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                         onClick={updateAuthContext.logout}
                       >
                         logout
@@ -205,17 +206,13 @@ function Header(props) {
                       <div className="tw-mx-4">
                         <NotificationsIcon />
                       </div>
-                      <button className="tw-mx-8 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full">
-                        {hide ? (
-                          <Link href="/">
-                            <a>stop Broadcasting</a>
-                          </Link>
-                        ) : (
-                          <Link href="/rohit/goLive">
-                            <a>Start Broadcasting</a>
-                          </Link>
-                        )}
-                      </button>
+                      {hide ? null : (
+                        <Link href="/rohit/goLive">
+                          <a className="tw-bg-white-color text-sm lg:tw-text-base tw-text-black tw-outline-none tw-capitalize tw-px-4 tw-py-2 tw-inline-block tw-mx-4 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
+                            Go Live
+                          </a>
+                        </Link>
+                      )}
                       <div
                         className="tw-mr-4 tw-cursor-pointer"
                         onClick={() => setHeaderProfileShow((prev) => !prev)}
@@ -257,13 +254,13 @@ function Header(props) {
                       </div>
                     </div>
                     <button
-                      className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-text-black sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-my-4"
+                      className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-text-black sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-my-4 tw-text-sm md:tw-text-base"
                       onClick={() => router.push("/auth/viewerRegistration")}
                     >
-                      Create account
+                      Sign Up
                     </button>
                     <button
-                      className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-6 tw-text-white tw-border-2 sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center "
+                      className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-6 tw-text-white tw-border-2 sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-text-sm md:tw-text-base"
                       onClick={() => router.push("auth/login")}
                     >
                       Login
@@ -276,14 +273,14 @@ function Header(props) {
             ) : (
               <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
                 <button
-                  className="tw-rounded-full md:tw-py-3 tw-py-1 tw-px-2 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2"
+                  className="tw-rounded-full md:tw-py-3 tw-py-2 tw-px-4 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2 tw-text-sm md:tw-text-base"
                   onClick={() => router.push("/auth/viewerRegistration")}
                 >
-                  Create account
+                  Sign Up
                 </button>
 
                 <button
-                  className="tw-rounded-full sm:tw-py-3 tw-py-1 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black"
+                  className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-4 md:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black tw-text-sm md:tw-text-base"
                   onClick={() => router.push("/auth/login")}
                 >
                   Login

@@ -6,7 +6,6 @@ import Boxgroup from "../components/Mainpage/Boxgroup"
 import { useState, useEffect } from "react"
 // import Mainbox from "../components/Mainbox";
 import Footer from "../components/Mainpage/Footer"
-import useFetchInterceptor from "../hooks/useFetchInterceptor"
 import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
 import useSetupSocket from "../socket/useSetupSocket"
 import socket from "../socket/socket"
@@ -41,6 +40,7 @@ const Home = () => {
   const authUpdateCtx = useAuthUpdateContext()
 
   useEffect(() => {
+    /* client should not be connected to any public/private room  while on index page */
     if (JSON.parse(sessionStorage.getItem("socket-rooms"))) {
       try {
         const socket = io.getSocket()

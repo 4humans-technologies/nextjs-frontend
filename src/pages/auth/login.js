@@ -1,20 +1,16 @@
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext";
-import LoginComponent from "../../components/model/Login";
-import PageHoc from "../../components/PageHoc";
-import useFetchInterceptor from "../../hooks/useFetchInterceptor";
-import { useRouter } from "next/router";
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import LoginComponent from "../../components/model/Login"
+import PageHoc from "../../components/PageHoc"
+import { useRouter } from "next/router"
 
 // export default Login
-let fetchIntercepted = false;
 const Login = () => {
-  const ctx = useAuthContext();
-  const updateCtx = useAuthUpdateContext();
-  useFetchInterceptor(fetchIntercepted);
-  fetchIntercepted = true;
-  const router = useRouter();
+  const ctx = useAuthContext()
+  const updateCtx = useAuthUpdateContext()
+  const router = useRouter()
 
   if (ctx.isLoggedIn) {
-    router.replace("/");
+    router.replace("/")
   }
 
   return !ctx.isLoggedIn ? (
@@ -33,7 +29,7 @@ const Login = () => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

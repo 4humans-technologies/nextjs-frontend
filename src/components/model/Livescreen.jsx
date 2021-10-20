@@ -1,11 +1,4 @@
-import React, {
-  createRef,
-  useReducer,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-} from "react"
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
 import PersonIcon from "@material-ui/icons/Person"
@@ -17,7 +10,6 @@ import PrivateChat from "./PrivateChat"
 import LivePeople from "./LivePeople"
 import dynamic from "next/dynamic"
 import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
-import BrowseGifts from "../Gift/BrowseGifts"
 import Token from "../model/Token"
 import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
@@ -33,6 +25,8 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 import io from "../../socket/socket"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
+import Image from "next/image"
+import TipMenuIcon from "../../../public/tips.png"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,
@@ -125,34 +119,6 @@ const giftData = [
   },
 ]
 
-const unAuthedUserEmojis = [
-  "🎈",
-  "✨",
-  "🎉",
-  "🎃",
-  "🎁",
-  "👓",
-  "👔",
-  "🎨",
-  "⚽",
-  "💎",
-  "🥇",
-  "♥",
-  "🎵",
-  "🧲",
-  "💰",
-  "🍺",
-  "🥂",
-  "🍎",
-  "🌼",
-  "🚩",
-  "🌞",
-  "🌈",
-  "⚡",
-  "🐬",
-  "🦄",
-]
-
 const chatWindowOptions = {
   PRIVATE: "private",
   PUBLIC: "public",
@@ -160,14 +126,9 @@ const chatWindowOptions = {
   TIP_MENU: "TIP_MENU",
 }
 
-let messageStorage = {
-  publicChatMessages: [],
-  privateChatMessages: [],
-}
-
 function LiveScreen(props) {
-  const chatInputRef = createRef()
-  const chatBoxContainer = createRef()
+  const chatInputRef = useRef()
+  const chatBoxContainer = useRef()
 
   const modalCtx = useModalContext()
   const authCtx = useAuthContext()
@@ -178,81 +139,23 @@ function LiveScreen(props) {
   const [showBrowseGifts, setShowBrowseGifts] = useState(true)
   const [gifts, setGifts] = useState(giftData)
 
-  useEffect(() => {
-    return () => {
-      messageStorage = {
-        publicChatMessages: [],
-        privateChatMessages: [],
-      }
-    }
-  }, [])
-
-  const persistPublicChat = useCallback(
-    (messagesToPersist) => {
-      messageStorage.publicChatMessages = [...messagesToPersist]
-    },
-    [messageStorage.publicChatMessages]
-  )
-  const persistPrivateChat = useCallback(
-    (messagesToPersist) => {
-      messageStorage.privateChatMessages = [...messagesToPersist]
-    },
-    [messageStorage.privateChatMessages]
-  )
-
-  useEffect(() => {
-    document.addEventListener("new-chat", () => {
-      alert("scrolling chat")
-      console.log(chatBoxContainer.current)
-      chatBoxContainer.current.scrollBy({
-        top: 400,
-        behavior: "smooth",
-      })
-    })
-  }, [chatBoxContainer.current])
-
-  console.log("chat box ref ⚡⚡⚡", chatBoxContainer.current)
+  // useEffect(() => {
+  //   document.addEventListener("new-chat", () => {
+  //     alert("scrolling chat")
+  //     console.log(chatBoxContainer.current)
+  //     chatBoxContainer.current.scrollBy({
+  //       top: 400,
+  //       behavior: "smooth",
+  //     })
+  //   })
+  // }, [chatBoxContainer.current])
 
   const scrollOnChat = useCallback(() => {
-    alert("scrolling chat")
-    console.log(chatBoxContainer.current)
     chatBoxContainer.current.scrollBy({
       top: 400,
       behavior: "smooth",
     })
   }, [chatBoxContainer.current])
-
-  const chatComponent = useMemo(() => {
-    switch (chatWindow) {
-      case chatWindowOptions.PUBLIC:
-        return (
-          <PublicChat
-            scrollOnChat={scrollOnChat}
-            persistPublicChat={persistPublicChat}
-            prevMessages={messageStorage.publicChatMessages}
-          />
-        )
-      case chatWindowOptions.PRIVATE:
-        return (
-          <PrivateChat
-            scrollOnChat={scrollOnChat}
-            persistPrivateChat={persistPrivateChat}
-            prevMessages={messageStorage.privateChatMessages}
-            // hasActivePlan={authCtx.user.relatedUser.isChatPlanActive}
-          />
-        )
-      case chatWindowOptions.TIP_MENU:
-        return <TipMenuActions modalCtx={modalCtx} />
-      default:
-        break
-    }
-  }, [
-    chatWindow,
-    scrollOnChat,
-    chatWindowOptions,
-    persistPublicChat,
-    persistPrivateChat,
-  ])
 
   const sendChatMessage = () => {
     //debugger
@@ -287,9 +190,7 @@ function LiveScreen(props) {
           authCtx.streamRoom ||
           JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
         message: message,
-        username: `Guest User ${
-          unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
-        }`,
+        username: localStorage.getItem("unAuthed-user-chat-name"),
         walletCoins: 0,
       }
     }
@@ -308,63 +209,6 @@ function LiveScreen(props) {
       document.removeEventListener("keydown", handleKeyPress)
     }
   }, [sendChatMessage])
-
-  const fetchGifts = () => {
-    if (gifts.length === 0) {
-      if (!authCtx.isLoggedIn) {
-        router.replace("/auth/login")
-        updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname })
-      } else {
-        /* fetch gifts from server */
-        const giftUrl = "/api/website/gifts/get-gifts"
-        fetch(giftUrl)
-          .then((res) => res.json())
-          .then((data) => {
-            /* render gift component and mount */
-            setGifts(data.results)
-            showBrowseGifts(true)
-          })
-          .catch((err) => {
-            /* call error modal */
-            alert("Error fetching gifts" + err.message)
-          })
-      }
-    }
-  }
-
-  const buyGift = (id) => {
-    if (!authCtx.isLoggedIn) {
-      alert("How you dare to buy gifts without logging in 😡😡😠😠😡😡")
-      router.replace("/auth/login")
-      updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname })
-    } else {
-      const theGift = gifts.find((gift) => gift._id === id)
-      /* fetch request buy gift _id to buy, deduct the money also */
-      fetch("/api/website/gifts/purchase-gift", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          giftId: id,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.actionStatus === "success") {
-            io.getSocket().emit("viewer_super_message_public_emitted", {
-              username: authCtx.user.user.username,
-              name: authCtx.user.user.relatedUser.name,
-              walletCoins: authCtx.user.user.wallet.currentAmount,
-              chatType: "gift-message-public",
-              theGift: { ...theGift },
-              room: authCtx.streamRoom,
-            })
-          }
-        })
-        .catch((err) => alert(err))
-    }
-  }
 
   const showCallDetailPopUp = useCallback(
     () =>
@@ -520,11 +364,7 @@ function LiveScreen(props) {
                     chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
                 }}
               >
-                <PublicChat
-                  scrollOnChat={scrollOnChat}
-                  persistPublicChat={persistPublicChat}
-                  prevMessages={messageStorage.publicChatMessages}
-                />
+                <PublicChat scrollOnChat={scrollOnChat} />
               </div>
               <div
                 className=""
@@ -533,11 +373,7 @@ function LiveScreen(props) {
                     chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
                 }}
               >
-                <PrivateChat
-                  scrollOnChat={scrollOnChat}
-                  persistPrivateChat={persistPrivateChat}
-                  prevMessages={messageStorage.privateChatMessages}
-                />
+                <PrivateChat scrollOnChat={scrollOnChat} />
               </div>
               <div
                 className=""
@@ -550,11 +386,20 @@ function LiveScreen(props) {
               >
                 <TipMenuActions modalCtx={modalCtx} />
               </div>
+              <div
+                className=""
+                style={{
+                  display:
+                    chatWindow === chatWindowOptions.USERS ? "block" : "none",
+                }}
+              >
+                <div className="">USERS</div>
+              </div>
             </div>
           </div>
 
           <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">
-            <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full">
+            <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
               <input
                 className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                 placeholder="Enter your message here"
@@ -562,7 +407,7 @@ function LiveScreen(props) {
               ></input>
               <button
                 onClick={sendChatMessage}
-                className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-tr-full tw-rounded-br-full"
+                className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-full"
               >
                 Send
               </button>

@@ -7,19 +7,24 @@ const SocketContext = createContext({
   isConnected: false,
   setSocketInstance: () => {},
   setIsConnected: () => {},
+  socketSetupDone: false,
+  setSocketSetupDone: () => {},
 })
 
 let socketSetup = false
 export const SocketContextProvider = ({ children }) => {
   const [socketInstance, setSocketInstance] = useState(null)
   const [isConnected, setIsConnected] = useState(false)
+  const [socketSetupDone, setSocketSetupDone] = useState(false)
 
   const initSocket = () => {
     //debugger
-    console.log("Initializing socket, status")
     const url = imageDomainURL
     const socket = io.connect(url)
     console.log("Initial socket id 🔴🔴", socket.id)
+    if (!socketSetupDone) {
+      setSocketSetupDone(true)
+    }
 
     socket.on("connect", () => {
       localStorage.setItem("socketId", socket.id)
@@ -82,6 +87,8 @@ export const SocketContextProvider = ({ children }) => {
         isConnected,
         setSocketInstance,
         setIsConnected,
+        socketSetupDone,
+        setSocketSetupDone,
       }}
     >
       {children}

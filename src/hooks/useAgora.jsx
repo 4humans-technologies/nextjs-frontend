@@ -8,6 +8,7 @@ function useAgora(client, role, callType) {
   const [localAudioTrack, setLocalAudioTrack] = useState(null)
   const [joinState, setJoinState] = useState(false)
   const [remoteUsers, setRemoteUsers] = useState([])
+  const [vol, setVol] = useState(100)
 
   async function createLocalTracks() {
     const tracks = []
@@ -32,7 +33,7 @@ function useAgora(client, role, callType) {
   }
 
   async function join(channel, token, uid) {
-    //debugger;
+    //debugger
     /* relatedUserId Will Be the > uid */
     console.log("join running..")
 
@@ -45,7 +46,7 @@ function useAgora(client, role, callType) {
         facingMode: "user",
         encoderConfig: { height: 720, width: 720, frameRate: 23 },
       })
-      //debugger;
+      //debugger
       await client.join(appId, channel, token, uid)
       await client.publish(track)
       return setJoinState(true)
@@ -55,7 +56,7 @@ function useAgora(client, role, callType) {
   }
 
   async function startLocalCameraPreview() {
-    //debugger;
+    //debugger
     if (!client) {
       return
     }
@@ -91,6 +92,14 @@ function useAgora(client, role, callType) {
     }
     // when component will mount
     setRemoteUsers(client.remoteUsers)
+    //for volume change this is by Ravi shankar still in trail stage
+    const handleUserVolume = async function (user, mediaType) {
+      console.log("new user published")
+      await client.subscribe(user, mediaType)
+      setRemoteUsers((_remoteUsers) =>
+        Array.from(client.remoteUsers.audioTrack.setVolume(vol))
+      )
+    }
 
     const handleUserPublished = async function (user, mediaType) {
       console.log("new user published")

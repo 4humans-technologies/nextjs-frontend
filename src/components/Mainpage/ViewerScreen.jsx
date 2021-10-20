@@ -10,6 +10,7 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import Slider from "@material-ui/core/Slider"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
+import { nanoid } from "nanoid"
 
 // Slide to show the things
 function valuetext(value) {
@@ -29,6 +30,33 @@ client.setClientRole("audience")
  */
 let token
 let tokenRequestDoneOnce = false
+const unAuthedUserEmojis = [
+  "🎈",
+  "✨",
+  "🎉",
+  "🎃",
+  "🎁",
+  "👓",
+  "👔",
+  "🎨",
+  "⚽",
+  "💎",
+  "🥇",
+  "♥",
+  "🎵",
+  "🧲",
+  "💰",
+  "🍺",
+  "🥂",
+  "🍎",
+  "🌼",
+  "🚩",
+  "🌞",
+  "🌈",
+  "⚡",
+  "🐬",
+  "🦄",
+]
 function Videocall(props) {
   const [value, setValue] = React.useState(30)
 
@@ -100,6 +128,14 @@ function Videocall(props) {
           join(channel, localStorage.getItem("rtcToken"), ctx.relatedUserId)
         }
       } else {
+        if (!localStorage.getItem("unAuthed-user-chat-name")) {
+          localStorage.setItem(
+            "unAuthed-user-chat-name",
+            `Guest User - ${nanoid(6)} ${
+              unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
+            }`
+          )
+        }
         if (
           !localStorage.getItem("rtcToken") &&
           localStorage.getItem("rtcTokenExpireIn") < Date.now()

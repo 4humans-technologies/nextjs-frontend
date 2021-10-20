@@ -104,10 +104,20 @@ function PrivateChat(props) {
 
   let chatContent
   if (authCtx.isLoggedIn) {
-    if (props.hasActivePlan) {
-      chatContent = <div className="">You Can Chat</div>
+    if (authCtx.user.userType !== "Model") {
+      if (props.hasActivePlan) {
+        chatContent = (
+          <div className="tw-text-white-color">
+            You Can Chat, activePlan viewer
+          </div>
+        )
+      } else {
+        chatContent = noPlanBanner
+      }
     } else {
-      chatContent = noPlanBanner
+      chatContent = (
+        <div className="tw-text-white-color">You Can Chat, Model</div>
+      )
     }
   } else {
     chatContent = notLoggedInBanner

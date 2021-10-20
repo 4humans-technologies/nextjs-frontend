@@ -20,7 +20,7 @@ function SecondHeader() {
   let screenWidth = useWidth()
   return (
     <div>
-      <div className="tw-flex tw-text-white tw-bg-second-color  tw-text-lg tw-top-20 tw-left-0 tw-right-0  tw-z-[101] md:tw-justify-between tw-items-center  tw-fixed">
+      <div className="tw-flex tw-text-white tw-bg-second-color tw-py-2  tw-text-lg tw-top-20  tw-left-0 tw-right-0  tw-z-[101] md:tw-justify-between tw-items-center  tw-fixed">
         {screenWidth < 600
           ? [
               search == true ? (
