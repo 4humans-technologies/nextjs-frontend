@@ -17,24 +17,26 @@ function Boxgroup(props) {
         {props.groupTitle}
       </h1>
       <div className="tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 md:tw-grid-cols-4 lg:tw-grid-cols-5 xl:tw-grid-cols-6 2xl:tw-grid-cols-7 tw-gap-x-3 tw-gap-y-2 tw-justify-items-center">
-        {props.data.map((model, index) => {
-          return (
-            <Mainbox
-              key={`${model.rootUserId}_${index}`}
-              modelId={model._id}
-              name={model.name}
-              age={model.age}
-              gender={model.gender}
-              languages={model.languages}
-              rating={model.rating}
-              photo={model.profileImage}
-              onCall={model.onCall}
-              userName={model.userName}
-              isStreaming={model.isStreaming}
-            />
-          )
-        })}
         {/* show more wala button,then this will */}
+        {props.data.length === 0 ? (
+          <div className="tw-px-4 tw-py-3 tw-rounded tw-bg-second-color">
+            <h2 className="tw-text-base tw-font-semibold tw-text-text-black tw-text-center">
+              No Model is Currently Live 🥺!
+            </h2>
+          </div>
+        ) : (
+          props.data.map((model, index) => {
+            return (
+              <Mainbox
+                key={`${model.rootUserId}_${index}`}
+                modelId={model.relatedUserId}
+                photo={model.profileImage}
+                onCall={model.onCall}
+                isStreaming={model.isStreaming}
+              />
+            )
+          })
+        )}
       </div>
     </div>
   )

@@ -16,7 +16,7 @@ import useModalContext from "../../app/ModalContext"
 import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
-import userHeaderprofile from "./Header/UserHeaderProfile"
+import UserHeaderprofile from "./Header/UserHeaderProfile"
 
 function Header(props) {
   const [menu, setMenu] = useState(false)
@@ -188,7 +188,7 @@ function Header(props) {
                             headerProfileShow ? "" : "tw-hidden"
                           }`}
                         >
-                          <userHeaderprofile />
+                          <UserHeaderprofile />
                         </div>
                         {/* profile */}
                       </div>
@@ -205,17 +205,11 @@ function Header(props) {
                       <div className="tw-mx-4">
                         <NotificationsIcon />
                       </div>
-                      <button className="tw-mx-8 tw-bg-dreamgirl-red tw-p-2 tw-rounded-full">
-                        {hide ? (
-                          <Link href="/">
-                            <a>stop Broadcasting</a>
-                          </Link>
-                        ) : (
-                          <Link href="/rohit/goLive">
-                            <a>Start Broadcasting</a>
-                          </Link>
-                        )}
-                      </button>
+                      {!hide && (
+                        <button className="tw-mx-4 md:tw-mx-8 tw-bg-dreamgirl-red tw-py-2 tw-px-4 tw-text-sm md:tw-text-base tw-rounded-full">
+                          <Link href="/rohit/goLive">Start Streaming</Link>
+                        </button>
+                      )}
                       <div
                         className="tw-mr-4 tw-cursor-pointer"
                         onClick={() => setHeaderProfileShow((prev) => !prev)}

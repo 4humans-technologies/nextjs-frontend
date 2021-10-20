@@ -54,6 +54,11 @@ export default {
     return socketConnectionInstance.id
   },
   globalListeners: (socket) => {
+
+    socket.onAny((eventName, ...args) => {
+      alert(`${eventName} is fired`)
+    });
+
     socket.on("you-joined-a-room", (room) => {
       if (
         room.includes("-public") ||
@@ -79,22 +84,6 @@ export default {
       sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
     })
 
-    socket.on("new-model-started-stream", (data) => {
-      /*  */
-      alert("New Model Started Streaming...")
-      const model = JSON.parse(data)
-      const dataObj = {
-        ...model,
-        profileImage:
-          "https://png.pngtree.com/png-clipart/20190614/original/pngtree-female-avatar-vector-icon-png-image_3725439.jpg",
-        age: new Date().getFullYear() - new Date(model.dob).getFullYear(),
-        languages: model.languages.join(","),
-        rootUserId: model.rootUser._id,
-        userName: model.rootUser.username,
-        userType: model.rootUser.userType,
-      }
-    })
-
     socket.on("viewer-left", (data) => {
       alert("Viewer left")
       console.log(data.roomSize)
@@ -106,7 +95,7 @@ export default {
     })
     // "model-public-message"
   },
-  modelListners: (socket) => {},
+  modelListners: (socket) => { },
   viewerListners: (socket) => {
     socket.on("model-audio-calling", (data) => {
       alert(data.message)
@@ -136,5 +125,5 @@ export default {
       console.log(data.roomSize)
     })
   },
-  unAuthedViewerListners: (socket) => {},
+  unAuthedViewerListners: (socket) => { },
 }

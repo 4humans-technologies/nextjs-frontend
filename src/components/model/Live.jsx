@@ -65,6 +65,7 @@ const chatWindowOptions = {
   TIP_MENU: "TIP_MENU",
 }
 let streamId
+let goneLiveOnce /* only when gone live once the stream rooms will be created, before that no room exists */
 function Live() {
   const ctx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
@@ -123,7 +124,7 @@ function Live() {
     localStorage.removeItem("rtcToken")
     localStorage.removeItem("rtcTokenExpireIn")
     return () => {
-      debugger
+      //debugger
       requestStreamEnd()
       leaveAndCloseTracks()
     }
@@ -132,6 +133,10 @@ function Live() {
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = () => {
     //debugger
+    if (!goneLiveOnce) {
+      goneLiveOnce = true
+    }
+
     if (
       !localStorage.getItem("rtcToken") &&
       localStorage.getItem("rtcTokenExpireIn") <= Date.now() + 10000 &&
@@ -183,7 +188,7 @@ function Live() {
   }
 
   const sendChatMessage = () => {
-    debugger
+    //debugger
     if (!chatInputRef.current) {
       alert("ref not created, updated")
       return
@@ -193,12 +198,13 @@ function Live() {
       return
     }
 
+    if (!goneLiveOnce) {
+      alert("Please Go Live First, Then Chat Will Start Automatically!")
+      return
+    }
+
     let payLoad
     const message = chatInputRef.current.value
-    console.log(
-      "sent message to room >>>",
-      JSON.parse(sessionStorage.getItem("socket-rooms"))
-    )
     if (ctx.isLoggedIn && ctx.user.userType === "Model") {
       let finalRoom
       if (chatWindow === chatWindowOptions.PUBLIC) {
@@ -219,6 +225,7 @@ function Live() {
         message: message,
         username: ctx.user.user.username,
       }
+      console.log("sent message to room >>> ", finalRoom)
       if (chatWindow === chatWindowOptions.PUBLIC) {
         io.getSocket().emit("model-message-public-emitted", payLoad)
       } else if (chatWindow === chatWindowOptions.PRIVATE) {
@@ -233,6 +240,18 @@ function Live() {
     await leave()
     requestStreamEnd()
   }
+
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.keyCode === 13) {
+        sendChatMessage()
+      }
+    }
+    document.addEventListener("keydown", handleKeyPress)
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress)
+    }
+  }, [sendChatMessage])
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div>
@@ -264,7 +283,7 @@ function Live() {
                 step={10}
                 marks
                 min={10}
-                max={110}
+                max={200}
                 onChange={handleChange}
                 className="tw-self-center tw-ml-2"
               />
@@ -277,7 +296,8 @@ function Live() {
                   variant="danger"
                   onClick={endStream}
                 >
-                  end streaming
+                  <span className="md:tw-block tw-hidden">end streaming</span>
+                  <span className="tw-block md:tw-hidden">end </span>
                 </Button>
               ) : (
                 <Button
@@ -295,7 +315,7 @@ function Live() {
                 disabled={joinState}
                 className={`${
                   joinState ? "tw-bg-green-500" : "tw-bg-red-500"
-                } tw-rounded-full tw-px-2 tw-py-1 tw-capitalize`}
+                } tw-rounded-full tw-px-2  tw-capitalize`}
               >
                 {`${joinState ? "connected to RTC servers" : "disconnected"}`}
               </button>

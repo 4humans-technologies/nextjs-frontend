@@ -1,4 +1,4 @@
-/* eslint-disable no-//debugger */
+import { useRouter } from "next/router"
 import React, { useCallback } from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 
@@ -34,12 +34,14 @@ const AuthUpdateContext = createContext({
   logout: () => {},
   updateViewer: () => {},
   readFromLocalStorage: () => {},
+  updateNestedPaths: () => {},
 })
 
 let numberOfInits = 0
 export const AuthContextProvider = ({ children }) => {
   console.log("Again initializing AUTHCONTEXT => ", numberOfInits)
   const [authState, setAuthState] = useState(initialState)
+  const router = useRouter()
 
   const updateViewer = useCallback(
     (newViewer) => {
@@ -57,12 +59,20 @@ export const AuthContextProvider = ({ children }) => {
     [setAuthState]
   )
 
+  const updateNestedPaths = (nestedHandlingFunc) => {
+    setAuthState((prev) => {
+      const newAuthState = nestedHandlingFunc(prev)
+      return newAuthState
+    })
+  }
+
   const logout = () => {
+    router.replace("/")
     localStorage.removeItem("jwtToken")
     localStorage.removeItem("jwtExpiresIn")
     localStorage.removeItem("rootUserId")
     localStorage.removeItem("relatedUserId")
-    localStorage.removeItem("userType")
+    localStorage.setItem("userType", "UnAuthedViewer")
     localStorage.removeItem("authContext")
     localStorage.removeItem("unAuthedUserId")
     localStorage.removeItem("user")
@@ -170,6 +180,7 @@ export const AuthContextProvider = ({ children }) => {
           updateViewer,
           readFromLocalStorage,
           logout,
+          updateNestedPaths,
         }}
       >
         {children}

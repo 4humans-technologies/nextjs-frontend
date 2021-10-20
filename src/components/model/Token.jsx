@@ -1,27 +1,71 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import CancelIcon from "@material-ui/icons/Cancel"
 import useModalContext from "../../app/ModalContext"
-import { useAuthContext } from "../../app/AuthContext"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import io from "../../socket/socket"
+import { useSocketContext } from "../../app/socket/SocketContext"
 
 function Token() {
   const [token, setToken] = useState("")
+  const ctx = useSocketContext()
   const modalCtx = useModalContext()
   const authContext = useAuthContext()
+  const authUpdateCtx = useAuthUpdateContext()
   const [isExcess, setIsExess] = useState(false)
 
   const handleBuyToken = () => {
+    if (!JSON.parse(sessionStorage.getItem("socket-rooms"))) {
+      alert(
+        "Please reload your connection to the server was closed, due to in-activity"
+      )
+    }
     fetch("/api/website/stream/process-token-gift", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        modlelId: window.location.pathname.split("/").reverse()[0],
+        modelId: window.location.pathname.split("/").reverse()[0],
         tokenAmount: token,
+        socketData: {
+          chatType: "coin-superchat-public",
+          room: JSON.parse(sessionStorage.getItem("socket-rooms")).filter(
+            (room) => room.includes("-public")
+          )[0],
+          amountGiven: token,
+          username: `${authContext.user.user.username} 👑`,
+          walletCoins: authContext.user.user.relatedUser.wallet.currentAmount,
+          message: `${authContext.user.user.username} 👑 gifted ${token} coins`,
+        },
       }),
     })
       .then((resp) => resp.json())
-      .then((mesg) => alert(mesg))
+      .then((data) => {
+        debugger
+        alert(data.message)
+        // update the authCtx & localstorage with new wallet amount
+        modalCtx.hideModal()
+        authUpdateCtx.updateNestedPaths((prevState) => {
+          return {
+            ...prevState,
+            user: {
+              ...prevState.user,
+              user: {
+                ...prevState.user.user,
+                relatedUser: {
+                  ...prevState.user.user.relatedUser,
+                  wallet: {
+                    ...prevState.user.user.relatedUser.wallet,
+                    currentAmount:
+                      prevState.user.user.relatedUser.wallet.currentAmount -
+                      token,
+                  },
+                },
+              },
+            },
+          }
+        })
+      })
       .catch((err) => console.log(err))
   }
 
@@ -134,7 +178,7 @@ function Token() {
         {isExcess && (
           <div className="">
             <p className="tw-text-left tw-text-red-400 tw-text-sm">
-              {`Oh Bhai !!!!! ${authContext.user.user.relatedUser.wallet.currentAmount} coins in your wallet!`}
+              {`Oh Bhai !!!!! Tere Wallet Me Sirf ${authContext.user.user.relatedUser.wallet.currentAmount} coins in your wallet!`}
             </p>
           </div>
         )}

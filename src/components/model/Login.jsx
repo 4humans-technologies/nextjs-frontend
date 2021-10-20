@@ -10,6 +10,7 @@ import io from "../../socket/socket"
 import Logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
+import { imageDomainURL } from "../../../dreamgirl.config"
 
 //Validation is still left in this
 function Login() {
@@ -61,9 +62,19 @@ function Login() {
             streamRoom: data.streamRoom,
           })
           //debugger
-          io.getSocket().close()
-          io.getSocket().open()
-          router.push(ctx.loginSuccessUrl)
+          sessionStorage.clear()
+          if (typeof window !== "undefined") {
+            const reloadUrl = `${window.location.protocol}//${window.location.host}${ctx.loginSuccessUrl}`
+            alert(reloadUrl)
+            window.location.href = reloadUrl
+          }
+          // io.getSocket().close()
+          // io.connect(imageDomainURL)
+          /* don't think it is re-creating handshake object for re-connection */
+          // io.getSocket().open()
+
+          // 👇👇 abhi ke liye is feature ko pause pe rakhaa hai bro
+          // router.push(ctx.loginSuccessUrl)
         }
       })
       .catch((err) => {

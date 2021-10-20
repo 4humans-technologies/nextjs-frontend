@@ -12,12 +12,18 @@ function SecondHeader() {
   const [isStream, setIsstream] = useState(false)
   const router = useRouter()
   useEffect(() => {
-    if (router.pathname.includes("view-stream")) {
-      setIsstream((prev) => !prev)
+    if (
+      router.pathname.includes("view-stream") ||
+      router.pathname.includes("goLive")
+    ) {
+      setIsstream(true)
+    } else {
+      setIsstream(false)
     }
   }, [])
 
   let screenWidth = useWidth()
+
   return (
     <div>
       <div className="tw-flex tw-text-white tw-bg-second-color  tw-text-lg tw-top-20 tw-left-0 tw-right-0  tw-z-[101] md:tw-justify-between tw-items-center  tw-fixed">
@@ -43,7 +49,7 @@ function SecondHeader() {
                         <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
                           Name
                         </div>
-                        <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                        <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer">
                           Profile
                         </div>
                         <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
