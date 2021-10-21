@@ -16,7 +16,6 @@ function UserProfile() {
           className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
         />
         <p className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-white tw-text-black tw-right-8 tw-py-2 tw-px-2 ">
-          {" "}
           Background
           <CreateIcon className="tw-ml-2" />
         </p>
@@ -122,7 +121,7 @@ function UserProfile() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default UserProfile;

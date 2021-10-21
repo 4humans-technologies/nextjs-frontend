@@ -146,7 +146,7 @@ const Home = () => {
       </Head>
       <div className="tw-h-20"></div>
       <Header />
-      <SecondHeader />
+      {/* <SecondHeader /> */}
       <div className="tw-flex tw-flex-grow-1 tw-flex-shrink-0">
         <Sidebar />
         <div>
