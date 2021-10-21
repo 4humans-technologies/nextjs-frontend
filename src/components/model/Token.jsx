@@ -42,7 +42,7 @@ function Token() {
       .then((resp) => resp.json())
       .then((data) => {
         debugger
-        alert(data.message)
+        // alert(data.message)
         // update the authCtx & localstorage with new wallet amount
         modalCtx.hideModal()
         authUpdateCtx.updateNestedPaths((prevState) => {

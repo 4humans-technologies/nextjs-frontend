@@ -1,4 +1,4 @@
-export const imageDomainURL = "http://localhost:8080"
+export const imageDomainURL = "https://localhost:8080"
 export const imageDomainHost = "localhost"
 
 /* ====================================================== */

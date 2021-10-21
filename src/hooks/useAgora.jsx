@@ -67,6 +67,10 @@ function useAgora(client, role, callType) {
     }
   }
 
+  async function changeClientRole(role) {
+    await client.setClientRole(role)
+  }
+
   async function leave() {
     await client?.leave()
     setRemoteUsers([])
@@ -85,10 +89,16 @@ function useAgora(client, role, callType) {
     }
   }
 
+  const renewRtcToken = async function () {
+    /* do a fetch request to renew token */
+    // fetch("/api/website/stream/global-renew-token")
+  }
+
   useEffect(() => {
     if (!client) {
       return
     }
+
     // when component will mount
     setRemoteUsers(client.remoteUsers)
 
@@ -116,6 +126,7 @@ function useAgora(client, role, callType) {
 
     client.on("user-joined", handleUsrJoined)
     client.on("user-left", handleUserLeft)
+    client.on("token-privilege-will-expire", renewRtcToken)
 
     return () => {
       client.off("user-published", handleUserPublished)

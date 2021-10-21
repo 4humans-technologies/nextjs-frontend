@@ -23,50 +23,10 @@ let channel
 function CallDetailsPopUp(props) {
   const router = useRouter()
 
-  useEffect(() => {
-    // //debugger;
-    fetch(
-      // "http://localhost:8080/api/website/token-builder/create-stream-and-gen-token", //for model class
-      "http://localhost:8080/api/website/token-builder/authed-viewer-join-stream",
-      {
-        method: "POST",
-        cors: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("jwtTokenViewer")}`,
-        },
-      }
-    )
-      .then((resp) => resp.json())
-      .then((data) => {
-        //debugger
-        updateCtx.updateViewer({
-          rtcToken: data.rtcToken,
-        })
-        token = data.rtcToken
-        channel = data.modelId
-        // join();
-        console.log(`${data.actionStatus}`)
-      })
-      .catch((error) => console.log(error))
-  }, [])
+  const { name, username, profileImage, rating, minCallDuration, audioCallCharges, videoCallCharges } = props
 
-  const callDirect = (e) => {
-    e.preventDefault()
-    router.push("/ravi/call")
-  }
-  const videoDirect = (e) => {
-    e.preventDefault()
-    ;(
-      <Videocall
-        token={token}
-        channel={channel}
-        role="host"
-        uid={channel}
-        callType="videoCall"
-      />
-    ),
-      router.push("/ravi/videocall")
+  const handleCallRequest = (callType) => {
+
   }
 
   return (
@@ -112,8 +72,8 @@ function CallDetailsPopUp(props) {
               <hr className="tw-w-8/12 tw-my-4 tw-text-white-color tw-mx-auto" />
               <div className="mt-2">
                 <button
-                  onClick={videoDirect}
                   className="video-call-button tw-capitalize tw-font-semibold tw-text-sm tw-rounded-full tw-px-3 tw-py-2 tw-bg-dreamgirl-red tw-text-white-color"
+                  onClick={() => handleCallRequest("videoCall")}
                 >
                   Start 12 coins/min
                 </button>
@@ -153,8 +113,8 @@ function CallDetailsPopUp(props) {
               <hr className="tw-w-8/12 tw-my-4 tw-text-white-color tw-mx-auto" />
               <div className="mt-2">
                 <button
-                  onClick={callDirect}
                   className="audio-call-button tw-capitalize tw-font-semibold tw-text-sm tw-rounded-full tw-px-3 tw-py-2 tw-bg-dreamgirl-red tw-text-white-color"
+                  onClick={() => handleCallRequest("audioCall")}
                 >
                   Start 8 coins/min
                 </button>

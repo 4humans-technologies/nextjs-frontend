@@ -130,7 +130,7 @@ const Home = () => {
       const socket = io.getSocket()
       if (!socket.hasListeners("new-model-started-stream")) {
         socket.on("new-model-started-stream", (socketData) => {
-          alert("New Model Started Streaming..." + JSON.stringify(socketData))
+          // alert("New Model Started Streaming..." + JSON.stringify(socketData))
           debugger
           setBoxGroupData(prev => {
             if (prev[prev.length - 1].data.map(stream => stream.relatedUserId).includes(socketData.modelId)) {
@@ -158,7 +158,7 @@ const Home = () => {
       }
       if (!socket.hasListeners("delete-stream-room")) {
         socket.on("delete-stream-room", (socketData) => {
-          alert("Model Ended Streaming..." + JSON.stringify(socketData))
+          // alert("Model Ended Streaming..." + JSON.stringify(socketData))
           debugger
           setBoxGroupData(prev => {
             const prevLastPopped = prev.pop()

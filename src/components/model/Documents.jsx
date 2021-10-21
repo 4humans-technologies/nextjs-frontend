@@ -3,9 +3,8 @@ import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
 import submitFile from "../Notifications/submitFile"
 import Header from "../Mainpage/Header"
-import Headermodel from "./Headermodel"
+// import Headermodel from "./Headermodel"
 
-let data = new FormData()
 function Documents() {
   const imageRef = useRef("")
   const videoRef = useRef("")
@@ -16,6 +15,7 @@ function Documents() {
   //submit handler to send data
 
   const submitHandler = async () => {
+    let data = new FormData()
     data.append("document_1", source)
     data.append("document_2", videoSource)
     let respose = await fetch("url", {

@@ -139,17 +139,8 @@ function LiveScreen(props) {
   const [showBrowseGifts, setShowBrowseGifts] = useState(true)
   const [gifts, setGifts] = useState(giftData)
   const [isChatPlanActive, setIsChatPlanActive] = useState(false)
-
-  // useEffect(() => {
-  //   document.addEventListener("new-chat", () => {
-  //     alert("scrolling chat")
-  //     console.log(chatBoxContainer.current)
-  //     chatBoxContainer.current.scrollBy({
-  //       top: 400,
-  //       behavior: "smooth",
-  //     })
-  //   })
-  // }, [chatBoxContainer.current])
+  const [callOnGoing, setCallOnGoing] = useState(false)
+  const [callType, setCallType] = useState("videoCall")
 
   const scrollOnChat = () => {
     chatBoxContainer.current.scrollBy({
@@ -253,105 +244,111 @@ function LiveScreen(props) {
           <ViewerScreen
             setModelProfileData={props.setModelProfileData}
             setIsChatPlanActive={setIsChatPlanActive}
+            callOnGoing={callOnGoing}
+            setCallOnGoing={setCallOnGoing}
+            callType={callType}
+            setCallType={setCallType}
           />
-          <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-0 tw-py-3 tw-px-2">
-            <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">
-              <div className="tw-col-span-1 tw-row-span-1 tw-flex tw-items-center tw-justify-start">
-                <FavoriteIcon className="tw-text-red-600" />
-                <p className="tw-pl-2 tw-text-white-color tw-font-semibold">
-                  33.k
-                </p>
-              </div>
-              <div className="tw-col-span-1 tw-row-span-1 tw-justify-self-end">
-                <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
-                  variant="danger"
-                  onClick={() => {
-                    if (authCtx.isLoggedIn) {
-                      modalCtx.showModalWithContent(<Token />)
-                    } else {
-                      alert("Please login first")
-                    }
-                  }}
-                >
-                  <CardGiftcardIcon fontSize="small" />
-                  <span className="tw-pl-1 tw-tracking-tight">Send Gift</span>
-                </Button>
-              </div>
-              <div className="tw-col-span-1 tw-row-span-1">
-                <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
-                  variant="primary"
-                  onClick={showCallDetailPopUp}
-                >
-                  <VideocamIcon fontSize="small" />
-                  <p className="tw-pl-1 tw-tracking-tight">
-                    Private video call
+          {!callOnGoing ? (
+            <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-0 tw-py-3 tw-px-2 tw-z-[300]">
+              <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">
+                <div className="tw-col-span-1 tw-row-span-1 tw-flex tw-items-center tw-justify-start">
+                  <FavoriteIcon className="tw-text-red-600" />
+                  <p className="tw-pl-2 tw-text-white-color tw-font-semibold">
+                    33.k
                   </p>
-                </Button>
+                </div>
+                <div className="tw-col-span-1 tw-row-span-1 tw-justify-self-end">
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
+                    variant="danger"
+                    onClick={() => {
+                      if (authCtx.isLoggedIn) {
+                        modalCtx.showModalWithContent(<Token />)
+                      } else {
+                        alert("Please login first")
+                      }
+                    }}
+                  >
+                    <CardGiftcardIcon fontSize="small" />
+                    <span className="tw-pl-1 tw-tracking-tight">Send Gift</span>
+                  </Button>
+                </div>
+                <div className="tw-col-span-1 tw-row-span-1">
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
+                    variant="primary"
+                    onClick={showCallDetailPopUp}
+                  >
+                    <VideocamIcon fontSize="small" />
+                    <p className="tw-pl-1 tw-tracking-tight">
+                      Private video call
+                    </p>
+                  </Button>
+                </div>
+                <div className="tw-col-span-1 tw-row-span-1 tw-justify-self-end">
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
+                    variant="success"
+                    onClick={showCallDetailPopUp}
+                  >
+                    <PhoneInTalkIcon fontSize="small" />
+                    <span className="tw-pl-1 tw-tracking-tight">
+                      Private Audio call
+                    </span>
+                  </Button>
+                </div>
               </div>
-              <div className="tw-col-span-1 tw-row-span-1 tw-justify-self-end">
-                <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
-                  variant="success"
-                  onClick={showCallDetailPopUp}
-                >
-                  <PhoneInTalkIcon fontSize="small" />
-                  <span className="tw-pl-1 tw-tracking-tight">
-                    Private Audio call
-                  </span>
-                </Button>
+              <div className="tw-hidden lg:tw-flex md:tw-justify-between md:tw-self-center tw-text-white">
+                <div className="tw-flex tw-self-center">
+                  <FavoriteIcon className="tw-rounded-full tw-flex sm:tw-mr-2" />
+                  <p className="pl-4">33.k</p>
+                </div>
+                <div className="tw-flex tw-justify-between">
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm tw-z-[110]"
+                    variant="success"
+                    onClick={showCallDetailPopUp}
+                  >
+                    <PhoneInTalkIcon fontSize="small" />
+                    <span className="tw-pl-1 tw-tracking-tight">
+                      Private Audio call
+                    </span>
+                  </Button>
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm tw-z-[110]"
+                    variant="primary"
+                    onClick={showCallDetailPopUp}
+                  >
+                    <VideocamIcon fontSize="small" />
+                    <p className="tw-pl-1 tw-tracking-tight">
+                      Private video call
+                    </p>
+                  </Button>
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
+                    variant="danger"
+                    onClick={() => {
+                      if (authCtx.isLoggedIn) {
+                        modalCtx.showModalWithContent(<Token />)
+                      } else {
+                        alert("Please login first")
+                      }
+                    }}
+                  >
+                    <CardGiftcardIcon fontSize="small" />
+                    <span className="tw-pl-1 tw-tracking-tight">Send Gift</span>
+                  </Button>
+                </div>
               </div>
             </div>
-            <div className="tw-hidden lg:tw-flex md:tw-justify-between md:tw-self-center tw-text-white">
-              <div className="tw-flex tw-self-center">
-                <FavoriteIcon className="tw-rounded-full tw-flex sm:tw-mr-2" />
-                <p className="pl-4">33.k</p>
-              </div>
-              <div className="tw-flex tw-justify-between">
-                <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
-                  variant="success"
-                  onClick={showCallDetailPopUp}
-                >
-                  <PhoneInTalkIcon fontSize="small" />
-                  <span className="tw-pl-1 tw-tracking-tight">
-                    Private Audio call
-                  </span>
-                </Button>
-                <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-mr-2 tw-text-sm"
-                  variant="primary"
-                  onClick={showCallDetailPopUp}
-                >
-                  <VideocamIcon fontSize="small" />
-                  <p className="tw-pl-1 tw-tracking-tight">
-                    Private video call
-                  </p>
-                </Button>
-                <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
-                  variant="danger"
-                  onClick={() => {
-                    if (authCtx.isLoggedIn) {
-                      modalCtx.showModalWithContent(<Token />)
-                    } else {
-                      alert("Please login first")
-                    }
-                  }}
-                >
-                  <CardGiftcardIcon fontSize="small" />
-                  <span className="tw-pl-1 tw-tracking-tight">Send Gift</span>
-                </Button>
-              </div>
-            </div>
-          </div>
+          ) : null}
         </div>
 
         <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-6/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
           <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
             <button
-              className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+              className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
               onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
             >
               <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
@@ -360,7 +357,7 @@ function LiveScreen(props) {
               </span>
             </button>
             <button
-              className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+              className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
               onClick={() => setChatWindow(chatWindowOptions.PRIVATE)}
             >
               <MarkChatReadIcon className="tw-mr-2 tw-my-auto" />
@@ -370,7 +367,7 @@ function LiveScreen(props) {
             </button>
             {authCtx.user.userType !== "Model" && (
               <button
-                className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
                 onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
               >
                 <LocalActivityIcon className="tw-mr-2 tw-my-auto" />
@@ -381,7 +378,7 @@ function LiveScreen(props) {
             )}
             {authCtx.user.userType === "Model" ? (
               <button
-                className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
                 onClick={() => setChatWindow(chatWindowOptions.USERS)}
               >
                 <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />

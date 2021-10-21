@@ -44,18 +44,18 @@ function CoinSuperChat(props) {
       <div className="tw-flex-grow-0 tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-mr-auto">
         <Image
           src={coinsImage}
-          width={90}
-          height={90}
+          width={25}
+          height={25}
           objectFit="contain"
           objectPosition="center"
           className="tw-rounded tw-mr-auto"
         />
-        <p className="tw-mt-1 tw-font-semibold tw-text-yellow-400">
+        {/* <p className="tw-mt-1 tw-font-semibold tw-text-yellow-400">
           <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
             {props.displayName}:
           </span>
           {props.amountGiven}
-        </p>
+        </p> */}
       </div>
       <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
         <div className="tw-flex-grow tw-pr-2">
@@ -63,9 +63,11 @@ function CoinSuperChat(props) {
             {props.message}
           </span>
         </div>
-        <p className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2 tw-text-yellow-400">
-          {props.walletCoins}
-        </p>
+        {props.showWallet && (
+          <p className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2 tw-text-yellow-400">
+            {props.walletCoins}
+          </p>
+        )}
       </div>
     </div>
   )
@@ -120,7 +122,7 @@ function PublicChatBox(props) {
       /* 🟥 will it cause problem if i click on recommendation list */
       const socket = io.getSocket()
       if (!socket.hasListeners("viewer_super_message_pubic-received")) {
-        alert("init socket listners")
+        // alert("init socket listners")
         socket.on("viewer_super_message_pubic-received", (data) => {
           let chat
           if (data.chatType === "gift-superchat-public") {
@@ -201,7 +203,7 @@ function PublicChatBox(props) {
     //debugger
     if (ctx.socketSetupDone) {
       return () => {
-        alert("removing listners")
+        // alert("removing listners")
         const socket = io.getSocket()
         //debugger
         if (socket.hasListeners("viewer-message-public-received")) {
@@ -223,7 +225,7 @@ function PublicChatBox(props) {
     if (ctx.socketSetupDone) {
       return () => {
         //debugger
-        alert("getting out of rooms")
+        // alert("getting out of rooms")
         const socket = io.getSocket()
         const socketRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
@@ -299,6 +301,7 @@ function PublicChatBox(props) {
                 message={chat.message}
                 giftImageUrl={chat.giftImageUrl}
                 walletCoins={chat.walletCoins}
+                showWallet={authCtx.user.userType === "Model"}
               />
             )
           case "coin-superchat-public":
@@ -309,6 +312,7 @@ function PublicChatBox(props) {
                 message={chat.message}
                 amountGiven={chat.amountGiven}
                 walletCoins={chat.walletCoins}
+                showWallet={authCtx.user.userType === "Model"}
               />
             )
           default:

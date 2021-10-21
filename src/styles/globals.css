@@ -5,9 +5,9 @@
 * {
   margin: 0;
   padding: 0;
-  
 }
-body,html{
+body,
+html {
   width: 100%;
   height: 100%;
 }
@@ -64,7 +64,6 @@ body,html{
   height: 120px;
 }
 
-
 .child_transition {
   background-color: black;
   width: 100%;
@@ -100,9 +99,9 @@ body,html{
   pointer-events: all;
 }
 
-.video-player {
+/* .video-player {
   height: calc(100% - 60px);
-}
+} */
 
 #sidebar_item_name {
   flex-basis: 60%;
@@ -522,12 +521,11 @@ body,html{
   grid-template-rows: 14rem 14rem;
 }
 /* for small screen */
- @media screen and (max-width:768px) {
-   .document_rows {
-  grid-template-rows: 5rem 10rem;
-}
-    
+@media screen and (max-width: 768px) {
+  .document_rows {
+    grid-template-rows: 5rem 10rem;
   }
+}
 
 .document_rows_main {
   display: grid;
@@ -535,17 +533,17 @@ body,html{
 }
 
 /* for small screen */
-@media screen and (max-width:768px) {
+@media screen and (max-width: 768px) {
   .document_rows_main {
-  display: grid;
-  grid-column: 1;
-  grid-template-rows: 20rem 20rem;
-}
+    display: grid;
+    grid-column: 1;
+    grid-template-rows: 20rem 20rem;
+  }
 }
 
 /*  */
 /* Profile Tabs */
-.profile_tabs:focus{
+.profile_tabs:focus {
   background-color: #f8673b;
 }
 /* Profile Tabs */

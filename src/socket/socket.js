@@ -55,9 +55,9 @@ export default {
   },
   globalListeners: (socket) => {
 
-    socket.onAny((eventName, ...args) => {
-      alert(`${eventName} is fired`)
-    });
+    // socket.onAny((eventName, ...args) => {
+    //   alert(`${eventName} is fired`)
+    // });
 
     socket.on("you-joined-a-room", (room) => {
       if (

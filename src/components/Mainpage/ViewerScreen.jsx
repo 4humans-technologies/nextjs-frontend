@@ -9,8 +9,11 @@ import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import Slider from "@material-ui/core/Slider"
-import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { nanoid } from "nanoid"
+import { Speaker, Cancel, VolumeMute } from "@material-ui/icons"
+import VolumeUpIcon from "@material-ui/icons/VolumeUp"
+import CallEndIcon from "@material-ui/icons/CallEnd"
+import MicOffIcon from "@material-ui/icons/MicOff"
 
 // Slide to show the things
 function valuetext(value) {
@@ -62,6 +65,9 @@ function ViewerScreen(props) {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
+  const { callOnGoing, callType } = props
+  const [callDuration, setCallDuration] = useState("05:46") /* in seconds */
+
   const { joinState, leave, join, remoteUsers } = useAgora(
     client,
     "audience",
@@ -198,34 +204,74 @@ function ViewerScreen(props) {
 
   return (
     // 82 vh has no signifcate impact
-    <div className="sm:tw-h-[82vh] " ref={container}>
+    <div className="tw-absolute tw-top-0 tw-bottom-0 tw-w-full" ref={container}>
       {remoteUsers.length > 0 &&
-        remoteUsers.map((user) => {
+        [remoteUsers[0]].map((user) => {
           return (
-            <div className="tw-min-h-full">
-              {/* below controll the size viseo player*/}
-              <div className="tw-h-[82vh]">
-                <VideoPlayer
-                  key={user.uid}
-                  videoTrack={user.videoTrack}
-                  audioTrack={user.audioTrack} //error of seesion storage is going
-                  playAudio={true}
-                />
-              </div>
-              {/* volume increase decrease */}
-              <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-100px]">
-                <VolumeUpIcon className="tw-text-white" fontSize="large" />
-                <Slider
-                  defaultValue={30}
-                  getAriaValueText={valuetext}
-                  aria-labelledby="discrete-slider"
-                  valueLabelDisplay="auto"
-                  step={10}
-                  marks
-                  min={10}
-                  max={100}
-                  className="tw-self-center tw-ml-2"
-                />
+            <div
+              className={
+                "tw-min-h-full tw-w-full tw-relative tw-bg-green-color" +
+                (callOnGoing
+                  ? " tw-z-[100]"
+                  : " tw-z-[-1] tw-pointer-events-none")
+              }
+            >
+              <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0">
+                <div
+                  className={
+                    "tw-min-h-full tw-relative tw-min-w-[100vw] lg:tw-min-w-[50vw]" +
+                    (callOnGoing
+                      ? " tw-z-[100]"
+                      : " tw-z-[-1] tw-pointer-events-none")
+                  }
+                >
+                  <VideoPlayer
+                    key={user.uid}
+                    videoTrack={user.videoTrack}
+                    audioTrack={user.audioTrack} //error of seesion storage is going
+                    playAudio={true}
+                  />
+                  {callOnGoing && (
+                    <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-grid tw-place-items-center">
+                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-310 tw-backdrop-blur">
+                        <p className="tw-text-center text-white">
+                          {callDuration}
+                        </p>
+                      </div>
+
+                      {callType === "audioCall" ? (
+                        <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-content-between">
+                          <div className="">{/* timer */}</div>
+                          <div className="">{/* model image */}</div>
+                          <div className="">{/* call controls */}</div>
+                        </div>
+                      ) : (
+                        <div className="tw-absolute tw-left-4 tw-bottom-1 tw-w-5/12 tw-h-38 md:tw-w-2/6 md:tw-h-40  lg:tw-w-1/4 lg:tw-h-64 xl:tw-h-72 tw-bg-dreamgirl-red tw-rounded tw-z-[100]"></div>
+                      )}
+                      <div className="tw-absolute tw-bottom-0 tw-h-6 tw-bg-dark-black tw-left-0 tw-right-0 tw-z-0"></div>
+                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-310 tw-backdrop-blur">
+                        <button className="tw-inline-block tw-mx-2">
+                          <VolumeUpIcon
+                            fontSize="medium"
+                            style={{ color: "white" }}
+                          />
+                        </button>
+                        <button className="tw-inline-block tw-mx-2">
+                          <CallEndIcon
+                            fontSize="medium"
+                            style={{ color: "red" }}
+                          />
+                        </button>
+                        <button className="tw-inline-block tw-mx-2">
+                          <MicOffIcon
+                            fontSize="medium"
+                            style={{ color: "white" }}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )

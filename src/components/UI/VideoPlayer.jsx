@@ -17,9 +17,8 @@ function VideoPlayer({ videoTrack, audioTrack, uid, playAudio }) {
   }, [videoTrack, container, audioTrack])
 
   return (
-    <div className="tw-h-full video-player">
-      <div ref={container} className="tw-h-full"></div>
-      <p>{uid && uid}</p>
+    <div className="video-player tw-min-h-full tw-min-w-full">
+      <div ref={container} className="tw-min-h-full tw-min-w-full"></div>
     </div>
   )
 }

@@ -205,7 +205,7 @@ function PrivateChat(props) {
     //debugger
     if (ctx.socketSetupDone) {
       return () => {
-        alert("removing Private listeners")
+        // alert("removing Private listeners")
         const socket = io.getSocket()
         //debugger
         if (socket.hasListeners("viewer-message-private-received")) {
