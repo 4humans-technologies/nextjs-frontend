@@ -14,13 +14,13 @@ function Tip() {
   }
   return (
     <div>
-      <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+      <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6 ">
         <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
           Set Actions
         </h1>
         <form
           id="action-form"
-          className="tw-grid tw-grid-rows-4 tw-max-h-64 tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2"
+          className="tw-grid tw-grid-rows-4 tw-max-h-64 tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-mx-2"
         >
           {dynamicData.map((item, index) => {
             return (

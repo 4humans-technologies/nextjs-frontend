@@ -7,7 +7,6 @@ import StarIcon from "@material-ui/icons/Star"
 import Link from "next/link"
 import { imageDomainURL } from "../../../dreamgirl.config"
 
-
 function Mainbox(props) {
   const watch = () => {
     console.log("pass dynamic ")

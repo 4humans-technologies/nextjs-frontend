@@ -5,37 +5,8 @@ import coinsImage from "../../../public/coins.png"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
-
-function NormalChatMessage(props) {
-  return (
-    <div className="tw-flex tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tw-bg-first-color tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
-      <div className="tw-flex-grow tw-pr-2">
-        <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
-          {props.displayName}:
-        </span>
-        <span className="user-message tw-text-sm tw-font-normal">
-          {props.message}
-        </span>
-      </div>
-      <div className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2">
-        {props.walletCoins}
-      </div>
-    </div>
-  )
-}
-
-function ModelChatMessage(props) {
-  return (
-    <div className="tw-flex tw-flex-grow tw-flex-shrink-0 tw-w-full tw-bg-first-color tw-text-white-color tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tw-justify-between">
-      <div className="tw-flex-grow tw-flex-shrink-0">
-        <h2 className="tw-font-semibold tw-text-sm tw-mb-1 tw-bg-second-color tw-px-1.5 tw-rounded tw-inline-block tw-py-1 tw-tracking-wider">
-          Message By Model
-        </h2>
-        <p className="tw-mt-1">{props.message}</p>
-      </div>
-    </div>
-  )
-}
+import NormalChatMessage from "../ChatMessageTypes/NormalChat"
+import ModelChatMessage from "../ChatMessageTypes/ModelChatMessage"
 
 function GiftSuperChat(props) {
   return (
@@ -143,13 +114,13 @@ function PublicChatBox(props) {
   const authUpdateCtx = useAuthUpdateContext()
 
   useEffect(() => {
-    debugger
+    //debugger
     if (ctx.socketSetupDone) {
-      debugger
+      //debugger
       /* 🟥 will it cause problem if i click on recommendation list */
       const socket = io.getSocket()
       if (!socket.hasListeners("viewer_super_message_pubic-received")) {
-        // alert("init socket listners")
+        alert("init socket listners")
         socket.on("viewer_super_message_pubic-received", (data) => {
           let chat
           if (data.chatType === "gift-superchat-public") {
@@ -225,61 +196,63 @@ function PublicChatBox(props) {
     /* checks for page url changes */
   }, [pageUrl])
 
-  // useEffect(() => {
-  //   /* why you have to remove the event listners any way */
-  //   debugger
-  //   if (ctx.socketSetupDone) {
-  //     return () => {
-  //       socket = io.getSocket()
-  //       debugger
-  //       if (socket.hasListeners("viewer-message-public-received")) {
-  //         socket.off("viewer-message-public-received")
-  //       }
-  //       if (socket.hasListeners("model-message-public-received")) {
-  //         socket.off("model-message-public-received")
-  //       }
-  //       if (socket.hasListeners("viewer_super_message_pubic-received")) {
-  //         socket.off("viewer_super_message_pubic-received")
-  //       }
-  //     }
-  //   }
-  // }, [ctx.socketSetupDone, io.getSocket()])
+  useEffect(() => {
+    /* why you have to remove the event listners any way */
+    //debugger
+    if (ctx.socketSetupDone) {
+      return () => {
+        alert("removing listners")
+        const socket = io.getSocket()
+        //debugger
+        if (socket.hasListeners("viewer-message-public-received")) {
+          socket.off("viewer-message-public-received")
+        }
+        if (socket.hasListeners("model-message-public-received")) {
+          socket.off("model-message-public-received")
+        }
+        if (socket.hasListeners("viewer_super_message_pubic-received")) {
+          socket.off("viewer_super_message_pubic-received")
+        }
+      }
+    }
+  }, [ctx.socketSetupDone, io.getSocket()])
 
-  // useEffect(() => {
-  //   /* when the viwerscreen component un-mounts leave the public/private stream specific rooms */
-  //   debugger
-  //   if (ctx.socketSetupDone) {
-  //     socket = io.getSocket()
-  //     return () => {
-  //       debugger
-  //       const socketRooms =
-  //         JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-  //       const roomsToLeave = []
-  //       socketRooms.forEach((room) => {
-  //         if (room.includes("-public") || room.includes("-private")) {
-  //           roomsToLeave.push(room)
-  //         }
-  //       })
-  //       socket.emit(
-  //         "take-me-out-of-these-rooms",
-  //         [...roomsToLeave],
-  //         (response) => {
-  //           if (response.status === "ok") {
-  //             /* remove this room from session storage also */
+  useEffect(() => {
+    /* when the viwerscreen component un-mounts leave the public/private stream specific rooms */
+    //debugger
+    if (ctx.socketSetupDone) {
+      return () => {
+        //debugger
+        alert("getting out of rooms")
+        const socket = io.getSocket()
+        const socketRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        const roomsToLeave = []
+        socketRooms.forEach((room) => {
+          if (room.includes("-public") || room.includes("-private")) {
+            roomsToLeave.push(room)
+          }
+        })
+        socket.emit(
+          "take-me-out-of-these-rooms",
+          [...roomsToLeave],
+          (response) => {
+            if (response.status === "ok") {
+              /* remove this room from session storage also */
 
-  //             sessionStorage.setItem(
-  //               "socket-rooms",
-  //               JSON.stringify(
-  //                 socketRooms.filter((room) => !roomsToLeave.includes(room))
-  //               )
-  //             )
-  //             authUpdateCtx.updateViewer({ streamRoom: null })
-  //           }
-  //         }
-  //       )
-  //     }
-  //   }
-  // }, [ctx.socketSetupDone, io.getSocket()])
+              sessionStorage.setItem(
+                "socket-rooms",
+                JSON.stringify(
+                  socketRooms.filter((room) => !roomsToLeave.includes(room))
+                )
+              )
+              authUpdateCtx.updateViewer({ streamRoom: null })
+            }
+          }
+        )
+      }
+    }
+  }, [ctx.socketSetupDone, io.getSocket()])
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 max-w-[100vw] md:tw-max-w-[49vw]">

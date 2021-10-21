@@ -5,10 +5,10 @@ import { imageDomainURL } from "../../../dreamgirl.config"
 const SocketContext = createContext({
   socketInstance: null,
   isConnected: false,
-  setSocketInstance: () => {},
-  setIsConnected: () => {},
+  setSocketInstance: () => { },
+  setIsConnected: () => { },
   socketSetupDone: false,
-  setSocketSetupDone: () => {},
+  setSocketSetupDone: () => { },
 })
 
 let socketSetup = false
@@ -31,7 +31,7 @@ export const SocketContextProvider = ({ children }) => {
       const socketRooms =
         JSON.parse(sessionStorage.getItem("socket-rooms")) || []
       if (socketRooms.length > 0) {
-        alert("put me in room")
+        // alert("put me in room")
         socket.emit("putting-me-in-these-rooms", socketRooms, (response) => {
           if (response.status === "ok") {
             setIsConnected(true)

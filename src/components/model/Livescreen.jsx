@@ -138,6 +138,7 @@ function LiveScreen(props) {
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [showBrowseGifts, setShowBrowseGifts] = useState(true)
   const [gifts, setGifts] = useState(giftData)
+  const [isChatPlanActive, setIsChatPlanActive] = useState(false)
 
   // useEffect(() => {
   //   document.addEventListener("new-chat", () => {
@@ -150,12 +151,12 @@ function LiveScreen(props) {
   //   })
   // }, [chatBoxContainer.current])
 
-  const scrollOnChat = useCallback(() => {
+  const scrollOnChat = () => {
     chatBoxContainer.current.scrollBy({
       top: 400,
       behavior: "smooth",
     })
-  }, [chatBoxContainer.current])
+  }
 
   const sendChatMessage = () => {
     //debugger
@@ -170,31 +171,58 @@ function LiveScreen(props) {
 
     let payLoad
     const message = chatInputRef.current.value
-    console.log(
-      "sent message to room >>>",
-      JSON.parse(sessionStorage.getItem("socket-rooms"))[0]
-    )
+    // console.log(
+    //   "sent message to room >>>",
+    //   JSON.parse(sessionStorage.getItem("socket-rooms"))[0]
+    // )
     if (authCtx.isLoggedIn) {
+      /* can have private room */
+      let finalRoom
+      if (isChatPlanActive) {
+        /* has private chat room */
+        if (chatWindow === chatWindowOptions.PRIVATE) {
+          JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
+            if (room.includes("-private")) {
+              finalRoom = room
+            }
+          })
+        } else {
+          JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
+            if (room.includes("-public")) {
+              finalRoom = room
+            }
+          })
+        }
+      } else {
+        /* logged in, not chat plan */
+        JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
+          if (room.includes("-public")) {
+            finalRoom = room
+          }
+        })
+      }
       payLoad = {
-        room:
-          authCtx.streamRoom ||
-          JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
+        room: finalRoom,
         message: message,
         username: authCtx.user.user.username,
         walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
       }
     } else {
-      /* un-authed user */
+      /* un-authed user, no private room*/
       payLoad = {
-        room:
-          authCtx.streamRoom ||
-          JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
+        room: JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
         message: message,
         username: localStorage.getItem("unAuthed-user-chat-name"),
         walletCoins: 0,
       }
     }
-    io.getSocket().emit("viewer-message-public-emitted", payLoad)
+    if (chatWindow === chatWindowOptions.PRIVATE) {
+      console.log("sent message to room >>> ", "private")
+      io.getSocket().emit("viewer-message-private-emitted", payLoad)
+    } else {
+      console.log("sent message to room >>> ", "public")
+      io.getSocket().emit("viewer-message-public-emitted", payLoad)
+    }
     chatInputRef.current.value = ""
   }
 
@@ -222,7 +250,10 @@ function LiveScreen(props) {
       <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
         <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-6/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
-          <ViewerScreen setModelProfileData={props.setModelProfileData} />
+          <ViewerScreen
+            setModelProfileData={props.setModelProfileData}
+            setIsChatPlanActive={setIsChatPlanActive}
+          />
           <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-0 tw-py-3 tw-px-2">
             <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">
               <div className="tw-col-span-1 tw-row-span-1 tw-flex tw-items-center tw-justify-start">
@@ -236,7 +267,11 @@ function LiveScreen(props) {
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                   variant="danger"
                   onClick={() => {
-                    setShowBrowseGifts((prev) => !prev)
+                    if (authCtx.isLoggedIn) {
+                      modalCtx.showModalWithContent(<Token />)
+                    } else {
+                      alert("Please login first")
+                    }
                   }}
                 >
                   <CardGiftcardIcon fontSize="small" />
@@ -298,7 +333,11 @@ function LiveScreen(props) {
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                   variant="danger"
                   onClick={() => {
-                    modalCtx.showModalWithContent(<Token />)
+                    if (authCtx.isLoggedIn) {
+                      modalCtx.showModalWithContent(<Token />)
+                    } else {
+                      alert("Please login first")
+                    }
                   }}
                 >
                   <CardGiftcardIcon fontSize="small" />
@@ -373,7 +412,10 @@ function LiveScreen(props) {
                     chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
                 }}
               >
-                <PrivateChat scrollOnChat={scrollOnChat} />
+                <PrivateChat
+                  scrollOnChat={scrollOnChat}
+                  hasActivePlan={isChatPlanActive}
+                />
               </div>
               <div
                 className=""

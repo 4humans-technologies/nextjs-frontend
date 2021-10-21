@@ -27,7 +27,7 @@ function Topic(props) {
           </div>
         </div>
         <br />
-        <p>Neeraj Rai's ex-girlfreind has 3 children</p>
+        <p>Neeraj Rai's ex-girlfreind has 2 children</p>
       </div>
     </div>
   )

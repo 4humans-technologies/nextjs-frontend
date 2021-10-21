@@ -3,10 +3,10 @@ import React from "react"
 function Pricing() {
   return (
     <div>
-      <div className="tw-text-white tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
+      <div className="tw-text-white tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6 tw-mx-2">
         <div className="tw-col-span-1">
-          <p>Private Audio Call</p>
-          <p className="tw-my-2">Private video Call</p>
+          <p>Private Audio</p>
+          <p className="tw-my-2">Private video </p>
         </div>
         <div className="tw-col-span-2">
           <div className="tw-flex ">

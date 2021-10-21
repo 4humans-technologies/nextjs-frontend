@@ -57,12 +57,7 @@ const unAuthedUserEmojis = [
   "🐬",
   "🦄",
 ]
-function Videocall(props) {
-  const [value, setValue] = React.useState(30)
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue)
-  }
+function ViewerScreen(props) {
   const container = useRef()
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
@@ -114,6 +109,7 @@ function Videocall(props) {
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
               console.log("model profile 👉👉 ", data.theModel)
+              props.setIsChatPlanActive(data.isChatPlanActive)
               props.setModelProfileData(data.theModel)
               const channel = window.location.pathname.split("/").reverse()[0]
               join(channel, data.rtcToken, ctx.relatedUserId)
@@ -162,6 +158,7 @@ function Videocall(props) {
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
               console.log("model profile 👉👉 ", data.theModel)
+              props.setIsChatPlanActive(data.isChatPlanActive)
               props.setModelProfileData(data.theModel)
               const channel = window.location.pathname.split("/").reverse()[0]
               join(channel, data.rtcToken, data.unAuthedUserId)
@@ -237,4 +234,4 @@ function Videocall(props) {
   )
 }
 
-export default Videocall
+export default ViewerScreen
