@@ -16,17 +16,28 @@ import useAgora from "../../hooks/useAgora"
 import AgoraRTC from "agora-rtc-sdk-ng"
 import Videocall from "../model/VideoCall" // Replace with your App ID.
 import { FastForward } from "@material-ui/icons"
+import io from "../../socket/socket"
+import { useAuthContext } from "../../app/AuthContext"
+
 
 let token
 let channel
-
 function CallDetailsPopUp(props) {
   const router = useRouter()
-
   const { name, username, profileImage, rating, minCallDuration, audioCallCharges, videoCallCharges } = props
+  const authCtx = useAuthContext()
 
   const handleCallRequest = (callType) => {
-
+    if (props.pendingCallRequest) {
+      alert("Your call request is pending! please for model's response 👑👑")
+      return
+    }
+    debugger
+    const socket = io.getSocket()
+    socket.emit("viewer-requested-for-call-emitted", { callType: callType, relatedUserId: authCtx.relatedUserId, modelId: window.location.pathname.split("/").reverse()[0] })
+    props.setPendingCallRequest(true)
+    props.setCallType(callType)
+    props.closeModal()
   }
 
   return (

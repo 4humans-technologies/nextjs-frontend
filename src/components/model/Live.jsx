@@ -31,6 +31,9 @@ import TipMenuActions from "../ViewerScreen/TipMenuActions"
 import io from "../../socket/socket"
 import Showcontroler from "./VideoStreaming/Showcontroler"
 import Videoshowcontroller from "./VideoStreaming/Videoshowcontroller"
+import LiveTvIcon from "@material-ui/icons/LiveTv"
+import { useSocketContext } from "../../app/socket/SocketContext"
+import useModalContext from "../../app/ModalContext"
 // /api/website/token-builder/create-stream-and-gen-token
 
 // Replace with your App ID.
@@ -68,10 +71,16 @@ let streamId
 let goneLiveOnce /* only when gone live once the stream rooms will be created, before that no room exists */
 function Live() {
   const ctx = useAuthContext()
+  const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
+  const modalCtx = useModalContext()
   const [fullScreen, setFullScreen] = useState(false)
   const [value, setValue] = React.useState(30)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
+  const [pendingCallRequest, setPendingCallRequest] = useState({
+    pending: false,
+    callType: null,
+  })
 
   /* Ref's */
   const container = useRef()
@@ -253,18 +262,83 @@ function Live() {
     }
   }, [sendChatMessage])
 
+  const handleModelResponse = (response, relatedUserId, callType) => {
+    /* can set encryption config */
+    debugger
+    io.getSocket().emit("model-call-request-response-emitted", {
+      response: response,
+      relatedUserId: relatedUserId,
+      callType: callType,
+      room: `${streamId}-public`,
+    })
+    setPendingCallRequest({
+      pending: false,
+      callType: null,
+    })
+  }
+
+  useEffect(() => {
+    if (socketCtx.socketSetupDone) {
+      /* listen for viewer call request */
+      const socket = io.getSocket()
+      if (!socket.hasListeners("viewer-requested-for-call-received")) {
+        socket.on("viewer-requested-for-call-received", (data) => {
+          debugger
+          setPendingCallRequest({
+            callType: data.callType,
+            pending: true,
+            data: data,
+          })
+        })
+      }
+    }
+  }, [socketCtx.socketSetupDone])
+
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div>
       <Header />
-      <SecondHeader />
-
+      {pendingCallRequest.pending && (
+        <div className="tw-px-6 tw-py-4 tw-text-white-color tw-font-semibold tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
+          <div className="tw-flex tw-justify-center tw-items-center">
+            <p className="tw-mx-2">
+              Incoming {pendingCallRequest.callType} from viewer
+            </p>
+            <Button
+              className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
+              variant="success"
+              onClick={() =>
+                handleModelResponse(
+                  "accepted",
+                  pendingCallRequest.data.relatedUserId,
+                  pendingCallRequest.callType
+                )
+              }
+            >
+              <span className="tw-pl-1">Accept</span>
+            </Button>
+            <Button
+              className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
+              variant="danger"
+              onClick={() =>
+                handleModelResponse(
+                  "rejected",
+                  pendingCallRequest.data.relatedUserId,
+                  pendingCallRequest.callType
+                )
+              }
+            >
+              <span className="tw-pl-1">Cancel</span>
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="tw-flex">
         <Sidebar />
         <div
           className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28 "}
         >
           <div
-            className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2"
+            className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2 tw-relative"
             ref={container}
           >
             <VideoPlayer
@@ -273,7 +347,7 @@ function Live() {
               uid={ctx.relatedUserId}
               playAudio={false}
             />
-            <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-32px] ">
+            {/* <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-32px] ">
               <VolumeUpIcon className="tw-text-white" fontSize="large" />
               <Slider
                 defaultValue={30}
@@ -287,38 +361,40 @@ function Live() {
                 onChange={handleChange}
                 className="tw-self-center tw-ml-2"
               />
-            </div>
+            </div> */}
 
-            <div className="tw-text-center tw-mt-3 tw-flex tw-ml-[40%]">
-              {joinState ? (
+            <div className="tw-absolute tw-w-full tw-bottom-0">
+              <div className="tw-flex tw-justify-between tw-items-center tw-py-2 tw-px-4 tw-z-[300] tw-bg-[rgba(29,26,26,0.62)]">
+                {!joinState ? (
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
+                    variant="success"
+                    onClick={startStreamingAndGoLive}
+                  >
+                    <LiveTvIcon fontSize="small" />
+                    <span className="tw-pl-1 tw-tracking-tight">Go Live</span>
+                  </Button>
+                ) : (
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
+                    variant="danger"
+                    onClick={endStream}
+                  >
+                    <LiveTvIcon fontSize="small" />
+                    <span className="tw-pl-1 tw-tracking-tight">
+                      End Streaming
+                    </span>
+                  </Button>
+                )}
                 <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx-4 tw-capitalize"
-                  variant="danger"
-                  onClick={endStream}
+                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110] tw-capitalize"
+                  variant={joinState ? "success" : "danger"}
                 >
-                  <span className="md:tw-block tw-hidden">end streaming</span>
-                  <span className="tw-block md:tw-hidden">end </span>
+                  <span className="tw-pl-1 tw-tracking-tight">{`${
+                    joinState ? "you are live" : "you're not live"
+                  }`}</span>
                 </Button>
-              ) : (
-                <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-mx- tw-capitalize"
-                  variant="success"
-                  onClick={startStreamingAndGoLive}
-                  // disabled={joinState}
-                >
-                  Go live
-                </Button>
-              )}
-
-              <button
-                onClick={endStream}
-                disabled={joinState}
-                className={`${
-                  joinState ? "tw-bg-green-500" : "tw-bg-red-500"
-                } tw-rounded-full tw-px-2  tw-capitalize`}
-              >
-                {`${joinState ? "connected to RTC servers" : "disconnected"}`}
-              </button>
+              </div>
             </div>
           </div>
 
@@ -403,7 +479,7 @@ function Live() {
                         : "none",
                   }}
                 >
-                  <TipMenuActions modalCtx={ctx} />
+                  <TipMenuActions />
                 </div>
                 <div
                   className=""
@@ -419,9 +495,6 @@ function Live() {
 
             <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">
               <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
-                {/* <button className="tw-absolute tw-top-[50%] tw-left-[5%] tw-translate-x-[-50%] tw-translate-y-[-50%] tw-rounded-full tw-px-2 tw-py-1 tw-bg-dreamgirl-red">
-                <Image height={25} width={25} src={TipMenuIcon} />
-              </button> */}
                 <input
                   className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                   placeholder="Enter your message here"

@@ -17,10 +17,17 @@ function VideoPlayer({ videoTrack, audioTrack, uid, playAudio }) {
   }, [videoTrack, container, audioTrack])
 
   return (
-    <div className="video-player tw-min-h-full tw-min-w-full">
-      <div ref={container} className="tw-min-h-full tw-min-w-full"></div>
-    </div>
+    <div
+      ref={container}
+      className="video-player tw-absolute tw-pointer-events-none tw-top-0 tw-bottom-0 tw-left-0 tw-right-0"
+    ></div>
   )
 }
 
 export default VideoPlayer
+{
+  /* <div
+      ref={container}
+      className="tw-absolute tw-pointer-events-none tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-border-white-color tw-border"
+    ></div> */
+}

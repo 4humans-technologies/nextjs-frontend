@@ -14,6 +14,8 @@ import { Speaker, Cancel, VolumeMute } from "@material-ui/icons"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
+import Draggable from "react-draggable"
+import io from "../../socket/socket"
 
 // Slide to show the things
 function valuetext(value) {
@@ -62,17 +64,29 @@ const unAuthedUserEmojis = [
 ]
 function ViewerScreen(props) {
   const container = useRef()
+  const selfFeed = useRef()
+
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
-  const { callOnGoing, callType } = props
+  const {
+    callOnGoing,
+    callType,
+    setCallOnGoing,
+    setCallType,
+    setPendingCallRequest,
+  } = props
   const [callDuration, setCallDuration] = useState("05:46") /* in seconds */
 
-  const { joinState, leave, join, remoteUsers } = useAgora(
-    client,
-    "audience",
-    props.callType || ""
-  )
+  const {
+    joinState,
+    leave,
+    join,
+    remoteUsers,
+    changeClientRole,
+    leaveDueToPrivateCall,
+    switchViewerToHost,
+  } = useAgora(client, "audience", props.callType || "")
 
   useEffect(() => {
     //debugger
@@ -202,18 +216,55 @@ function ViewerScreen(props) {
     tokenRequestDoneOnce,
   ])
 
+  useEffect(() => {
+    if (socketCtx.socketSetupDone) {
+      debugger
+      const socket = io.getSocket()
+      if (!socket.hasListeners("model-call-request-response-received")) {
+        socket.on("model-call-request-response-received", (data) => {
+          debugger
+          if (data.response !== "rejected") {
+            if (data.relatedUserId === ctx.relatedUserId) {
+              /* dont kick of, switch role to host */
+              // await leave() /* why leave?? */
+              setPendingCallRequest(false)
+              setCallOnGoing(true)
+              setCallType(data.callType)
+              // await changeClientRole("host")
+              const [selfAudioFeed, selfVideoFeed] = switchViewerToHost(
+                selfFeed,
+                ["self-video-container", "self-video"]
+              )
+              selfVideoFeed.play(selfFeed)
+              selfVideoFeed.play("self-video-container")
+              selfVideoFeed.play("self-video")
+            } else {
+              /* unsubscribe stream and close connection to agora */
+              leaveDueToPrivateCall()
+            }
+          } else {
+            /* clear call type and pending call */
+            setPendingCallRequest(false)
+            setCallOnGoing(false)
+            alert("Model rejected call request!")
+          }
+        })
+      }
+    }
+  }, [ctx.relatedUserId, socketCtx.setSocketSetupDone, switchViewerToHost])
+
   return (
     // 82 vh has no signifcate impact
     <div className="tw-absolute tw-top-0 tw-bottom-0 tw-w-full" ref={container}>
-      {remoteUsers.length > 0 &&
+      {remoteUsers.length &&
         [remoteUsers[0]].map((user) => {
           return (
             <div
               className={
                 "tw-min-h-full tw-w-full tw-relative tw-bg-green-color" +
                 (callOnGoing
-                  ? " tw-z-[100]"
-                  : " tw-z-[-1] tw-pointer-events-none")
+                  ? " tw-z-[300] tw-pointer-events-none"
+                  : " tw-z-[10] tw-pointer-events-none")
               }
             >
               <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0">
@@ -221,8 +272,8 @@ function ViewerScreen(props) {
                   className={
                     "tw-min-h-full tw-relative tw-min-w-[100vw] lg:tw-min-w-[50vw]" +
                     (callOnGoing
-                      ? " tw-z-[100]"
-                      : " tw-z-[-1] tw-pointer-events-none")
+                      ? " tw-z-[300] tw-pointer-events-none"
+                      : " tw-z-[10] tw-pointer-events-none")
                   }
                 >
                   <VideoPlayer
@@ -233,7 +284,7 @@ function ViewerScreen(props) {
                   />
                   {callOnGoing && (
                     <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-grid tw-place-items-center">
-                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-310 tw-backdrop-blur">
+                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[310] tw-backdrop-blur">
                         <p className="tw-text-center text-white">
                           {callDuration}
                         </p>
@@ -246,23 +297,29 @@ function ViewerScreen(props) {
                           <div className="">{/* call controls */}</div>
                         </div>
                       ) : (
-                        <div className="tw-absolute tw-left-4 tw-bottom-1 tw-w-5/12 tw-h-38 md:tw-w-2/6 md:tw-h-40  lg:tw-w-1/4 lg:tw-h-64 xl:tw-h-72 tw-bg-dreamgirl-red tw-rounded tw-z-[100]"></div>
+                        <div
+                          ref={selfFeed}
+                          id="self-video-container"
+                          className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"
+                        >
+                          <div id="self-video"></div>
+                        </div>
                       )}
-                      <div className="tw-absolute tw-bottom-0 tw-h-6 tw-bg-dark-black tw-left-0 tw-right-0 tw-z-0"></div>
-                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-310 tw-backdrop-blur">
-                        <button className="tw-inline-block tw-mx-2">
+                      {/* <div className="tw-absolute tw-bottom-0 tw-h-6 tw-bg-dark-black tw-left-0 tw-right-0 tw-z-0"></div> */}
+                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[310] tw-backdrop-blur">
+                        <button className="tw-inline-block tw-mx-2 tw-z-[390]">
                           <VolumeUpIcon
                             fontSize="medium"
                             style={{ color: "white" }}
                           />
                         </button>
-                        <button className="tw-inline-block tw-mx-2">
+                        <button className="tw-inline-block tw-mx-2 tw-z-[390]">
                           <CallEndIcon
                             fontSize="medium"
                             style={{ color: "red" }}
                           />
                         </button>
-                        <button className="tw-inline-block tw-mx-2">
+                        <button className="tw-inline-block tw-mx-2 tw-z-[390]">
                           <MicOffIcon
                             fontSize="medium"
                             style={{ color: "white" }}

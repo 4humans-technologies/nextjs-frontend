@@ -22,6 +22,12 @@ function Login() {
   const ctx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
 
+  if (typeof window !== "undefined" && ctx.isLoggedIn) {
+    const reloadUrl = `${window.location.protocol}//${window.location.host}${ctx.loginSuccessUrl}`
+    window.location.href = reloadUrl
+    return <></>
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     // console.log(password, username)
@@ -63,11 +69,6 @@ function Login() {
           })
           //debugger
           sessionStorage.clear()
-          if (typeof window !== "undefined") {
-            const reloadUrl = `${window.location.protocol}//${window.location.host}${ctx.loginSuccessUrl}`
-            alert(reloadUrl)
-            window.location.href = reloadUrl
-          }
           // io.getSocket().close()
           // io.connect(imageDomainURL)
           /* don't think it is re-creating handshake object for re-connection */

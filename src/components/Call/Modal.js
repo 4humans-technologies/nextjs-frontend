@@ -24,7 +24,7 @@ function ContentModal(props) {
     overlay: {
       ...props.overlayStyles,
       position: "fixed",
-      zIndex: 150,
+      zIndex: 500,
       top: 0,
       bottom: 0,
       left: 0,

@@ -112,7 +112,10 @@ const Home = () => {
               ...prev,
               {
                 title: "Online Models | Either onCall or onStream",
-                data: data.resultDocs,
+                data: data.resultDocs.map(model => ({
+                  ...model,
+                  relatedUserId: model._id
+                })),
               },
             ]
           })
@@ -200,13 +203,14 @@ const Home = () => {
       </Head>
       <div className="tw-h-20"></div>
       <Header />
-      <SecondHeader />
+      {/* <SecondHeader /> */}
       <div className="tw-flex tw-flex-grow-1 tw-flex-shrink-0">
         <Sidebar />
         <div>
           {boxGroupsData.map((data, index) => {
             return (
               <Boxgroup
+                parent={"index"}
                 groupTitle={data.title}
                 data={data.data}
                 key={`${index}_boxGroup_&^HJK`}
@@ -215,7 +219,7 @@ const Home = () => {
           })}
         </div>
       </div>
-      <div className="tw-text-center tw-flex tw-items-center tw-justify-around">
+      {/* <div className="tw-text-center tw-flex tw-items-center tw-justify-around">
         <button
           onClick={doRequest}
           className="tw-px-4 py-2 tw-bg-red-500 tw-text-xl tw-my-4 tw-text-white-color"
@@ -227,7 +231,7 @@ const Home = () => {
             Go Live As A model
           </a>
         </Link>
-      </div>
+      </div> */}
       <Footer />
     </div>
   )

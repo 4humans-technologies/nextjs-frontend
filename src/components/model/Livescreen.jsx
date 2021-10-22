@@ -141,6 +141,7 @@ function LiveScreen(props) {
   const [isChatPlanActive, setIsChatPlanActive] = useState(false)
   const [callOnGoing, setCallOnGoing] = useState(false)
   const [callType, setCallType] = useState("videoCall")
+  const [pendingCallRequest, setPendingCallRequest] = useState(false)
 
   const scrollOnChat = () => {
     chatBoxContainer.current.scrollBy({
@@ -229,13 +230,20 @@ function LiveScreen(props) {
     }
   }, [sendChatMessage])
 
-  const showCallDetailPopUp = useCallback(
-    () =>
-      modalCtx.showModalWithContent(
-        <CallDetailsPopUp closeModal={modalCtx.hideModal} />
-      ),
-    [modalCtx.showModalWithContent, modalCtx.hideModal]
-  )
+  const showCallDetailPopUp = useCallback(() => {
+    if (!authCtx.isLoggedIn) {
+      alert("Please Login To Make Private Call Request 👑👑")
+      return
+    }
+    modalCtx.showModalWithContent(
+      <CallDetailsPopUp
+        closeModal={modalCtx.hideModal}
+        setPendingCallRequest={setPendingCallRequest}
+        pendingCallRequest={pendingCallRequest}
+        setCallType={setCallType}
+      />
+    )
+  }, [modalCtx.showModalWithContent, modalCtx.hideModal])
   return (
     <>
       <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
@@ -248,6 +256,7 @@ function LiveScreen(props) {
             setCallOnGoing={setCallOnGoing}
             callType={callType}
             setCallType={setCallType}
+            setPendingCallRequest={setPendingCallRequest}
           />
           {!callOnGoing ? (
             <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-0 tw-py-3 tw-px-2 tw-z-[300]">
@@ -344,9 +353,8 @@ function LiveScreen(props) {
             </div>
           ) : null}
         </div>
-
         <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-6/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-          <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
+          <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative">
             <button
               className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
               onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
@@ -387,7 +395,17 @@ function LiveScreen(props) {
                 </span>
               </button>
             ) : null}
+            {/* pending call request  */}
           </div>
+          {pendingCallRequest && (
+            <div className="tw-absolute tw-top-14 tw-left-1 tw-right-1 tw-py-1.5 tw-px-4 tw-bg-[rgba(56,117,37,0.4)] tw-text-white-color tw-font-semibold tw-z-[300] tw-backdrop-blur">
+              <p className="tw-capitalize tw-text-white-color tw-font-medium">
+                {`Your private
+              ${callType === "videoCall" ? "video call" : "audio call"} request
+              is pending`}
+              </p>
+            </div>
+          )}
           <div
             ref={chatBoxContainer}
             className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
@@ -439,9 +457,7 @@ function LiveScreen(props) {
 
           <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">
             <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
-              {/* <button className="tw-absolute tw-top-[50%] tw-left-[5%] tw-translate-x-[-50%] tw-translate-y-[-50%] tw-rounded-full tw-px-2 tw-py-1 tw-bg-dreamgirl-red">
-                <Image height={25} width={25} src={TipMenuIcon} />
-              </button> */}
+              <img src="/tips.png" alt="" className=" tw-h-8 tw-pl-4" />
               <input
                 className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                 placeholder="Enter your message here"

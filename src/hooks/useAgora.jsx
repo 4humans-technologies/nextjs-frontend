@@ -8,6 +8,8 @@ function useAgora(client, role, callType) {
   const [localAudioTrack, setLocalAudioTrack] = useState(null)
   const [joinState, setJoinState] = useState(false)
   const [remoteUsers, setRemoteUsers] = useState([])
+  const [vol, setVol] = useState(100)
+  const [currentSetup, setCurrentSetup] = useState("stream") /* stream | call */
 
   async function createLocalTracks() {
     const tracks = []
@@ -77,6 +79,17 @@ function useAgora(client, role, callType) {
     setJoinState(false)
   }
 
+  async function leaveDueToPrivateCall(username) {
+    alert(
+      "Model has accepted call request by " +
+        username +
+        " ,stream is ended now 🥺🥺"
+    )
+    await client?.leave()
+    setRemoteUsers([])
+    setJoinState(false)
+  }
+
   async function leaveAndCloseTracks() {
     if (localAudioTrack) {
       localAudioTrack.stop()
@@ -94,6 +107,19 @@ function useAgora(client, role, callType) {
     // fetch("/api/website/stream/global-renew-token")
   }
 
+  async function switchViewerToHost(selfFeedRef, domIds) {
+    await client.setClientRole("host")
+    const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+    const cameraTrack = await AgoraRTC.createCameraVideoTrack()
+    setLocalAudioTrack(microphoneTrack)
+    setLocalVideoTrack(cameraTrack)
+    // cameraTrack.play(selfFeedRef)
+    // domIds.forEach((domId) => {
+    //   cameraTrack.play(domId)
+    // })
+    return [microphoneTrack, cameraTrack]
+  }
+
   useEffect(() => {
     if (!client) {
       return
@@ -102,8 +128,15 @@ function useAgora(client, role, callType) {
     // when component will mount
     setRemoteUsers(client.remoteUsers)
 
+    // //for volume change this is by Ravi shankar still in trail stage
+    // const handleUserVolume = async function (user, mediaType) {
+    //   await client.subscribe(user, mediaType)
+    //   setRemoteUsers((_remoteUsers) =>
+    //     Array.from(client.remoteUsers.audioTrack.setVolume(vol))
+    //   )
+    // }
+
     const handleUserPublished = async function (user, mediaType) {
-      console.log("new user published")
       await client.subscribe(user, mediaType)
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
     }
@@ -113,7 +146,10 @@ function useAgora(client, role, callType) {
     }
 
     const handleUsrJoined = async function (user) {
-      console.log("new user joined")
+      if (currentSetup === "call" && remoteUsers.length >= 2) {
+        alert("A user tried to publish")
+        return
+      }
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
     }
 
@@ -146,6 +182,9 @@ function useAgora(client, role, callType) {
     remoteUsers,
     startLocalCameraPreview,
     leaveAndCloseTracks,
+    leaveDueToPrivateCall,
+    changeClientRole,
+    switchViewerToHost,
   }
 }
 

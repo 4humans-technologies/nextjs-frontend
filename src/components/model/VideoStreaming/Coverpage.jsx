@@ -5,7 +5,7 @@ function Coverpage() {
   const [coverImage, setCoverImage] = useState("/pp.jpg")
   return (
     <div>
-      <div className="tw-bg-first-color tw-text-white tw-mx-4 tw-rounded-t-2xl tw-rounded-b-2xl tw-mt-6">
+      <div className="tw-bg-first-color tw-text-white tw-mx-4 tw-rounded-t-2xl tw-rounded-b-2xl tw-mt-6  tw-text-xs tw-font-normal sm:-font-medium ">
         <div className="tw-border-b-[1px] tw-border-text-black tw-mb-4 tw-py-2 tw-mx-auto">
           <VolumeMuteIcon /> Topic
         </div>

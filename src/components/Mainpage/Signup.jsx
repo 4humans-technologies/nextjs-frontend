@@ -23,7 +23,7 @@ function Signup() {
   const [username, setUsername] = useState(
     `ravi_4${Math.floor(Math.random() * 1000000)}`
   )
-  const [gender, setGender] = useState("Male")
+  const [gender, setGender] = useState("Female")
   const [name, setName] = useState("")
 
   const ctx = useAuthContext()
@@ -67,8 +67,8 @@ function Signup() {
   }
 
   return (
-    <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-min-h-screen tw-bg-third-color tw-w-[100vw] sm:tw-w-auto ">
-      <div className="tw-my-4">
+    <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-min-h-screen tw-bg-third-color tw-w-full sm:tw-w-auto tw-py-16">
+      <div className="tw-my-4 tw-flex-grow-0">
         <Link href="/" className="tw-cursor-pointer">
           <Image
             src={Logo}
@@ -85,7 +85,7 @@ function Signup() {
               {" "}
               Registration user
             </h1>
-            <form onSubmit={handleSubmit} className="tw-mb-4">
+            <form onSubmit={handleSubmit} className="tw-mb-4 viewer-form">
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
                 <input
                   type="text"

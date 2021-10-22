@@ -28,6 +28,7 @@ function Boxgroup(props) {
           props.data.map((model, index) => {
             return (
               <Mainbox
+                parent={props.parent}
                 key={`${model.rootUserId}_${index}`}
                 modelId={model.relatedUserId}
                 photo={model.profileImage}

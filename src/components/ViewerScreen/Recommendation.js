@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useAuthContext } from "../../app/AuthContext"
 import Boxgroup from "../Mainpage/Boxgroup"
 
-function Recommendation() {
+function Recommendation(props) {
   const [boxGroupData, setBoxGroupData] = useState([])
   const ctx = useAuthContext()
 
@@ -41,6 +41,7 @@ function Recommendation() {
       {boxGroupData.map((data, index) => {
         return (
           <Boxgroup
+            parent={props.parent}
             groupTitle={data.title}
             data={data.data}
             key={`${index}_boxGroup_&HJK`}

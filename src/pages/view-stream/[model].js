@@ -10,10 +10,11 @@ import Recommendation from "../../components/ViewerScreen/Recommendation"
 function ViewModelStream() {
   // 👇👇👇 store the models profile value in a state here
   const [modelProfileData, setModelProfileData] = useState(null)
+
   return (
     <>
       <Header />
-      <SecondHeader />
+      {/* <SecondHeader /> */}
       <Sidebar />
       <LiveScreen setModelProfileData={setModelProfileData} />
       {modelProfileData && (
@@ -47,7 +48,7 @@ function ViewModelStream() {
           ]}
         />
       )}
-      <Recommendation />
+      <Recommendation parent={"viewerScreen"} />
       <Footer />
     </>
   )
