@@ -22,7 +22,7 @@ const Login = () => {
           You are already Logged In
         </h1>
         <button
-          className="tw-px-4 tw-py-2 tw-shadow tw-rounded tw-bg-red-500 tw-text-white-color"
+          className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
           onClick={updateCtx.logout}
         >
           Logout

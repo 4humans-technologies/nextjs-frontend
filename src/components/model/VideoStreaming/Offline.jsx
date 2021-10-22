@@ -18,10 +18,10 @@ function Topic(props) {
             onChange={(e) => setChildState(e.target.value)}
           />
           <div className="tw-flex tw-my-4">
-            <button className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-dreamgirl-red tw-mr-4 tw-outline-none">
+            <button className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color tw-mr-4 tw-outline-none">
               Save
             </button>
-            <button className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color">
+            <button className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-dreamgirl-red">
               Cancel
             </button>
           </div>

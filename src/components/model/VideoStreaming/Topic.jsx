@@ -14,7 +14,8 @@ function Topic(props) {
           <input
             type="text"
             value={childState}
-            className="tw-rounded-full tw-w-1/2 tw-h-8 tw-pl-2 tw-bg-second-color tw-border-none tw-outline-none  "
+            placeholder="Your perfomence in Live stream"
+            className="tw-rounded-full tw-w-1/2 tw-h-8 tw-pl-2 tw-bg-second-color tw-border-none tw-outline-none tw-px-4 "
             onChange={(e) => setChildState(e.target.value)}
           />
           <div className="tw-flex tw-my-4">
@@ -27,7 +28,7 @@ function Topic(props) {
           </div>
         </div>
         <br />
-        <p>Some Bakwas Here</p>
+        <p>Bhojpuri singer Neeraj Rai </p>
       </div>
     </div>
   )

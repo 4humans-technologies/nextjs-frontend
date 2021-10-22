@@ -1,6 +1,10 @@
-import React from "react"
+import React, { useState } from "react"
+import Notification from "../../Notifications/Notification"
 
 function Pricing() {
+  const [show, setshow] = useState(false)
+  const [close, setClose] = useState(false)
+
   return (
     <div>
       <div className="tw-text-white tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6 tw-mx-2">
@@ -61,14 +65,21 @@ function Pricing() {
           </div>
         </div>
         <div className="tw-flex tw-my-4 tw-text-white">
-          <button className="tw-rounded-full tw-px-4  tw-bg-green-color tw-mr-4 tw-outline-none">
+          <button
+            className="tw-rounded-full tw-px-4  tw-bg-green-color tw-mr-4 tw-outline-none"
+            onClick={() => setshow((prev) => !prev)}
+          >
             Save
           </button>
-          <button className="tw-rounded-full tw-px-4 tw-py-1 tw-bg-second-color ">
+          <button
+            className="tw-rounded-full tw-px-4 tw-py-1 tw-bg-dreamgirl-red "
+            onClick={() => setClose((prev) => !prev)}
+          >
             Cancel
           </button>
         </div>
       </div>
+      <Notification onShow={show} onClose={close} />
     </div>
   )
 }
