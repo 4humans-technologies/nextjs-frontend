@@ -20,7 +20,7 @@ function Tip() {
         </h1>
         <form
           id="action-form"
-          className="tw-grid tw-grid-rows-4 tw-max-h-64 tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-mx-2"
+          className="tw-grid tw-grid-rows-4 tw-max-h-64 tw-overflow-y-auto tw-mb-3  tw-rounded-lg tw-p-2 "
         >
           {dynamicData.map((item, index) => {
             return (
@@ -29,11 +29,11 @@ function Tip() {
                 key={index}
               >
                 <input
-                  className="tw-rounded-full tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black  tw-outline-none"
+                  className="tw-rounded-full tw-col-span-1 tw-py-2 tw-mr-4 tw-px-6 tw-bg-dark-black  tw-outline-none"
                   placeholder="ravi"
                 />
                 <input
-                  className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
+                  className="tw-col-span-1 tw-py-2 tw-mr-8 tw-ml-2 tw-px-6 tw-bg-dark-black tw-rounded-full tw-outline-none"
                   placeholder="name"
                 />
               </div>
@@ -43,7 +43,7 @@ function Tip() {
         <Button
           variant="denger"
           onClick={() => setDynamicData((prev) => [...prev, 1])}
-          className="tw-rounded-full tw-bg-gray-600"
+          className="tw-rounded-full  tw-bg-dreamgirl-red"
         >
           add new action
         </Button>

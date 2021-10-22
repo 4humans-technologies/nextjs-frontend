@@ -17,7 +17,6 @@ import useModalContext from "../../app/ModalContext"
 import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
-import userHeaderprofile from "./Header/UserHeaderProfile"
 import SecondHeader from "./SecondHeader"
 
 function Header(props) {
@@ -128,42 +127,38 @@ function Header(props) {
                 ? [
                     // login and at small screen and viwer
                     authContext.user.userType == "Viewer" ? (
-                      <div className="">
-                        <div className="tw-flex tw-self-center">
-                          <button
-                            className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-px-2 tw-rounded-full"
-                            onClick={updateAuthContext.logout}
-                          >
-                            logout
-                          </button>
-                          <div className=" tw-ml-6">
-                            <NotificationsIcon />
-                          </div>
+                      <div className="tw-flex tw-self-center">
+                        <button
+                          className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-px-2 tw-rounded-full"
+                          onClick={updateAuthContext.logout}
+                        >
+                          logout
+                        </button>
+                        <div className=" tw-ml-6">
+                          <NotificationsIcon />
                         </div>
                       </div>
                     ) : (
                       // login at smaller screen and model
-                      <div className="">
-                        <div className="tw-flex tw-self-center">
-                          <button
-                            className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-rounded-full tw-capitalize tw-px-4 tw-py-2"
-                            onClick={updateAuthContext.logout}
-                          >
-                            logout
-                          </button>
-                          <button className="tw-mx-4  tw-rounded-full tw-capitalize tw-px-4 tw-py-2 tw-bg-white-color tw-text-black">
-                            <Link href="/rohit/goLive">
-                              <a>live</a>
-                            </Link>
-                          </button>
-                        </div>
+                      <div className="tw-flex tw-self-center">
+                        <button
+                          className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-rounded-full tw-capitalize tw-px-4 tw-py-2"
+                          onClick={updateAuthContext.logout}
+                        >
+                          logout
+                        </button>
+                        <button className="tw-mx-4  tw-rounded-full tw-capitalize tw-px-4 tw-py-2 tw-bg-white-color tw-text-black">
+                          <Link href="/rohit/goLive">
+                            <a>live</a>
+                          </Link>
+                        </button>
                       </div>
                     ),
                   ]
                 : [
                     // login at large screen viwer
                     authContext.user.userType == "Viewer" ? (
-                      <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
+                      <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
                         <button
                           className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                           onClick={updateAuthContext.logout}
@@ -179,10 +174,10 @@ function Header(props) {
                         </div>
                         <div
                           className="tw-mr-4"
-                          onClick={() => router.push("/user/name")}
+                          // onClick={() => router.push("/user/name")}
                         >
                           <img
-                            className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
+                            className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 "
                             src="/pp.jpg"
                           ></img>
                           {/* profile */}
@@ -191,19 +186,19 @@ function Header(props) {
                               headerProfileShow ? "" : "tw-hidden"
                             }`}
                           >
-                            <userHeaderprofile />
+                            <Headerprofile type="Viewer" />
                           </div>
                           {/* profile */}
                         </div>
                       </div>
                     ) : (
                       // login at large screen model
-                      <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg ">
+                      <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
                         <button
-                          className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
+                          className="tw-mx-4 tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                           onClick={updateAuthContext.logout}
                         >
-                          logout
+                          Neeraj
                         </button>
                         <div className="tw-mx-4">
                           <NotificationsIcon />
@@ -220,7 +215,7 @@ function Header(props) {
                           onClick={() => setHeaderProfileShow((prev) => !prev)}
                         >
                           <img
-                            className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-shadow-lg"
+                            className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 "
                             src="/pp.jpg"
                           ></img>
                           {/* Profile  */}
@@ -229,7 +224,7 @@ function Header(props) {
                               headerProfileShow ? "" : "tw-hidden"
                             }`}
                           >
-                            <Headerprofile />
+                            <Headerprofile type="Model" />
                           </div>
                           {/* Profile  */}
                         </div>

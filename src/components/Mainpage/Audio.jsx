@@ -43,7 +43,7 @@ function Audio() {
       <div>{joinState ? "connect" : "not connected"}</div>
       <div>
         <div
-          className="tw-flex tw-mt-4 "
+          className="tw-flex tw-mt-4"
           audioTrack={localAudioTrack}
           uid={4534534}
           playAudio={true}
@@ -63,7 +63,7 @@ function Audio() {
           <button
             className="tw-rounded-full tw-bg-yellow-200 tw-px-2 tw-py-1"
             onClick={() => {
-              setEnable(!enable);
+              setEnable(!enable)
             }}
           >
             mute
@@ -71,7 +71,7 @@ function Audio() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
 export default Audio;

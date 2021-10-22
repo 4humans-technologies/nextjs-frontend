@@ -332,13 +332,6 @@ function LiveScreen(props) {
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                   variant="danger"
-                  onClick={() => {
-                    if (authCtx.isLoggedIn) {
-                      modalCtx.showModalWithContent(<Token />)
-                    } else {
-                      alert("Please login first")
-                    }
-                  }}
                 >
                   <CardGiftcardIcon fontSize="small" />
                   <span className="tw-pl-1 tw-tracking-tight">Send Gift</span>
@@ -442,7 +435,18 @@ function LiveScreen(props) {
 
           <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">
             <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
-              <img src="/tips.png" alt="" className=" tw-h-8 tw-pl-4" />
+              <img
+                src="/tips.png"
+                alt=""
+                className=" tw-h-8 tw-pl-4"
+                onClick={() => {
+                  if (authCtx.isLoggedIn) {
+                    modalCtx.showModalWithContent(<Token />)
+                  } else {
+                    alert("Please login first")
+                  }
+                }}
+              />
               <input
                 className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                 placeholder="Enter your message here"

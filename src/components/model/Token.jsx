@@ -94,7 +94,11 @@ function Token() {
         <div className="tw-font-extrabold tw-text-xl tw-mb-">
           How many token would you like to tip
         </div>
-        <div className="tw-flex tw-justify-between tw-my-2 ">
+        <div
+          className={`tw-flex tw-justify-between tw-my-2 ${
+            token == "20" ? "tw-text-green-400" : null
+          }`}
+        >
           <div className="tw-flex tw-place-items-center">
             <input
               type="radio"
@@ -107,10 +111,20 @@ function Token() {
               20 <span>Tokens</span>
             </label>
           </div>
-          <div className=" tw-px-2 tw-border-2">Tip the model 20 token</div>
+          <div
+            className={`tw-px-2 tw-border-2 ${
+              token == "20" ? "tw-border-green-400" : null
+            }`}
+          >
+            Tip the model 20 token
+          </div>
         </div>
         {/*  */}
-        <div className="tw-flex tw-justify-between tw-my-2 ">
+        <div
+          className={`tw-flex tw-justify-between tw-my-2 ${
+            token == 50 ? "tw-text-green-400" : null
+          }`}
+        >
           <div className="tw-flex tw-place-items-center">
             <input
               type="radio"
@@ -123,10 +137,20 @@ function Token() {
               50 <span>Tokens</span>
             </label>
           </div>
-          <div className=" tw-px-2 tw-border-2">Tip the model 50 token</div>
+          <div
+            className={`tw-px-2 tw-border-2 ${
+              token == "50" ? "tw-border-green-400" : null
+            }`}
+          >
+            Tip the model 50 token
+          </div>
         </div>
         {/*  */}
-        <div className="tw-flex tw-justify-between tw-my-2">
+        <div
+          className={`tw-flex tw-justify-between tw-my-2 ${
+            token == 100 ? "tw-text-green-400" : null
+          }`}
+        >
           <div className="tw-flex tw-place-items-center">
             <input
               type="radio"
@@ -139,10 +163,20 @@ function Token() {
               100 <span>Tokens</span>
             </label>
           </div>
-          <div className=" tw-px-2 tw-border-2">Tip the model 100 token</div>
+          <div
+            className={`tw-px-2 tw-border-2 ${
+              token == "100" ? "tw-border-green-400" : null
+            }`}
+          >
+            Tip the model 100 token
+          </div>
         </div>
         {/*  */}
-        <div className="tw-flex tw-justify-between tw-my-2">
+        <div
+          className={`tw-flex tw-justify-between tw-my-2 ${
+            token == 200 ? "tw-text-green-400" : null
+          }`}
+        >
           <div className="tw-flex tw-place-items-center">
             <input
               type="radio"
@@ -155,9 +189,19 @@ function Token() {
               200 <span>Tokens</span>
             </label>
           </div>
-          <div className=" tw-px-2 tw-border-2">Tip the model 200 token</div>
+          <div
+            className={`tw-px-2 tw-border-2 ${
+              token == "200" ? "tw-border-green-400" : null
+            }`}
+          >
+            Tip the model 200 token
+          </div>
         </div>
-        <div className="tw-flex tw-place-items-center tw-justify-between tw-my-2">
+        <div
+          className={`tw-flex tw-justify-between tw-my-2 ${
+            token > 200 ? "tw-text-green-400" : null
+          }`}
+        >
           <div className="tw-flex tw-place-items-center">
             <input
               type="radio"

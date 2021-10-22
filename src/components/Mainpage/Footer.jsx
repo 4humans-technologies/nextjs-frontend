@@ -10,7 +10,6 @@ function Footer() {
         <div className="tw-col-span-1 md:tw-col-span-3 lg:tw-col-span-2 flex tw-flex-col tw-items-center tw-justify-between">
           <div className="flex tw-items-center tw-justify-start tw-mb-10">
             <Image src={logo} width={134} height={68} objectFit="cover" />
-            {/* <img src={logo} alt="" /> */}
           </div>
           <div className="mt-2 tw-text-text-black">
             <p className="tw-text-sm tw-font-light tw-mb-1.5">
