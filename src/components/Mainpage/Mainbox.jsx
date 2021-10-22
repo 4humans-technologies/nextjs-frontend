@@ -1,27 +1,57 @@
-import { data } from "autoprefixer";
-import React from "react";
-import Image from "next/image";
+import React, { useState } from "react"
+import Image from "next/image"
+import { Button } from "react-bootstrap"
+import router, { useRouter } from "next/router"
+import dynamic from "next/dynamic"
+import StarIcon from "@material-ui/icons/Star"
+import Link from "next/link"
+import { imageDomainURL } from "../../../dreamgirl.config"
 
-function Mainbox() {
-  const data = {
-    Name: "Mainbox",
-    Description:
-      "Mainbox is a simple, yet powerful, flexbox based grid system. ",
-    Age: "22",
-    nation: "China",
-    language: "Javascript,PHP,English",
-    photo: "brandikaran.jpg",
-  };
+function Mainbox(props) {
+  const watch = () => {
+    console.log("pass dynamic ")
+    router.push("/ravi?streaming=true")
+  }
+
+  // FOR RENDERING STARS
+  // let star = [];
+  // for (let index = 0; index < Rating; index++) {
+  //   star.push(<StarIcon className="tw-text-yellow-300 " />);
+  // }
+
+  let imageUrl
+  if (props.photo.startsWith("http")) {
+    imageUrl = props.photo
+  } else {
+    imageUrl = `${imageDomainURL}${props.photo}`
+  }
+
   return (
-    <div className = "tw-ml-2 tw-p-2" >
-      <div className = "tw-relative" >
-        <img src={data.photo} alt="Mainbox" className = "tw-h-40 tw-w-40" />
-        <p className = "tw-h-40 tw-w-40 tw-absolute tw-bottom-0 tw-bg-gray-500 tw-opacity-0 hover:tw-opacity-80" >
-          {data.Description}
-        </p>
+    <div className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full">
+      <div className="tw-relative tw-font-sans parent_transition tw-m-0">
+        <Link
+          href={
+            props.parent === "index" ? `/view-stream/${props.modelId}` : "/"
+          }
+          className="tw-cursor-pointer"
+        >
+          <span className="tw-cursor-pointer">
+            <img
+              src={imageUrl}
+              className="tw-object-cover tw-object-center tw-rounded-t"
+              alt=""
+            />
+            <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-purple-600">
+              Busy
+            </p>
+            {/* <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color">
+              Streaming
+            </p> */}
+          </span>
+        </Link>
       </div>
     </div>
-  );
+  )
 }
 
-export default Mainbox;
+export default Mainbox

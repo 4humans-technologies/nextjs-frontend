@@ -1,52 +1,46 @@
-import React from "react";
-import Mainbox from "./Mainbox";
+import React, { useEffect, useState } from "react"
+import Mainbox from "./Mainbox"
 
-function Boxgroup() {
+function Boxgroup(props) {
+  const [streams, setStreams] = useState([])
+  useEffect(() => {
+    // fetch("http://localhost:8080/api/website/compose-ui/get-streaming-models")
+    //   .then((res) => res.json)
+    //   .then((data) => {
+    //     setStreams(data.resultDoc);
+    //   });
+  }, [])
+
   return (
-    <div>
-      <h1 className = "tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold" >Top Free Live Webcams</h1>
-      <div className = "tw-flex tw-pt-4 tw-flex-wrap" >
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-      </div>
-
-      {/* Next ------ */}
-      <h1 className = "tw-text-xl tw-ml-6 tw-mt-4 tw-font-bold" >South Indian Live Webcams</h1>
-      <div className = "tw-flex tw-pt-4 tw-flex-wrap" >
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-        <Mainbox />
-      </div>
-      <hr className = "tw-bg-black tw-p-1" />
-      <div className = "tw-text-center" >
-        <p className = "tw-break-words tw-max-w-md tw-text-black tw-text-center tw-inline-flex tw-mt-4" >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium
-          expedita ipsa vel similique hic magni, possimus suscipit
-          necessitatibus rerum soluta fugit voluptatum illum, nemo laboriosam
-          quaerat reprehenderit accusantium tempora? Maiores.
-        </p>
+    <div className="tw-bg-first-color tw-px-3 tw-py-4 tw-border-b tw-border-second-color box-group">
+      <h1 className="tw-text-lg tw-font-medium tw-text-white tw-mb-4 tw-mt-4">
+        {props.groupTitle}
+      </h1>
+      <div className="tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 md:tw-grid-cols-4 lg:tw-grid-cols-5 xl:tw-grid-cols-6 2xl:tw-grid-cols-7 tw-gap-x-3 tw-gap-y-2 tw-justify-items-center">
+        {/* show more wala button,then this will */}
+        {props.data.length === 0 ? (
+          <div className="tw-px-4 tw-py-3 tw-rounded tw-bg-second-color">
+            <h2 className="tw-text-base tw-font-semibold tw-text-text-black tw-text-center">
+              No Model is Currently Live 🥺!
+            </h2>
+          </div>
+        ) : (
+          props.data.map((model, index) => {
+            return (
+              <Mainbox
+                parent={props.parent}
+                key={`${model.rootUserId}_${index}`}
+                modelId={model.relatedUserId}
+                photo={model.profileImage}
+                onCall={model.onCall}
+                isStreaming={model.isStreaming}
+              />
+            )
+          })
+        )}
       </div>
     </div>
-  );
+  )
 }
 
-export default Boxgroup;
+export default Boxgroup

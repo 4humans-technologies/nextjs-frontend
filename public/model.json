@@ -1,0 +1,13 @@
+{"models":[  
+    {"id": "1", "Name":"Shyam", "Email":"shyamjaiswal@gmail.com","Language":"Bhojpuri","Age":"34","Hair":"Black","Eye":"Black","Call":"videoCall","Rate":"45 ps/m" , "Time":"34"},  
+    {"id": "2", "Name":"Bob", "Email":"bob32@gmail.com","Language":"Bhojpuri","Age":"34","Hair":"Black","Eye":"Black","Call":"videoCall","Rate":"45 ps/m", "Time":"34"},  
+    {"id": "3", "Name":"Jai", "Email":"jai87@gmail.com","Language":"Bhojpuri","Age":"34","Hair":"Black","Eye":"Black","Call":"videoCall","Rate":"45 ps/m", "Time":"34"}  
+],
+"Personal":[
+    {"Intrest":"EveryOne","From":"Bangladesh","Language":"Bhojpuri","Age":"34","Hair":"Black","Eye":"Black","Call":"videoCall","Rate":"45 ps/m", "Time":"34","Body":"skiny"}
+],
+"Charges":[
+    {"Audio":45,"Video":45,"Photo":45,"Text":45,"Call":45,"Rate":45,"Time":45}
+]
+
+} 
