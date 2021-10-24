@@ -1,47 +1,87 @@
 import React, { useState, useEffect } from "react";
-import CreateIcon from "@material-ui/icons/Create";
-import HelpIcon from "@material-ui/icons/Help"
-import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
-import Switch from "@material-ui/core/Switch";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import AddIcon from "@material-ui/icons/Add";
-import { Button } from "react-bootstrap";
-import Card from "../UI/Card";
+import CreateIcon from "@material-ui/icons/Create"
+import { Button } from "react-bootstrap"
+import Card from "../UI/Card"
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
 import Callhistory from "./CallHistory"
+import modalContext from "../../app/ModalContext"
 
-let firstRenderHappened = false
+const EmailChange = (props) => {
+  const [email, setEmail] = useState({
+    oldEmail: "",
+    newEmail: "",
+  })
+  const changeHandler = (e) => {
+    setEmail({ ...email, [e.target.name]: e.target.value })
+  }
+  return (
+    <div>
+      <input
+        type="email"
+        name="oldEmail"
+        id=""
+        placeholder="Last Email Id"
+        onChange={changeHandler}
+      />
+      <input
+        type="email"
+        name="newEmail"
+        id=""
+        placeholder="New Email Id"
+        onChange={changeHandler}
+      />
+    </div>
+  )
+}
+
+const PasswordChange = (props) => {
+  const [password, setPassword] = useState({
+    oldPasswod: "",
+    newPasswod: "",
+  })
+
+  // This change handler can handle change in of all type in the form this helps to make code clean and smooth
+  const changeHandler = (e) => {
+    setPassword({ ...password, [e.target.name]: e.target.value })
+  }
+
+  return (
+    <div>
+      <input
+        type="password"
+        name=""
+        id=""
+        value={oldPasswod}
+        onChange={changeHandler}
+      />
+      <input
+        type="password"
+        name=""
+        id=""
+        value={newPasswod}
+        onChange={changeHandler}
+      />
+    </div>
+  )
+}
+
 function Profile() {
   const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
   const [dynamicData, setDynamicData] = useState([2])
   const [modelData, setModelData] = useState()
   const [callData, setCallData] = useState()
-  const [modelState, setModelState] = useState({
-    images: [],
-    videos: [],
-    videoCall: 200,
-    audioCall: 100,
-    profile: "",
-    header_image: "",
-  })
-  const [information, setInformation] = useState({
-    Interest: "Every One",
-    From: "",
-    Language: "",
-    Age: 18,
-    Body: "",
-    Specific: "",
-    Hair: "",
-    Eye: "Black",
-    Subculture: "",
-  })
+  const modalCtx = modalContext()
+
   useEffect(() => {
     fetch("/model.json")
       .then((res) => res.json())
       .then((data) => {
         setModelData(data.Personal), setCallData(data.Charges)
       })
+      return{
+        
+      }
   }, [])
 
   // useEffect to make  button appear when change in information takes place
@@ -82,27 +122,26 @@ function Profile() {
           src="/swami_ji.jpg"
           className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
         />
-        <p className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-white tw-text-black tw-right-8 tw-py-2 tw-px-2 ">
-          {" "}
+        <p className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full ">
+          <CreateIcon className="tw-mr-2" />
           Background
-          <CreateIcon className="tw-ml-2" />
         </p>
       </div>
       {/* corcle for profile picture */}
-      <div className="tw-w-screen tw-bg-red-400 tw-h-28 tw-flex tw-pl-8">
+      <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8">
         <img
-          className="tw-rounded-full tw-w-32 tw-h-32 flex tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%] tw-bg-green-400 tw-shadow-lg"
+          className="tw-rounded-full tw-w-32 tw-h-32 flex tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
           src="/pp.jpg"
         ></img>
         <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44  ">
-          Sansatinal Girl
+          Neeraj Rai
         </div>
       </div>
       {/* horizontal bar */}
       {/* Profile compy from grid */}
-      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4">
+      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background">
         <div className="md:tw-col-span-4 tw-col-span-1">
-          <div className="tw-bg-gray-600  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
+          <div className="  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
             <h1 className="tw-ml-4">My Information</h1>
             <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
               <div className=" md:tw-col-span-1 tw-col-span-2 ">
@@ -190,6 +229,32 @@ function Profile() {
             </div>
             {/* removed epic goal and Broadcast shedule */}
 
+            {/* setting */}
+            <div className="  tw-rounded-t-2xl tw-rounded-b-lg tw-mt-4">
+              <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4">
+                <p className="tw-px-4">My Email</p>
+                <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
+                  <button
+                    className="tw-rounded-full tw-bg-second-color tw-px-2"
+                    onClick={modalCtx.showModalWithContent(<EmailChange />)}
+                  >
+                    Change Email
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="tw-my-4  hover:tw-shadow-lg tw-rounded-t-2xl tw-rounded-b-2xl ">
+              <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4 ">
+                <p className="tw-mx-4">My Password</p>
+                <div className=" tw-mx-auto tw-pt-2">
+                  <button className="tw-rounded-full tw-bg-second-color  tw-px-2 ">
+                    Change Password
+                  </button>
+                </div>
+              </div>
+            </div>
+            {/* setting */}
             {/* Pricing */}
             <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
               <div className="tw-col-span-1">
@@ -225,13 +290,12 @@ function Profile() {
 
                 <div className="tw-flex  tw-my-2">
                   <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
-                    {video.length > 0
-                      ? video.map((item) => (
-                          <option value={item}>
-                            {item} <span>tk</span>
-                          </option>
-                        ))
-                      : null}
+                    {video.length > 0 &&
+                      video.map((item) => (
+                        <option value={item}>
+                          {item} <span>tk</span>
+                        </option>
+                      ))}
                   </select>
                   {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-py-2 ">
                     <option value="200tk">200tk </option>
@@ -250,9 +314,9 @@ function Profile() {
               </div>
             </div>
             {/* scroll*/}
-            <div className=" tw-text-white tw-flex  tw-overflow-x-auto tw-mt-6 tw-bg-black ">
+            <div className=" tw-text-white tw-flex  tw-overflow-x-auto tw-mt-6 tw-bg-first-color ">
               <Card>
-                <div className="tw-flex tw-justify-between">
+                <div className="tw-flex tw-justify-between ">
                   <h2>Earning</h2>
                   <div className="help_1">
                     <HelpOutlineIcon />
@@ -366,7 +430,6 @@ function Profile() {
                   6
                 </td>
               </tr>
-              😂😂😊
               <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
                 <td className="tw-border-solid tw-bg-dark-black tw-border-4">
                   1
@@ -412,7 +475,7 @@ function Profile() {
           </div>
           {/* Scroll */}
         </div>
-        <div className="md:tw-col-span-3 tw-col-span-1 tw-bg-gray-600  tw-text-white tw-py-8">
+        <div className="md:tw-col-span-3 tw-col-span-1 tw-bg-dark-background  tw-text-white tw-py-8">
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             <div className="tw-flex tw-justify-between">
               <h1>My Photos</h1>
@@ -532,10 +595,16 @@ function Profile() {
                 )
               })}
             </form>
-            <Button onClick={() => setDynamicData((prev) => [...prev, 1])}>
+            <Button
+              className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
+              onClick={() => setDynamicData((prev) => [...prev, 1])}
+            >
               add new action
             </Button>
-            <Button onClick={saveData} className="tw-ml-4">
+            <Button
+              onClick={saveData}
+              className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
+            >
               Save
             </Button>
           </div>

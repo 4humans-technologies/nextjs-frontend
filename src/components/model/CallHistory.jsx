@@ -11,7 +11,7 @@ function chat() {
   }, [])
 
   return (
-    <div className="tw-grid tw-grid-cols-2">
+    <div className="tw-grid tw-grid-cols-2 tw-bg-first-color tw-mt-4 tw-rounded-t-lg tw-rounded-b-lg">
       {pending.map((item) => {
         return (
           <Card key={item.id}>

@@ -195,10 +195,10 @@ function Header(props) {
                       // login at large screen model
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
                         <button
-                          className="tw-mx-4 tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
+                          className="tw-mx-4 tw-px-4 tw-py-2 tw-rounded-full hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                           onClick={updateAuthContext.logout}
                         >
-                          Neeraj
+                          Logout
                         </button>
                         <div className="tw-mx-4">
                           <NotificationsIcon />
