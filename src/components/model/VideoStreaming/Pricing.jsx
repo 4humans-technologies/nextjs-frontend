@@ -10,7 +10,7 @@ function Pricing() {
       <div className="tw-text-white tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6 tw-mx-2">
         <div className="tw-col-span-1">
           <p>Private Audio</p>
-          <p className="tw-my-2">Private video </p>
+          <p className="tw-mt-8">Private video </p>
         </div>
         <div className="tw-col-span-2">
           <div className="tw-flex ">
@@ -23,14 +23,14 @@ function Pricing() {
                     ))
                   : null}
               </select> */}
-            <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
+            <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2 tw-outline-none">
               <option value="200tk">200tk </option>
               <option value="300tk">300tk </option>
               <option value="400tk">400tk </option>
               <option value="500tk">500tk </option>
             </select>
 
-            <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4">
+            <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4 tw-outline-none">
               <option value="1"> 1 minute </option>
               <option value="2"> 2 minute </option>
               <option value="3"> 3 minute </option>
@@ -49,14 +49,14 @@ function Pricing() {
                     ))
                   : null}
               </select> */}
-            <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-py-2 ">
+            <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-py-2 tw-outline-none">
               <option value="200tk">200tk </option>
               <option value="300tk">300tk </option>
               <option value="400tk">400tk </option>
               <option value="500tk">500tk </option>
             </select>
 
-            <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4 tw-py-2">
+            <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4 tw-py-2 tw-outline-none">
               <option value="1"> 1 minute </option>
               <option value="2"> 2 minute </option>
               <option value="3"> 3 minute </option>

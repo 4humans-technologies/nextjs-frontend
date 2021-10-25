@@ -1,74 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 import CreateIcon from "@material-ui/icons/Create"
 import { Button } from "react-bootstrap"
 import Card from "../UI/Card"
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
 import Callhistory from "./CallHistory"
 import modalContext from "../../app/ModalContext"
-
-const EmailChange = (props) => {
-  const [email, setEmail] = useState({
-    oldEmail: "",
-    newEmail: "",
-  })
-  const changeHandler = (e) => {
-    setEmail({ ...email, [e.target.name]: e.target.value })
-  }
-  return (
-    <div>
-      <input
-        type="email"
-        name="oldEmail"
-        id=""
-        placeholder="Last Email Id"
-        onChange={changeHandler}
-      />
-      <input
-        type="email"
-        name="newEmail"
-        id=""
-        placeholder="New Email Id"
-        onChange={changeHandler}
-      />
-    </div>
-  )
-}
-
-const PasswordChange = (props) => {
-  const [password, setPassword] = useState({
-    oldPasswod: "",
-    newPasswod: "",
-  })
-
-  // This change handler can handle change in of all type in the form this helps to make code clean and smooth
-  const changeHandler = (e) => {
-    setPassword({ ...password, [e.target.name]: e.target.value })
-  }
-
-  return (
-    <div>
-      <input
-        type="password"
-        name=""
-        id=""
-        value={oldPasswod}
-        onChange={changeHandler}
-      />
-      <input
-        type="password"
-        name=""
-        id=""
-        value={newPasswod}
-        onChange={changeHandler}
-      />
-    </div>
-  )
-}
+import ClearIcon from "@material-ui/icons/Clear"
+import {
+  EmailChange,
+  PasswordChange,
+  CoverUpdate,
+  ProfileUpdate,
+} from "../UI/Profile/Emailpassword"
 
 function Profile() {
   const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
-  const [dynamicData, setDynamicData] = useState([2])
+  const [dynamicData, setDynamicData] = useState([1])
   const [modelData, setModelData] = useState()
   const [callData, setCallData] = useState()
   const modalCtx = modalContext()
@@ -79,9 +27,7 @@ function Profile() {
       .then((data) => {
         setModelData(data.Personal), setCallData(data.Charges)
       })
-      return{
-        
-      }
+    return {}
   }, [])
 
   // useEffect to make  button appear when change in information takes place
@@ -97,8 +43,6 @@ function Profile() {
     }
   }, [callData])
 
-  console.log(audio)
-  console.log(video)
   const toggleChecked = () => {
     setChecked((prev) => !prev)
   }
@@ -122,17 +66,25 @@ function Profile() {
           src="/swami_ji.jpg"
           className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
         />
-        <p className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full ">
+        <p
+          className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full "
+          onClick={() => modalCtx.showModalWithContent(<CoverUpdate />)}
+        >
           <CreateIcon className="tw-mr-2" />
           Background
         </p>
       </div>
       {/* corcle for profile picture */}
-      <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8">
+      <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative">
         <img
           className="tw-rounded-full tw-w-32 tw-h-32 flex tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
           src="/pp.jpg"
         ></img>
+        <CreateIcon
+          className="tw-ml-24 tw-mt-14 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full "
+          fontSize="medium"
+          onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
+        />
         <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44  ">
           Neeraj Rai
         </div>
@@ -236,7 +188,9 @@ function Profile() {
                 <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
                   <button
                     className="tw-rounded-full tw-bg-second-color tw-px-2"
-                    onClick={modalCtx.showModalWithContent(<EmailChange />)}
+                    onClick={() =>
+                      modalCtx.showModalWithContent(<EmailChange />)
+                    }
                   >
                     Change Email
                   </button>
@@ -248,13 +202,19 @@ function Profile() {
               <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4 ">
                 <p className="tw-mx-4">My Password</p>
                 <div className=" tw-mx-auto tw-pt-2">
-                  <button className="tw-rounded-full tw-bg-second-color  tw-px-2 ">
+                  <button
+                    className="tw-rounded-full tw-bg-second-color  tw-px-2 "
+                    onClick={() =>
+                      modalCtx.showModalWithContent(<PasswordChange />)
+                    }
+                  >
                     Change Password
                   </button>
                 </div>
               </div>
             </div>
             {/* setting */}
+
             {/* Pricing */}
             <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
               <div className="tw-col-span-1">
@@ -575,21 +535,29 @@ function Profile() {
             <h1 className="tw-mb-3 tw-font-semibold tw-text-lg">Set Actions</h1>
             <form
               id="action-form"
-              className="tw-grid tw-grid-rows-4 tw-max-h-64 tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2"
+              className="tw-max-h-64  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
             >
               {dynamicData.map((item, index) => {
                 return (
                   <div
-                    className="tw-grid tw-grid-cols-2 tw-my-4 tw-text-white-color"
+                    className="tw-grid tw-my-4 tw-text-white-color action_grid "
+                    id={index}
                     key={index}
                   >
                     <input
-                      className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-md"
-                      placeholder="ravi"
+                      className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
+                      placeholder={index}
                     />
                     <input
-                      className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-md"
-                      placeholder="name"
+                      className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
+                      placeholder={dynamicData}
+                    />
+                    {/* Amazing ninja technique for dom menupulation */}
+                    <ClearIcon
+                      className="tw-text-white tw-my-auto"
+                      onClick={() => {
+                        document.getElementById(index).remove()
+                      }}
                     />
                   </div>
                 )
@@ -617,4 +585,4 @@ function Profile() {
   )
 }
 
-export default Profile;
+export default Profile
