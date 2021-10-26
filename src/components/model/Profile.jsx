@@ -18,6 +18,7 @@ function Profile() {
   const [infoedited, setInfoedited] = useState(false)
   const [dynamicData, setDynamicData] = useState([1])
   const [modelData, setModelData] = useState()
+  const [modelDetails, setModelDetails] = useState()
   const [callData, setCallData] = useState()
   const modalCtx = modalContext()
 
@@ -30,6 +31,13 @@ function Profile() {
     return {}
   }, [])
 
+  useEffect(() => {
+    fetch("/api/website/profile/get-model-profile-data")
+      .then((resp) => resp.json())
+      .then((data) => setModelDetails(data))
+  }, [])
+
+  console.log(modelDetails.model)
   // useEffect to make  button appear when change in information takes place
   let audio = []
   let video = []
@@ -56,6 +64,8 @@ function Profile() {
       actionArray.push({ [action]: actionValue })
     }
   }
+  let today = new Date()
+  let thisYear = today.getFullYear()
 
   // Data fetching which make things possible
   return (
@@ -86,7 +96,7 @@ function Profile() {
           onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
         />
         <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44  ">
-          Neeraj Rai
+          {modelDetails ? modelDetails.model.name : null}
         </div>
       </div>
       {/* horizontal bar */}
@@ -130,13 +140,17 @@ function Profile() {
                         onInput={(e) => e.currentTarget.textContent}
                         contentEditable="true"
                       >
-                        {item.Language}
+                        {/* {item.Language} */}
+                        {modelDetails ? modelDetails.model.languages[0] : null}
                       </p>
                       <p
                         onInput={(e) => e.currentTarget.textContent}
                         contentEditable="true"
                       >
-                        {item.Age}
+                        {/* {item.Age} */}
+                        {modelDetails
+                          ? thisYear - modelDetails.model.dob
+                          : null}
                       </p>
                       <p
                         onInput={(e) => e.currentTarget.textContent}
@@ -184,7 +198,12 @@ function Profile() {
             {/* setting */}
             <div className="  tw-rounded-t-2xl tw-rounded-b-lg tw-mt-4">
               <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4">
-                <p className="tw-px-4">My Email</p>
+                <p className="tw-px-4">
+                  My Email{" "}
+                  <span className="tw-ml-4 tw-font-bold tw-text-xl">
+                    {modelDetails.model ? modelDetails.model.email : null}
+                  </span>
+                </p>
                 <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
                   <button
                     className="tw-rounded-full tw-bg-second-color tw-px-2"
