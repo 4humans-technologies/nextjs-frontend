@@ -82,6 +82,40 @@ function UserProfile() {
             <p>Eye color</p>
             <p>SubCulture</p>
           </div>
+          <div className="  tw-rounded-t-2xl tw-rounded-b-lg tw-mt-4">
+            <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4">
+              <p className="tw-px-4">
+                My Email{" "}
+                <span className="tw-ml-4 tw-font-bold tw-text-xl">
+                  {modelDetails ? modelDetails.model.email : null}
+                </span>
+              </p>
+              <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
+                <button
+                  className="tw-rounded-full tw-bg-second-color tw-px-2"
+                  onClick={() => modelCtx.showModalWithContent(<EmailChange />)}
+                >
+                  Change Email
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="tw-my-4  hover:tw-shadow-lg tw-rounded-t-2xl tw-rounded-b-2xl ">
+            <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4 ">
+              <p className="tw-mx-4">My Password</p>
+              <div className=" tw-mx-auto tw-pt-2">
+                <button
+                  className="tw-rounded-full tw-bg-second-color  tw-px-2 "
+                  onClick={() =>
+                    modelCtx.showModalWithContent(<PasswordChange />)
+                  }
+                >
+                  Change Password
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="tw-grid  tw-bg-first-color md:tw-col-span-3 tw-col-span-1">
           <h1 className="tw-pl-4 tw-pt-4">Freinds</h1>

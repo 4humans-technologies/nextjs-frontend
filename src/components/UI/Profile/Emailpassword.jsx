@@ -7,8 +7,22 @@ const EmailChange = (props) => {
     oldEmail: "",
     newEmail: "",
   })
+  // Check type to change url according to change
   const changeHandler = (e) => {
     setEmail({ ...email, [e.target.name]: e.target.value })
+    if (email.oldEmail != email.newMail) {
+      fetch("url", {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: {
+          newMail: email.newEmail,
+        },
+      })
+        .then((resp) => resp.json())
+        .then((data) => console.log(data))
+    }
   }
   return (
     <div className="tw-flex tw-flex-col">
@@ -42,11 +56,27 @@ const PasswordChange = (props) => {
   const [password, setPassword] = useState({
     oldPasswod: null,
     newPasswod: null,
+    newPasswod_2: null,
   })
+  // Check type of user then change the url of fetch request
 
   // This change handler can handle change in of all type in the form this helps to make code clean and smooth
   const changeHandler = (e) => {
     setPassword({ ...password, [e.target.name]: e.target.value })
+    if (password.newPasswod != password.newPasswod_2) {
+      return null
+    }
+    fetch("url", {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: {
+        Password: password.newPasswod,
+      },
+    })
+      .then((resp) => resp.json())
+      .then((data) => console.log(data))
   }
 
   return (
@@ -55,7 +85,7 @@ const PasswordChange = (props) => {
       <br />
       <input
         type="password"
-        name=""
+        name="oldPasswod"
         id=""
         // value={oldPasswod}
         onChange={changeHandler}
@@ -65,13 +95,24 @@ const PasswordChange = (props) => {
 
       <input
         type="password"
-        name=""
+        name="newPasswod"
         id=""
         // value={newPasswod}
         onChange={changeHandler}
         placeholder="Eneter your new Password"
         className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
       />
+
+      <input
+        type="password"
+        name="newPasswod_2"
+        id=""
+        // value={newPasswod}
+        onChange={changeHandler}
+        placeholder="Eneter your new Password"
+        className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
+      />
+
       <br />
       <button className="tw-bg-dreamgirl-red  tw-border-none tw-rounded-full tw-mx-auto tw-px-4 tw-py-2">
         Change

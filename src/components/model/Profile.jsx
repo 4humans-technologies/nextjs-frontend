@@ -17,6 +17,10 @@ function Profile() {
   const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
   const [dynamicData, setDynamicData] = useState([1])
+  const [imageVideo, setImageVideo] = useState({
+    images: [],
+    videos: [],
+  })
   const [modelData, setModelData] = useState()
   const [modelDetails, setModelDetails] = useState()
   const [callData, setCallData] = useState()
@@ -31,13 +35,51 @@ function Profile() {
     return {}
   }, [])
 
+  // PhotoUplode Handler
+  const photoUpdateHandler = async (e) => {
+    setImageVideo.images((prev) => [
+      ...prev,
+      URL.createObjectURL(e.target.files[0]),
+    ])
+    let req = await fetch("url", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      body: {
+        modelImage: imageVideo.images,
+      },
+    })
+    let resp = await req.json()
+    return resp
+  }
+
+  // VideoUplodeHandler videoUpdateHandler
+  const videoUpdateHandler = async (e) => {
+    setImageVideo.videos((prev) => [
+      ...prev,
+      URL.createObjectURL(e.target.files[0]),
+    ])
+    let req = await fetch("url", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      body: {
+        modelVideos: imageVideo.videos,
+      },
+    })
+    let resp = await req.json()
+    return resp
+  }
+
   useEffect(() => {
     fetch("/api/website/profile/get-model-profile-data")
       .then((resp) => resp.json())
       .then((data) => setModelDetails(data))
   }, [])
 
-  console.log(modelDetails.model)
+  // console.log(modelDetails.model)
   // useEffect to make  button appear when change in information takes place
   let audio = []
   let video = []
@@ -55,6 +97,7 @@ function Profile() {
     setChecked((prev) => !prev)
   }
 
+  // This will change data and fecth data and send to uper
   const saveData = () => {
     const allInputs = document.querySelectorAll("#action-form input")
     const actionArray = []
@@ -63,7 +106,20 @@ function Profile() {
       const actionValue = allInputs[index + 1].value
       actionArray.push({ [action]: actionValue })
     }
+
+    fetch("url", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      body: {
+        tipMenu: actionArray,
+      },
+    })
+      .then((resp) => resp.json())
+      .then((data) => console.log(data))
   }
+
   let today = new Date()
   let thisYear = today.getFullYear()
 
@@ -201,7 +257,7 @@ function Profile() {
                 <p className="tw-px-4">
                   My Email{" "}
                   <span className="tw-ml-4 tw-font-bold tw-text-xl">
-                    {modelDetails.model ? modelDetails.model.email : null}
+                    {modelDetails ? modelDetails.model.email : null}
                   </span>
                 </p>
                 <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
@@ -470,6 +526,7 @@ function Profile() {
                     name="file-input"
                     id="file-input"
                     className="file-input__input"
+                    onChange={() => photoUpdateHandler()}
                   />
                   <label className="file-input__label" htmlFor="file-input">
                     <svg
@@ -520,6 +577,7 @@ function Profile() {
                       name="file-input"
                       id="file-input"
                       className="file-input__input"
+                      onChange={() => videoUpdateHandler()}
                     />
                     <svg
                       aria-hidden="true"
