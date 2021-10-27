@@ -127,6 +127,11 @@ const Home = () => {
     }
   }, [ctx.loadedFromLocalStorage])
 
+  // useEffect(() => {
+  //   const socket = io.getSocket()
+  //   alert(socket.connected)
+  // }, [])
+
 
   useEffect(() => {
     if (socketContext.setSocketSetupDone) {
@@ -182,14 +187,12 @@ const Home = () => {
   useEffect(() => {
     return () => {
       if (socketContext.setSocketSetupDone) {
-        return () => {
-          const socket = io.getSocket()
-          if (socket.hasListeners("delete-stream-room")) {
-            socket.off("delete-stream-room")
-          }
-          if (socket.hasListeners("new-model-started-stream")) {
-            socket.off("new-model-started-stream")
-          }
+        const socket = io.getSocket()
+        if (socket.hasListeners("delete-stream-room")) {
+          socket.off("delete-stream-room")
+        }
+        if (socket.hasListeners("new-model-started-stream")) {
+          socket.off("new-model-started-stream")
         }
       }
     }

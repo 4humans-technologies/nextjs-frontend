@@ -11,6 +11,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
    * in closure will have no effect (no matter if "stale function")
    */
   const spinnerCtx = useSpinnerContext()
+  
   useEffect(() => {
     //debugger
     if (!isAlreadyIntercepted) {
@@ -36,22 +37,21 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             // ) {
             //   baseUrl = "https://dreamgirl.live"
             // }
-            let finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem(
-              "socketId"
-            )}&unAuthedUserId=`
-            // let finalUrl = `${baseUrl}${url}?socketId=${io.getSocketId()}&unAuthedUserId=`;
+
+            let urlObj = new URL(`${baseUrl}${url}`)
+            urlObj.searchParams.append("socketId", localStorage.getItem("socketId"))
+            urlObj.searchParams.append("unAuthedUserId", "")
 
             if (typeof config === "undefined") {
               /* get request */
               config = {}
+              urlObj.searchParams.append("jwtToken", localStorage.getItem("jwtToken"))
             }
 
             if (latestCtx.unAuthedUserId) {
-              finalUrl = `${baseUrl}${url}?socketId=${localStorage.getItem(
-                "socketId"
-              )}&unAuthedUserId=${latestCtx.unAuthedUserId}`
-              // finalUrl = `${baseUrl}${url}?socketId=${io.getSocketId()}&unAuthedUserId=${latestCtx.unAuthedUserId}`;
+              urlObj.searchParams.set("unAuthedUserId", latestCtx.unAuthedUserId)
             }
+
             /* attach jwtToken in the header */
             let finalConfig
             if (latestCtx.isLoggedIn) {
@@ -60,18 +60,16 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                   ...config,
                   headers: {
                     ...config.headers,
-                    Authorization: `Bearer ${
-                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
-                    }`,
+                    Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                      }`,
                   },
                 }
               } else {
                 finalConfig = {
                   ...config,
                   headers: {
-                    Authorization: `Bearer ${
-                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
-                    }`,
+                    Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                      }`,
                   },
                 }
               }
@@ -81,7 +79,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
               }
             }
             //debugger
-            return [finalUrl, finalConfig]
+            return [urlObj.toString(), finalConfig]
           }
           return [url, config]
         },

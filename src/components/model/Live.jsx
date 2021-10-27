@@ -54,13 +54,10 @@ const createAgoraClient = (extraOptions) => {
   client = AgoraRTC.createClient(clientOptions)
   client.setClientRole("host")
 }
+
 /* Init Client */
 createAgoraClient()
 
-// Slide to show the things
-function valuetext(value) {
-  return `${value}°C`
-}
 const chatWindowOptions = {
   PRIVATE: "private",
   PUBLIC: "public",
@@ -69,13 +66,17 @@ const chatWindowOptions = {
 }
 let streamId
 let goneLiveOnce /* only when gone live once the stream rooms will be created, before that no room exists */
+const streamTimer = {
+  value: 0,
+  ref: null,
+}
+
 function Live() {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
   const modalCtx = useModalContext()
   const [fullScreen, setFullScreen] = useState(false)
-  const [value, setValue] = React.useState(30)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [pendingCallRequest, setPendingCallRequest] = useState({
     pending: false,
@@ -86,17 +87,7 @@ function Live() {
   const container = useRef()
   const chatInputRef = useRef()
   const chatBoxContainer = useRef()
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue)
-  }
-
-  const scrollOnChat = useCallback(() => {
-    chatBoxContainer.current.scrollBy({
-      top: 400,
-      behavior: "smooth",
-    })
-  }, [chatBoxContainer.current])
+  const timerTextBox = useRef()
 
   const {
     localAudioTrack,
@@ -109,39 +100,62 @@ function Live() {
     leaveAndCloseTracks,
   } = useAgora(client, "host", callType)
 
-  const requestStreamEnd = () => {
-    fetch("/api/website/stream/handle-stream-end", {
-      method: "POST",
-      cors: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        streamId: streamId,
-        reason: "Manual",
-      }),
+  const scrollOnChat = useCallback(() => {
+    chatBoxContainer.current.scrollBy({
+      top: 400,
+      behavior: "smooth",
     })
-      .then((res) => res.json())
-      .then((data) => {
-        alert(data.message)
-      })
-      .catch((err) => alert("Stream was not ended successfully!"))
-  }
+  }, [chatBoxContainer])
 
-  useEffect(() => {
-    startLocalCameraPreview()
-    localStorage.removeItem("rtcToken")
-    localStorage.removeItem("rtcTokenExpireIn")
-    return () => {
-      //debugger
-      requestStreamEnd()
-      leaveAndCloseTracks()
-    }
-  }, [])
+  const startStreamTimer = useCallback(() => {
+    /* timer ⏰⏰ */
+    streamTimer.ref = setInterval(() => {
+      const totalSeconds = ++streamTimer.value
+      let newTime
+      if (currentTime < 3600) {
+        newTime = new Date(totalSeconds * 1000).toISOString().substr(14, 5)
+      } else {
+        newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
+      }
+      timerTextBox.current.innerText = newTime
+      console.log(newTime)
+    }, [1000])
+  }, [timerTextBox])
+
+  const requestServerStreamEnd = useCallback(
+    (keepAlive) => {
+      if (!joinState) {
+        return
+      }
+      alert("will end stream now")
+      fetch("/api/website/stream/handle-stream-end", {
+        method: "POST",
+        cors: "include",
+        keepalive: keepAlive ? true : true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          streamId: streamId,
+          reason: "Manual",
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert(data.message)
+          clearInterval(startStreamTimer.ref)
+          streamTimer.value = 0
+          streamTimer.ref = null
+        })
+        .catch((err) =>
+          alert("Stream was not ended successfully!" + err.message)
+        )
+    },
+    [streamId, joinState]
+  )
 
   /* Will Not Go Live When The Component Mounts */
-  const startStreamingAndGoLive = () => {
-    //debugger
+  const startStreamingAndGoLive = useCallback(() => {
     if (!goneLiveOnce) {
       goneLiveOnce = true
     }
@@ -194,7 +208,50 @@ function Live() {
         })
         .catch((error) => console.log(error))
     }
-  }
+  }, [
+    ctx.isLoggedIn,
+    ctx.user.userType,
+    ctx.relatedUserId,
+    ctx.loadedFromLocalStorage,
+    streamId,
+    goneLiveOnce,
+  ])
+
+  useEffect(() => {
+    /* clear the rtcToken onetime on first mount only */
+    localStorage.removeItem("rtcToken")
+    localStorage.removeItem("rtcTokenExpireIn")
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (joinState) {
+        leaveAndCloseTracks()
+        requestServerStreamEnd()
+      }
+    }
+  }, [joinState, leaveAndCloseTracks])
+
+  const endStream = useCallback(
+    (keepAlive = false) => {
+      leaveAndCloseTracks()
+      // requestServerStreamEnd(keepAlive)
+    },
+    [leaveAndCloseTracks]
+  )
+
+  const endStreamOnWindowReload = useCallback((_e) => {
+    alert("unloading")
+    endStream(true)
+  }, [])
+
+  /* add eventListener for window reload */
+  useEffect(() => {
+    window.addEventListener("beforeunload", endStreamOnWindowReload)
+    // return () => {
+    //   window.removeEventListener("beforeunload", endStreamOnWindowReload)
+    // }
+  }, [endStream])
 
   const sendChatMessage = () => {
     //debugger
@@ -244,12 +301,6 @@ function Live() {
     }
   }
 
-  const endStream = async () => {
-    //debugger
-    await leave()
-    requestStreamEnd()
-  }
-
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.keyCode === 13) {
@@ -262,20 +313,23 @@ function Live() {
     }
   }, [sendChatMessage])
 
-  const handleModelResponse = (response, relatedUserId, callType) => {
-    /* can set encryption config */
-    debugger
-    io.getSocket().emit("model-call-request-response-emitted", {
-      response: response,
-      relatedUserId: relatedUserId,
-      callType: callType,
-      room: `${streamId}-public`,
-    })
-    setPendingCallRequest({
-      pending: false,
-      callType: null,
-    })
-  }
+  const handleModelResponse = useCallback(
+    (response, relatedUserId, callType) => {
+      /* can set encryption config */
+      debugger
+      io.getSocket().emit("model-call-request-response-emitted", {
+        response: response,
+        relatedUserId: relatedUserId,
+        callType: callType,
+        room: `${streamId}-public`,
+      })
+      setPendingCallRequest({
+        pending: false,
+        callType: null,
+      })
+    },
+    [streamId]
+  )
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
@@ -283,7 +337,7 @@ function Live() {
       const socket = io.getSocket()
       if (!socket.hasListeners("viewer-requested-for-call-received")) {
         socket.on("viewer-requested-for-call-received", (data) => {
-          debugger
+          alert("call request received from viewer!")
           setPendingCallRequest({
             callType: data.callType,
             pending: true,
@@ -385,6 +439,14 @@ function Live() {
                       End Streaming
                     </span>
                   </Button>
+                )}
+                {joinState && (
+                  <p
+                    ref={timerTextBox}
+                    className="tw-px-3 tw-py-1.5 tw-rounded tw-font-semibold tw-bg-[rgba(20,20,20,0.75)] tw-text-white-color"
+                  >
+                    04:50
+                  </p>
                 )}
                 <Button
                   className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110] tw-capitalize"
