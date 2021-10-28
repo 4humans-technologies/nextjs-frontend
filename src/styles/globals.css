@@ -520,8 +520,13 @@ html {
 
 /* card grid  */
 .card_grid {
-  grid-template-rows: 1fr, 2fr, 2fr;
+  grid-template-rows: 1fr 2fr 2fr;
 }
+ @media screen and (max-width: 768px){
+   .card_grid_main{
+     grid-template-columns:50% 10% ;
+   }
+ }
 
 /* card grid */
 
@@ -584,3 +589,16 @@ select {
   text-indent: 1px;
   text-overflow: "";
 }
+
+/* action grid  */
+.action_grid{
+  grid-template-columns: 1fr 1fr auto;
+}
+
+  @media screen and (max-width: 768px) {
+    .action_grid{
+      grid-template-columns: 45% 45% 10% ;
+    }
+  }
+
+/* action grid  */
