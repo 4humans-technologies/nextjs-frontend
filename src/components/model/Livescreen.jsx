@@ -136,8 +136,6 @@ function LiveScreen(props) {
   const router = useRouter()
 
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
-  const [showBrowseGifts, setShowBrowseGifts] = useState(true)
-  const [gifts, setGifts] = useState(giftData)
   const [isChatPlanActive, setIsChatPlanActive] = useState(false)
   const [callOnGoing, setCallOnGoing] = useState(false)
   const [callType, setCallType] = useState("videoCall")
@@ -243,7 +241,8 @@ function LiveScreen(props) {
         setCallType={setCallType}
       />
     )
-  }, [modalCtx.showModalWithContent, modalCtx.hideModal])
+  }, [modalCtx.showModalWithContent, pendingCallRequest, modalCtx.hideModal])
+
   return (
     <>
       <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">

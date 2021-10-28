@@ -36,11 +36,39 @@ function CallDetailsPopUp(props) {
     }
     debugger
     if (socketCtx.setSocketSetupDone) {
-      const socket = io.getSocket()
-      socket.emit("viewer-requested-for-call-emitted", { callType: callType, relatedUserId: authCtx.relatedUserId, modelId: window.location.pathname.split("/").reverse()[0], walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount, username: authCtx.user.user.username })
-      props.setPendingCallRequest(true)
-      props.setCallType(callType)
-      props.closeModal()
+      /* can either emit or do http request */
+      /* const socket = io.getSocket()
+      socket.emit("viewer-requested-for-call-emitted",
+        {
+          callType: callType,
+          relatedUserId: authCtx.relatedUserId,
+          modelId: window.location.pathname.split("/").reverse()[0],
+          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+          username: authCtx.user.user.username
+        }) */
+
+      /* do http request */
+      fetch("/api/website/stream/handle-viewer-call-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          callType: callType,
+          relatedUserId: authCtx.relatedUserId,
+          modelId: window.location.pathname.split("/").reverse()[0],
+          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+          username: authCtx.user.user.username,
+          streamId: sessionStorage.getItem("streamId")
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          props.setPendingCallRequest(true)
+          props.setCallType(callType)
+          props.closeModal()
+        })
+        .catch(err => alert("call request not sent"))
     }
   }
 

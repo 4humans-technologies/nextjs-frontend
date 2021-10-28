@@ -58,6 +58,7 @@ const unAuthedUserEmojis = [
   "🦄",
 ]
 let modelEndedStreamOnce = false
+let streamId
 function ViewerScreen(props) {
   const container = useRef()
 
@@ -65,6 +66,7 @@ function ViewerScreen(props) {
   const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
   const [callDuration, setCallDuration] = useState("05:46") /* in seconds */
+  const [isModelOffline, setIsModelOffline] = useState(false)
 
   const {
     callOnGoing,
@@ -107,22 +109,24 @@ function ViewerScreen(props) {
           ) {
             return
           }
+          if (!localStorage.getItem("rtcToken")) {
+            return window.location.reload()
+          }
           let url
           if (ctx.isLoggedIn) {
             url = "/api/website/stream/re-join-models-currentstream-authed"
-            fetch(url, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                modelId: window.location.pathname.split("/").reverse()[0],
-              }),
-            }).catch((err) => alert(err.message))
           } else {
             url = "/api/website/stream/re-join-models-currentstream-unauthed"
-            fetch(url).catch((err) => alert(err.message))
           }
+          fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              modelId: window.location.pathname.split("/").reverse()[0],
+            }),
+          }).catch((err) => alert(err.message))
         })
       }
 
@@ -205,6 +209,9 @@ function ViewerScreen(props) {
           })
             .then((resp) => resp.json())
             .then((data) => {
+              if (data?.message === "model not streaming") {
+                return setIsModelOffline(true)
+              }
               token = data.rtcToken
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
@@ -213,9 +220,10 @@ function ViewerScreen(props) {
               props.setModelProfileData(data.theModel)
               const channel = window.location.pathname.split("/").reverse()[0]
               join(channel, data.rtcToken, ctx.relatedUserId)
+              sessionStorage.setItem("streamId", data.streamId)
               updateCtx.updateViewer({
                 rtcToken: data.rtcToken,
-                streamRoom: data.streamRoom,
+                streamRoom: `${data.streamId}-public`,
               })
             })
         } else {
@@ -254,6 +262,9 @@ function ViewerScreen(props) {
             .then((resp) => resp.json())
             .then((data) => {
               //debugger
+              if (data?.message === "model not streaming") {
+                return setIsModelOffline(true)
+              }
               /* 🤩🤩🔥🔥 join stream */
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
@@ -261,6 +272,7 @@ function ViewerScreen(props) {
               props.setIsChatPlanActive(data.isChatPlanActive)
               props.setModelProfileData(data.theModel)
               const channel = window.location.pathname.split("/").reverse()[0]
+              sessionStorage.setItem("streamId", data.streamId)
               join(channel, data.rtcToken, data.unAuthedUserId)
               if (data.newUnAuthedUserCreated) {
                 /* if new viewer was created save the _id in localstorage */
@@ -268,12 +280,12 @@ function ViewerScreen(props) {
                 updateCtx.updateViewer({
                   unAuthedUserId: data.unAuthedUserId,
                   rtcToken: data.rtcToken,
-                  streamRoom: data.streamRoom,
+                  streamRoom: `${data.streamId}-public`,
                 })
               } else {
                 updateCtx.updateViewer({
                   rtcToken: data.rtcToken,
-                  streamRoom: data.streamRoom,
+                  streamRoom: `${data.streamId}-public`,
                 })
               }
             })
@@ -305,13 +317,13 @@ function ViewerScreen(props) {
           debugger
           alert("model response received")
           if (data.response !== "rejected") {
-            if (data.relatedUserId === ctx.relatedUserId) {
+            if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               /* dont kick of, switch role to host */
               // await leave() /* why leave?? */
               setPendingCallRequest(false)
               setCallOnGoing(true)
               setCallType(data.callType)
-              // await changeClientRole("host")
+              data.callStartTs /* 👈👈 */
               const [selfAudioFeed, selfVideoFeed] = await switchViewerToHost(
                 "sd",
                 ["self-video-container", "self-video"]
@@ -322,7 +334,14 @@ function ViewerScreen(props) {
               // selfVideoFeed.play("self-video")
             } else {
               /* unsubscribe stream and close connection to agora */
-              alert("Model accepted " + data?.username + " your call Request")
+              localStorage.removeItem("rtcToken")
+              localStorage.removeItem("rtcTokenExpireIn")
+              alert(
+                "Model accepted " +
+                  data?.username +
+                  " your call Request, streaming will be ended now"
+              )
+              /* 🔻🔻leave al socket rooms also 🔺🔺 */
               leaveDueToPrivateCall()
             }
           } else {
@@ -367,7 +386,7 @@ function ViewerScreen(props) {
               <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0">
                 <div
                   className={
-                    "tw-min-h-full tw-relative tw-min-w-[100vw] lg:tw-min-w-[50vw]" +
+                    "tw-min-h-full tw-relative tw-min-w-[100vw] md:tw-min-w-[50vw]" +
                     (callOnGoing
                       ? " tw-z-[300] tw-pointer-events-none"
                       : " tw-z-[10] tw-pointer-events-none")

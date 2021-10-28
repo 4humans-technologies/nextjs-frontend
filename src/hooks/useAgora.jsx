@@ -3,13 +3,12 @@ import AgoraRTC from "agora-rtc-sdk-ng"
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"
 function useAgora(client, role, callType) {
-  console.log("running useAgora!")
+  // console.log("running useAgora!")
   const [localVideoTrack, setLocalVideoTrack] = useState(null)
   const [localAudioTrack, setLocalAudioTrack] = useState(null)
   const [joinState, setJoinState] = useState(false)
   const [remoteUsers, setRemoteUsers] = useState([])
-  const [vol, setVol] = useState(100)
-  const [currentSetup, setCurrentSetup] = useState("stream") /* stream | call */
+  const [streamOnGoing, setStreamOnGoing] = useState(true)
 
   async function createLocalTracks() {
     const tracks = []
@@ -107,7 +106,7 @@ function useAgora(client, role, callType) {
       localVideoTrack.stop()
       localVideoTrack.close()
     }
-    
+
     setRemoteUsers([])
     setJoinState(false)
   }, [localAudioTrack, localVideoTrack, client])
@@ -156,8 +155,8 @@ function useAgora(client, role, callType) {
     }
 
     const handleUsrJoined = async function (user) {
-      if (currentSetup === "call" && remoteUsers.length >= 2) {
-        alert("A user tried to publish")
+      if (streamOnGoing && remoteUsers.length >= 2) {
+        alert("A user hacker has published 💀💀")
         return
       }
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
