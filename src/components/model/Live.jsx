@@ -34,7 +34,8 @@ import Videoshowcontroller from "./VideoStreaming/Videoshowcontroller"
 import LiveTvIcon from "@material-ui/icons/LiveTv"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import useModalContext from "../../app/ModalContext"
-// /api/website/token-builder/create-stream-and-gen-token
+
+import { useWidth } from "../../app/Context"
 
 // Replace with your App ID.
 let token
@@ -67,15 +68,19 @@ const chatWindowOptions = {
   USERS: "users",
   TIP_MENU: "TIP_MENU",
 }
+
+// Fullescreen when clicked
+
 let streamId
 let goneLiveOnce /* only when gone live once the stream rooms will be created, before that no room exists */
 function Live() {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
-  const updateCtx = useAuthUpdateContext()
-  const modalCtx = useModalContext()
-  const [fullScreen, setFullScreen] = useState(false)
-  const [value, setValue] = React.useState(30)
+  // const updateCtx = useAuthUpdateContext()
+  // const modalCtx = useModalContext()
+  // const [fullScreen, setFullScreen] = useState(false)
+  // const [value, setValue] = React.useState(30)
+  let screenWidth = useWidth()
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [pendingCallRequest, setPendingCallRequest] = useState({
     pending: false,
@@ -86,9 +91,21 @@ function Live() {
   const container = useRef()
   const chatInputRef = useRef()
   const chatBoxContainer = useRef()
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue)
+  const videoPlayerFullScreen = (e) => {
+    let orientation = screen.orientation
+    if (screenWidth < 768) {
+      // alert("clicked")
+      console.log(orientation)
+      orientation.unlock()
+      // screen.orientation.angle = 90
+      // screen.orientation.angle(90)
+      screen.orientation.lock("landscape-primary")
+      // document.getElementById("live_videoPlayer").requestFullscreen()
+      console.log(orientation)
+    } else {
+      document.getElementById("live_videoPlayer").requestFullscreen()
+    }
+    //  alert("clecked")
   }
 
   const scrollOnChat = useCallback(() => {
@@ -339,6 +356,8 @@ function Live() {
         >
           <div
             className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2 tw-relative"
+            id="live_videoPlayer"
+            onClick={() => videoPlayerFullScreen()}
             ref={container}
           >
             <VideoPlayer

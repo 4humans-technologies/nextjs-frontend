@@ -24,6 +24,17 @@ function SecondHeader() {
 
   let screenWidth = useWidth()
 
+  const scrollDown = () => {
+    if (typeof window == "undefined") {
+    } else {
+      if (screenWidth > 768) {
+        window.scroll(0, 600)
+      } else {
+        window.scroll(0, 1000)
+      }
+    }
+  }
+
   return (
     <div>
       <div className="tw-flex tw-text-white tw-bg-first-color tw-pt-6  md:tw-pt-2  tw-text-lg tw-top-14 md:tw-top-20  tw-left-0 tw-right-0  tw-z-[400] md:tw-justify-between tw-items-center  tw-fixed">
@@ -46,17 +57,30 @@ function SecondHeader() {
                   isStream ? (
                     <div className="tw-grid tw-grid-cols-8 tw-w-full tw-gap-x-2">
                       <div className=" tw-col-span-7 tw-flex tw-justify-around">
-                        <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                        <div
+                          className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2"
+                          onClick={scrollDown}
+                        >
                           Name
                         </div>
-                        <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer">
+                        <div
+                          className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"
+                          onClick={scrollDown}
+                        >
                           Profile
                         </div>
-                        <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                        <div
+                          className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2"
+                          onClick={scrollDown}
+                        >
                           Image
                         </div>
-                        <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
-                          Videos
+                        <div
+                          className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2"
+                          onClick={scrollDown}
+                        >
+                          {/* Videos */}
+                          {screenWidth}
                         </div>
                       </div>
                       <div className=" tw-col-span-1 tw-flex tw-items-center">
@@ -81,7 +105,8 @@ function SecondHeader() {
                           Guys
                         </div>
                         <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
-                          Trans
+                          {/* Trans */}
+                          {screenWidth}
                         </div>
                       </div>
                       <div className=" tw-col-span-1 tw-flex tw-items-center">
@@ -100,19 +125,28 @@ function SecondHeader() {
           : [
               isStream ? (
                 <div className="tw-flex tw-my-auto">
-                  <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">
+                  <div className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer">
                     Name
                   </div>
-                  <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">
+                  <div
+                    className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"
+                    onClick={scrollDown}
+                  >
                     Profile
                   </div>
-                  <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">
+                  <div
+                    className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer "
+                    onClick={scrollDown}
+                  >
                     Image
                   </div>
-                  <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">
+                  <div
+                    className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"
+                    onClick={scrollDown}
+                  >
                     Videos
                   </div>
-                  <div className="tw-px-4 hover:tw-bg-first-color tw-py-2">
+                  <div className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer">
                     {screenWidth}
                   </div>
                 </div>
