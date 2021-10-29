@@ -151,6 +151,7 @@ function ViewerScreen(props) {
             return
           }
           setCallOnGoing(false)
+          setPendingCallRequest(false)
           const socketRooms =
             JSON.parse(sessionStorage.getItem("socket-rooms")) || []
           sessionStorage.setItem(
@@ -371,7 +372,11 @@ function ViewerScreen(props) {
 
   return (
     // 82 vh has no signifcate impact
-    <div className="tw-absolute tw-top-0 tw-bottom-0 tw-w-full" ref={container}>
+    /* the left part of the screen 👇👇 */
+    <div
+      className="tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10"
+      ref={container}
+    >
       {remoteUsers.length &&
         [remoteUsers[0]].map((user) => {
           return (
@@ -380,7 +385,7 @@ function ViewerScreen(props) {
                 "tw-min-h-full tw-w-full tw-relative tw-bg-green-color" +
                 (callOnGoing
                   ? " tw-z-[300] tw-pointer-events-none"
-                  : " tw-z-[10] tw-pointer-events-none")
+                  : " tw-z-[20] tw-pointer-events-none")
               }
             >
               <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0">
@@ -388,8 +393,8 @@ function ViewerScreen(props) {
                   className={
                     "tw-min-h-full tw-relative tw-min-w-[100vw] md:tw-min-w-[50vw]" +
                     (callOnGoing
-                      ? " tw-z-[300] tw-pointer-events-none"
-                      : " tw-z-[10] tw-pointer-events-none")
+                      ? " tw-z-[310] tw-pointer-events-none"
+                      : " tw-z-[20] tw-pointer-events-none")
                   }
                 >
                   <VideoPlayer
@@ -401,7 +406,7 @@ function ViewerScreen(props) {
                   {callOnGoing && (
                     /* controls layer */
                     <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-grid tw-place-items-center tw-z-[390]">
-                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[390] tw-backdrop-blur">
+                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[391] tw-backdrop-blur">
                         <p className="tw-text-center text-white">
                           {callDuration}
                         </p>
@@ -422,20 +427,20 @@ function ViewerScreen(props) {
                         </div>
                       )}
                       {/* <div className="tw-absolute tw-bottom-0 tw-h-6 tw-bg-dark-black tw-left-0 tw-right-0 tw-z-0"></div> */}
-                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
-                        <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-4 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[391] tw-backdrop-blur">
+                        <button className="tw-inline-block tw-mx-2 tw-z-[390] tw-relative">
                           <VolumeUpIcon
                             fontSize="medium"
                             style={{ color: "white" }}
                           />
                         </button>
-                        <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+                        <button className="tw-inline-block tw-mx-2 tw-z-[390] tw-relative">
                           <CallEndIcon
                             fontSize="medium"
                             style={{ color: "red" }}
                           />
                         </button>
-                        <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+                        <button className="tw-inline-block tw-mx-2 tw-z-[390] tw-relative">
                           <MicOffIcon
                             fontSize="medium"
                             style={{ color: "white" }}

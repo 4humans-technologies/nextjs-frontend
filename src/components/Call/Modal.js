@@ -12,12 +12,12 @@ function ContentModal(props) {
       right: "auto",
       bottom: "auto",
       transform: "translate(-50%, -50%)",
-      // width: "90%",    // width has been reduced to make the modal looks good
+      width: "90%",    // width has been reduced to make the modal looks good
       backgroundColor: "#232323",
       borderWidth: 0,
       borderRadius: 4,
       overflowY: "auto",
-      // maxHeight: "92vh",    //Height has also been changed to make good
+      maxHeight: "92vh",    //Height has also been changed to make good
       paddingTop: "2rem",
       paddingBottom: "2rem",
     },

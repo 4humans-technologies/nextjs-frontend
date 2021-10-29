@@ -34,6 +34,10 @@ import Videoshowcontroller from "./VideoStreaming/Videoshowcontroller"
 import LiveTvIcon from "@material-ui/icons/LiveTv"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import useModalContext from "../../app/ModalContext"
+import CallEndIcon from "@material-ui/icons/CallEnd"
+import MicOffIcon from "@material-ui/icons/MicOff"
+import FullscreenIcon from "@material-ui/icons/Fullscreen"
+import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 // /api/website/token-builder/create-stream-and-gen-token
 
 // Replace with your App ID.
@@ -64,33 +68,42 @@ const chatWindowOptions = {
   USERS: "users",
   TIP_MENU: "TIP_MENU",
 }
-let streamId
 let goneLiveOnce /* only when gone live once the stream rooms will be created, before that no room exists */
 const streamTimer = {
   value: 0,
   ref: null,
 }
 
+const pendingCallInitialData = {
+  pending: true,
+  callType: "videoCall",
+  data: {
+    relatedUserId: null,
+  },
+}
+
 function Live() {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
-  const updateCtx = useAuthUpdateContext()
-  const modalCtx = useModalContext()
   const [fullScreen, setFullScreen] = useState(false)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [pendingCallRequest, setPendingCallRequest] = useState({
     pending: false,
-    callType: null,
+    callType: "videoCall",
+    data: {
+      relatedUserId: null,
+    },
   })
-
-  /*  */
   const [callOnGoing, setCallOnGoing] = useState(false)
+  const [callType, setCallType] = useState("videoCall")
 
   /* Ref's */
   const container = useRef()
   const chatInputRef = useRef()
   const chatBoxContainer = useRef()
   const timerTextBox = useRef()
+  const requestServerEndAndStreamLeaveRef = useRef()
+  const leaveAndCloseTracksRef = useRef
 
   const {
     localAudioTrack,
@@ -103,6 +116,10 @@ function Live() {
     leaveAndCloseTracks,
   } = useAgora(client, "host", callType)
 
+  const toggleFullscreen = useCallback(() => {
+    /* fullscreen logic */
+  }, [fullScreen])
+
   const scrollOnChat = useCallback(() => {
     chatBoxContainer.current.scrollBy({
       top: 400,
@@ -112,7 +129,7 @@ function Live() {
 
   const startStreamTimer = useCallback(() => {
     /* timer ⏰⏰ */
-    alert("starting timer....")
+    // alert("starting timer....")
     streamTimer.ref = setInterval(() => {
       const totalSeconds = ++streamTimer.value
       let newTime
@@ -122,38 +139,18 @@ function Live() {
         newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
       }
       timerTextBox.current.innerText = newTime
-      console.log(newTime)
     }, [1000])
   }, [timerTextBox])
 
-  const requestServerStreamEnd = useCallback(
-    (keepAlive) => {
-      if (!joinState) {
-        return
-      }
-      alert("will end stream now")
-      fetch("/api/website/stream/handle-stream-end", {
-        method: "POST",
-        cors: "include",
-        keepalive: keepAlive ? true : true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          streamId: streamId,
-          reason: "Manual",
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          alert(data.message)
-        })
-        .catch((err) =>
-          alert("Stream was not ended successfully!" + err.message)
-        )
-    },
-    [streamId, joinState]
-  )
+  useEffect(() => {
+    /* clear the rtcToken onetime on first mount only */
+    localStorage.removeItem("rtcToken")
+    localStorage.removeItem("rtcTokenExpireIn")
+    return () => {
+      localStorage.removeItem("rtcToken")
+      localStorage.removeItem("rtcTokenExpireIn")
+    }
+  }, [])
 
   /* Will Not Go Live When The Component Mounts */
   const startStreamingAndGoLive = useCallback(() => {
@@ -180,11 +177,12 @@ function Live() {
           })
           .then((data) => {
             //debugger
+            sessionStorage.setItem("liveNow", "true")
             token = data.rtcToken
             rtcTokenExpireIn = data.privilegeExpiredTs
             localStorage.setItem("rtcToken", data.rtcToken)
             localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
-            streamId = data.streamId
+            sessionStorage.setItem("streamId", data.streamId)
             return join(ctx.relatedUserId, token, ctx.relatedUserId)
           })
           .then((_result) => {
@@ -200,7 +198,8 @@ function Live() {
         })
         .then((data) => {
           //debugger
-          streamId = data.streamId
+          sessionStorage.setItem("liveNow", "true")
+          sessionStorage.setItem("streamId", data.streamId)
           join(
             ctx.relatedUserId,
             localStorage.getItem("rtcToken"),
@@ -214,56 +213,102 @@ function Live() {
     ctx.user.userType,
     ctx.relatedUserId,
     ctx.loadedFromLocalStorage,
-    streamId,
     goneLiveOnce,
   ])
 
   useEffect(() => {
-    /* clear the rtcToken onetime on first mount only */
-    localStorage.removeItem("rtcToken")
-    localStorage.removeItem("rtcTokenExpireIn")
+    if (joinState) {
+      if (!callOnGoing) {
+        startStreamTimer()
+        return () => {
+          clearInterval(streamTimer.ref)
+          streamTimer.value = 0
+          streamTimer.ref = null
+        }
+      }
+    }
+  }, [streamTimer, joinState, callOnGoing])
+
+  const onUnMountEndStream = useCallback(() => {
+    fetch("/api/website/stream/handle-stream-end", {
+      method: "POST",
+      cors: "include",
+      keepalive: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        streamId: sessionStorage.getItem("streamId"),
+        reason: "Manual",
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message)
+        sessionStorage.setItem("liveNow", "false")
+        leaveAndCloseTracks()
+      })
+      .catch((err) =>
+        alert("Stream was not ended successfully! " + err.message)
+      )
+  }, [])
+
+  const requestServerEndAndStreamLeave = useCallback((joinStatus = true) => {
+    if (!joinStatus) {
+      return
+    }
+    if (sessionStorage.getItem("liveNow") === "false") {
+      return
+    }
+    alert("will end stream now")
+    fetch("/api/website/stream/handle-stream-end", {
+      method: "POST",
+      cors: "include",
+      keepalive: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        streamId: sessionStorage.getItem("streamId"),
+        reason: "Manual",
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message)
+        sessionStorage.setItem("liveNow", "false")
+        sessionStorage.removeItem("streamId")
+        setCallOnGoing(false)
+        // leaveAndCloseTracks()
+      })
+      .catch((err) =>
+        alert("Stream was not ended successfully! " + err.message)
+      )
   }, [])
 
   useEffect(() => {
-    return () => {
-      if (joinState) {
-        leaveAndCloseTracks()
-        requestServerStreamEnd()
-      }
-    }
-  }, [joinState, leaveAndCloseTracks])
+    requestServerEndAndStreamLeaveRef.current = requestServerEndAndStreamLeave
+    leaveAndCloseTracksRef.current = leaveAndCloseTracks
+  }, [requestServerEndAndStreamLeave, leaveAndCloseTracks])
 
   useEffect(() => {
-    if (joinState) {
-      startStreamTimer()
-      return () => {
-        clearInterval(streamTimer.ref)
-        streamTimer.value = 0
-        streamTimer.ref = null
-      }
+    return () => {
+      // leaveAndCloseTracks()
+      // onUnMountEndStream()
+      requestServerEndAndStreamLeaveRef.current()
+      leaveAndCloseTracksRef.current()
     }
-  }, [streamTimer, joinState])
-
-  const endStream = useCallback(
-    (keepAlive = false) => {
-      leaveAndCloseTracks()
-      // requestServerStreamEnd(keepAlive)
-    },
-    [leaveAndCloseTracks]
-  )
-
-  const endStreamOnWindowReload = useCallback(
-    (_e) => {
-      alert("unloading")
-      endStream(true)
-    },
-    [endStream]
-  )
+  }, [])
 
   /* add eventListener for window reload */
   useEffect(() => {
-    window.addEventListener("beforeunload", endStreamOnWindowReload)
-  }, [endStreamOnWindowReload])
+    window.addEventListener("beforeunload", () => {
+      // leaveAndCloseTracks()
+      // onUnMountEndStream()
+      requestServerEndAndStreamLeaveRef.current()
+      leaveAndCloseTracksRef.current()
+    })
+  }, [])
 
   const sendChatMessage = () => {
     //debugger
@@ -337,7 +382,7 @@ function Live() {
           response: response,
           relatedUserId: relatedUserId,
           callType: callType,
-          room: `${streamId}-public`,
+          room: `${sessionStorage.getItem("streamId")}-public`,
         })
         setPendingCallRequest({
           pending: false,
@@ -355,7 +400,7 @@ function Live() {
               callType: callType,
               relatedUserId: relatedUserId /* viewer */,
             },
-            streamId: streamId,
+            streamId: sessionStorage.getItem("streamId"),
           }),
         })
           .then((res) => res.json())
@@ -370,7 +415,7 @@ function Live() {
           .catch((err) => alert(err.message))
       }
     },
-    [streamId]
+    []
   )
 
   useEffect(() => {
@@ -444,36 +489,45 @@ function Live() {
               </div>
             )}
 
-            {/* if streaming */}
-            {!callOnGoing && (
+            {/* if streaming, model's preview */}
+            {!callOnGoing && !remoteUsers[0] ? (
               <VideoPlayer
                 videoTrack={localVideoTrack}
                 audioTrack={localAudioTrack}
                 playAudio={false}
               />
-            )}
+            ) : null}
 
             {/* on call | viewer image */}
-            {callOnGoing && (
+            {callOnGoing && callType === "videoCall" && remoteUsers[0] ? (
               <VideoPlayer
-                videoTrack={remoteUsers[0].videoTrack}
+                videoTrack={
+                  callType === "videoCall" ? remoteUsers[0].videoTrack : null
+                }
                 audioTrack={remoteUsers[0].audioTrack}
                 playAudio={true}
               />
-            )}
+            ) : null}
 
             {/* on call | model's image */}
-            {callOnGoing && (
-              <VideoPlayer
-                videoTrack={localVideoTrack.videoTrack}
-                audioTrack={localVideoTrack.audioTrack}
-                playAudio={false}
-              />
-            )}
+            {callOnGoing && callType === "videoCall" ? (
+              <div
+                id="self-video-container"
+                className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"
+              >
+                <div id="self-video" class="tw-relative tw-w-full tw-h-full">
+                  <VideoPlayer
+                    videoTrack={localVideoTrack}
+                    audioTrack={localAudioTrack}
+                    playAudio={false}
+                  />
+                </div>
+              </div>
+            ) : null}
 
             {/* call controls */}
             {callOnGoing && (
-              <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
+              <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
                 <button className="tw-inline-block tw-mx-2 tw-z-[390]">
                   <VolumeUpIcon fontSize="medium" style={{ color: "white" }} />
                 </button>
@@ -482,6 +536,22 @@ function Live() {
                 </button>
                 <button className="tw-inline-block tw-mx-2 tw-z-[390]">
                   <MicOffIcon fontSize="medium" style={{ color: "white" }} />
+                </button>
+                <button
+                  className="tw-inline-block tw-mx-2 tw-z-[390]"
+                  onClick={toggleFullscreen}
+                >
+                  {fullScreen ? (
+                    <FullscreenExitIcon
+                      fontSize="medium"
+                      style={{ color: "white" }}
+                    />
+                  ) : (
+                    <FullscreenIcon
+                      fontSize="medium"
+                      style={{ color: "white" }}
+                    />
+                  )}
                 </button>
               </div>
             )}
@@ -503,7 +573,10 @@ function Live() {
                     <Button
                       className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
                       variant="danger"
-                      onClick={endStream}
+                      onClick={() => {
+                        requestServerEndAndStreamLeave(joinState)
+                        leaveAndCloseTracks()
+                      }}
                     >
                       <LiveTvIcon fontSize="small" />
                       <span className="tw-pl-1 tw-tracking-tight">

@@ -122,6 +122,8 @@ function useAgora(client, role, callType) {
     const cameraTrack = await AgoraRTC.createCameraVideoTrack()
     setLocalAudioTrack(microphoneTrack)
     setLocalVideoTrack(cameraTrack)
+    await client.publish([microphoneTrack, cameraTrack])
+    return setJoinState(true)
     // cameraTrack.play(selfFeedRef)
     // domIds.forEach((domId) => {
     //   cameraTrack.play(domId)
@@ -156,7 +158,9 @@ function useAgora(client, role, callType) {
 
     const handleUsrJoined = async function (user) {
       if (streamOnGoing && remoteUsers.length >= 2) {
-        alert("A user hacker has published 💀💀")
+        alert(
+          "A user hacker has published 💀💀, please contact the admin otherwise all your money can be lost... fast."
+        )
         return
       }
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
