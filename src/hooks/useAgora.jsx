@@ -1,31 +1,37 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import AgoraRTC from "agora-rtc-sdk-ng"
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"
 function useAgora(client, role, callType) {
-  console.log("running useAgora!")
+  // console.log("running useAgora!")
   const [localVideoTrack, setLocalVideoTrack] = useState(null)
   const [localAudioTrack, setLocalAudioTrack] = useState(null)
   const [joinState, setJoinState] = useState(false)
   const [remoteUsers, setRemoteUsers] = useState([])
-  const [vol, setVol] = useState(100)
-  const [currentSetup, setCurrentSetup] = useState("stream") /* stream | call */
+  const [streamOnGoing, setStreamOnGoing] = useState(true)
 
   async function createLocalTracks() {
     const tracks = []
     if (role === "host") {
       if (callType === "audioCall") {
+        if (localAudioTrack) {
+          return
+        }
         const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
         tracks.push(microphoneTrack)
         setLocalAudioTrack(microphoneTrack)
       }
       if (callType === "videoCall") {
-        const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
-        const cameraTrack = await AgoraRTC.createCameraVideoTrack()
-        tracks.push(microphoneTrack)
-        tracks.push(cameraTrack)
-        setLocalAudioTrack(microphoneTrack)
-        setLocalVideoTrack(cameraTrack)
+        if (!localAudioTrack) {
+          const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+          tracks.push(microphoneTrack)
+          setLocalAudioTrack(microphoneTrack)
+        }
+        if (!localVideoTrack) {
+          const cameraTrack = await AgoraRTC.createCameraVideoTrack()
+          tracks.push(cameraTrack)
+          setLocalVideoTrack(cameraTrack)
+        }
       }
       return tracks
     }
@@ -56,28 +62,25 @@ function useAgora(client, role, callType) {
     await client.join(appId, channel, token, uid)
   }
 
-  async function startLocalCameraPreview() {
-    //debugger
+  const startLocalCameraPreview = useCallback(async () => {
     if (!client) {
       return
     }
     if (role === "host") {
-      if (!localAudioTrack || !localVideoTrack) {
-        let track = await createLocalTracks()
-        return track
-      }
+      let track = await createLocalTracks()
+      return track
     }
-  }
+  }, [])
 
   async function changeClientRole(role) {
     await client.setClientRole(role)
   }
 
-  async function leave() {
+  const leave = useCallback(async () => {
     await client?.leave()
     setRemoteUsers([])
     setJoinState(false)
-  }
+  }, [client])
 
   async function leaveDueToPrivateCall(username) {
     alert(
@@ -90,7 +93,10 @@ function useAgora(client, role, callType) {
     setJoinState(false)
   }
 
-  async function leaveAndCloseTracks() {
+  const leaveAndCloseTracks = useCallback(async () => {
+    if (client.connectionState) {
+      await client?.leave()
+    }
     if (localAudioTrack) {
       localAudioTrack.stop()
       localAudioTrack.close()
@@ -100,7 +106,10 @@ function useAgora(client, role, callType) {
       localVideoTrack.stop()
       localVideoTrack.close()
     }
-  }
+
+    setRemoteUsers([])
+    setJoinState(false)
+  }, [localAudioTrack, localVideoTrack, client])
 
   const renewRtcToken = async function () {
     /* do a fetch request to renew token */
@@ -146,8 +155,8 @@ function useAgora(client, role, callType) {
     }
 
     const handleUsrJoined = async function (user) {
-      if (currentSetup === "call" && remoteUsers.length >= 2) {
-        alert("A user tried to publish")
+      if (streamOnGoing && remoteUsers.length >= 2) {
+        alert("A user hacker has published 💀💀")
         return
       }
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))

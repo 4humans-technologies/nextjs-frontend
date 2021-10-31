@@ -22,11 +22,11 @@ function Login() {
   const ctx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
 
-  if (typeof window !== "undefined" && ctx.isLoggedIn) {
-    const reloadUrl = `${window.location.protocol}//${window.location.host}${ctx.loginSuccessUrl}`
-    window.location.href = reloadUrl
-    return <></>
-  }
+  // if (typeof window !== "undefined" && ctx.isLoggedIn) {
+  //   const reloadUrl = `${window.location.protocol}//${window.location.host}${ctx.loginSuccessUrl}`
+  //   window.location.href = reloadUrl
+  //   return <></>
+  // }
 
   const handleSubmit = (e) => {
     e.preventDefault()

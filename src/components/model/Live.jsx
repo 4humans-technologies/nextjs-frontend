@@ -55,13 +55,10 @@ const createAgoraClient = (extraOptions) => {
   client = AgoraRTC.createClient(clientOptions)
   client.setClientRole("host")
 }
+
 /* Init Client */
 createAgoraClient()
 
-// Slide to show the things
-function valuetext(value) {
-  return `${value}°C`
-}
 const chatWindowOptions = {
   PRIVATE: "private",
   PUBLIC: "public",
@@ -73,6 +70,11 @@ const chatWindowOptions = {
 
 let streamId
 let goneLiveOnce /* only when gone live once the stream rooms will be created, before that no room exists */
+const streamTimer = {
+  value: 0,
+  ref: null,
+}
+
 function Live() {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
@@ -81,16 +83,23 @@ function Live() {
   // const [fullScreen, setFullScreen] = useState(false)
   // const [value, setValue] = React.useState(30)
   let screenWidth = useWidth()
+  const updateCtx = useAuthUpdateContext()
+  const modalCtx = useModalContext()
+  const [fullScreen, setFullScreen] = useState(false)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [pendingCallRequest, setPendingCallRequest] = useState({
     pending: false,
     callType: null,
   })
 
+  /*  */
+  const [callOnGoing, setCallOnGoing] = useState(false)
+
   /* Ref's */
   const container = useRef()
   const chatInputRef = useRef()
   const chatBoxContainer = useRef()
+  const timerTextBox = useRef()
   const videoPlayerFullScreen = (e) => {
     let orientation = screen.orientation
     if (screenWidth < 768) {
@@ -108,13 +117,6 @@ function Live() {
     //  alert("clecked")
   }
 
-  const scrollOnChat = useCallback(() => {
-    chatBoxContainer.current.scrollBy({
-      top: 400,
-      behavior: "smooth",
-    })
-  }, [chatBoxContainer.current])
-
   const {
     localAudioTrack,
     localVideoTrack,
@@ -126,39 +128,60 @@ function Live() {
     leaveAndCloseTracks,
   } = useAgora(client, "host", callType)
 
-  const requestStreamEnd = () => {
-    fetch("/api/website/stream/handle-stream-end", {
-      method: "POST",
-      cors: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        streamId: streamId,
-        reason: "Manual",
-      }),
+  const scrollOnChat = useCallback(() => {
+    chatBoxContainer.current.scrollBy({
+      top: 400,
+      behavior: "smooth",
     })
-      .then((res) => res.json())
-      .then((data) => {
-        alert(data.message)
-      })
-      .catch((err) => alert("Stream was not ended successfully!"))
-  }
+  }, [chatBoxContainer])
 
-  useEffect(() => {
-    startLocalCameraPreview()
-    localStorage.removeItem("rtcToken")
-    localStorage.removeItem("rtcTokenExpireIn")
-    return () => {
-      //debugger
-      requestStreamEnd()
-      leaveAndCloseTracks()
-    }
-  }, [])
+  const startStreamTimer = useCallback(() => {
+    /* timer ⏰⏰ */
+    alert("starting timer....")
+    streamTimer.ref = setInterval(() => {
+      const totalSeconds = ++streamTimer.value
+      let newTime
+      if (totalSeconds < 3600) {
+        newTime = new Date(totalSeconds * 1000).toISOString().substr(14, 5)
+      } else {
+        newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
+      }
+      timerTextBox.current.innerText = newTime
+      console.log(newTime)
+    }, [1000])
+  }, [timerTextBox])
+
+  const requestServerStreamEnd = useCallback(
+    (keepAlive) => {
+      if (!joinState) {
+        return
+      }
+      alert("will end stream now")
+      fetch("/api/website/stream/handle-stream-end", {
+        method: "POST",
+        cors: "include",
+        keepalive: keepAlive ? true : true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          streamId: streamId,
+          reason: "Manual",
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert(data.message)
+        })
+        .catch((err) =>
+          alert("Stream was not ended successfully!" + err.message)
+        )
+    },
+    [streamId, joinState]
+  )
 
   /* Will Not Go Live When The Component Mounts */
-  const startStreamingAndGoLive = () => {
-    //debugger
+  const startStreamingAndGoLive = useCallback(() => {
     if (!goneLiveOnce) {
       goneLiveOnce = true
     }
@@ -211,7 +234,61 @@ function Live() {
         })
         .catch((error) => console.log(error))
     }
-  }
+  }, [
+    ctx.isLoggedIn,
+    ctx.user.userType,
+    ctx.relatedUserId,
+    ctx.loadedFromLocalStorage,
+    streamId,
+    goneLiveOnce,
+  ])
+
+  useEffect(() => {
+    /* clear the rtcToken onetime on first mount only */
+    localStorage.removeItem("rtcToken")
+    localStorage.removeItem("rtcTokenExpireIn")
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (joinState) {
+        leaveAndCloseTracks()
+        requestServerStreamEnd()
+      }
+    }
+  }, [joinState, leaveAndCloseTracks])
+
+  useEffect(() => {
+    if (joinState) {
+      startStreamTimer()
+      return () => {
+        clearInterval(streamTimer.ref)
+        streamTimer.value = 0
+        streamTimer.ref = null
+      }
+    }
+  }, [streamTimer, joinState])
+
+  const endStream = useCallback(
+    (keepAlive = false) => {
+      leaveAndCloseTracks()
+      // requestServerStreamEnd(keepAlive)
+    },
+    [leaveAndCloseTracks]
+  )
+
+  const endStreamOnWindowReload = useCallback(
+    (_e) => {
+      alert("unloading")
+      endStream(true)
+    },
+    [endStream]
+  )
+
+  /* add eventListener for window reload */
+  useEffect(() => {
+    window.addEventListener("beforeunload", endStreamOnWindowReload)
+  }, [endStreamOnWindowReload])
 
   const sendChatMessage = () => {
     //debugger
@@ -261,12 +338,6 @@ function Live() {
     }
   }
 
-  const endStream = async () => {
-    //debugger
-    await leave()
-    requestStreamEnd()
-  }
-
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.keyCode === 13) {
@@ -279,20 +350,53 @@ function Live() {
     }
   }, [sendChatMessage])
 
-  const handleModelResponse = (response, relatedUserId, callType) => {
-    /* can set encryption config */
-    debugger
-    io.getSocket().emit("model-call-request-response-emitted", {
-      response: response,
-      relatedUserId: relatedUserId,
-      callType: callType,
-      room: `${streamId}-public`,
-    })
-    setPendingCallRequest({
-      pending: false,
-      callType: null,
-    })
-  }
+  const handleModelResponse = useCallback(
+    (response, relatedUserId, callType) => {
+      /* can set encryption config */
+      debugger
+      if (response === "rejected") {
+        /* 
+          if call rejected then directly emit
+        */
+        io.getSocket().emit("model-call-request-response-emitted", {
+          response: response,
+          relatedUserId: relatedUserId,
+          callType: callType,
+          room: `${streamId}-public`,
+        })
+        setPendingCallRequest({
+          pending: false,
+          callType: null,
+        })
+      } else {
+        fetch("/api/website/stream/accepted-call-request", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            socketData: {
+              response: response /* RESPONSE will be accepted is reach here */,
+              callType: callType,
+              relatedUserId: relatedUserId /* viewer */,
+            },
+            streamId: streamId,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            // data.callStartTs
+            setPendingCallRequest({
+              pending: false,
+              callType: null,
+            })
+            setCallOnGoing(true)
+          })
+          .catch((err) => alert(err.message))
+      }
+    },
+    [streamId]
+  )
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
@@ -300,7 +404,7 @@ function Live() {
       const socket = io.getSocket()
       if (!socket.hasListeners("viewer-requested-for-call-received")) {
         socket.on("viewer-requested-for-call-received", (data) => {
-          debugger
+          alert("call request received from viewer!")
           setPendingCallRequest({
             callType: data.callType,
             pending: true,
@@ -357,64 +461,100 @@ function Live() {
           <div
             className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2 tw-relative"
             id="live_videoPlayer"
-            onClick={() => videoPlayerFullScreen()}
+            // onClick={() => videoPlayerFullScreen()}
             ref={container}
           >
-            <VideoPlayer
-              videoTrack={localVideoTrack}
-              audioTrack={localAudioTrack}
-              uid={ctx.relatedUserId}
-              playAudio={false}
-            />
-            {/* <div className="tw-w-32 tw-absolute tw-z-20 tw-flex tw-mt-[-32px] ">
-              <VolumeUpIcon className="tw-text-white" fontSize="large" />
-              <Slider
-                defaultValue={30}
-                getAriaValueText={valuetext}
-                aria-labelledby="discrete-slider"
-                valueLabelDisplay="auto"
-                step={10}
-                marks
-                min={10}
-                max={200}
-                onChange={handleChange}
-                className="tw-self-center tw-ml-2"
-              />
-            </div> */}
-
-            <div className="tw-absolute tw-w-full tw-bottom-0">
-              <div className="tw-flex tw-justify-between tw-items-center tw-py-2 tw-px-4 tw-z-[300] tw-bg-[rgba(29,26,26,0.62)]">
-                {!joinState ? (
-                  <Button
-                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
-                    variant="success"
-                    onClick={startStreamingAndGoLive}
-                  >
-                    <LiveTvIcon fontSize="small" />
-                    <span className="tw-pl-1 tw-tracking-tight">Go Live</span>
-                  </Button>
-                ) : (
-                  <Button
-                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
-                    variant="danger"
-                    onClick={endStream}
-                  >
-                    <LiveTvIcon fontSize="small" />
-                    <span className="tw-pl-1 tw-tracking-tight">
-                      End Streaming
-                    </span>
-                  </Button>
-                )}
-                <Button
-                  className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110] tw-capitalize"
-                  variant={joinState ? "success" : "danger"}
-                >
-                  <span className="tw-pl-1 tw-tracking-tight">{`${
-                    joinState ? "you are live" : "you're not live"
-                  }`}</span>
-                </Button>
+            {/* on call timer */}
+            {callOnGoing && (
+              <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[390] tw-backdrop-blur">
+                <p className="tw-text-center text-white">04:15</p>
               </div>
-            </div>
+            )}
+
+            {/* if streaming */}
+            {!callOnGoing && (
+              <VideoPlayer
+                videoTrack={localVideoTrack}
+                audioTrack={localAudioTrack}
+                playAudio={false}
+              />
+            )}
+
+            {/* on call | viewer image */}
+            {callOnGoing && (
+              <VideoPlayer
+                videoTrack={remoteUsers[0].videoTrack}
+                audioTrack={remoteUsers[0].audioTrack}
+                playAudio={true}
+              />
+            )}
+
+            {/* on call | model's image */}
+            {callOnGoing && (
+              <VideoPlayer
+                videoTrack={localVideoTrack.videoTrack}
+                audioTrack={localVideoTrack.audioTrack}
+                playAudio={false}
+              />
+            )}
+
+            {/* call controls */}
+            {callOnGoing && (
+              <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-1 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
+                <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+                  <VolumeUpIcon fontSize="medium" style={{ color: "white" }} />
+                </button>
+                <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+                  <CallEndIcon fontSize="medium" style={{ color: "red" }} />
+                </button>
+                <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+                  <MicOffIcon fontSize="medium" style={{ color: "white" }} />
+                </button>
+              </div>
+            )}
+
+            {/* on stream controls */}
+            {!callOnGoing && (
+              <div className="tw-absolute tw-w-full tw-bottom-0">
+                <div className="tw-flex tw-justify-between tw-items-center tw-py-2 tw-px-4 tw-z-[300] tw-bg-[rgba(29,26,26,0.62)]">
+                  {!joinState ? (
+                    <Button
+                      className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
+                      variant="success"
+                      onClick={startStreamingAndGoLive}
+                    >
+                      <LiveTvIcon fontSize="small" />
+                      <span className="tw-pl-1 tw-tracking-tight">Go Live</span>
+                    </Button>
+                  ) : (
+                    <Button
+                      className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
+                      variant="danger"
+                      onClick={endStream}
+                    >
+                      <LiveTvIcon fontSize="small" />
+                      <span className="tw-pl-1 tw-tracking-tight">
+                        End Streaming
+                      </span>
+                    </Button>
+                  )}
+                  {joinState && (
+                    <p
+                      ref={timerTextBox}
+                      className="tw-px-3 tw-py-1.5 tw-rounded tw-font-semibold tw-bg-[rgba(20,20,20,0.75)] tw-text-white-color"
+                    ></p>
+                  )}
+                  <Button
+                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110] tw-capitalize"
+                    variant={joinState ? "success" : "danger"}
+                  >
+                    <span className="tw-pl-1 tw-tracking-tight">{`${
+                      joinState ? "you are live" : "you're not live"
+                    }`}</span>
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* chat site | ex right side */}

@@ -73,6 +73,17 @@ function CoinSuperChat(props) {
   )
 }
 
+function CallRequestChat(props) {
+  return (
+    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 gift-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
+      <span className="tw-font-semibold tw-px-1 py-1 tw-rounded tw-bg-second-color">
+        @{props.username}
+      </span>
+      Requested {props.callType}
+    </div>
+  )
+}
+
 const initialMessages = [
   {
     type: "normal-public-message",
@@ -191,6 +202,26 @@ function PublicChatBox(props) {
           // document.dispatchEvent(chatEvent)
         })
       }
+      
+      // if (!socket.hasListeners("viewer-requested-for-call-received")) {
+      //   socket.on("viewer-requested-for-call-received", (data) => {
+      //     setChatMessages((prevChats) => {
+      //       const newChats = [
+      //         ...prevChats,
+      //         {
+      //           type: "viewer-call-request",
+      //           index: chatIndex,
+      //           username: data.username,
+      //           walletCoins: data.walletCoins,
+      //           callType: data.callType,
+      //         },
+      //       ]
+      //       chatIndex++
+      //       return newChats
+      //     })
+      //     props.scrollOnChat()
+      //   })
+      // }
     }
   }, [ctx.socketSetupDone, io.getSocket()])
 
@@ -215,6 +246,9 @@ function PublicChatBox(props) {
         if (socket.hasListeners("viewer_super_message_pubic-received")) {
           socket.off("viewer_super_message_pubic-received")
         }
+        if (socket.hasListeners("viewer-requested-for-call-emitted")) {
+          socket.off("viewer-requested-for-call-emitted")
+        }
       }
     }
   }, [ctx.socketSetupDone, io.getSocket()])
@@ -231,7 +265,7 @@ function PublicChatBox(props) {
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
         const roomsToLeave = []
         socketRooms.forEach((room) => {
-          if (room.includes("-public") || room.includes("-private")) {
+          if (room.endsWith("-public") || room.endsWith("-private")) {
             roomsToLeave.push(room)
           }
         })
@@ -240,14 +274,15 @@ function PublicChatBox(props) {
           [...roomsToLeave],
           (response) => {
             if (response.status === "ok") {
+              /* 👇 actually no need for manual removal it will be left automatically */
               /* remove this room from session storage also */
 
-              sessionStorage.setItem(
-                "socket-rooms",
-                JSON.stringify(
-                  socketRooms.filter((room) => !roomsToLeave.includes(room))
-                )
-              )
+              // sessionStorage.setItem(
+              //   "socket-rooms",
+              //   JSON.stringify(
+              //     socketRooms.filter((room) => !roomsToLeave.includes(room))
+              //   )
+              // )
               authUpdateCtx.updateViewer({ streamRoom: null })
             }
           }
@@ -313,6 +348,14 @@ function PublicChatBox(props) {
                 amountGiven={chat.amountGiven}
                 walletCoins={chat.walletCoins}
                 showWallet={authCtx.user.userType === "Model"}
+              />
+            )
+          case "viewer-call-request":
+            return (
+              <CallRequestChat
+                index={chat.index}
+                username={chat.username}
+                callType={chat.callType}
               />
             )
           default:

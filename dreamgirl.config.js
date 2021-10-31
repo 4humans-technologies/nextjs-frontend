@@ -1,5 +1,6 @@
 // export const imageDomainURL = "https://5f88-103-238-106-157.ngrok.io"
 // export const imageDomainHost = "5f88-103-238-106-157.ngrok.io"
+
 // export const imageDomainURL = "http://localhost:8080"
 // export const imageDomainHost = "localhost"
 

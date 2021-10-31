@@ -18,6 +18,7 @@ import Videocall from "../model/VideoCall" // Replace with your App ID.
 import { FastForward } from "@material-ui/icons"
 import io from "../../socket/socket"
 import { useAuthContext } from "../../app/AuthContext"
+import { useSocketContext } from "../../app/socket/SocketContext"
 
 
 let token
@@ -26,6 +27,7 @@ function CallDetailsPopUp(props) {
   const router = useRouter()
   const { name, username, profileImage, rating, minCallDuration, audioCallCharges, videoCallCharges } = props
   const authCtx = useAuthContext()
+  const socketCtx = useSocketContext()
 
   const handleCallRequest = (callType) => {
     if (props.pendingCallRequest) {
@@ -33,11 +35,41 @@ function CallDetailsPopUp(props) {
       return
     }
     debugger
-    const socket = io.getSocket()
-    socket.emit("viewer-requested-for-call-emitted", { callType: callType, relatedUserId: authCtx.relatedUserId, modelId: window.location.pathname.split("/").reverse()[0] })
-    props.setPendingCallRequest(true)
-    props.setCallType(callType)
-    props.closeModal()
+    if (socketCtx.setSocketSetupDone) {
+      /* can either emit or do http request */
+      /* const socket = io.getSocket()
+      socket.emit("viewer-requested-for-call-emitted",
+        {
+          callType: callType,
+          relatedUserId: authCtx.relatedUserId,
+          modelId: window.location.pathname.split("/").reverse()[0],
+          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+          username: authCtx.user.user.username
+        }) */
+
+      /* do http request */
+      fetch("/api/website/stream/handle-viewer-call-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          callType: callType,
+          relatedUserId: authCtx.relatedUserId,
+          modelId: window.location.pathname.split("/").reverse()[0],
+          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+          username: authCtx.user.user.username,
+          streamId: sessionStorage.getItem("streamId")
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          props.setPendingCallRequest(true)
+          props.setCallType(callType)
+          props.closeModal()
+        })
+        .catch(err => alert("call request not sent"))
+    }
   }
 
   return (
