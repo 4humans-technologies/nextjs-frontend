@@ -10,17 +10,18 @@ function Tip() {
     for (let index = 0; index < allInputs.length; index += 2) {
       const action = allInputs[index].value
       const actionValue = allInputs[index + 1].value
-      actionArray.push({ [action]: actionValue })
+      actionArray.push({ action: action, price: actionValue })
     }
+    console.log(actionArray)
 
-    fetch("url", {
+    fetch("/api/website/profile/update-model-tipmenu-actions", {
       method: "POST",
       headers: {
-        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Content-type": "application/json",
       },
-      body: {
-        tipMenu: actionArray,
-      },
+      body: JSON.stringify({
+        newActions: actionArray,
+      }),
     })
       .then((resp) => resp.json())
       .then((data) => console.log(data))
@@ -68,7 +69,7 @@ function Tip() {
           add new action
         </Button>
         <Button
-          onClick={saveData}
+          onClick={() => saveData()}
           className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
         >
           Save
