@@ -18,11 +18,19 @@ import {
 function UserProfile() {
   const [followerData, setFollowerData] = useState([])
   const modelCtx = useModalContext()
+  
+  const [userDetails, setuserDetails] = useState(null)
 
   useEffect(() => {
     fetch("/model.json")
       .then((resp) => resp.json())
       .then((data) => setFollowerData(data))
+  }, [])
+
+  useEffect(() => {
+    fetch("/api/website/profile/get-model-profile-data")
+      .then((resp) => resp.json())
+      .then((data) => setuserDetails(data))
   }, [])
 
   return (
@@ -82,41 +90,8 @@ function UserProfile() {
             <p>Eye color</p>
             <p>SubCulture</p>
           </div>
-          <div className="  tw-rounded-t-2xl tw-rounded-b-lg tw-mt-4">
-            <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4">
-              <p className="tw-px-4">
-                My Email{" "}
-                <span className="tw-ml-4 tw-font-bold tw-text-xl">
-                  {modelDetails ? modelDetails.model.email : null}
-                </span>
-              </p>
-              <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
-                <button
-                  className="tw-rounded-full tw-bg-second-color tw-px-2"
-                  onClick={() => modelCtx.showModalWithContent(<EmailChange />)}
-                >
-                  Change Email
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="tw-my-4  hover:tw-shadow-lg tw-rounded-t-2xl tw-rounded-b-2xl ">
-            <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4 ">
-              <p className="tw-mx-4">My Password</p>
-              <div className=" tw-mx-auto tw-pt-2">
-                <button
-                  className="tw-rounded-full tw-bg-second-color  tw-px-2 "
-                  onClick={() =>
-                    modelCtx.showModalWithContent(<PasswordChange />)
-                  }
-                >
-                  Change Password
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
+
         <div className="tw-grid  tw-bg-first-color md:tw-col-span-3 tw-col-span-1">
           <h1 className="tw-pl-4 tw-pt-4">Freinds</h1>
           <br />
@@ -135,6 +110,55 @@ function UserProfile() {
             </div>
           )}
         </div>
+
+        {/* this is for email and password change  */}
+        <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 tw-bg-first-color tw-pl-4 tw-py-4">
+          <div className="md:tw-col-span-4 tw-col-span-1   ">
+            <div className="  tw-rounded-t-2xl tw-rounded-b-lg tw-mt-4">
+              <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4">
+                <p className="tw-px-4">
+                  My Email{" "}
+                  <span className="tw-ml-4 tw-font-bold tw-text-xl">
+                    {userDetails ? userDetails.model.email : null}
+                  </span>
+                </p>
+                <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
+                  <button
+                    className="tw-rounded-full tw-bg-second-color tw-px-2"
+                    onClick={() =>
+                      modelCtx.showModalWithContent(<EmailChange />)
+                    }
+                  >
+                    Change Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* password change happen here */}
+        <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 tw-bg-first-color tw-pl-4 tw-py-4">
+          <div className="md:tw-col-span-4 tw-col-span-1   ">
+            <div className="tw-my-4  hover:tw-shadow-lg tw-rounded-t-2xl tw-rounded-b-2xl ">
+              <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4 ">
+                <p className="tw-mx-4">My Password</p>
+                <div className=" tw-mx-auto tw-pt-2">
+                  <button
+                    className="tw-rounded-full tw-bg-second-color  tw-px-2 "
+                    onClick={() =>
+                      modelCtx.showModalWithContent(<PasswordChange />)
+                    }
+                  >
+                    Change Password
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* password change happen here */}
+        {/* this is for email and password change  */}
       </div>
     </div>
   )

@@ -12,7 +12,7 @@ function Tip() {
       const actionValue = allInputs[index + 1].value
       actionArray.push({ action: action, price: actionValue })
     }
-    console.log(actionArray)
+    // console.log(actionArray)
 
     fetch("/api/website/profile/update-model-tipmenu-actions", {
       method: "POST",

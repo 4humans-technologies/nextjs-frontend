@@ -10,7 +10,7 @@ function Headerprofile(props) {
   const ctx = useAuthUpdateContext()
 
   const router = useRouter()
-  const profileRouter = (props) => {
+  const profileRouter = () => {
     if (props.type == "Model") {
       router.push("/name/profile")
     }

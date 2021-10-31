@@ -12,6 +12,7 @@ import {
   CoverUpdate,
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
 function Profile() {
   const [checked, setChecked] = useState(false)
@@ -22,9 +23,11 @@ function Profile() {
     videos: [],
   })
   const [modelData, setModelData] = useState()
-  const [modelDetails, setModelDetails] = useState()
+  const [modelDetails, setModelDetails] = useState(null)
   const [callData, setCallData] = useState()
   const modalCtx = modalContext()
+  const authContext = useAuthContext()
+  const updateAuth = useAuthUpdateContext()
 
   useEffect(() => {
     fetch("/model.json")
@@ -35,16 +38,28 @@ function Profile() {
     return {}
   }, [])
 
+  // s3 bucket image upload
+  // to get url from domain and then uplode to aws
+  const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
+    (resp) => resp.json()
+  ) //this is the url where to uplode to aws
+
+  // s3 bucket image upload
+
   // PhotoUplode Handler
   const photoUpdateHandler = async (e) => {
     setImageVideo.images((prev) => [
       ...prev,
       URL.createObjectURL(e.target.files[0]),
     ])
+    // to get url from domain and then uplode to aws
+    const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
+      (resp) => resp.json() //this is the url where to uplode to aws
+    )
     let req = await fetch("url", {
-      method: "POST",
+      method: "PUT",
       headers: {
-        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Content-type": "multipart/form-data",
       },
       body: {
         modelImage: imageVideo.images,
@@ -52,6 +67,20 @@ function Profile() {
     })
     let resp = await req.json()
     return resp
+    // send data back to node serve as success report with user id and url for the data
+
+    let serverReq = await fetch("url", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        rootUserId: authContext.rootUserId,
+        // there we need to pass the image url to save in local data base
+      }),
+    })
+      .then((resp) => resp.json())
+      .then((data) => console.log(data))
   }
 
   // VideoUplodeHandler videoUpdateHandler
@@ -104,17 +133,17 @@ function Profile() {
     for (let index = 0; index < allInputs.length; index += 2) {
       const action = allInputs[index].value
       const actionValue = allInputs[index + 1].value
-      actionArray.push({ [action]: actionValue })
+      actionArray.push({ action: action, price: actionValue })
     }
 
-    fetch("url", {
+    fetch("/api/website/profile/update-model-tipmenu-actions", {
       method: "POST",
       headers: {
-        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Content-type": "application/json",
       },
-      body: {
-        tipMenu: actionArray,
-      },
+      body: JSON.stringify({
+        newActions: actionArray,
+      }),
     })
       .then((resp) => resp.json())
       .then((data) => console.log(data))
