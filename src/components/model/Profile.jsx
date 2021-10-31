@@ -12,15 +12,22 @@ import {
   CoverUpdate,
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
 function Profile() {
   const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
   const [dynamicData, setDynamicData] = useState([1])
+  const [imageVideo, setImageVideo] = useState({
+    images: [],
+    videos: [],
+  })
   const [modelData, setModelData] = useState()
-  const [modelDetails, setModelDetails] = useState()
+  const [modelDetails, setModelDetails] = useState(null)
   const [callData, setCallData] = useState()
   const modalCtx = modalContext()
+  const authContext = useAuthContext()
+  const updateAuth = useAuthUpdateContext()
 
   useEffect(() => {
     fetch("/model.json")
@@ -31,13 +38,77 @@ function Profile() {
     return {}
   }, [])
 
+  // s3 bucket image upload
+  // to get url from domain and then uplode to aws
+  // const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
+  //   (resp) => resp.json()
+  // ) //this is the url where to uplode to aws
+
+  // s3 bucket image upload
+
+  // PhotoUplode Handler
+  const photoUpdateHandler = async (e) => {
+    setImageVideo.images((prev) => [
+      ...prev,
+      URL.createObjectURL(e.target.files[0]),
+    ])
+    // to get url from domain and then uplode to aws
+    // const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
+    //   (resp) => resp.json() //this is the url where to uplode to aws
+    // )
+    let req = await fetch("url", {
+      method: "PUT",
+      headers: {
+        "Content-type": "multipart/form-data",
+      },
+      body: {
+        modelImage: imageVideo.images,
+      },
+    })
+    let resp = await req.json()
+    return resp
+    // send data back to node serve as success report with user id and url for the data
+
+    // let serverReq = await fetch("url", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     rootUserId: authContext.rootUserId,
+    //     // there we need to pass the image url to save in local data base
+    //   }),
+    // })
+    //   .then((resp) => resp.json())
+    //   .then((data) => console.log(data))
+  }
+
+  // VideoUplodeHandler videoUpdateHandler
+  const videoUpdateHandler = async (e) => {
+    setImageVideo.videos((prev) => [
+      ...prev,
+      URL.createObjectURL(e.target.files[0]),
+    ])
+    let req = await fetch("url", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      body: {
+        modelVideos: imageVideo.videos,
+      },
+    })
+    let resp = await req.json()
+    return resp
+  }
+
   useEffect(() => {
     fetch("/api/website/profile/get-model-profile-data")
       .then((resp) => resp.json())
       .then((data) => setModelDetails(data))
   }, [])
 
-  console.log(modelDetails.model)
+  // console.log(modelDetails.model)
   // useEffect to make  button appear when change in information takes place
   let audio = []
   let video = []
@@ -55,15 +126,29 @@ function Profile() {
     setChecked((prev) => !prev)
   }
 
+  // This will change data and fecth data and send to uper
   const saveData = () => {
     const allInputs = document.querySelectorAll("#action-form input")
     const actionArray = []
     for (let index = 0; index < allInputs.length; index += 2) {
       const action = allInputs[index].value
       const actionValue = allInputs[index + 1].value
-      actionArray.push({ [action]: actionValue })
+      actionArray.push({ action: action, price: actionValue })
     }
+
+    fetch("/api/website/profile/update-model-tipmenu-actions", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        newActions: actionArray,
+      }),
+    })
+      .then((resp) => resp.json())
+      .then((data) => console.log(data))
   }
+
   let today = new Date()
   let thisYear = today.getFullYear()
 
@@ -201,7 +286,7 @@ function Profile() {
                 <p className="tw-px-4">
                   My Email{" "}
                   <span className="tw-ml-4 tw-font-bold tw-text-xl">
-                    {modelDetails.model ? modelDetails.model.email : null}
+                    {modelDetails ? modelDetails.model.email : null}
                   </span>
                 </p>
                 <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
@@ -470,6 +555,7 @@ function Profile() {
                     name="file-input"
                     id="file-input"
                     className="file-input__input"
+                    onChange={() => photoUpdateHandler()}
                   />
                   <label className="file-input__label" htmlFor="file-input">
                     <svg
@@ -520,6 +606,7 @@ function Profile() {
                       name="file-input"
                       id="file-input"
                       className="file-input__input"
+                      onChange={() => videoUpdateHandler()}
                     />
                     <svg
                       aria-hidden="true"
