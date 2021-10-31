@@ -8,9 +8,13 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 
 const httpsOptions = {
-  key: fs.readFileSync("./localhost-key.pem"),
-  cert: fs.readFileSync("./localhost.pem"),
+  key: fs.readFileSync("./192.168.1.104-key.pem"),
+  cert: fs.readFileSync("./192.168.1.104.pem"),
 }
+// const httpsOptions = {
+//   key: fs.readFileSync("./localhost-key.pem"),
+//   cert: fs.readFileSync("./localhost.pem"),
+// }
 
 app.prepare().then(() => {
   createServer(httpsOptions, (req, res) => {

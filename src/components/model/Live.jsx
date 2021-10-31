@@ -71,9 +71,13 @@ const chatWindowOptions = {
 let goneLiveOnce /* only when gone live once the stream rooms will be created, before that no room exists */
 const streamTimer = {
   value: 0,
-  ref: null,
+  timerElement: null,
 }
 
+const callTimer = {
+  value: 0,
+  timerElement: null,
+}
 const pendingCallInitialData = {
   pending: true,
   callType: "videoCall",
@@ -96,14 +100,16 @@ function Live() {
   })
   const [callOnGoing, setCallOnGoing] = useState(false)
   const [callType, setCallType] = useState("videoCall")
+  const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
 
   /* Ref's */
   const container = useRef()
   const chatInputRef = useRef()
   const chatBoxContainer = useRef()
-  const timerTextBox = useRef()
+  const streamTimerRef = useRef()
+  const callTimerRef = useRef()
   const requestServerEndAndStreamLeaveRef = useRef()
-  const leaveAndCloseTracksRef = useRef
+  const leaveAndCloseTracksRef = useRef()
 
   const {
     localAudioTrack,
@@ -118,7 +124,13 @@ function Live() {
 
   const toggleFullscreen = useCallback(() => {
     /* fullscreen logic */
-  }, [fullScreen])
+    const palyBackArea = document.getElementById("playback-area")
+    if (!document.fullscreenElement) {
+      palyBackArea.requestFullscreen()
+    } else {
+      document.exitFullscreen()
+    }
+  }, [])
 
   const scrollOnChat = useCallback(() => {
     chatBoxContainer.current.scrollBy({
@@ -127,10 +139,23 @@ function Live() {
     })
   }, [chatBoxContainer])
 
+  const startCallTimer = useCallback(() => {
+    callTimer.timerElement = document.getElementById("call-timer")
+    callTimerRef.current = setInterval(() => {
+      const totalSeconds = ++callTimer.value
+      let newTime
+      if (totalSeconds < 3600) {
+        newTime = new Date(totalSeconds * 1000).toISOString().substr(14, 5)
+      } else {
+        newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
+      }
+      callTimer.timerElement.innerText = newTime
+    }, [1000])
+  }, [])
+
   const startStreamTimer = useCallback(() => {
-    /* timer ⏰⏰ */
-    // alert("starting timer....")
-    streamTimer.ref = setInterval(() => {
+    streamTimer.timerElement = document.getElementById("stream-timer")
+    streamTimerRef.current = setInterval(() => {
       const totalSeconds = ++streamTimer.value
       let newTime
       if (totalSeconds < 3600) {
@@ -138,9 +163,9 @@ function Live() {
       } else {
         newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
       }
-      timerTextBox.current.innerText = newTime
+      streamTimer.timerElement.innerText = newTime
     }, [1000])
-  }, [timerTextBox])
+  }, [])
 
   useEffect(() => {
     /* clear the rtcToken onetime on first mount only */
@@ -216,18 +241,30 @@ function Live() {
     goneLiveOnce,
   ])
 
+  // useEffect(() => {
+  //   if (joinState) {
+  //     if (!callOnGoing) {
+  //       startStreamTimer()
+  //       return () => {
+  //         clearInterval(streamTimer.ref)
+  //         streamTimer.value = 0
+  //         streamTimer.ref = null
+  //       }
+  //     }
+  //   }
+  // }, [streamTimer, joinState, callOnGoing])
+
   useEffect(() => {
-    if (joinState) {
-      if (!callOnGoing) {
-        startStreamTimer()
-        return () => {
-          clearInterval(streamTimer.ref)
-          streamTimer.value = 0
-          streamTimer.ref = null
-        }
+    if (joinState && !callOnGoing) {
+      startStreamTimer()
+      return () => {
+        clearInterval(streamTimerRef.current)
+        streamTimerRef.current = null
+        streamTimer.timerElement = null
+        streamTimer.value = 0
       }
     }
-  }, [streamTimer, joinState, callOnGoing])
+  }, [startStreamTimer, joinState, callOnGoing, streamTimerRef])
 
   const onUnMountEndStream = useCallback(() => {
     fetch("/api/website/stream/handle-stream-end", {
@@ -293,21 +330,11 @@ function Live() {
 
   useEffect(() => {
     return () => {
-      // leaveAndCloseTracks()
-      // onUnMountEndStream()
       requestServerEndAndStreamLeaveRef.current()
       leaveAndCloseTracksRef.current()
+      clearInterval(streamTimerRef.current)
+      clearInterval(callTimerRef.current)
     }
-  }, [])
-
-  /* add eventListener for window reload */
-  useEffect(() => {
-    window.addEventListener("beforeunload", () => {
-      // leaveAndCloseTracks()
-      // onUnMountEndStream()
-      requestServerEndAndStreamLeaveRef.current()
-      leaveAndCloseTracksRef.current()
-    })
   }, [])
 
   const sendChatMessage = () => {
@@ -370,6 +397,27 @@ function Live() {
     }
   }, [sendChatMessage])
 
+  const offCallListeners = () => {
+    const socket = io.getSocket()
+    if (socket.hasListeners("viewer-call-end-request-init-received")) {
+      socket.off("viewer-call-end-request-init-received")
+    }
+  }
+
+  const setUpCallListeners = () => {
+    const socket = io.getSocket()
+    if (!socket.hasListeners("viewer-call-end-request-init-received")) {
+      socket.on("viewer-call-end-request-init-received", async (data) => {
+        /* viewer has put call end request before you */
+        alert("viewer ended call")
+        setCallOnGoing(false)
+        setPendingCallEndRequest(true)
+        await leaveAndCloseTracks()
+        offCallListeners()
+      })
+    }
+  }
+
   const handleModelResponse = useCallback(
     (response, relatedUserId, callType) => {
       /* can set encryption config */
@@ -411,6 +459,18 @@ function Live() {
               callType: null,
             })
             setCallOnGoing(true)
+            setCallType(callType)
+            setUpCallListeners()
+            const startCallTimerAfter =
+              new Date(data.callStartTs).getTime() - Date.now()
+            if (startCallTimerAfter <= 1) {
+              /* start instantaneously */
+              startCallTimer()
+            } else {
+              setTimeout(() => {
+                startCallTimer()
+              }, startCallTimerAfter)
+            }
           })
           .catch((err) => alert(err.message))
       }
@@ -434,6 +494,21 @@ function Live() {
       }
     }
   }, [socketCtx.socketSetupDone])
+
+  const handleCallEnd = async () => {
+    if (!callOnGoing && !joinState) {
+      return alert("no ongoing call")
+    }
+    const socket = io.getSocket()
+    socket.emit("model-call-end-request-init-emitted", {
+      action: "model-has-requested-call-end",
+      room: `${sessionStorage.getItem("streamId")}-public`,
+    })
+    setCallOnGoing(false)
+    setPendingCallEndRequest(true)
+    await leaveAndCloseTracks()
+    offCallListeners()
+  }
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div>
@@ -481,11 +556,14 @@ function Live() {
           <div
             className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2 tw-relative"
             ref={container}
+            id="playback-area"
           >
             {/* on call timer */}
             {callOnGoing && (
               <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[390] tw-backdrop-blur">
-                <p className="tw-text-center text-white">04:15</p>
+                <p id="call-timer" className="tw-text-center text-white">
+                  00:00
+                </p>
               </div>
             )}
 
@@ -531,7 +609,10 @@ function Live() {
                 <button className="tw-inline-block tw-mx-2 tw-z-[390]">
                   <VolumeUpIcon fontSize="medium" style={{ color: "white" }} />
                 </button>
-                <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+                <button
+                  className="tw-inline-block tw-mx-2 tw-z-[390]"
+                  onClick={() => handleCallEnd()}
+                >
                   <CallEndIcon fontSize="medium" style={{ color: "red" }} />
                 </button>
                 <button className="tw-inline-block tw-mx-2 tw-z-[390]">
@@ -586,8 +667,8 @@ function Live() {
                   )}
                   {joinState && (
                     <p
-                      ref={timerTextBox}
                       className="tw-px-3 tw-py-1.5 tw-rounded tw-font-semibold tw-bg-[rgba(20,20,20,0.75)] tw-text-white-color"
+                      id="stream-timer"
                     ></p>
                   )}
                   <Button

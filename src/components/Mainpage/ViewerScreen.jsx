@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, createRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import AgoraRTC from "agora-rtc-sdk-ng"
 import { Button } from "react-bootstrap"
 import MediaPlayer from "../UI/MediaPlayer"
@@ -16,6 +16,9 @@ import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
 import Draggable from "react-draggable"
 import io from "../../socket/socket"
+import { imageDomainURL } from "../../../dreamgirl.config"
+import FullscreenIcon from "@material-ui/icons/Fullscreen"
+import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 
 /**
  * If this screen is being mounted then it is understood by default that,
@@ -59,14 +62,27 @@ const unAuthedUserEmojis = [
 ]
 let modelEndedStreamOnce = false
 let streamId
+const callTimer = {
+  value: 0,
+  timerElement: null,
+}
 function ViewerScreen(props) {
   const container = useRef()
+  const callTimerRef = useRef()
 
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
   const [callDuration, setCallDuration] = useState("05:46") /* in seconds */
-  const [isModelOffline, setIsModelOffline] = useState(false)
+
+  const {
+    modelOfflineData,
+    isModelOffline,
+    setIsModelOffline,
+    setTipMenuActions,
+    pendingCallEndRequest,
+    setPendingCallEndRequest,
+  } = props
 
   const {
     callOnGoing,
@@ -74,6 +90,7 @@ function ViewerScreen(props) {
     setCallOnGoing,
     setCallType,
     setPendingCallRequest,
+    pendingCallRequest,
   } = props
 
   const {
@@ -83,23 +100,45 @@ function ViewerScreen(props) {
     leave,
     join,
     remoteUsers,
-    changeClientRole,
     leaveDueToPrivateCall,
     switchViewerToHost,
+    leaveAndCloseTracks,
   } = useAgora(client, "audience", props.callType || "")
 
+  const toggleFullscreen = useCallback(() => {
+    /* fullscreen logic */
+    const palyBackArea = document.getElementById("playback-area")
+    if (!document.fullscreenElement) {
+      palyBackArea.requestFullscreen()
+    } else {
+      document.exitFullscreen()
+    }
+  }, [])
+
+  const startCallTimer = useCallback(() => {
+    callTimer.timerElement = document.getElementById("call-timer")
+    callTimerRef.current = setInterval(() => {
+      const totalSeconds = ++callTimer.value
+      let newTime
+      if (totalSeconds < 3600) {
+        newTime = new Date(totalSeconds * 1000).toISOString().substr(14, 5)
+      } else {
+        newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
+      }
+      callTimer.timerElement.innerText = newTime
+    }, [1000])
+  }, [callTimerRef])
+
   useEffect(() => {
-    /* rejoin chat channels when model starts streaming */
-    // if (modelEndedStreamOnce) {
-    //   const socketRooms = JSON.parse(sessionStorage.getItem("socket-rooms"))
-    //   if (socketRooms?.length === 0) {
-    //     if (joinState && remoteUsers?.length > 0) {
-    //       fetch("/api/website/stream/re-join-models-currentstream")
-    //         .then((res) => res.json())
-    //         .catch((err) => alert(err.message))
-    //     }
-    //   }
-    // }
+    if (joinState && callOnGoing) {
+      return () => {
+        clearInterval(callTimerRef.current)
+        callTimerRef.current = null
+      }
+    }
+  }, [joinState, callOnGoing])
+
+  useEffect(() => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
       if (!socket.hasListeners("new-model-started-stream")) {
@@ -126,7 +165,17 @@ function ViewerScreen(props) {
             body: JSON.stringify({
               modelId: window.location.pathname.split("/").reverse()[0],
             }),
-          }).catch((err) => alert(err.message))
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              join(
+                window.location.pathname.split("/").reverse()[0],
+                localStorage.getItem("rtcToken"),
+                ctx.relatedUserId
+              )
+              setIsModelOffline(false)
+            })
+            .catch((err) => alert(err.message))
         })
       }
 
@@ -152,6 +201,7 @@ function ViewerScreen(props) {
           }
           setCallOnGoing(false)
           setPendingCallRequest(false)
+          setIsModelOffline(true)
           const socketRooms =
             JSON.parse(sessionStorage.getItem("socket-rooms")) || []
           sessionStorage.setItem(
@@ -184,6 +234,7 @@ function ViewerScreen(props) {
     }
   }, [])
 
+  /* http fetch request for rtc token */
   useEffect(() => {
     //debugger
     if (socketCtx.isConnected && !tokenRequestDoneOnce) {
@@ -211,8 +262,10 @@ function ViewerScreen(props) {
             .then((resp) => resp.json())
             .then((data) => {
               if (data?.message === "model not streaming") {
+                props.setModelProfileData(data.theModel)
                 return setIsModelOffline(true)
               }
+              setTipMenuActions(data.theModel.tipMenuActions.actions)
               token = data.rtcToken
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
@@ -264,9 +317,10 @@ function ViewerScreen(props) {
             .then((data) => {
               //debugger
               if (data?.message === "model not streaming") {
+                props.setModelProfileData(data.theModel)
                 return setIsModelOffline(true)
               }
-              /* 🤩🤩🔥🔥 join stream */
+              setTipMenuActions(data.theModel.tipMenuActions.actions)
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
               console.log("model profile 👉👉 ", data.theModel)
@@ -309,13 +363,54 @@ function ViewerScreen(props) {
     tokenRequestDoneOnce,
   ])
 
+  const offCallListeners = () => {
+    const socket = io.getSocket()
+    if (!socket.hasListeners("model-call-end-request-init-received")) {
+      socket.off("model-call-end-request-init-received")
+    }
+  }
+
+  const setUpCallListeners = () => {
+    const socket = io.getSocket()
+    if (!socket.hasListeners("model-call-end-request-init-received")) {
+      socket.on("model-call-end-request-init-received", async (data) => {
+        /* model has put call end request before you */
+        alert("model ended call")
+        setCallOnGoing(false)
+        setPendingCallEndRequest(true)
+        await leaveAndCloseTracks()
+        setIsModelOffline(true)
+        offCallListeners()
+      })
+    }
+
+    // if (!socket.hasListeners("model-call-end-request-finished")) {
+    //   socket.on("model-call-end-request-finished", (data) => {
+    //     /* the after call transaction is now complete, fetch the details of it now */
+    //     fetch("", {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         callId: sessionStorage.getItem("callId"),
+    //         callType: callType,
+    //       }),
+    //     })
+    //       .then((res) => res.json())
+    //       .then((data) => {
+    //         setIsModelOffline(true)
+    //       })
+    //       .catch((err) => alert(err.message))
+    //   })
+    // }
+  }
+
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
-      debugger
       const socket = io.getSocket()
       if (!socket.hasListeners("model-call-request-response-received")) {
         socket.on("model-call-request-response-received", async (data) => {
-          debugger
           alert("model response received")
           if (data.response !== "rejected") {
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
@@ -324,26 +419,55 @@ function ViewerScreen(props) {
               setPendingCallRequest(false)
               setCallOnGoing(true)
               setCallType(data.callType)
-              data.callStartTs /* 👈👈 */
-              const [selfAudioFeed, selfVideoFeed] = await switchViewerToHost(
-                "sd",
-                ["self-video-container", "self-video"]
-              )
-              const selfVideo = document.getElementById("self-video-container")
-              selfVideoFeed.play(selfVideo)
-              // selfVideoFeed.play("self-video-container")
-              // selfVideoFeed.play("self-video")
+              const startCallTimerAfter =
+                new Date(data.callStartTs).getTime() - Date.now()
+              if (startCallTimerAfter <= 1) {
+                /* start instantaneously */
+                startCallTimer()
+              } else {
+                setTimeout(() => {
+                  startCallTimer()
+                }, startCallTimerAfter)
+              }
+              sessionStorage.removeItem("callId")
+              sessionStorage.setItem("callId", data.callId)
+              setUpCallListeners()
+              await switchViewerToHost()
             } else {
               /* unsubscribe stream and close connection to agora */
               localStorage.removeItem("rtcToken")
               localStorage.removeItem("rtcTokenExpireIn")
-              alert(
-                "Model accepted " +
-                  data?.username +
-                  " your call Request, streaming will be ended now"
-              )
+              if (pendingCallRequest) {
+                alert(
+                  "Model rejected your call request and accepted other viewer's call request, Good luck next time 💘💘"
+                )
+              } else {
+                alert(
+                  "Model accepted " +
+                    data?.username +
+                    " your call Request, streaming will be ended now."
+                )
+              }
               /* 🔻🔻leave al socket rooms also 🔺🔺 */
               leaveDueToPrivateCall()
+              /* also leave all chat channels */
+              const socketRooms =
+                JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+              const roomsToLeave = []
+              socketRooms.forEach((room) => {
+                if (room.endsWith("-public")) {
+                  roomsToLeave.push(room)
+                }
+              })
+              socket.emit(
+                "take-me-out-of-these-rooms",
+                [...roomsToLeave],
+                (response) => {
+                  if (response.status === "ok") {
+                    updateCtx.updateViewer({ streamRoom: null })
+                  }
+                }
+              )
             }
           } else {
             /* clear call type and pending call */
@@ -357,103 +481,230 @@ function ViewerScreen(props) {
     }
   }, [ctx.relatedUserId, socketCtx.setSocketSetupDone, switchViewerToHost])
 
-  /* dev useEffect */
+  /* clear timer on component un-mounting */
+  useEffect(() => {
+    return () => {
+      clearInterval(callTimerRef.current)
+    }
+  }, [])
 
-  // useEffect(async () => {
-  //   if (callOnGoing && callType) {
-  //     const [selfAudioFeed, selfVideoFeed] = await switchViewerToHost("sd", [
-  //       "self-video-container",
-  //       "self-video",
-  //     ])
-  //     const selfVideo = document.getElementById("self-video-container")
-  //     selfVideoFeed.play(selfVideo)
+  /**
+   * commented for client presentation only it's working
+   */
+
+  // useEffect(() => {
+  //   const socket = io.getSocket()
+  //   if (socketCtx.setSocketSetupDone) {
+  //     if (!socket.hasListeners("model-call-end-request-init-received")) {
+  //       socket.off("model-call-end-request-init-received")
+  //     }
+  //     if (!socket.hasListeners("model-call-end-request-finished")) {
+  //       socket.off("model-call-end-request-finished")
+  //     }
   //   }
-  // }, [])
+  // }, [socketCtx.setSocketSetupDone])
+
+  /* handle call end */
+  const handleCallEnd = async () => {
+    if (!callOnGoing && !joinState) {
+      return alert("no ongoing call")
+    }
+    const socket = io.getSocket()
+    socket.emit("viewer-call-end-request-init-emitted", {
+      action: "viewer-has-requested-call-end",
+      room: `${sessionStorage.getItem("streamId")}-public`,
+    })
+    setCallOnGoing(false)
+    setPendingCallEndRequest(true)
+    await leaveAndCloseTracks()
+    setIsModelOffline(true)
+    offCallListeners()
+    /* 
+    * commented because of client presentation
+    *
+    * fetch("/api/website/stream/handle-call-end-from-viewer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        callId: callId,
+        callType: callType,
+        endTimeStamp: Date.now(),
+        streamId: sessionStorage.getItem("streamId"),
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {})
+      .catch((err) => alert(err.message))
+    * 
+    */
+
+    /**
+     * 1. close agora streaming first
+     * 2. http request to the server with call end Timestamp
+     * 3. show call end page/summary modal
+     */
+  }
 
   return (
-    // 82 vh has no signifcate impact
-    /* the left part of the screen 👇👇 */
     <div
-      className="tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10"
+      className={
+        isModelOffline
+          ? "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10 tw-flex tw-items-center tw-justify-center"
+          : "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10"
+      }
       ref={container}
+      id="playback-area"
     >
-      {remoteUsers.length &&
-        [remoteUsers[0]].map((user) => {
-          return (
-            <div
-              className={
-                "tw-min-h-full tw-w-full tw-relative tw-bg-green-color" +
-                (callOnGoing
-                  ? " tw-z-[300] tw-pointer-events-none"
-                  : " tw-z-[20] tw-pointer-events-none")
-              }
-            >
-              <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0">
-                <div
-                  className={
-                    "tw-min-h-full tw-relative tw-min-w-[100vw] md:tw-min-w-[50vw]" +
-                    (callOnGoing
-                      ? " tw-z-[310] tw-pointer-events-none"
-                      : " tw-z-[20] tw-pointer-events-none")
-                  }
-                >
-                  <VideoPlayer
-                    key={user.uid}
-                    videoTrack={user.videoTrack}
-                    audioTrack={user.audioTrack} //error of seesion storage is going
-                    playAudio={true}
-                  />
-                  {callOnGoing && (
-                    /* controls layer */
-                    <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-grid tw-place-items-center tw-z-[390]">
-                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[391] tw-backdrop-blur">
-                        <p className="tw-text-center text-white">
-                          {callDuration}
-                        </p>
-                      </div>
+      {callOnGoing && (
+        <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[390] tw-backdrop-blur">
+          <p id="call-timer" className="tw-text-center text-white">
+            00:00
+          </p>
+        </div>
+      )}
 
-                      {callType === "audioCall" ? (
-                        <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-content-between">
-                          <div className="">{/* timer */}</div>
-                          <div className="">{/* model image */}</div>
-                          <div className="">{/* call controls */}</div>
-                        </div>
-                      ) : (
-                        <div
-                          id="self-video-container"
-                          className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"
-                        >
-                          <div id="self-video"></div>
-                        </div>
-                      )}
-                      {/* <div className="tw-absolute tw-bottom-0 tw-h-6 tw-bg-dark-black tw-left-0 tw-right-0 tw-z-0"></div> */}
-                      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-4 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[391] tw-backdrop-blur">
-                        <button className="tw-inline-block tw-mx-2 tw-z-[390] tw-relative">
-                          <VolumeUpIcon
-                            fontSize="medium"
-                            style={{ color: "white" }}
-                          />
-                        </button>
-                        <button className="tw-inline-block tw-mx-2 tw-z-[390] tw-relative">
-                          <CallEndIcon
-                            fontSize="medium"
-                            style={{ color: "red" }}
-                          />
-                        </button>
-                        <button className="tw-inline-block tw-mx-2 tw-z-[390] tw-relative">
-                          <MicOffIcon
-                            fontSize="medium"
-                            style={{ color: "white" }}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+      {/* viewing streaming | call not ongoing */}
+      {!callOnGoing && remoteUsers?.length > 0 ? (
+        <VideoPlayer
+          videoTrack={remoteUsers[0]?.videoTrack}
+          audioTrack={remoteUsers[0].audioTrack} //error of session storage is going
+          playAudio={true}
+        />
+      ) : null}
+
+      {/* on "any-call" with model */}
+      {callOnGoing && remoteUsers?.length > 0 ? (
+        <VideoPlayer
+          videoTrack={remoteUsers[0]?.videoTrack}
+          audioTrack={remoteUsers[0].audioTrack} //error of session storage is going
+          playAudio={true}
+        />
+      ) : null}
+
+      {/* on audioCall with model */}
+      {callOnGoing && callType === "audioCall" && remoteUsers?.length ? (
+        <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
+          <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
+            <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
+              <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
+                <img
+                  src={imageDomainURL + modelOfflineData.profileImage}
+                  alt=""
+                  className="tw-h-[100px] tw-w-[100px] md:tw-h-[150px] md:tw-w-[150px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
+                />
               </div>
             </div>
-          )
-        })}
+          </div>
+        </div>
+      ) : null}
+
+      {/*  */}
+
+      {/* not streaming && not on call | model circles | offline mode*/}
+      {isModelOffline && !callOnGoing ? (
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4 md:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(70,70,70,0.1)]">
+          <p className="tw-text-white-color tw-font-medium tw-text-center">
+            The model is currently offline 😞😞
+          </p>
+        </div>
+      ) : null}
+
+      {/* not streaming && not on call | model circles | offline mode*/}
+      {/* model image */}
+      {isModelOffline && (
+        <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
+          <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
+            <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
+              <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
+                <img
+                  src={imageDomainURL + modelOfflineData.profileImage}
+                  alt=""
+                  className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* not streaming && not on call | model circles | offline mode*/}
+      {/* model offline status */}
+      {isModelOffline && !callOnGoing ? (
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-4 md:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(255,255,255,0.1)]">
+          <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
+            {modelOfflineData.offlineStatus}
+          </p>
+        </div>
+      ) : null}
+
+      {/* on call local preview */}
+      {callOnGoing && callType === "videoCall" ? (
+        <div
+          id="self-video-container"
+          className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"
+        >
+          <div id="self-video" class="tw-relative tw-w-full tw-h-full">
+            <VideoPlayer
+              videoTrack={localVideoTrack}
+              audioTrack={localAudioTrack}
+              playAudio={false}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {/* On call controls */}
+      {callOnGoing && !isModelOffline && (
+        <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
+          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+            <VolumeUpIcon fontSize="medium" style={{ color: "white" }} />
+          </button>
+          <button
+            className="tw-inline-block tw-mx-2 tw-z-[390]"
+            onClick={() => handleCallEnd()}
+          >
+            <CallEndIcon fontSize="medium" style={{ color: "red" }} />
+          </button>
+          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+            <MicOffIcon fontSize="medium" style={{ color: "white" }} />
+          </button>
+          <button
+            className="tw-inline-block tw-mx-2 tw-z-[390]"
+            onClick={toggleFullscreen}
+          >
+            {document.fullscreenElement ? (
+              <FullscreenExitIcon
+                fontSize="medium"
+                style={{ color: "white" }}
+              />
+            ) : (
+              <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
+            )}
+          </button>
+        </div>
+      )}
+      {!callOnGoing && !isModelOffline && remoteUsers?.length > 0 && (
+        <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
+          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+            <MicOffIcon fontSize="medium" style={{ color: "white" }} />
+          </button>
+          <button
+            className="tw-inline-block tw-mx-2 tw-z-[390]"
+            onClick={toggleFullscreen}
+          >
+            {document.fullscreenElement ? (
+              <FullscreenExitIcon
+                fontSize="medium"
+                style={{ color: "white" }}
+              />
+            ) : (
+              <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
+            )}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

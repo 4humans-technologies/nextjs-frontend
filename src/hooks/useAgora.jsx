@@ -116,19 +116,15 @@ function useAgora(client, role, callType) {
     // fetch("/api/website/stream/global-renew-token")
   }
 
-  async function switchViewerToHost(selfFeedRef, domIds) {
+  async function switchViewerToHost() {
+    /* switch viewer to host and capture tracks */
     await client.setClientRole("host")
     const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
     const cameraTrack = await AgoraRTC.createCameraVideoTrack()
     setLocalAudioTrack(microphoneTrack)
     setLocalVideoTrack(cameraTrack)
     await client.publish([microphoneTrack, cameraTrack])
-    return setJoinState(true)
-    // cameraTrack.play(selfFeedRef)
-    // domIds.forEach((domId) => {
-    //   cameraTrack.play(domId)
-    // })
-    return [microphoneTrack, cameraTrack]
+    setJoinState(true)
   }
 
   useEffect(() => {

@@ -36,89 +36,6 @@ const ViewerScreen = dynamic(() => import("../Mainpage/ViewerScreen"), {
   ssr: false,
 })
 
-const giftData = [
-  {
-    _id: "6162af0bfae2928e5cc98cbd",
-    name: "flower_1",
-    price: 10,
-    imageUrl: "/images/gifts/kZbV-mMd_flower_1_gift.png",
-    packages: [],
-    createdAt: "2021-10-10T09:14:52.633Z",
-    updatedAt: "2021-10-10T09:14:52.633Z",
-    __v: 0,
-  },
-  {
-    _id: "6162afa1f477334b400a6b55",
-    name: "teddy",
-    price: 100,
-    imageUrl: "/images/gifts/Ar8BORml_teddy_gift.png",
-    packages: [],
-    createdAt: "2021-10-10T09:17:21.914Z",
-    updatedAt: "2021-10-10T09:17:21.914Z",
-    __v: 0,
-  },
-  {
-    _id: "6162afb0f477334b400a6b57",
-    name: "sunflower",
-    price: 1000,
-    imageUrl: "/images/gifts/mbgXSvj9_sunflower_gift.png",
-    packages: [],
-    createdAt: "2021-10-10T09:17:36.373Z",
-    updatedAt: "2021-10-10T09:17:36.373Z",
-    __v: 0,
-  },
-  {
-    _id: "6162afc9f477334b400a6b59",
-    name: "purple_bush",
-    price: 500,
-    imageUrl: "/images/gifts/i3Nx_5ED_purple_bush_gift.png",
-    packages: [],
-    createdAt: "2021-10-10T09:18:01.394Z",
-    updatedAt: "2021-10-10T09:18:01.394Z",
-    __v: 0,
-  },
-  {
-    _id: "6162afd9f477334b400a6b5b",
-    name: "iris_bush",
-    price: 5000,
-    imageUrl: "/images/gifts/Lp88JtNB_iris_bush_gift.png",
-    packages: [],
-    createdAt: "2021-10-10T09:18:17.488Z",
-    updatedAt: "2021-10-10T09:18:17.488Z",
-    __v: 0,
-  },
-  {
-    _id: "6162affbf477334b400a6b5d",
-    name: "flower_pot",
-    price: 473,
-    imageUrl: "/images/gifts/Tvh731hH_flower_pot_gift.png",
-    packages: [],
-    createdAt: "2021-10-10T09:18:51.394Z",
-    updatedAt: "2021-10-10T09:18:51.394Z",
-    __v: 0,
-  },
-  {
-    _id: "6162b01af477334b400a6b5f",
-    name: "symetetrical_flower",
-    price: 90,
-    imageUrl: "/images/gifts/CKtWuBB9_symetetrical_flower_gift.png",
-    packages: [],
-    createdAt: "2021-10-10T09:19:22.190Z",
-    updatedAt: "2021-10-10T09:19:22.190Z",
-    __v: 0,
-  },
-  {
-    _id: "6162b02cf477334b400a6b61",
-    name: "vass",
-    price: 12,
-    imageUrl: "/images/gifts/SHDMLgSZ_vass_gift.png",
-    packages: [],
-    createdAt: "2021-10-10T09:19:40.857Z",
-    updatedAt: "2021-10-10T09:19:40.857Z",
-    __v: 0,
-  },
-]
-
 const chatWindowOptions = {
   PRIVATE: "private",
   PUBLIC: "public",
@@ -136,10 +53,13 @@ function LiveScreen(props) {
   const router = useRouter()
 
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
+  const [tipMenuActions, setTipMenuActions] = useState([])
+  const [isModelOffline, setIsModelOffline] = useState(false)
   const [isChatPlanActive, setIsChatPlanActive] = useState(false)
   const [callOnGoing, setCallOnGoing] = useState(false)
   const [callType, setCallType] = useState("videoCall")
   const [pendingCallRequest, setPendingCallRequest] = useState(false)
+  const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
 
   const scrollOnChat = () => {
     chatBoxContainer.current.scrollBy({
@@ -147,6 +67,27 @@ function LiveScreen(props) {
       behavior: "smooth",
     })
   }
+
+  const handleModelFollow = useCallback(() => {
+    if (!authCtx.isLoggedIn) {
+      return alert("Please login to follow the model!")
+    }
+    fetch("/api/website/stream/follow-model", {
+      method: "POST",
+      cors: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        modelId: window.location.pathname.split("/").reverse()[0],
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        /*  */
+      })
+      .catch((err) => err.message)
+  }, [authCtx.isLoggedIn])
 
   const sendChatMessage = () => {
     //debugger
@@ -249,22 +190,33 @@ function LiveScreen(props) {
         <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-6/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
           <ViewerScreen
-            setModelProfileData={props.setModelProfileData}
             setIsChatPlanActive={setIsChatPlanActive}
-            callOnGoing={callOnGoing}
             setCallOnGoing={setCallOnGoing}
-            callType={callType}
             setCallType={setCallType}
             setPendingCallRequest={setPendingCallRequest}
+            setIsModelOffline={setIsModelOffline}
+            setTipMenuActions={setTipMenuActions}
+            setModelProfileData={props.setModelProfileData}
+            callOnGoing={callOnGoing}
+            callType={callType}
+            pendingCallRequest={pendingCallRequest}
+            isModelOffline={isModelOffline}
+            modelOfflineData={props.modelProfileData}
+            pendingCallEndRequest={pendingCallEndRequest}
+            setPendingCallEndRequest={setPendingCallEndRequest}
           />
           {!callOnGoing ? (
             <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-0 tw-py-3 tw-px-2 tw-z-[300]">
               <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">
                 <div className="tw-col-span-1 tw-row-span-1 tw-flex tw-items-center tw-justify-start">
-                  <FavoriteIcon className="tw-text-red-600" />
-                  <p className="tw-pl-2 tw-text-white-color tw-font-semibold">
-                    33.k
-                  </p>
+                  <button onClick={handleModelFollow}>
+                    <span className="tw-p-1 tw-rounded-full tw-bg-white-color tw-inline-block">
+                      <FavoriteIcon className="tw-text-red-600" />
+                    </span>
+                    <span className="tw-pl-2 tw-text-white-color tw-font-semibold">
+                      33.k
+                    </span>
+                  </button>
                 </div>
                 <div className="tw-col-span-1 tw-row-span-1 tw-justify-self-end">
                   <Button
@@ -309,8 +261,14 @@ function LiveScreen(props) {
               </div>
               <div className="tw-hidden lg:tw-flex md:tw-justify-between md:tw-self-center tw-text-white">
                 <div className="tw-flex tw-self-center">
-                  <FavoriteIcon className="tw-rounded-full tw-flex sm:tw-mr-2" />
-                  <p className="pl-4">33.k</p>
+                  <button onClick={handleModelFollow}>
+                    <span className="tw-p-1 tw-rounded-full tw-bg-white-color tw-inline-block">
+                      <FavoriteIcon className="tw-text-red-600" />
+                    </span>
+                    <span className="tw-pl-2 tw-text-white-color tw-font-semibold">
+                      33.k
+                    </span>
+                  </button>
                 </div>
                 <div className="tw-flex tw-justify-between">
                   <Button
@@ -440,7 +398,10 @@ function LiveScreen(props) {
                       : "none",
                 }}
               >
-                <TipMenuActions modalCtx={modalCtx} />
+                <TipMenuActions
+                  tipMenuActions={tipMenuActions}
+                  setTipMenuActions={setTipMenuActions}
+                />
               </div>
               <div
                 className=""

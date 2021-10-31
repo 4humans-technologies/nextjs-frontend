@@ -13,30 +13,12 @@ function TipAction(props) {
   )
 }
 
-const initialData = [
-  {
-    action: "Dance",
-    price: 100,
-  },
-  {
-    action: "Logo Design",
-    price: 100,
-  },
-  {
-    action: "Sing",
-    price: 500,
-  },
-  {
-    action: "Smile",
-    price: 1000,
-  },
-]
 
-function TipMenuActions() {
-  const [tipMenuActions, setTipMenuActions] = useState([...initialData])
+function TipMenuActions(props) {
+  const { tipMenuActions, setTipMenuActions } = props
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-10 tw-h-full tw-ml-1 tw-pb-4">
-      {tipMenuActions.map((activity, index) => {
+      {tipMenuActions?.length > 0 ? tipMenuActions.map((activity, index) => {
         return (
           <TipAction
             key={`${index}_&*(JK^&)`}
@@ -44,7 +26,11 @@ function TipMenuActions() {
             price={activity.price}
           />
         )
-      })}
+      }) : (
+        <TipAction
+          action={"Not activity added by the model"}
+          price={0}
+        />)}
     </div>
   )
 }
