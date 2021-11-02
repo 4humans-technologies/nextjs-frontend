@@ -24,18 +24,8 @@ function Registration() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const formData = new FormData()
-    formData.append("name", name)
-    formData.append("username", username)
-    formData.append("age", age)
-    formData.append("password", password)
-    formData.append("email", email)
-    formData.append("phone", phone)
-    formData.append("gender", gender)
-    formData.append("profileImage", profile)
-    formData.append("languages", "marwadi")
     // In this get we url from to uplode profile image to s3 bucket ,first get url from server and then use that url to uplode directly to aws
-    const { profile_url } = fetch("url")
+    const { profile_url } = fetch("/api/website/aws/get-s3-upload-url")
       .then((data) => data.uploadUrl)
       .catch((error) => console.log(error))
 
@@ -46,25 +36,40 @@ function Registration() {
         "Content-type": "multipart/form-data",
       },
       body: {
-        formData,
+        profile,
       },
     })
-    // model Creation -------------- //////////////
-    fetch("/api/website/register/model/create", {
-      method: "POST",
-      cors: "include",
-      body: formData,
-    })
       .then((resp) => resp.json())
-      .then((data) => {
-        console.log(data.message)
-        console.log(data)
-        console.log(name, age, email, password, username, phone, gender),
-          SetFormsubmit(true),
-          console.log(formsubmit)
-        router.push("/document")
-      })
-      .catch((err) => console.log(err))
+      .then((data) => console.log(data))
+
+    // Now to send the data to server to make
+    // const formData = new FormData()
+    // formData.append("name", name)
+    // formData.append("username", username)
+    // formData.append("age", age)
+    // formData.append("password", password)
+    // formData.append("email", email)
+    // formData.append("phone", phone)
+    // formData.append("gender", gender)
+    // formData.append("profileImage", profile)
+    // formData.append("languages", "marwadi")
+
+    // // model Creation -------------- //////////////
+    // fetch("/api/website/register/model/create", {
+    //   method: "POST",
+    //   cors: "include",
+    //   body: formData,
+    // })
+    //   .then((resp) => resp.json())
+    //   .then((data) => {
+    //     console.log(data.message)
+    //     console.log(data)
+    //     console.log(name, age, email, password, username, phone, gender),
+    //       SetFormsubmit(true),
+    //       console.log(formsubmit)
+    //     router.push("/document")
+    //   })
+    //   .catch((err) => console.log(err))
   }
 
   return (
@@ -83,7 +88,6 @@ function Registration() {
         <div className="tw-grid sm:tw-grid-cols-2 tw-grid-cols-1  tw-grid-rows-1 sm:tw-w-full   tw-h-full tw-w-[100vw]  ">
           <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-10 tw-pb-10 tw-rounded-md">
             <h1 className="tw-text-3xl tw-font-medium tw-text-white-color tw-mb-4 tw-text-center tw-ml-3 tw-z-20">
-              {" "}
               Registration Model
             </h1>
             <form

@@ -1,7 +1,7 @@
 import useSpinnerContext from "../app/Loading/SpinnerContext"
 import fetchIntercept from "fetch-intercept"
 import { useEffect } from "react"
-import io from "../socket/socket"
+// import io from "../socket/socket"
 import { imageDomainURL, imageDomainHost } from "../../dreamgirl.config"
 const useFetchInterceptor = (isAlreadyIntercepted) => {
   /**
