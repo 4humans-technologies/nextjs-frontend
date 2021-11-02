@@ -41,7 +41,7 @@ function Profile() {
   // s3 bucket image upload
   // to get url from domain and then uplode to aws
   const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
-    (resp) => resp.json()
+    (resp) => resp.uploadUrl
   ) //this is the url where to uplode to aws
 
   // s3 bucket image upload

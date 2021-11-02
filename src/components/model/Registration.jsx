@@ -34,7 +34,21 @@ function Registration() {
     formData.append("gender", gender)
     formData.append("profileImage", profile)
     formData.append("languages", "marwadi")
+    // In this get we url from to uplode profile image to s3 bucket ,first get url from server and then use that url to uplode directly to aws
+    const { profile_url } = fetch("url")
+      .then((data) => data.uploadUrl)
+      .catch((error) => console.log(error))
 
+    // Now use this url to uplode the
+    fetch(profile_url, {
+      method: "PUT",
+      headers: {
+        "Content-type": "multipart/form-data",
+      },
+      body: {
+        formData,
+      },
+    })
     // model Creation -------------- //////////////
     fetch("/api/website/register/model/create", {
       method: "POST",

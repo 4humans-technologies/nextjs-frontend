@@ -26,6 +26,12 @@ function Tip() {
       .then((resp) => resp.json())
       .then((data) => console.log(data))
   }
+
+  // data will be loaded once the Item will mount
+  fetch("url")
+    .then((resp) => resp.json())
+    .then((data) => actionArray(JSON.parse(data)))
+
   return (
     <div>
       <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">

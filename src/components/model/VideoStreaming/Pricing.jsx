@@ -17,19 +17,30 @@ function Pricing() {
     fetch("url", {
       method: "POST",
       headers: {
-        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Content-type": "application/json",
       },
-      body: {
+      body: JSON.stringify({
         video_token: price.private_audio_token,
         audio_toke: price.private_audio_token,
         video_time: price.private_video_time,
         audio_time: price.private_audio_time,
-      },
+      }),
     })
       .then((resp) => resp.json())
       .then((data) => console.log(data))
-      .catch((err) => console.log(error))
+      .catch((error) => console.log(error))
   }
+
+  // now to fetch the data to make to show the data
+
+  fetch("url")
+    .then((resp) => resp.json())
+    .then((data) => {
+      price.private_audio_token(data)
+      price.private_audio_token(data)
+      price.private_video_time(data)
+      price.private_audio_time(data)
+    })
 
   return (
     <div>
@@ -40,7 +51,10 @@ function Pricing() {
         </div>
         <div className="tw-col-span-2">
           <div className="tw-flex ">
-            {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
+            {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2 tw-outline-none"
+             onSelect={(e) => setPrice.private_audio_token(e.targe.value)}
+             name="private_audio_token"
+            >
                 {audio.length > 0
                   ? audio.map((item) => (
                       <option value={item}>
@@ -74,7 +88,10 @@ function Pricing() {
           {/*  */}
 
           <div className="tw-flex  tw-my-2">
-            {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
+            {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2"
+            name="private_video_token"
+              onSelect={(e) => setPrice.private_video_token(e.targe.value)}
+            >
                 {video.length > 0
                   ? video.map((item) => (
                       <option value={item}>
