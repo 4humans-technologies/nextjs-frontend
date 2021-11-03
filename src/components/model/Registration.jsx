@@ -7,12 +7,13 @@ import { useRouter } from "next/router"
 import Logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
+import { useAuthUpdateContext } from "../../app/AuthContext"
+import io from "../../socket/socket"
 
 //Validation is still left in this
 // I did blunder using multiple state ,rather than using single to create it
 function Registration() {
   const router = useRouter()
-  const [formsubmit, SetFormsubmit] = useState(false)
   const [name, setName] = useState("")
   const [username, setuserName] = useState("")
   const [age, setAge] = useState("")
@@ -21,6 +22,9 @@ function Registration() {
   const [phone, setPhone] = useState("")
   const [gender, setGender] = useState("Female")
   const [profile, setProfile] = useState()
+  const [formError, setFormError] = useState(null)
+
+  const updateCtx = useAuthUpdateContext()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -43,14 +47,61 @@ function Registration() {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        console.log(data.message)
-        console.log(data)
-        console.log(name, age, email, password, username, phone, gender),
-          SetFormsubmit(true),
-          console.log(formsubmit)
-        router.push("/document")
+        // login the model also
+        if (data.actionStatus === "success") {
+          localStorage.setItem("jwtToken", data.token)
+          localStorage.setItem(
+            "jwtExpiresIn",
+            Date.now() + data.expiresIn * 60 * 60 * 1000
+          )
+          localStorage.setItem("rootUserId", data.user._id)
+          localStorage.setItem("relatedUserId", data.model._id)
+          localStorage.setItem("userType", data.user.userType)
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...data.user,
+              relatedUser: {
+                ...data.model,
+                wallet: {
+                  ...data.wallet,
+                },
+              },
+            })
+          )
+          updateCtx.updateViewer({
+            rootUserId: data.user._id,
+            relatedUserId: data.model._id,
+            token: data.token,
+            isLoggedIn: true,
+            user: {
+              userType: data.user.userType,
+              user: {
+                ...data.user,
+                relatedUser: {
+                  ...data.model,
+                  wallet: {
+                    ...data.wallet,
+                  },
+                },
+              },
+            },
+            jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
+          })
+          sessionStorage.clear()
+          io.getSocket().close()
+          io.getSocket().open()
+          router.push("/document")
+        }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        if (err.message && err?.data[0]) {
+          /* validator.js error */
+          setFormError(err.data[0].msg)
+        } else if (err.message && !err?.data[0]) {
+          setFormError(err.message)
+        }
+      })
   }
 
   return (
@@ -176,8 +227,14 @@ function Registration() {
                   <option value="Male">Male</option>
                 </select>
               </div>
-
-              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-6">
+              {formError && (
+                <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[260px]">
+                  <div className="tw-text-white-color tw-text-sm">
+                    <span>{formError}</span>
+                  </div>
+                </div>
+              )}
+              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-3">
                 <Button
                   variant="danger"
                   className="tw-rounded-full tw-inline-block tw-w-11/12"

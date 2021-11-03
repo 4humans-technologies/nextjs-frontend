@@ -19,6 +19,9 @@ import io from "../../socket/socket"
 import { imageDomainURL } from "../../../dreamgirl.config"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
+import useSpinnerContext from "../../app/Loading/SpinnerContext"
+import useModalContext from "../../app/ModalContext"
+import CallEndDetails from "../Call/CallEndDetails"
 
 /**
  * If this screen is being mounted then it is understood by default that,
@@ -73,10 +76,13 @@ function ViewerScreen(props) {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
-  const [callDuration, setCallDuration] = useState("05:46") /* in seconds */
+  const spinnerCtx = useSpinnerContext()
+  const modalCtx = useModalContext()
+
+  const [callEndDetails, setCallEndDetails] = useState(null)
 
   const {
-    modelOfflineData,
+    modelProfileData,
     isModelOffline,
     setIsModelOffline,
     setTipMenuActions,
@@ -125,7 +131,7 @@ function ViewerScreen(props) {
       } else {
         newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
       }
-      callTimer.timerElement.innerText = newTime
+      // callTimer.timerElement.innerText = newTime
     }, [1000])
   }, [callTimerRef])
 
@@ -237,7 +243,7 @@ function ViewerScreen(props) {
   /* http fetch request for rtc token */
   useEffect(() => {
     //debugger
-    if (socketCtx.isConnected && !tokenRequestDoneOnce) {
+    if (socketCtx.setSocketSetupDone && !tokenRequestDoneOnce) {
       /* on first load fetch rtcToken and join */
       tokenRequestDoneOnce = true
       if (ctx.isLoggedIn === true) {
@@ -261,8 +267,8 @@ function ViewerScreen(props) {
           })
             .then((resp) => resp.json())
             .then((data) => {
+              props.setModelProfileData(data.theModel)
               if (data?.message === "model not streaming") {
-                props.setModelProfileData(data.theModel)
                 return setIsModelOffline(true)
               }
               setTipMenuActions(data.theModel.tipMenuActions.actions)
@@ -271,7 +277,6 @@ function ViewerScreen(props) {
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
               console.log("model profile 👉👉 ", data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
-              props.setModelProfileData(data.theModel)
               const channel = window.location.pathname.split("/").reverse()[0]
               join(channel, data.rtcToken, ctx.relatedUserId)
               sessionStorage.setItem("streamId", data.streamId)
@@ -316,8 +321,8 @@ function ViewerScreen(props) {
             .then((resp) => resp.json())
             .then((data) => {
               //debugger
+              props.setModelProfileData(data.theModel)
               if (data?.message === "model not streaming") {
-                props.setModelProfileData(data.theModel)
                 return setIsModelOffline(true)
               }
               setTipMenuActions(data.theModel.tipMenuActions.actions)
@@ -325,7 +330,6 @@ function ViewerScreen(props) {
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
               console.log("model profile 👉👉 ", data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
-              props.setModelProfileData(data.theModel)
               const channel = window.location.pathname.split("/").reverse()[0]
               sessionStorage.setItem("streamId", data.streamId)
               join(channel, data.rtcToken, data.unAuthedUserId)
@@ -359,7 +363,7 @@ function ViewerScreen(props) {
     ctx.isLoggedIn,
     ctx.relatedUserId,
     window.location.pathname,
-    socketCtx.isConnected,
+    socketCtx.setSocketSetupDone,
     tokenRequestDoneOnce,
   ])
 
@@ -372,38 +376,30 @@ function ViewerScreen(props) {
 
   const setUpCallListeners = () => {
     const socket = io.getSocket()
+    /* model has put call end request before you */
     if (!socket.hasListeners("model-call-end-request-init-received")) {
       socket.on("model-call-end-request-init-received", async (data) => {
-        /* model has put call end request before you */
         alert("model ended call")
         setCallOnGoing(false)
         setPendingCallEndRequest(true)
         await leaveAndCloseTracks()
         setIsModelOffline(true)
         offCallListeners()
+        /**
+         * now show spinner and wait for call-end-request-finished
+         * do a fetch request in that listener nad fetch the call end details/metrics
+         * then show the call metric/details page/modal
+         */
       })
     }
 
-    // if (!socket.hasListeners("model-call-end-request-finished")) {
-    //   socket.on("model-call-end-request-finished", (data) => {
-    //     /* the after call transaction is now complete, fetch the details of it now */
-    //     fetch("", {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({
-    //         callId: sessionStorage.getItem("callId"),
-    //         callType: callType,
-    //       }),
-    //     })
-    //       .then((res) => res.json())
-    //       .then((data) => {
-    //         setIsModelOffline(true)
-    //       })
-    //       .catch((err) => alert(err.message))
-    //   })
-    // }
+    /* the, after call transaction is now complete, fetch the details of it now */
+    if (!socket.hasListeners("model-call-end-request-finished")) {
+      socket.on("model-call-end-request-finished", (data) => {
+        setCallEndDetails(data.callEndDetails)
+        setPendingCallEndRequest(false)
+      })
+    }
   }
 
   useEffect(() => {
@@ -506,39 +502,54 @@ function ViewerScreen(props) {
 
   /* handle call end */
   const handleCallEnd = async () => {
+    if (pendingCallEndRequest) {
+      return alert(
+        "Your call end request is processing please have patience.... 🙏🎵🎵"
+      )
+    }
+
     if (!callOnGoing && !joinState) {
       return alert("no ongoing call")
     }
+
     const socket = io.getSocket()
+
+    /* inform model viewer has already put call end request, and end the call there also */
     socket.emit("viewer-call-end-request-init-emitted", {
       action: "viewer-has-requested-call-end",
       room: `${sessionStorage.getItem("streamId")}-public`,
     })
-    setCallOnGoing(false)
+
     setPendingCallEndRequest(true)
-    await leaveAndCloseTracks()
-    setIsModelOffline(true)
-    offCallListeners()
-    /* 
-    * commented because of client presentation
-    *
-    * fetch("/api/website/stream/handle-call-end-from-viewer", {
+    /* show spinner */
+    spinnerCtx.setShowSpinner(true, "Processing transaction...")
+    //  commented because of client presentation
+    fetch("/api/website/stream/handle-call-end-from-viewer", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        callId: callId,
+        callId: sessionStorage.getItem("callId"),
         callType: callType,
         endTimeStamp: Date.now(),
         streamId: sessionStorage.getItem("streamId"),
       }),
     })
       .then((res) => res.json())
-      .then((data) => {})
+      .then(async (data) => {
+        if (data.wasFirst === "no") {
+          /* wait for the */
+        }
+        setCallOnGoing(false)
+        await leaveAndCloseTracks()
+        setIsModelOffline(true)
+        offCallListeners()
+        setPendingCallEndRequest(false)
+        modalCtx.showModalWithContent(<CallEndDetails theCall={data.theCall} />)
+        spinnerCtx.setShowSpinner(false, "Please wait...")
+      })
       .catch((err) => alert(err.message))
-    * 
-    */
 
     /**
      * 1. close agora streaming first
@@ -560,7 +571,7 @@ function ViewerScreen(props) {
       {callOnGoing && (
         <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[390] tw-backdrop-blur">
           <p id="call-timer" className="tw-text-center text-white">
-            00:00
+            LIVE
           </p>
         </div>
       )}
@@ -590,7 +601,7 @@ function ViewerScreen(props) {
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
               <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
                 <img
-                  src={imageDomainURL + modelOfflineData.profileImage}
+                  src={imageDomainURL + modelProfileData.profileImage}
                   alt=""
                   className="tw-h-[100px] tw-w-[100px] md:tw-h-[150px] md:tw-w-[150px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
                 />
@@ -613,13 +624,13 @@ function ViewerScreen(props) {
 
       {/* not streaming && not on call | model circles | offline mode*/}
       {/* model image */}
-      {isModelOffline && (
+      {isModelOffline && modelProfileData && (
         <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
           <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
               <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
                 <img
-                  src={imageDomainURL + modelOfflineData.profileImage}
+                  src={imageDomainURL + modelProfileData.profileImage}
                   alt=""
                   className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
                 />
@@ -631,10 +642,10 @@ function ViewerScreen(props) {
 
       {/* not streaming && not on call | model circles | offline mode*/}
       {/* model offline status */}
-      {isModelOffline && !callOnGoing ? (
+      {isModelOffline && !callOnGoing && modelProfileData ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-4 md:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(255,255,255,0.1)]">
           <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
-            {modelOfflineData.offlineStatus}
+            {modelProfileData.offlineStatus}
           </p>
         </div>
       ) : null}
@@ -685,7 +696,8 @@ function ViewerScreen(props) {
           </button>
         </div>
       )}
-      {!callOnGoing && !isModelOffline && remoteUsers?.length > 0 && (
+
+      {
         <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
           <button className="tw-inline-block tw-mx-2 tw-z-[390]">
             <MicOffIcon fontSize="medium" style={{ color: "white" }} />
@@ -704,7 +716,7 @@ function ViewerScreen(props) {
             )}
           </button>
         </div>
-      )}
+      }
     </div>
   )
 }

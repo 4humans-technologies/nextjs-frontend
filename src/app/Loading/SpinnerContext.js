@@ -1,20 +1,20 @@
-import React, { useContext, createContext, useState } from "react";
-import Spinner from "../../components/UI/Spinner";
+import React, { useContext, createContext, useState } from "react"
+import Spinner from "../../components/UI/Spinner"
 const SpinnerContext = createContext({
   isLoading: false,
-  setShowSpinner: () => {},
+  setShowSpinner: (showSpinner, loadText) => {},
   setLoading: () => {},
-});
+})
 
 export function SpinnerContextProvider(props) {
-  const [isLoading, setLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState("Please Wait...");
+  const [isLoading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState("Please Wait...")
   const setShowSpinner = (showSpinner, loadText) => {
-    setLoading(showSpinner);
+    setLoading(showSpinner)
     if (loadText) {
-      setLoadingText(loadText);
+      setLoadingText(loadText)
     }
-  };
+  }
   return (
     <SpinnerContext.Provider
       value={{
@@ -26,9 +26,9 @@ export function SpinnerContextProvider(props) {
       {isLoading && <Spinner loadingText={loadingText} />}
       {props.children}
     </SpinnerContext.Provider>
-  );
+  )
 }
 
 export default function useSpinnerContext() {
-  return useContext(SpinnerContext);
+  return useContext(SpinnerContext)
 }

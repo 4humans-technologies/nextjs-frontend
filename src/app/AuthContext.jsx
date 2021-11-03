@@ -1,6 +1,8 @@
 import { useRouter } from "next/router"
 import React, { useCallback } from "react"
 import { createContext, useContext, useState, useEffect } from "react"
+import io from "../socket/socket"
+import { imageDomainURL } from "../../dreamgirl.config"
 
 const initialState = {
   rootUserId: null,
@@ -67,7 +69,6 @@ export const AuthContextProvider = ({ children }) => {
   }
 
   const logout = () => {
-    router.replace("/")
     localStorage.removeItem("jwtToken")
     localStorage.removeItem("jwtExpiresIn")
     localStorage.removeItem("rootUserId")
@@ -86,6 +87,9 @@ export const AuthContextProvider = ({ children }) => {
       jwtToken: "",
       rtcToken: "",
     })
+    io.getSocket().close()
+    io.getSocket().open()
+    router.replace("/")
   }
 
   const readFromLocalStorage = () => {

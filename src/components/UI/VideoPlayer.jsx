@@ -19,7 +19,7 @@ function VideoPlayer({ videoTrack, audioTrack, playAudio }) {
   return (
     <div
       ref={container}
-      className="video-player tw-absolute tw-pointer-events-none tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-z-auto"
+      className="video-player tw-absolute tw-pointer-events-none tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-z-10"
     ></div>
   )
 }

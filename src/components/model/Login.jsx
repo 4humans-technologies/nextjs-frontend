@@ -69,10 +69,10 @@ function Login() {
           })
           //debugger
           sessionStorage.clear()
-          // io.getSocket().close()
+          io.getSocket().close()
+          io.getSocket().open()
           // io.connect(imageDomainURL)
           /* don't think it is re-creating handshake object for re-connection */
-          // io.getSocket().open()
 
           // 👇👇 abhi ke liye is feature ko pause pe rakhaa hai bro
           // router.push(ctx.loginSuccessUrl)

@@ -38,6 +38,7 @@ import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
+import useSpinnerContext from "../../app/Loading/SpinnerContext"
 // /api/website/token-builder/create-stream-and-gen-token
 
 // Replace with your App ID.
@@ -89,6 +90,7 @@ const pendingCallInitialData = {
 function Live() {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
+  const spinnerCtx = useSpinnerContext()
   const [fullScreen, setFullScreen] = useState(false)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [pendingCallRequest, setPendingCallRequest] = useState({
@@ -266,30 +268,6 @@ function Live() {
     }
   }, [startStreamTimer, joinState, callOnGoing, streamTimerRef])
 
-  const onUnMountEndStream = useCallback(() => {
-    fetch("/api/website/stream/handle-stream-end", {
-      method: "POST",
-      cors: "include",
-      keepalive: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        streamId: sessionStorage.getItem("streamId"),
-        reason: "Manual",
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        alert(data.message)
-        sessionStorage.setItem("liveNow", "false")
-        leaveAndCloseTracks()
-      })
-      .catch((err) =>
-        alert("Stream was not ended successfully! " + err.message)
-      )
-  }, [])
-
   const requestServerEndAndStreamLeave = useCallback((joinStatus = true) => {
     if (!joinStatus) {
       return
@@ -330,8 +308,10 @@ function Live() {
 
   useEffect(() => {
     return () => {
-      requestServerEndAndStreamLeaveRef.current()
-      leaveAndCloseTracksRef.current()
+      if (sessionStorage.getItem("liveNow") === "true") {
+        requestServerEndAndStreamLeaveRef.current()
+        leaveAndCloseTracksRef.current()
+      }
       clearInterval(streamTimerRef.current)
       clearInterval(callTimerRef.current)
     }
@@ -402,6 +382,9 @@ function Live() {
     if (socket.hasListeners("viewer-call-end-request-init-received")) {
       socket.off("viewer-call-end-request-init-received")
     }
+    if (socket.hasListeners("viewer-call-end-request-finished")) {
+      socket.off("viewer-call-end-request-finished")
+    }
   }
 
   const setUpCallListeners = () => {
@@ -414,6 +397,14 @@ function Live() {
         setPendingCallEndRequest(true)
         await leaveAndCloseTracks()
         offCallListeners()
+      })
+    }
+
+    /*  */
+    if (!socket.hasListeners("viewer-call-end-request-finished")) {
+      socket.on("viewer-call-end-request-finished", (data) => {
+        setCallEndDetails(data.callEndDetails)
+        setPendingCallEndRequest(false)
       })
     }
   }
@@ -496,18 +487,48 @@ function Live() {
   }, [socketCtx.socketSetupDone])
 
   const handleCallEnd = async () => {
+    if (pendingCallEndRequest) {
+      return alert(
+        "Your call end request is processing please have patience.... 🙏🎵🎵"
+      )
+    }
+
     if (!callOnGoing && !joinState) {
       return alert("no ongoing call")
     }
+
     const socket = io.getSocket()
     socket.emit("model-call-end-request-init-emitted", {
       action: "model-has-requested-call-end",
       room: `${sessionStorage.getItem("streamId")}-public`,
     })
-    setCallOnGoing(false)
+
+    spinnerCtx.setShowSpinner(true, "Processing transaction...")
     setPendingCallEndRequest(true)
-    await leaveAndCloseTracks()
-    offCallListeners()
+
+    fetch("/api/website/stream/handle-call-end-from-model", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        callId: sessionStorage.getItem("callId"),
+        callType: callType,
+        endTimeStamp: Date.now(),
+        streamId: sessionStorage.getItem("streamId"),
+      }),
+    })
+      .then((res) => res.json())
+      .then(async (data) => {
+        if (data.wasFirst === "no") {
+          /* */
+        }
+        setCallOnGoing(false)
+        setPendingCallEndRequest(true)
+        await leaveAndCloseTracks()
+        offCallListeners()
+        setPendingCallEndRequest(true)
+      })
   }
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (

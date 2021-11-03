@@ -189,6 +189,7 @@ function LiveScreen(props) {
       <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
         <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-6/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
+
           <ViewerScreen
             setIsChatPlanActive={setIsChatPlanActive}
             setCallOnGoing={setCallOnGoing}
@@ -201,10 +202,11 @@ function LiveScreen(props) {
             callType={callType}
             pendingCallRequest={pendingCallRequest}
             isModelOffline={isModelOffline}
-            modelOfflineData={props.modelProfileData}
+            modelProfileData={props.modelProfileData}
             pendingCallEndRequest={pendingCallEndRequest}
             setPendingCallEndRequest={setPendingCallEndRequest}
           />
+
           {!callOnGoing ? (
             <div className=" tw-bg-second-color tw-w-full tw-absolute tw-bottom-0 tw-py-3 tw-px-2 tw-z-[300]">
               <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">

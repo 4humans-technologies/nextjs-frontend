@@ -7,6 +7,8 @@ import Sidebar from "../../components/Mainpage/Sidebar"
 import LiveScreen from "../../components/model/LiveScreen"
 import ModelProfile from "../../components/model/ModelProfile"
 import Recommendation from "../../components/ViewerScreen/Recommendation"
+import CallEndDetails from "../../components/Call/CallEndDetails"
+
 function ViewModelStream() {
   // 👇👇👇 store the models profile value in a state here
   const [modelProfileData, setModelProfileData] = useState(null)
@@ -16,7 +18,10 @@ function ViewModelStream() {
       <Header />
       {/* <SecondHeader /> */}
       <Sidebar />
-      <LiveScreen setModelProfileData={setModelProfileData} modelProfileData={modelProfileData} />
+      <LiveScreen
+        setModelProfileData={setModelProfileData}
+        modelProfileData={modelProfileData}
+      />
       {modelProfileData && (
         <ModelProfile
           profileData={{
@@ -48,6 +53,7 @@ function ViewModelStream() {
           ]}
         />
       )}
+      {/* <CallEndDetails /> */}
       <Recommendation parent={"viewerScreen"} />
       <Footer />
     </>

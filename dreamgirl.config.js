@@ -1,5 +1,5 @@
-export const imageDomainURL = "http://localhost:8080"
-export const imageDomainHost = "localhost"
+export const imageDomainURL = "https://dreamgirl-backend.in.ngrok.io"
+export const imageDomainHost = "dreamgirl-backend.in.ngrok.io"
 
 /* Vishal prajapati network - http */
 // export const imageDomainURL = "http://192.168.1.104:8080"
@@ -14,5 +14,5 @@ export const imageDomainHost = "localhost"
 // export const imageDomainHost = "192.168.1.104"
 
 /* Airtel asuz network */
-// export const imageDomainURL = "http://274b-103-238-106-157.ngrok.io"
-// export const imageDomainHost = "274b-103-238-106-157.ngrok.io"
+// export const imageDomainURL = "https://9e7b-103-238-107-91.ngrok.io"
+// export const imageDomainHost = "9e7b-103-238-107-91.ngrok.io"

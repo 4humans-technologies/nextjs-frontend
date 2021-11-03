@@ -10,8 +10,9 @@ import { Button } from "react-bootstrap"
 import Logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
+import io from "../../socket/socket"
 
-function Signup() {
+function SignUp() {
   const modalCtx = useModalContext()
 
   const [email, setEmail] = useState(
@@ -26,7 +27,8 @@ function Signup() {
   const [gender, setGender] = useState("Female")
   const [name, setName] = useState("")
 
-  const ctx = useAuthContext()
+  const [formError, setFormError] = useState(null)
+
   const updateCtx = useAuthUpdateContext()
   const router = useRouter()
 
@@ -48,22 +50,32 @@ function Signup() {
       }),
     })
       .then((resp) => resp.json())
-      .then(
-        (data) =>
-          updateCtx.updateViewer(
-            {
-              rootUserId: data.user._id,
-              relatedUserId: data.user.relatedUser._id,
-              user: data.user,
-            },
-            () => {
-              router.replace("/")
-            }
-          )
-        //redirect to home page
-      )
-
-      .catch((err) => console.log(err))
+      .then((data) => {
+        updateCtx.updateViewer({
+          rootUserId: data.user._id,
+          relatedUserId: data.user.relatedUser._id,
+          isLoggedIn: true,
+          token: data.token,
+          user: {
+            userType: data.user.userType,
+            user: data.user,
+          },
+          jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
+        })
+        sessionStorage.clear()
+        io.getSocket().close()
+        io.getSocket().open()
+        router.replace("/")
+      })
+      .catch((err) => {
+        if (err.message && err?.data[0]) {
+          /* validator.js error */
+          setFormError(err.data[0].msg)
+        }
+        if (err.message && !err?.data[0]) {
+          setFormError(err.message)
+        }
+      })
   }
 
   return (
@@ -150,8 +162,14 @@ function Signup() {
                   <option value="male">Male</option>
                 </select>
               </div>
-
-              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-6">
+              {formError && (
+                <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[260px]">
+                  <div className="tw-text-white-color tw-text-sm">
+                    <span>{formError}</span>
+                  </div>
+                </div>
+              )}
+              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-3">
                 <Button
                   variant="danger"
                   className="tw-rounded-full tw-inline-block tw-w-11/12"
@@ -198,4 +216,4 @@ function Signup() {
   )
 }
 
-export default Signup
+export default SignUp
