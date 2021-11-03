@@ -130,6 +130,13 @@ const CoverUpdate = () => {
   const changeCover = (e) => {
     setCoverImage(URL.createObjectURL(e.target.files[0]))
   }
+  // Cover photo to aws
+  const res = await fetch("/api/website/aws/get-s3-upload-url")
+  const data_2 = await res.json()
+  const cover_url = await data_2.uploadUrl
+
+  // Now use this url to uploade to serve using url
+
   return (
     <div className="tw-bg-first-color ">
       <CancelIcon
@@ -158,6 +165,11 @@ const ProfileUpdate = () => {
   const changeCover = (e) => {
     setCoverImage(URL.createObjectURL(e.target.files[0]))
   }
+  // Profile pic to aws
+  const res = await fetch("/api/website/aws/get-s3-upload-url")
+  const data_2 = await res.json()
+  const profile_url = await data_2.uploadUrl
+
   return (
     <div className="tw-bg-first-color ">
       <CancelIcon

@@ -22,43 +22,47 @@ function Registration() {
   const [gender, setGender] = useState("Female")
   const [profile, setProfile] = useState()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     // In this get we url from to uplode profile image to s3 bucket ,first get url from server and then use that url to uplode directly to aws
-    const { profile_url } = fetch("/api/website/aws/get-s3-upload-url")
-      .then((data) => data.uploadUrl)
-      .catch((error) => console.log(error))
+    const res = await fetch("/api/website/aws/get-s3-upload-url")
+    const data_2 = await res.json()
+    const profile_url = await data_2.uploadUrl
+
+    console.log(`This is profile url bro ${profile_url}`)
 
     // Now use this url to uplode the
-    fetch(profile_url, {
+    let form_data = new FormData()
+    form_data.append("profile_image", profile)
+
+    const resp = await fetch(profile_url, {
       method: "PUT",
       headers: {
         "Content-type": "multipart/form-data",
       },
-      body: {
-        profile,
-      },
+      body: profile,
     })
-      .then((resp) => resp.json())
-      .then((data) => console.log(data))
+    console.log(resp)
 
-    // Now to send the data to server to make
-    // const formData = new FormData()
-    // formData.append("name", name)
-    // formData.append("username", username)
-    // formData.append("age", age)
-    // formData.append("password", password)
-    // formData.append("email", email)
-    // formData.append("phone", phone)
-    // formData.append("gender", gender)
-    // formData.append("profileImage", profile)
-    // formData.append("languages", "marwadi")
+    // const result = await data_3
+    // console.log(data_3)
+    // console.log(resp.body)
 
-    // // model Creation -------------- //////////////
+    // // model Creation --------------
+    // Now profile is url and you have to fetch the data from aws for profile image
     // fetch("/api/website/register/model/create", {
     //   method: "POST",
     //   cors: "include",
-    //   body: formData,
+    //   body: JSON.stringify({
+    //     name,
+    //     username,
+    //     age,
+    //     phone,
+    //     gender,
+    //     languages,
+    //     email,
+    //     profile: data_1,
+    //   }),
     // })
     //   .then((resp) => resp.json())
     //   .then((data) => {

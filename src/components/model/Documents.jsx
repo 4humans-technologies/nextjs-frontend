@@ -13,15 +13,19 @@ function Documents() {
   const [videoSource, setVideoSource] = useState("/pp.jpg")
 
   //submit handler to send data
-  const submitHandler = async () => {
+  const submitHandler = async (e) => {
+    e.preventDefault()
     let data = new FormData()
     data.append("document_1", source)
     data.append("document_2", videoSource)
     // s3 bucket image upload
     // to get url from domain and then uplode to aws
-    const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
-      (data) => data.uploadUrl
-    )
+    const resp = await fetch("/api/website/aws/get-s3-upload-url")
+    const raw_url = await resp.json()
+    const url = await raw_url.uploadUrl
+
+    // is it possible to uplode the two images together in s3 bucket. Thats what I want to get that
+
     let respose = await fetch(url, {
       method: "PUT",
       headers: {
@@ -31,7 +35,7 @@ function Documents() {
         data,
       },
     })
-    let result = await respose.json()
+    let result = await respose
     return result
   }
   // this data need to be send to server for to store at the server
