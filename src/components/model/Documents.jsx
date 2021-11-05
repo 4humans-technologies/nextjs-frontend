@@ -14,10 +14,11 @@ function Documents() {
 
   //submit handler to send data
   const submitHandler = async (e) => {
-    e.preventDefault()
+    // e.preventDefault()
     let data = new FormData()
     data.append("document_1", source)
     data.append("document_2", videoSource)
+
     // s3 bucket image upload
     // to get url from domain and then uplode to aws
     const resp = await fetch("/api/website/aws/get-s3-upload-url")
@@ -42,15 +43,16 @@ function Documents() {
   submitHandler().then((data) => console.log(data))
 
   return (
-    <div className="tw-bg-black  tw-h-[100vh] tw-text-white tw-text-center ">
+    <div className="tw-bg-first-color  tw-h-[100vh] tw-text-white tw-text-center ">
       <Header />
       <div className="tw-bg-third-color md:tw-w-1/2 tw-gap-2 md:tw-ml-[28%] tw-ml-0 md:tw-top-[20%] tw-mt-0 md:tw-absolute  document_rows_main tw-rounded-t-2xl tw-rounded-b-2xl">
-        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0 tw-bg-second-color tw-m-4  ">
-          <div className="tw-bg-gray-400 ">
+        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0   tw-m-4  ">
+          <div className=" ">
             <div className=" tw-min-h-full tw-relative tw-pt-4">
               {/* file input */}
               <input
                 type="file"
+                accept="image/png, image/jpeg"
                 name="document_1"
                 id="file-input"
                 className="file-input__input"
@@ -80,25 +82,26 @@ function Documents() {
                 </svg>
                 <span>Upload file</span>
               </label>
-              <p className="md:tw-absolute md:tw-top-1/2 md:tw-left-1/4 ">
+              <p className="md:tw-absolute md:tw-top-1/2 md:tw-left-1/3 tw-mt-3">
                 Uplode Your Id card
               </p>
             </div>
           </div>
-          <div className="tw-bg-gray-400 ">
+          <div className=" ">
             <img
               id="output"
               src={videoSource}
-              className=" tw-w-full tw-h-full md:tw-px-4 md:tw-py-8"
+              className=" tw-w-full tw-h-full  md:tw-py-4"
             />
           </div>
         </div>
         {/* change of department */}
-        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0 tw-bg-second-color tw-m-4 ">
-          <div className="tw-bg-gray-400  ">
+        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0  tw-m-4 ">
+          <div className="  ">
             <div className=" tw-min-h-full tw-relative tw-pt-4 ">
               <input
                 type="file"
+                accept="image/png, image/jpeg"
                 name="document_2"
                 id="file-input_1"
                 className="file-input__input"
@@ -128,22 +131,23 @@ function Documents() {
                 </svg>
                 <span>Upload file</span>
               </label>
-              <p className="md:tw-absolute md:tw-top-1/2 md:tw-left-1/4">
+              <p className="md:tw-absolute md:tw-top-1/2 md:tw-left-1/4 tw-mt-3">
                 Uplode self with Id card
               </p>
             </div>
           </div>
-          <div className="tw-bg-gray-400">
+          <div className="">
             <img
               id="output"
               src={source}
-              className=" tw-w-full tw-h-full md:tw-px-4 md:tw-py-8"
+              className=" tw-w-full tw-h-full  tw-py-4"
             />
           </div>
         </div>
-        <div className='tw-justify-center"'>
+        {/* Once this happens the there will be modal that will be pop out and make it to send conformation on to the client */}
+        <div className="tw-justify-center tw-outline-none">
           <Button
-            className="tw-w-1/3 tw-justify-center tw-mt-4 "
+            className="tw-w-1/3 tw-justify-center tw-mt-4 tw-bg-green-color hover:tw-bg-green-color tw-rounded-full tw-outline-none"
             onClick={() => submitHandler}
           >
             submit request

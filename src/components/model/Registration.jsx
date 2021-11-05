@@ -25,55 +25,57 @@ function Registration() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     // In this get we url from to uplode profile image to s3 bucket ,first get url from server and then use that url to uplode directly to aws
-    const res = await fetch("/api/website/aws/get-s3-upload-url")
+    const res = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + profile.type
+    )
     const data_2 = await res.json()
     const profile_url = await data_2.uploadUrl
 
-    console.log(`This is profile url bro ${profile_url}`)
+    // console.log(`This is profile url bro ${profile_url}`)
+    // console.log(`This is profile url bro ${profile_url.split("?")[0]}`)
 
     // Now use this url to uplode the
-    let form_data = new FormData()
-    form_data.append("profile_image", profile)
 
     const resp = await fetch(profile_url, {
       method: "PUT",
-      headers: {
-        "Content-type": "multipart/form-data",
-      },
+      // When I was using multipart form data the data needed to be downloaded
       body: profile,
     })
-    console.log(resp)
 
-    // const result = await data_3
-    // console.log(data_3)
-    // console.log(resp.body)
+    console.log(resp.ok)
 
     // // model Creation --------------
     // Now profile is url and you have to fetch the data from aws for profile image
-    // fetch("/api/website/register/model/create", {
-    //   method: "POST",
-    //   cors: "include",
-    //   body: JSON.stringify({
-    //     name,
-    //     username,
-    //     age,
-    //     phone,
-    //     gender,
-    //     languages,
-    //     email,
-    //     profile: data_1,
-    //   }),
-    // })
-    //   .then((resp) => resp.json())
-    //   .then((data) => {
-    //     console.log(data.message)
-    //     console.log(data)
-    //     console.log(name, age, email, password, username, phone, gender),
-    //       SetFormsubmit(true),
-    //       console.log(formsubmit)
-    //     router.push("/document")
-    //   })
-    //   .catch((err) => console.log(err))
+    if (!resp.ok) {
+      return alert("Betaa data is wrong")
+    }
+
+    imageUrl = profile_url.split("?")[0]
+
+    fetch("/api/website/register/model/create", {
+      method: "POST",
+      cors: "include",
+      body: JSON.stringify({
+        name,
+        username,
+        age,
+        phone,
+        gender,
+        languages,
+        email,
+        profile: imageUrl,
+      }),
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        console.log(data.message)
+        console.log(data)
+        console.log(name, age, email, password, username, phone, gender),
+          SetFormsubmit(true),
+          console.log(formsubmit)
+        router.push("/document")
+      })
+      .catch((err) => console.log(err))
   }
 
   return (

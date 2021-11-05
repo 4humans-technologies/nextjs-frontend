@@ -13,6 +13,9 @@ import {
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import Header from "../Mainpage/Header"
+import { urlAlphabet } from "nanoid"
+import { width } from "dom-helpers"
 
 function Profile() {
   const [checked, setChecked] = useState(false)
@@ -40,9 +43,9 @@ function Profile() {
 
   // s3 bucket image upload
   // to get url from domain and then uplode to aws
-  const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
-    (resp) => resp.uploadUrl
-  ) //this is the url where to uplode to aws
+  // const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
+  //   (resp) => resp.uploadUrl
+  // ) //this is the url where to uplode to aws
 
   // s3 bucket image upload
 
@@ -53,9 +56,9 @@ function Profile() {
       URL.createObjectURL(e.target.files[0]),
     ])
     // to get url from domain and then uplode to aws
-    const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
-      (resp) => resp.json() //this is the url where to uplode to aws
-    )
+    // const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
+    //   (resp) => resp.json() //this is the url where to uplode to aws
+    // )
     let req = await fetch("url", {
       method: "PUT",
       headers: {
@@ -156,17 +159,22 @@ function Profile() {
   return (
     <div>
       {/* Cover page */}
-      <div className="tw-w-screen tw-relative  ">
-        <img
-          src="/swami_ji.jpg"
-          className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
-        />
+      <Header />
+
+      <div
+        className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
+        style={{
+          backgroundImage: `url(/swami_ji.jpg)`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+        }}
+      >
         <p
-          className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full "
+          className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full tw-cursor-pointer"
           onClick={() => modalCtx.showModalWithContent(<CoverUpdate />)}
         >
           <CreateIcon className="tw-mr-2" />
-          Background
+          Edit Background
         </p>
       </div>
       {/* corcle for profile picture */}
@@ -176,7 +184,7 @@ function Profile() {
           src="/pp.jpg"
         ></img>
         <CreateIcon
-          className="tw-ml-24 tw-mt-14 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full "
+          className="tw-ml-24 tw-mt-14 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
           fontSize="medium"
           onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
         />
@@ -186,7 +194,7 @@ function Profile() {
       </div>
       {/* horizontal bar */}
       {/* Profile compy from grid */}
-      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background">
+      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background tw-w-screen">
         <div className="md:tw-col-span-4 tw-col-span-1">
           <div className="  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
             <h1 className="tw-ml-4">My Information</h1>
@@ -433,108 +441,7 @@ function Profile() {
             </div>
             {/* Call History */}
             {/* give width and apply scroll-y this is still not implimented */}
-            <table className="tw-border-solid  tw-border-4 tw-text-center tw-mt-8 tw-w-full tw-bg-first-color">
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4 tw-px-2">
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4  ">
-                  No
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Date Joined
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Call Type
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Duration
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Rate
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Viewer
-                </th>
-              </tr>
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  1
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  2
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  3
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  4
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  5
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  6
-                </td>
-              </tr>
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4 tw-text-center">
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  1
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  2
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  3
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  4
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  5
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  6
-                </td>
-              </tr>
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  1
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  2
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  3
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  4
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  5
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  6
-                </td>
-              </tr>
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  1
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  2
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  3
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  4
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  5
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  6
-                </td>
-              </tr>
-            </table>
+
             {/* Call History */}
           </div>
           {/* Scroll */}
@@ -543,7 +450,6 @@ function Profile() {
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             <div className="tw-flex tw-justify-between">
               <h1>My Photos</h1>
-              <CreateIcon className="tw-mr-2 tw-underline tw-text-white" />
             </div>
             {/* Make Model Clickeble in model */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1  tw-flex tw-flex-wrap tw-justify-around tw-py-4">
@@ -590,7 +496,6 @@ function Profile() {
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
             <div className="tw-flex tw-justify-between">
               <h1>My videos</h1>
-              <CreateIcon className="tw-mr-2 tw-underline tw-text-white" />
             </div>
             {/* Make Model Clickeble in model */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1  tw-flex tw-flex-wrap tw-justify-around tw-py-4">
@@ -670,7 +575,7 @@ function Profile() {
               })}
             </form>
             <Button
-              className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
+              className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full "
               onClick={() => setDynamicData((prev) => [...prev, 1])}
             >
               add new action
@@ -682,9 +587,8 @@ function Profile() {
               Save
             </Button>
           </div>
-          <div>
-            <Callhistory />
-          </div>
+          <div>{/* <Callhistory /> */}</div>
+          {/* Bro in this call table and history has been removed,so you have to check all the thing carefully before procedure */}
         </div>
       </div>
     </div>

@@ -16,9 +16,9 @@ const EmailChange = (props) => {
         headers: {
           "Content-type": "application/json",
         },
-        body: {
-          newMail: email.newEmail,
-        },
+        body: JSON.stringify({
+          email: email.newEmail,
+        }),
       })
         .then((resp) => resp.json())
         .then((data) => console.log(data))
@@ -71,9 +71,9 @@ const PasswordChange = (props) => {
       headers: {
         "Content-type": "application/json",
       },
-      body: {
+      body: JSON.stringify({
         Password: password.newPasswod,
-      },
+      }),
     })
       .then((resp) => resp.json())
       .then((data) => console.log(data))
@@ -127,13 +127,43 @@ const PasswordChange = (props) => {
 const CoverUpdate = () => {
   const [coverImage, setCoverImage] = useState("")
   const modelCtx = useModalContext()
-  const changeCover = (e) => {
+  const changeCover = async (e) => {
     setCoverImage(URL.createObjectURL(e.target.files[0]))
+    // To send image to url and the make things possible
+    // There I have to send with type of url that we uplode
+    const res = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + coverImage.type
+    )
+    const data_2 = await res.json()
+    const cover_url = await data_2.uploadUrl
+
+    console.log(`Bro this is cover page url, ${cover_url.split("?")[0]}`) //The place where it needed to be uploded
+
+    // Then this uplode uplode the Image in the S3 bucket
+    const resp = await fetch("cover_url", {
+      method: "PUT",
+      body: coverImage,
+    })
+    console.log(resp)
+
+    // if response is 200 then send the data to your own server
+    if (!resp.ok) {
+      return alert("What is this Bakloli")
+    }
+    coverUrl = cover_url.split("?")[0]
+    const re = await fetch("url", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify({
+        coverImage: coverUrl,
+      }),
+    })
+    const jsonResp = await re.json()
+    console.log(jsonResp)
   }
-  // Cover photo to aws
-  const res = await fetch("/api/website/aws/get-s3-upload-url")
-  const data_2 = await res.json()
-  const cover_url = await data_2.uploadUrl
 
   // Now use this url to uploade to serve using url
 
@@ -162,13 +192,40 @@ const CoverUpdate = () => {
 const ProfileUpdate = () => {
   const [coverImage, setCoverImage] = useState("")
   const modelCtx = useModalContext()
-  const changeCover = (e) => {
+  const changeCover = async (e) => {
     setCoverImage(URL.createObjectURL(e.target.files[0]))
+    // this is ton get the url for the aws server to image uplode
+    const res = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + coverImage.type
+    )
+    const data_2 = await res.json()
+    const profile_url = await data_2.uploadUrl
+
+    // this to send the data to aws server and get the url
+    const resp = await fetch(profile_url, {
+      method: "PUT",
+      body: coverImage,
+    })
+    console.log(resp)
+    if (!resp.ok) {
+      return alert("OK BRO")
+    }
+
+    profileUrl = profile_url.split("?")[0]
+    // take this url from the aws and send it to your serve to access it in the future
+    const re = await fetch("url", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        profile: profileImage,
+      }),
+    })
+    const jsonRe = await re.json()
+    console.log(jsonRe)
   }
   // Profile pic to aws
-  const res = await fetch("/api/website/aws/get-s3-upload-url")
-  const data_2 = await res.json()
-  const profile_url = await data_2.uploadUrl
 
   return (
     <div className="tw-bg-first-color ">
