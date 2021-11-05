@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react"
 import CreateIcon from "@material-ui/icons/Create"
-import Card from "../UI/Card"
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
-import { Tooltip } from "react-bootstrap"
-import help from "../UI/help"
-import { OverlayTrigger } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
-// import CoverUpdate from "./Userdata/Coverpage"
-import CancelIcon from "@material-ui/icons/Cancel"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext" // <-- AuthContext
+
 import {
   EmailChange,
   PasswordChange,
@@ -18,7 +13,8 @@ import {
 function UserProfile() {
   const [followerData, setFollowerData] = useState([])
   const modelCtx = useModalContext()
-  
+  const authCtx = useAuthContext()
+
   const [userDetails, setuserDetails] = useState(null)
 
   useEffect(() => {
@@ -62,6 +58,8 @@ function UserProfile() {
           onClick={() => modelCtx.showModalWithContent(<ProfileUpdate />)}
         />
         <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44 tw-pt-4 ">
+          {authCtx && authCtx.user.name}{" "}
+          {/* <-- AuthContext * user name from context as it login */}
           Neeraj Rai
         </div>
       </div>

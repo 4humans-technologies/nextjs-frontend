@@ -78,10 +78,7 @@ const streamTimer = {
 function Live() {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
-  // const updateCtx = useAuthUpdateContext()
-  // const modalCtx = useModalContext()
-  // const [fullScreen, setFullScreen] = useState(false)
-  // const [value, setValue] = React.useState(30)
+
   let screenWidth = useWidth()
   const updateCtx = useAuthUpdateContext()
   const modalCtx = useModalContext()

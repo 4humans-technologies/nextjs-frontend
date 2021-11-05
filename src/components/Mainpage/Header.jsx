@@ -52,6 +52,15 @@ function Header(props) {
       .then((data) => setSearchData(data.products))
   }, [query])
 
+  // this is where data will be fetch for the profile and image that is require in header
+
+  // first data will be get by the context
+  // useEffect(() => {
+  //   if (authContext.user) {
+  //     setHeaderProfileShow(true)
+  //   }
+  // }, [authContext.user])
+
   return (
     <div>
       <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 tw-py-4 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[410]">
@@ -186,7 +195,7 @@ function Header(props) {
                               headerProfileShow ? "" : "tw-hidden"
                             }`}
                           >
-                            <Headerprofile type="Viewer" />
+                            <Headerprofile userType="Viewer" />
                           </div>
                           {/* profile */}
                         </div>
@@ -224,7 +233,7 @@ function Header(props) {
                               headerProfileShow ? "" : "tw-hidden"
                             }`}
                           >
-                            <Headerprofile type="Model" />
+                            <Headerprofile userType="Model" />
                           </div>
                           {/* Profile  */}
                         </div>

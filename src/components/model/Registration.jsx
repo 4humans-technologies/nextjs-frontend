@@ -50,20 +50,24 @@ function Registration() {
       return alert("Betaa data is wrong")
     }
 
-    imageUrl = profile_url.split("?")[0]
+    const imageUrl = profile_url.split("?")[0]
 
     fetch("/api/website/register/model/create", {
       method: "POST",
       cors: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name,
         username,
         age,
         phone,
         gender,
-        languages,
+        password,
+        languages: "Bhojpuri",
         email,
-        profile: imageUrl,
+        profileImage: imageUrl,
       }),
     })
       .then((resp) => resp.json())
@@ -99,7 +103,7 @@ function Registration() {
             <form
               onSubmit={handleSubmit}
               className="tw-mb-4"
-              encType="multipart/form-data"
+              // encType="multipart/form-data"
             >
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
                 <input

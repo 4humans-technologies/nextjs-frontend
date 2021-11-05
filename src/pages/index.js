@@ -1,10 +1,8 @@
 import Head from "next/head"
 import Header from "../components/Mainpage/Header"
-import SecondHeader from "../components/Mainpage/SecondHeader"
 import Sidebar from "../components/Mainpage/Sidebar"
 import Boxgroup from "../components/Mainpage/Boxgroup"
 import { useState, useEffect } from "react"
-// import Mainbox from "../components/Mainbox";
 import Footer from "../components/Mainpage/Footer"
 import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
 import useSetupSocket from "../socket/useSetupSocket"
@@ -112,9 +110,9 @@ const Home = () => {
               ...prev,
               {
                 title: "Online Models | Either onCall or onStream",
-                data: data.resultDocs.map(model => ({
+                data: data.resultDocs.map((model) => ({
                   ...model,
-                  relatedUserId: model._id
+                  relatedUserId: model._id,
                 })),
               },
             ]
@@ -127,12 +125,6 @@ const Home = () => {
     }
   }, [ctx.loadedFromLocalStorage])
 
-  // useEffect(() => {
-  //   const socket = io.getSocket()
-  //   alert(socket.connected)
-  // }, [])
-
-
   useEffect(() => {
     if (socketContext.setSocketSetupDone) {
       const socket = io.getSocket()
@@ -140,26 +132,29 @@ const Home = () => {
         socket.on("new-model-started-stream", (socketData) => {
           // alert("New Model Started Streaming..." + JSON.stringify(socketData))
           debugger
-          setBoxGroupData(prev => {
-            if (prev[prev.length - 1].data.map(stream => stream.relatedUserId).includes(socketData.modelId)) {
+          setBoxGroupData((prev) => {
+            if (
+              prev[prev.length - 1].data
+                .map((stream) => stream.relatedUserId)
+                .includes(socketData.modelId)
+            ) {
               return prev
             }
-            // prev[prev.length - 1].data.forEach(stream => {
-            //   if (stream.relatedUserId === socketData.modelId) {
-            //     return prev
-            //   }
-            // })
+
             const prevLastPopped = prev.pop()
             return [
               ...prev,
               {
                 ...prevLastPopped,
-                data: [...prevLastPopped.data, {
-                  relatedUserId: socketData.modelId,
-                  profileImage: socketData.profileImage,
-                  isStreaming: true
-                }]
-              }
+                data: [
+                  ...prevLastPopped.data,
+                  {
+                    relatedUserId: socketData.modelId,
+                    profileImage: socketData.profileImage,
+                    isStreaming: true,
+                  },
+                ],
+              },
             ]
           })
         })
@@ -168,15 +163,17 @@ const Home = () => {
         socket.on("delete-stream-room", (socketData) => {
           // alert("Model Ended Streaming..." + JSON.stringify(socketData))
           debugger
-          setBoxGroupData(prev => {
+          setBoxGroupData((prev) => {
             const prevLastPopped = prev.pop()
-            const poppedModelDataList = prevLastPopped.data.filter(stream => stream.relatedUserId !== socketData.modelId)
+            const poppedModelDataList = prevLastPopped.data.filter(
+              (stream) => stream.relatedUserId !== socketData.modelId
+            )
             return [
               ...prev,
               {
                 ...prevLastPopped,
-                data: [...poppedModelDataList]
-              }
+                data: [...poppedModelDataList],
+              },
             ]
           })
         })
@@ -206,7 +203,6 @@ const Home = () => {
       </Head>
       <div className="tw-h-20"></div>
       <Header />
-      {/* <SecondHeader /> */}
       <div className="tw-flex tw-flex-grow-1 tw-flex-shrink-0">
         <Sidebar />
         <div>
@@ -222,19 +218,6 @@ const Home = () => {
           })}
         </div>
       </div>
-      {/* <div className="tw-text-center tw-flex tw-items-center tw-justify-around">
-        <button
-          onClick={doRequest}
-          className="tw-px-4 py-2 tw-bg-red-500 tw-text-xl tw-my-4 tw-text-white-color"
-        >
-          Do Request
-        </button>
-        <Link href="/rohit/goLive">
-          <a className="tw-px-4 py-2 tw-bg-red-500 tw-text-xl tw-my-4 tw-text-white-color hover:tw-text-white-color">
-            Go Live As A model
-          </a>
-        </Link>
-      </div> */}
       <Footer />
     </div>
   )

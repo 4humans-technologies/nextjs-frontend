@@ -3,7 +3,6 @@ import CreateIcon from "@material-ui/icons/Create"
 import { Button } from "react-bootstrap"
 import Card from "../UI/Card"
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
-import Callhistory from "./CallHistory"
 import modalContext from "../../app/ModalContext"
 import ClearIcon from "@material-ui/icons/Clear"
 import {
@@ -14,8 +13,6 @@ import {
 } from "../UI/Profile/Emailpassword"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Header from "../Mainpage/Header"
-import { urlAlphabet } from "nanoid"
-import { width } from "dom-helpers"
 
 function Profile() {
   const [checked, setChecked] = useState(false)
@@ -215,30 +212,41 @@ function Profile() {
                 ? modelData.map((item) => (
                     <div
                       className="md:tw-col-span-5 tw-col-span-4 "
-                      onChange={console.log("changed")}
+                      onChange={() => setInfoedited(true)}
                     >
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Interest}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.From}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {/* {item.Language} */}
                         {modelDetails ? modelDetails.model.languages[0] : null}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
-                        contentEditable="true"
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                       >
                         {/* {item.Age} */}
                         {modelDetails
@@ -246,31 +254,46 @@ function Profile() {
                           : null}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Body}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Hair}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Eye}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Call}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Call}
@@ -281,9 +304,13 @@ function Profile() {
 
               <br />
               {infoedited && (
-                <Button type="submit" onClick={() => setInfoedited(false)}>
+                <button
+                  type="submit"
+                  onClick={() => setInfoedited(false)}
+                  className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color"
+                >
                   Save
-                </Button>
+                </button>
               )}
             </div>
             {/* removed epic goal and Broadcast shedule */}
