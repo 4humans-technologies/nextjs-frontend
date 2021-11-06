@@ -2,6 +2,7 @@ import React from "react";
 import Profile from "../../components/model/Profile";
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
+
 function profile() {
   const user = useAuthContext()
   const { updateUser } = useAuthUpdateContext()

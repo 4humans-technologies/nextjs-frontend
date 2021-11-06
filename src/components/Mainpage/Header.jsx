@@ -18,6 +18,7 @@ import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
 import SecondHeader from "./SecondHeader"
+import ProfileHeader from "../model/ProfileHeader"
 
 function Header(props) {
   const [menu, setMenu] = useState(false)
@@ -52,14 +53,15 @@ function Header(props) {
       .then((data) => setSearchData(data.products))
   }, [query])
 
-  // this is where data will be fetch for the profile and image that is require in header
+  // search result
 
-  // first data will be get by the context
-  // useEffect(() => {
-  //   if (authContext.user) {
-  //     setHeaderProfileShow(true)
-  //   }
-  // }, [authContext.user])
+  if (authContext.user.user) {
+    const profileImage = authContext.user.user.relatedUser.profileImage
+  } else {
+    const profileImage = ""
+  }
+
+  // When ever the Heder reloada sidebarshow is false
 
   return (
     <div>
@@ -187,7 +189,7 @@ function Header(props) {
                         >
                           <img
                             className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 "
-                            src="/pp.jpg"
+                            src={profileImage}
                           ></img>
                           {/* profile */}
                           <div
@@ -225,7 +227,7 @@ function Header(props) {
                         >
                           <img
                             className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 "
-                            src="/pp.jpg"
+                            src={profileImage}
                           ></img>
                           {/* Profile  */}
                           <div
@@ -304,6 +306,12 @@ function Header(props) {
           <MoreVertIcon />
         </div>
       </div>
+      {/* --------------------------------------------------------------*/}
+      {/* {router.pathname.includes("profile") ? (
+        <ProfileHeader />
+      ) : (
+        <SecondHeader />
+      )} */}
       <SecondHeader />
     </div>
   )

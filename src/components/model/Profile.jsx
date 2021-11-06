@@ -153,15 +153,21 @@ function Profile() {
   let thisYear = today.getFullYear()
 
   // Data fetching which make things possible
+  let profileImage = ""
+  useEffect(() => {
+    profileImage = authContext.user.user.relatedUser.profileImage
+  }, [])
+
+  // console.log(profileImage)
   return (
     <div>
       {/* Cover page */}
-      <Header />
+      {/* <Header /> */}
 
       <div
         className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
         style={{
-          backgroundImage: `url(/swami_ji.jpg)`,
+          backgroundImage: `url(${profileImage})`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
@@ -178,7 +184,7 @@ function Profile() {
       <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative">
         <img
           className="tw-rounded-full tw-w-32 tw-h-32 flex tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
-          src="/pp.jpg"
+          src={profileImage}
         ></img>
         <CreateIcon
           className="tw-ml-24 tw-mt-14 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
