@@ -162,7 +162,7 @@ function Profile() {
   return (
     <div>
       {/* Cover page */}
-      {/* <Header /> */}
+      <Header />
 
       <div
         className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
