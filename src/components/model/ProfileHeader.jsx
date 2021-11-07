@@ -1,63 +1,65 @@
-import React, { useState } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import Profile from "../model/Profile"
 
 function ProfileHeader() {
-  const [display, setdisplay] = useState({
-    profileDisplay: true,
-    settingDisplay: false,
-    imageDisplay: false,
-    videoDisplay: false,
-  })
+  const profileRef = useRef(true)
+  const settingsRef = useRef(false)
+  const imageRef = useRef(false)
+  const videoRef = useRef(false)
+
   let clickedElement = "Profile"
+
   const changeHandler = (e) => {
     // console.log(e.target.value)
     clickedElement = e.target.id
     console.log(clickedElement)
+    console.log(profileRef.current)
     switch (clickedElement) {
       case "Profile":
-        setdisplay({
-          profileDisplay: true,
-          settingDisplay: false,
-          imageDisplay: false,
-          videoDisplay: false,
-        })
+        settingsRef.current = false
+        imageRef.current = false
+        videoRef.current = false
+        profileRef.current = true
+        console.log("profile clicked")
         break
-      case "Setting":
-        setdisplay({
-          profileDisplay: false,
-          settingDisplay: true,
-          imageDisplay: false,
-          videoDisplay: false,
-        })
-        break
-      case "Image":
-        setdisplay({
-          profileDisplay: false,
-          settingDisplay: false,
-          imageDisplay: true,
-          videoDisplay: false,
-        })
-        break
-      case "Video":
-        setdisplay({
-          profileDisplay: false,
-          settingDisplay: false,
-          imageDisplay: false,
-          videoDisplay: true,
-        })
+      case "Settings":
+        profileRef.current = false
+        imageRef.current = false
+        videoRef.current = false
+        settingsRef.current = true
 
+        console.log("setting clicked")
+        break
+      case "Images":
+        profileRef.current = false
+        settingsRef.current = false
+        videoRef.current = false
+        imageRef.current = true
+
+        console.log("image clicked")
+        break
+      case "Videos":
+        profileRef.current = false
+        settingsRef.current = false
+        imageRef.current = false
+        videoRef.current = true
+        console.log("video clicked")
+        break
       default:
-        setdisplay({
-          profileDisplay: true,
-          settingDisplay: false,
-          imageDisplay: false,
-          videoDisplay: false,
-        })
+        console.log("default")
         break
     }
   }
 
-  console.log(display)
+  console.log(profileRef.current)
+
+  useEffect(() => {
+    console.log("profile header mounted")
+    return () => {
+      console.log("profile header unmounted")
+    }
+  }, [changeHandler])
+
   return (
     <div>
       {/* <h1 className="tw-text-black">Hello</h1> */}
@@ -86,25 +88,37 @@ function ProfileHeader() {
           </div>
           <div
             className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"
-            id="Projects"
+            id="Videos"
             onClick={(e) => changeHandler(e)}
           >
-            Projects
+            Videos
           </div>
         </div>
       </div>
       {/* Here all the case will go */}
       <div className="tw-bg-dark-black tw-w-screen">
-        <div className={`${display.profileDisplay ? "tw-block" : "tw-hidden"}`}>
+        <div className={`${profileRef.current ? "tw-block" : "tw-hidden"}`}>
           <Profile />
         </div>
-        <div className={`${display.settingDisplay ? "tw-block" : "tw-hidden"}`}>
+        <div
+          className={`tw-text-green-color ${
+            settingsRef.current ? "tw-block" : "tw-hidden"
+          }`}
+        >
           <h1>Setting</h1>
         </div>
-        <div className={`${display.imageDisplay ? "tw-block" : "tw-hidden"}`}>
+        <div
+          className={`tw-text-green-color ${
+            imageRef.current ? "tw-block" : "tw-hidden"
+          }`}
+        >
           <h1>Images</h1>
         </div>
-        <div className={`${display.videoDisplay ? "tw-block" : "tw-hidden"}`}>
+        <div
+          className={` tw-text-green-color ${
+            videoRef.current ? "tw-block" : "tw-hidden"
+          }`}
+        >
           <h1>Videos</h1>
         </div>
       </div>

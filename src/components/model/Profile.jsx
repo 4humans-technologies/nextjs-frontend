@@ -155,10 +155,10 @@ function Profile() {
   // Data fetching which make things possible
   let profileImage = ""
   useEffect(() => {
-    profileImage = authContext.user.user.relatedUser.profileImage
+    if (authContext.user.userType === "model")
+      profileImage = authContext.user.user.relatedUser.profileImage
   }, [])
 
-  // console.log(profileImage)
   return (
     <div>
       {/* Cover page */}
