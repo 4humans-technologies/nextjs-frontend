@@ -17,17 +17,24 @@ import Header from "../Mainpage/Header"
 function Profile() {
   const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
+  const [priceEdit, setPriceEdited] = useState(false)
   const [dynamicData, setDynamicData] = useState([1])
   const [imageVideo, setImageVideo] = useState({
     images: [],
     videos: [],
   })
+
   const [modelData, setModelData] = useState()
   const [modelDetails, setModelDetails] = useState(null)
   const [callData, setCallData] = useState()
   const modalCtx = modalContext()
   const authContext = useAuthContext()
   const updateAuth = useAuthUpdateContext()
+
+  const [audioVideoPrice, setAudioVideoPrice] = useState({
+    audio: authContext.user.user.relatedUser.charges.audioCall,
+    video: authContext.user.user.relatedUser.charges.videoCall,
+  })
 
   useEffect(() => {
     fetch("/model.json")
@@ -37,6 +44,12 @@ function Profile() {
       })
     return {}
   }, [])
+
+  const callChangeHandler = (e) => {
+    const { name, value } = e.target
+    setAudioVideoPrice({ ...audioVideoPrice, [name]: value })
+    setPriceEdited(true)
+  }
 
   // s3 bucket image upload
   // to get url from domain and then uplode to aws
@@ -154,15 +167,15 @@ function Profile() {
 
   // Data fetching which make things possible
   let profileImage = ""
-  useEffect(() => {
+  if (authContext.user.user) {
     profileImage = authContext.user.user.relatedUser.profileImage
-  }, [])
+  }
 
   // console.log(profileImage)
   return (
     <div>
       {/* Cover page */}
-      {/* <Header /> */}
+      <Header />
 
       <div
         className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
@@ -187,12 +200,17 @@ function Profile() {
           src={profileImage}
         ></img>
         <CreateIcon
-          className="tw-ml-24 tw-mt-14 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
+          className="md:tw-ml-24 md:tw-mt-12 tw-mt-16 tw-ml-28 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
           fontSize="medium"
           onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
         />
-        <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44  ">
+        <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44 tw-flex  md:tw-mt-4 tw-mt-8">
           {modelDetails ? modelDetails.model.name : null}
+          {authContext.user.user.relatedUser.gender == "Female" ? (
+            <img src="/femaleIcon.png" className="tw-w-8 tw-h-8 tw-ml-4" />
+          ) : (
+            <img src="/maleIcon.png" className="tw-w-8 tw-h-8 tw-ml-4" />
+          )}
         </div>
       </div>
       {/* horizontal bar */}
@@ -200,7 +218,7 @@ function Profile() {
       <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background tw-w-screen">
         <div className="md:tw-col-span-4 tw-col-span-1">
           <div className="  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
-            <h1 className="tw-ml-4">My Information</h1>
+            <h1 className="tw-ml-4 tw-mb-4">My Information</h1>
             <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
               <div className=" md:tw-col-span-1 tw-col-span-2 ">
                 <p>Intrested in</p>
@@ -364,58 +382,40 @@ function Profile() {
             <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
               <div className="tw-col-span-1">
                 <p>Private Audio Call</p>
-                <p className="tw-my-2">Private video Call</p>
+                <p className="md:tw-my-2">Private video Call</p>
               </div>
               <div className="tw-col-span-2">
                 <div className="tw-flex ">
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
-                    {audio.length > 0
-                      ? audio.map((item) => (
-                          <option value={item}>
-                            {item} <span>tk</span>
-                          </option>
-                        ))
-                      : null}
-                  </select>
-                  {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
-                    <option value="200tk">200tk </option>
-                    <option value="300tk">300tk </option>
-                    <option value="400tk">400tk </option>
-                    <option value="500tk">500tk </option>
-                  </select> */}
-
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4">
-                    <option value="1"> 1 minute </option>
-                    <option value="2"> 2 minute </option>
-                    <option value="3"> 3 minute </option>
-                    <option value="4"> 4 minute </option>
-                  </select>
+                  <input
+                    type="number"
+                    name="audio"
+                    onChange={(e) => callChangeHandler(e)}
+                    id=""
+                    max="100"
+                    min="20"
+                    className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
+                    value={audioVideoPrice.audio}
+                  />
                 </div>
                 {/*  */}
 
-                <div className="tw-flex  tw-my-2">
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
-                    {video.length > 0 &&
-                      video.map((item) => (
-                        <option value={item}>
-                          {item} <span>tk</span>
-                        </option>
-                      ))}
-                  </select>
-                  {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-py-2 ">
-                    <option value="200tk">200tk </option>
-                    <option value="300tk">300tk </option>
-                    <option value="400tk">400tk </option>
-                    <option value="500tk">500tk </option>
-                  </select> */}
-
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4 tw-py-2">
-                    <option value="1"> 1 minute </option>
-                    <option value="2"> 2 minute </option>
-                    <option value="3"> 3 minute </option>
-                    <option value="4"> 4 minute </option>
-                  </select>
+                <div className="tw-flex  md:tw-my-2 tw-my-10">
+                  <input
+                    type="number"
+                    name="video"
+                    onChange={(e) => callChangeHandler(e)}
+                    id=""
+                    max="100"
+                    min="20"
+                    className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
+                    value={audioVideoPrice.video}
+                  />
                 </div>
+                {priceEdit && (
+                  <button className="tw-bg-green-color tw-text-white tw-px-4  tw-my-2 tw-rounded-full">
+                    Save
+                  </button>
+                )}
               </div>
             </div>
             {/* scroll*/}
@@ -454,7 +454,9 @@ function Profile() {
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
-                  <h1 className="tw-font-extrabold tw-text-4xl">123</h1>
+                  <h1 className="tw-font-extrabold tw-text-4xl">
+                    {authContext.user.user.relatedUser.rating}
+                  </h1>
                   <span className="tw-self-center">Stars</span>
                 </div>
               </Card>

@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import useModalContext from "../../../app/ModalContext"
 import CancelIcon from "@material-ui/icons/Cancel"
+import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 const EmailChange = (props) => {
   const [email, setEmail] = useState({
@@ -126,7 +127,9 @@ const PasswordChange = (props) => {
 
 const CoverUpdate = () => {
   const [coverImage, setCoverImage] = useState("")
+  const authContext = useAuthContext()
   const modelCtx = useModalContext()
+  const oldCover = authContext.user.user.relatedUser.profileImage
   const changeCover = async (e) => {
     setCoverImage(URL.createObjectURL(e.target.files[0]))
     // To send image to url and the make things possible
@@ -151,7 +154,7 @@ const CoverUpdate = () => {
       return alert("What is this Bakloli")
     }
     coverUrl = cover_url.split("?")[0]
-    const re = await fetch("url", {
+    const re = await fetch("/update-model-basic-details", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -175,7 +178,7 @@ const CoverUpdate = () => {
         onClick={modelCtx.hideModal}
       />
       <div className="tw-mx-auto">
-        <img src={coverImage} className="tw-w-96 tw-h-48 tw-my-4" />
+        <img src={oldCover} className="tw-w-96 tw-h-48 tw-my-4" />
         <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
           <input
             type="file"
@@ -192,6 +195,8 @@ const CoverUpdate = () => {
 const ProfileUpdate = () => {
   const [coverImage, setCoverImage] = useState("")
   const modelCtx = useModalContext()
+  const authContext = useAuthContext()
+  const oldCover = authContext.user.user.relatedUser.profileImage
   const changeCover = async (e) => {
     setCoverImage(URL.createObjectURL(e.target.files[0]))
     // this is ton get the url for the aws server to image uplode
@@ -236,7 +241,7 @@ const ProfileUpdate = () => {
       />
       n
       <div className="tw-mx-auto">
-        <img src={coverImage} className="tw-w-96 tw-h-48 tw-my-4" />
+        <img src={oldCover} className="tw-w-96 tw-h-48 tw-my-4" />
         <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
           <input
             type="file"

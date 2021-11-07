@@ -9,7 +9,7 @@ function name() {
       <UserProfile />
     </div>
   ) : (
-    <h1 className="tw-mx-auto tw-mt-auto tw-font-extrabold tw-capitalize tw-text-3xl">
+    <h1 className="tw-mx-auto tw-mt-auto ">
       You are not authorized to view this page
       {/* tw-mx-auto tw-mt-auto tw-font-extrabold tw-capitalize tw-text-3xl */}
     </h1>
