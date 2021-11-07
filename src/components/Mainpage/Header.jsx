@@ -307,12 +307,12 @@ function Header(props) {
         </div>
       </div>
       {/* --------------------------------------------------------------*/}
-      {/* {router.pathname.includes("profile") ? (
+      {router.pathname.includes("/profile") ? (
         <ProfileHeader />
       ) : (
         <SecondHeader />
-      )} */}
-      <SecondHeader />
+      )}
+      {/* <SecondHeader /> */}
     </div>
   )
 }

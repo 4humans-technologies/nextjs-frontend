@@ -171,7 +171,6 @@ function Profile() {
     profileImage = authContext.user.user.relatedUser.profileImage
   }
 
-  // console.log(profileImage)
   return (
     <div>
       {/* Cover page */}
