@@ -15,17 +15,18 @@ function Documents() {
   //submit handler to send data
   const submitHandler = async (e) => {
     // e.preventDefault()
-    let data = new FormData()
-    data.append("document_1", source)
-    data.append("document_2", videoSource)
-
     // s3 bucket image upload
     // to get url from domain and then uplode to aws
-    const resp = await fetch("/api/website/aws/get-s3-upload-url")
+    const resp = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + source.type
+    )
     const raw_url = await resp.json()
     const url = await raw_url.uploadUrl
 
     // is it possible to uplode the two images together in s3 bucket. Thats what I want to get that
+
+    const imageUrl_1 = url.split("?")[0]
+    console.log(imageUrl_1)
 
     let respose = await fetch(url, {
       method: "PUT",
@@ -33,14 +34,44 @@ function Documents() {
         "Content-Type": "multipart/form-data",
       },
       body: {
-        data,
+        source,
       },
     })
-    let result = await respose
-    return result
+    let result = await respose.json()
+    console.log(result)
+
+    // Second image upload to s3 bucket
+    const resp_2 = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + source.type
+    )
+    const raw_url_2 = await resp_2.json()
+    const url_2 = await raw_url_2.uploadUrl
+
+    // is it possible to uplode the two images together in s3 bucket. Thats what I want to get that
+
+    const imageUrl_2 = url_2.split("?")[0]
+    console.log(imageUrl_2)
+
+    let respose_2 = await fetch(url_2, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: {
+        videoSource,
+      },
+    })
+    let result_2 = await respose_2.json()
+    console.log(result_2)
+
+    // send data to server
+    const data = {
+      imageUrl_1,
+      imageUrl_2,
+    }
   }
   // this data need to be send to server for to store at the server
-  submitHandler().then((data) => console.log(data))
+  // submitHandler().then((data) => console.log(data))
 
   return (
     <div className="tw-bg-first-color  tw-h-[100vh] tw-text-white tw-text-center ">
@@ -148,7 +179,7 @@ function Documents() {
         <div className="tw-justify-center tw-outline-none">
           <Button
             className="tw-w-1/3 tw-justify-center tw-mt-4 tw-bg-green-color hover:tw-bg-green-color tw-rounded-full tw-outline-none"
-            onClick={() => submitHandler}
+            onClick={() => submitHandler()}
           >
             submit request
           </Button>

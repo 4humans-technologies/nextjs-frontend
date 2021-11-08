@@ -1,22 +1,23 @@
 import React, { useReducer } from "react"
 import Profile from "../model/Profile"
 
-const initState = { val: <Profile /> }
-const reducer = (state = initState, action) => {
-  switch (action.type) {
-    case "PROFILE":
-      return { val: <Profile /> }
-    case "SETTING":
-      return { val: "SETTING" }
-    case "IMAGE":
-      return { val: "IMAGE" }
-    case "VIDEO":
-      return { val: "VIDEO" }
-    default:
-      return state
-  }
-}
+// Question Why useReducer worked inside function ot out side ,giving webpack error 
 function ProfileHeader() {
+  const initState = { val: <Profile /> }
+  const reducer = (state = initState, action) => {
+    switch (action.type) {
+      case "PROFILE":
+        return { val: <Profile /> }
+      case "SETTING":
+        return { val: "SETTING" }
+      case "IMAGE":
+        return { val: "IMAGE" }
+      case "VIDEO":
+        return { val: "VIDEO" }
+      default:
+        return state
+    }
+  }
   const [state, dispatch] = useReducer(reducer, initState)
   return (
     <div>

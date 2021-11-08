@@ -126,16 +126,19 @@ const PasswordChange = (props) => {
 // Cover update and Profile update
 
 const CoverUpdate = () => {
-  const [coverImage, setCoverImage] = useState("")
+  const [coverImage, setCoverImage] = useState(null)
   const authContext = useAuthContext()
   const modelCtx = useModalContext()
   const oldCover = authContext.user.user.relatedUser.profileImage
+
   const changeCover = async (e) => {
-    setCoverImage(URL.createObjectURL(e.target.files[0]))
+    const image_1 = await e.target.files[0]
+    const image_2 = await URL.createObjectURL(e.target.files[0])
+    setCoverImage(image_2)
     // To send image to url and the make things possible
     // There I have to send with type of url that we uplode
     const res = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + coverImage.type
+      "/api/website/aws/get-s3-upload-url?type=" + image_1.type
     )
     const data_2 = await res.json()
     const cover_url = await data_2.uploadUrl
@@ -143,9 +146,9 @@ const CoverUpdate = () => {
     console.log(`Bro this is cover page url, ${cover_url.split("?")[0]}`) //The place where it needed to be uploded
 
     // Then this uplode uplode the Image in the S3 bucket
-    const resp = await fetch("cover_url", {
+    const resp = await fetch(cover_url, {
       method: "PUT",
-      body: coverImage,
+      body: image_1,
     })
     console.log(resp)
 
@@ -153,8 +156,9 @@ const CoverUpdate = () => {
     if (!resp.ok) {
       return alert("What is this Bakloli")
     }
-    coverUrl = cover_url.split("?")[0]
-    const re = await fetch("/update-model-basic-details", {
+    const coverUrl = cover_url.split("?")[0]
+    console.log(coverUrl)
+    const re = await fetch("/api/website/profile/update-model-basic-details", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -182,7 +186,7 @@ const CoverUpdate = () => {
         <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
           <input
             type="file"
-            onChange={changeCover}
+            onChange={(e) => changeCover(e)}
             className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10]"
           />
           Update Cover Page
@@ -193,42 +197,52 @@ const CoverUpdate = () => {
 }
 
 const ProfileUpdate = () => {
-  const [coverImage, setCoverImage] = useState("")
+  const [showImage, setshowImage] = useState()
   const modelCtx = useModalContext()
   const authContext = useAuthContext()
   const oldCover = authContext.user.user.relatedUser.profileImage
+
   const changeCover = async (e) => {
-    setCoverImage(URL.createObjectURL(e.target.files[0]))
+    const image_1 = await e.target.files[0]
+    const image_2 = await URL.createObjectURL(e.target.files[0])
+    setshowImage(image_2)
     // this is ton get the url for the aws server to image uplode
+
+    console.log(image_1.type)
     const res = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + coverImage.type
+      "/api/website/aws/get-s3-upload-url?type=" + image_1.type
     )
     const data_2 = await res.json()
     const profile_url = await data_2.uploadUrl
 
-    // this to send the data to aws server and get the url
+    // // this to send the data to aws server and get the url
     const resp = await fetch(profile_url, {
       method: "PUT",
-      body: coverImage,
+      body: image_1,
     })
-    console.log(resp)
+    // console.log(`send the data to url ${resp}`)
     if (!resp.ok) {
       return alert("OK BRO")
     }
-
-    profileUrl = profile_url.split("?")[0]
+    // console.log(resp)
+    console.log(profile_url)
+    const profileUrl = profile_url.split("?")[0]
+    console.log(profileUrl)
     // take this url from the aws and send it to your serve to access it in the future
-    const re = await fetch("url", {
-      method: "PUT",
+    // console.log(`Profile url ------${profileUrl}`)
+
+    const re = await fetch("/api/website/profile/update-model-basic-details", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        profile: profileImage,
+        profileImage: profileUrl,
       }),
     })
     const jsonRe = await re.json()
-    console.log(jsonRe)
+
+    console.log(`This is json response -----${jsonRe}`)
   }
   // Profile pic to aws
 
@@ -239,13 +253,13 @@ const ProfileUpdate = () => {
         fontSize="medium"
         onClick={modelCtx.hideModal}
       />
-      n
+
       <div className="tw-mx-auto">
-        <img src={oldCover} className="tw-w-96 tw-h-48 tw-my-4" />
+        <img src={showImage} className="tw-w-96 tw-h-48 tw-my-4" />
         <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
           <input
             type="file"
-            onChange={changeCover}
+            onChange={(e) => changeCover(e)}
             className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10]"
           />
           Update Profile Image

@@ -14,11 +14,12 @@ import {
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Header from "../Mainpage/Header"
 
+// ========================================================
 function Profile() {
   const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
   const [priceEdit, setPriceEdited] = useState(false)
-  const [dynamicData, setDynamicData] = useState([1])
+  const [dynamicData, setDynamicData] = useState([2])
   const [imageVideo, setImageVideo] = useState({
     images: [],
     videos: [],
@@ -51,68 +52,102 @@ function Profile() {
     setPriceEdited(true)
   }
 
-  // s3 bucket image upload
-  // to get url from domain and then uplode to aws
-  // const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
-  //   (resp) => resp.uploadUrl
-  // ) //this is the url where to uplode to aws
+
+  //  ============================================================================================
+
+        const priceSetting = async() => {
+          const res= await fetch("/model.json",{
+            method: "PUT",
+            body: JSON.stringify({
+              audio: audioVideoPrice.audio,
+              video: audioVideoPrice.video,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+          const data = await res.json()
+          console.log(data)
+
+        }
+  //  ============================================================================================
+
 
   // s3 bucket image upload
 
   // PhotoUplode Handler
   const photoUpdateHandler = async (e) => {
-    setImageVideo.images((prev) => [
-      ...prev,
-      URL.createObjectURL(e.target.files[0]),
-    ])
+    // setImageVideo.images((prev) => [
+    //   ...prev,
+    //   URL.createObjectURL(e.target.files[0]),
+    // ])
+    const image=e.target.files[0]
     // to get url from domain and then uplode to aws
-    // const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
-    //   (resp) => resp.json() //this is the url where to uplode to aws
-    // )
-    let req = await fetch("url", {
+    const url  = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + image.type
+    )
+    const urlJson = await url.json()
+    const imageUrl = await urlJson.uploadUrl
+
+     const profileUrl = imageUrl.split("?")[0]
+
+    // below is the data uplode to aws
+    let req = await fetch(imageUrl, {
       method: "PUT",
-      headers: {
-        "Content-type": "multipart/form-data",
-      },
-      body: {
-        modelImage: imageVideo.images,
-      },
+      body: image,
     })
-    let resp = await req.json()
-    return resp
+     if (!req.ok) {
+       return alert("OK BRO")
+     }
     // send data back to node serve as success report with user id and url for the data
 
-    let serverReq = await fetch("url", {
+    let serverReq = await fetch(
+      "/api/website/profile/update-model-basic-details",
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          publicImages: authContext.user.user.relatedUser.publicImages.push( profileUrl),
+        }),
+      }
+    )
+    let serverResp = await serverReq.json()
+    console.log(serverResp)
+
+  }
+
+  // VideoUplodeHandler videoUpdateHandler
+  const videoUpdateHandler = async (e) => {
+    const image=e.target.files[0]
+    // to get url from domain and then uplode to aws
+    const url  = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + image.type
+    )
+    const urlJson = await url.json()
+    const imageUrl = await urlJson.uploadUrl
+
+     const profileUrl = imageUrl.split("?")[0]
+
+    let req = await fetch(imageUrl, {
+      method: "POST",
+      body: image,
+    })
+     if (!req.ok) {
+       return alert("OK BRO")
+     }
+    // send data back to node serve as success report with user id and url for the data
+    const serverReq = await fetch("/api/website/profile/update-model-basic-details",{
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        rootUserId: authContext.rootUserId,
-        // there we need to pass the image url to save in local data base
-      }),
-    })
-      .then((resp) => resp.json())
-      .then((data) => console.log(data))
-  }
-
-  // VideoUplodeHandler videoUpdateHandler
-  const videoUpdateHandler = async (e) => {
-    setImageVideo.videos((prev) => [
-      ...prev,
-      URL.createObjectURL(e.target.files[0]),
-    ])
-    let req = await fetch("url", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-      },
-      body: {
-        modelVideos: imageVideo.videos,
-      },
-    })
-    let resp = await req.json()
-    return resp
+        publicVideos: authContext.user.user.relatedUser.publicVideos.push(profileUrl),
+    }
+    )})
+    const  serverResp = await serverReq.json()
   }
 
   useEffect(() => {
@@ -411,7 +446,10 @@ function Profile() {
                   />
                 </div>
                 {priceEdit && (
-                  <button className="tw-bg-green-color tw-text-white tw-px-4  tw-my-2 tw-rounded-full">
+                  <button
+                    className="tw-bg-green-color tw-text-white tw-px-4  tw-my-2 tw-rounded-full"
+                    onClick={priceSetting}
+                  >
                     Save
                   </button>
                 )}
@@ -428,7 +466,9 @@ function Profile() {
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
-                  <h1 className="tw-font-extrabold tw-text-4xl">123</h1>
+                  <h1 className="tw-font-extrabold tw-text-4xl">
+                    {authContext.user.user.relatedUser.wallet.currentAmount}
+                  </h1>
                   <span className="tw-self-center">Token</span>
                 </div>
               </Card>
@@ -441,7 +481,9 @@ function Profile() {
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
-                  <h1 className="tw-font-extrabold tw-text-4xl">123</h1>
+                  <h1 className="tw-font-extrabold tw-text-4xl">
+                    {authContext.user.user.relatedUser.numberOfFollowers}
+                  </h1>
                 </div>
               </Card>
               <Card>
@@ -576,51 +618,57 @@ function Profile() {
               </div>
             </div>
           </div>
-          <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <h1 className="tw-mb-3 tw-font-semibold tw-text-lg">Set Actions</h1>
-            <form
-              id="action-form"
-              className="tw-max-h-64  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
-            >
-              {dynamicData.map((item, index) => {
-                return (
-                  <div
-                    className="tw-grid tw-my-4 tw-text-white-color action_grid "
-                    id={index}
-                    key={index}
-                  >
-                    <input
-                      className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
-                      placeholder={index}
-                    />
-                    <input
-                      className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
-                      placeholder={dynamicData}
-                    />
-                    {/* Amazing ninja technique for dom menupulation */}
-                    <ClearIcon
-                      className="tw-text-white tw-my-auto"
-                      onClick={() => {
-                        document.getElementById(index).remove()
-                      }}
-                    />
-                  </div>
-                )
-              })}
-            </form>
-            <Button
-              className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full "
-              onClick={() => setDynamicData((prev) => [...prev, 1])}
-            >
-              add new action
-            </Button>
-            <Button
-              onClick={saveData}
-              className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
-            >
-              Save
-            </Button>
+          {/* ---------------------------------------------------- */}
+          <div>
+            <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+              <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
+                Set Actions
+              </h1>
+              <form
+                id="action-form"
+                className="tw-max-h-64  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
+              >
+                {dynamicData.map((item, index) => {
+                  return (
+                    <div
+                      className="tw-grid tw-my-4 tw-text-white-color action_grid "
+                      id={index}
+                      key={index}
+                    >
+                      <input
+                        className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
+                        placeholder={index}
+                      />
+                      <input
+                        className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
+                        placeholder={dynamicData}
+                      />
+                      {/* Amazing ninja technique for dom menupulation */}
+                      <ClearIcon
+                        className="tw-text-white tw-my-auto"
+                        onClick={() => {
+                          document.getElementById(index).remove()
+                        }}
+                      />
+                    </div>
+                  )
+                })}
+              </form>
+              <Button
+                className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
+                onClick={() => setDynamicData((prev) => [...prev, 1])}
+              >
+                add new action
+              </Button>
+              <Button
+                onClick={() => saveData()}
+                className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
+              >
+                Save
+              </Button>
+            </div>
           </div>
+          {/* ---------------------------------------------------- */}
           <div>{/* <Callhistory /> */}</div>
           {/* Bro in this call table and history has been removed,so you have to check all the thing carefully before procedure */}
         </div>
