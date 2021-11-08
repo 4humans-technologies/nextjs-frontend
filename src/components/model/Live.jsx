@@ -36,10 +36,12 @@ import { useSocketContext } from "../../app/socket/SocketContext"
 import useModalContext from "../../app/ModalContext"
 import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
+import MicIcon from "@material-ui/icons/Mic"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
-// /api/website/token-builder/create-stream-and-gen-token
+import CallEndDetails from "../Call/CallEndDetails"
+import PrivateChatWrapper from "../PrivateChat/PrivateChatWrapper"
 
 // Replace with your App ID.
 let token
@@ -91,6 +93,7 @@ function Live() {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
   const spinnerCtx = useSpinnerContext()
+  const modalCtx = useModalContext()
   const [fullScreen, setFullScreen] = useState(false)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [pendingCallRequest, setPendingCallRequest] = useState({
@@ -124,13 +127,25 @@ function Live() {
     leaveAndCloseTracks,
   } = useAgora(client, "host", callType)
 
+  const toggleMuteMic = () => {
+    if (localAudioTrack.muted) {
+      /* un mute audio */
+      localAudioTrack.setMuted(false)
+    } else {
+      /* mute the audio */
+      localAudioTrack.setMuted(true)
+    }
+  }
+
   const toggleFullscreen = useCallback(() => {
     /* fullscreen logic */
     const palyBackArea = document.getElementById("playback-area")
     if (!document.fullscreenElement) {
       palyBackArea.requestFullscreen()
+      setFullScreen(true)
     } else {
       document.exitFullscreen()
+      setFullScreen(false)
     }
   }, [])
 
@@ -318,7 +333,6 @@ function Live() {
   }, [])
 
   const sendChatMessage = () => {
-    //debugger
     if (!chatInputRef.current) {
       alert("ref not created, updated")
       return
@@ -333,7 +347,6 @@ function Live() {
       return
     }
 
-    let payLoad
     const message = chatInputRef.current.value
     if (ctx.isLoggedIn && ctx.user.userType === "Model") {
       let finalRoom
@@ -343,25 +356,20 @@ function Live() {
             finalRoom = room
           }
         })
-      } else if (chatWindow === chatWindowOptions.PRIVATE) {
-        JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
-          if (room.includes("-private")) {
-            finalRoom = room
-          }
-        })
-      }
-      payLoad = {
-        room: finalRoom,
-        message: message,
-        username: ctx.user.user.username,
-      }
-      console.log("sent message to room >>> ", finalRoom)
-      if (chatWindow === chatWindowOptions.PUBLIC) {
+        const payLoad = {
+          room: finalRoom,
+          message: message,
+          username: ctx.user.user.username,
+        }
         io.getSocket().emit("model-message-public-emitted", payLoad)
+        chatInputRef.current.value = ""
       } else if (chatWindow === chatWindowOptions.PRIVATE) {
-        io.getSocket().emit("model-message-private-emitted", payLoad)
+        const customEvent = new CustomEvent("send-private-message", {
+          message: message,
+        })
+        document.dispatchEvent(customEvent)
+        chatInputRef.current.value = ""
       }
-      chatInputRef.current.value = ""
     }
   }
 
@@ -378,96 +386,131 @@ function Live() {
   }, [sendChatMessage])
 
   const offCallListeners = () => {
-    const socket = io.getSocket()
-    if (socket.hasListeners("viewer-call-end-request-init-received")) {
-      socket.off("viewer-call-end-request-init-received")
-    }
-    if (socket.hasListeners("viewer-call-end-request-finished")) {
-      socket.off("viewer-call-end-request-finished")
+    if (socketCtx.socketSetupDone) {
+      const socket = io.getSocket()
+      if (socket.hasListeners("viewer-call-end-request-init-received")) {
+        socket.off("viewer-call-end-request-init-received")
+      }
+      if (socket.hasListeners("viewer-call-end-request-finished")) {
+        socket.off("viewer-call-end-request-finished")
+      }
     }
   }
 
   const setUpCallListeners = () => {
-    const socket = io.getSocket()
-    if (!socket.hasListeners("viewer-call-end-request-init-received")) {
-      socket.on("viewer-call-end-request-init-received", async (data) => {
-        /* viewer has put call end request before you */
-        alert("viewer ended call")
-        setCallOnGoing(false)
-        setPendingCallEndRequest(true)
-        await leaveAndCloseTracks()
-        offCallListeners()
-      })
-    }
+    if (socketCtx.socketSetupDone) {
+      const socket = io.getSocket()
+      if (!socket.hasListeners("viewer-call-end-request-init-received")) {
+        socket.on("viewer-call-end-request-init-received", (data) => {
+          /* viewer has put call end request before you */
+          alert("viewer ended call")
+          spinnerCtx.setShowSpinner(true, "Processing transaction...")
+          setPendingCallEndRequest(true)
+        })
 
-    /*  */
-    if (!socket.hasListeners("viewer-call-end-request-finished")) {
-      socket.on("viewer-call-end-request-finished", (data) => {
-        setCallEndDetails(data.callEndDetails)
-        setPendingCallEndRequest(false)
-      })
+        /* if response is not received for 6 seconds 
+          manually query the db with fetch request
+      */
+        // setTimeout(() => {
+        //   const url = "get-call-details"
+        //   fetch(url)
+        //     .then((res) => res.json())
+        //     .then((data) => {
+        //       setCallEndDetails(data.callEndDetails)
+        //       setPendingCallEndRequest(false)
+        //       if (socket.hasListeners("viewer-call-end-request-finished")) {
+        //         socket.off("viewer-call-end-request-finished")
+        //       }
+        //     })
+        // }, 6000)
+      }
+
+      /*  */
+      if (!socket.hasListeners("viewer-call-end-request-finished")) {
+        socket.on("viewer-call-end-request-finished", async (data) => {
+          if (data.ended === "ok") {
+            spinnerCtx.setShowSpinner(true, "Processing transaction...")
+            modalCtx.showModalWithContent(
+              <CallEndDetails
+                dateTime={data.dateTime}
+                viewerName={data.name}
+                amountAdded={data.amountAmount}
+                currentAmount={data.currentAmount}
+                callType={data.callType}
+                callDuration={data.callDuration}
+                theCall={data.theCall}
+                totalCharges={data.totalCharges}
+                userType="Model"
+              />
+            )
+          }
+          setPendingCallEndRequest(false)
+          // setCallEndDetails(data.callEndDetails)
+          setCallOnGoing(false)
+          offCallListeners()
+          await leaveAndCloseTracks()
+        })
+      }
     }
   }
 
-  const handleModelResponse = useCallback(
-    (response, relatedUserId, callType) => {
-      /* can set encryption config */
-      debugger
-      if (response === "rejected") {
-        /* 
+  const handleModelResponse = (response, relatedUserId, callType) => {
+    /* can set encryption config */
+    debugger
+    if (response === "rejected") {
+      /* 
           if call rejected then directly emit
         */
-        io.getSocket().emit("model-call-request-response-emitted", {
-          response: response,
-          relatedUserId: relatedUserId,
-          callType: callType,
-          room: `${sessionStorage.getItem("streamId")}-public`,
-        })
-        setPendingCallRequest({
-          pending: false,
-          callType: null,
-        })
-      } else {
-        fetch("/api/website/stream/accepted-call-request", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      io.getSocket().emit("model-call-request-response-emitted", {
+        response: response,
+        relatedUserId: relatedUserId,
+        callType: callType,
+        room: `${sessionStorage.getItem("streamId")}-public`,
+      })
+      setPendingCallRequest({
+        pending: false,
+        callType: null,
+      })
+    } else {
+      fetch("/api/website/stream/accepted-call-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          socketData: {
+            response: response /* RESPONSE will be accepted is reach here */,
+            callType: callType,
+            relatedUserId: relatedUserId /* viewer */,
           },
-          body: JSON.stringify({
-            socketData: {
-              response: response /* RESPONSE will be accepted is reach here */,
-              callType: callType,
-              relatedUserId: relatedUserId /* viewer */,
-            },
-            streamId: sessionStorage.getItem("streamId"),
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            // data.callStartTs
-            setPendingCallRequest({
-              pending: false,
-              callType: null,
-            })
-            setCallOnGoing(true)
-            setCallType(callType)
-            setUpCallListeners()
-            const startCallTimerAfter =
-              new Date(data.callStartTs).getTime() - Date.now()
-            if (startCallTimerAfter <= 1) {
-              /* start instantaneously */
-              startCallTimer()
-            } else {
-              setTimeout(() => {
-                startCallTimer()
-              }, startCallTimerAfter)
-            }
+          streamId: sessionStorage.getItem("streamId"),
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // data.callStartTs
+          setPendingCallRequest({
+            pending: false,
+            callType: null,
           })
-          .catch((err) => alert(err.message))
-      }
-    },
-    []
-  )
+          setCallType(callType)
+          setCallOnGoing(true)
+          setUpCallListeners()
+          sessionStorage.setItem("callId", data.callDoc._id)
+          const startCallTimerAfter =
+            new Date(data.callStartTs).getTime() - Date.now()
+          if (startCallTimerAfter <= 1) {
+            /* start instantaneously */
+            startCallTimer()
+          } else {
+            setTimeout(() => {
+              startCallTimer()
+            }, startCallTimerAfter)
+          }
+        })
+        .catch((err) => alert(err.message))
+    }
+  }
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
@@ -520,14 +563,29 @@ function Live() {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        if (data.wasFirst === "no") {
+        if (data.wasFirst === "yes" && data.actionStatus === "success") {
           /* */
+          spinnerCtx.setShowSpinner(false, "Please wait...")
+          modalCtx.showModalWithContent(
+            <CallEndDetails
+              dateTime={data.dateTime}
+              viewerName={data.name}
+              amountAdded={data.amountAmount}
+              currentAmount={data.currentAmount}
+              callType={data.callType}
+              callDuration={data.callDuration}
+              theCall={data.theCall}
+              totalCharges={data.totalCharges}
+              userType="Model"
+            />
+          )
         }
         setCallOnGoing(false)
-        setPendingCallEndRequest(true)
         await leaveAndCloseTracks()
         offCallListeners()
-        setPendingCallEndRequest(true)
+        setPendingCallEndRequest(false)
+        // setCallEndDetails(data.callEndDetails)
+        offCallListeners()
       })
   }
 
@@ -598,10 +656,14 @@ function Live() {
             ) : null}
 
             {/* on call | viewer image */}
-            {callOnGoing && callType === "videoCall" && remoteUsers[0] ? (
+            {callOnGoing &&
+            pendingCallRequest.callType === "videoCall" &&
+            remoteUsers[0] ? (
               <VideoPlayer
                 videoTrack={
-                  callType === "videoCall" ? remoteUsers[0].videoTrack : null
+                  pendingCallRequest.callType === "videoCall"
+                    ? remoteUsers[0].videoTrack
+                    : null
                 }
                 audioTrack={remoteUsers[0].audioTrack}
                 playAudio={true}
@@ -609,7 +671,7 @@ function Live() {
             ) : null}
 
             {/* on call | model's image */}
-            {callOnGoing && callType === "videoCall" ? (
+            {callOnGoing && pendingCallRequest.callType === "videoCall" ? (
               <div
                 id="self-video-container"
                 className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"
@@ -637,7 +699,19 @@ function Live() {
                   <CallEndIcon fontSize="medium" style={{ color: "red" }} />
                 </button>
                 <button className="tw-inline-block tw-mx-2 tw-z-[390]">
-                  <MicOffIcon fontSize="medium" style={{ color: "white" }} />
+                  {localAudioTrack.muted ? (
+                    <MicIcon
+                      fontSize="medium"
+                      style={{ color: "white" }}
+                      onClick={toggleMuteMic}
+                    />
+                  ) : (
+                    <MicOffIcon
+                      fontSize="medium"
+                      style={{ color: "white" }}
+                      onClick={toggleMuteMic}
+                    />
+                  )}
                 </button>
                 <button
                   className="tw-inline-block tw-mx-2 tw-z-[390]"
@@ -657,6 +731,26 @@ function Live() {
                 </button>
               </div>
             )}
+
+            {!callOnGoing && joinState && localAudioTrack ? (
+              <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-2 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(58,54,54,0.2)] tw-z-[390] tw-backdrop-blur">
+                <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+                  {localAudioTrack.muted ? (
+                    <MicIcon
+                      fontSize="medium"
+                      style={{ color: "white" }}
+                      onClick={toggleMuteMic}
+                    />
+                  ) : (
+                    <MicOffIcon
+                      fontSize="medium"
+                      style={{ color: "white" }}
+                      onClick={toggleMuteMic}
+                    />
+                  )}
+                </button>
+              </div>
+            ) : null}
 
             {/* on stream controls */}
             {!callOnGoing && (
@@ -705,6 +799,7 @@ function Live() {
             )}
           </div>
 
+          {/* ================================================= */}
           {/* chat site | ex right side */}
           <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-6/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
             <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
@@ -756,7 +851,7 @@ function Live() {
             >
               <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color">
                 <div
-                  className=""
+                  className="tw-relative"
                   style={{
                     display:
                       chatWindow === chatWindowOptions.PUBLIC
@@ -767,7 +862,7 @@ function Live() {
                   <PublicChat scrollOnChat={scrollOnChat} />
                 </div>
                 <div
-                  className=""
+                  className="tw-relative"
                   style={{
                     display:
                       chatWindow === chatWindowOptions.PRIVATE
@@ -775,10 +870,10 @@ function Live() {
                         : "none",
                   }}
                 >
-                  <PrivateChat scrollOnChat={scrollOnChat} />
+                  <PrivateChatWrapper scrollOnChat={scrollOnChat} />
                 </div>
                 <div
-                  className=""
+                  className="tw-relative"
                   style={{
                     display:
                       chatWindow === chatWindowOptions.TIP_MENU
@@ -800,7 +895,7 @@ function Live() {
               </div>
             </div>
 
-            <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full">
+            <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-border-b tw-border-first-color">
               <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
                 <input
                   className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"

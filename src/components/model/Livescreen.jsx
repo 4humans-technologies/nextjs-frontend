@@ -102,27 +102,36 @@ function LiveScreen(props) {
 
     let payLoad
     const message = chatInputRef.current.value
-    // console.log(
-    //   "sent message to room >>>",
-    //   JSON.parse(sessionStorage.getItem("socket-rooms"))[0]
-    // )
     if (authCtx.isLoggedIn) {
       /* can have private room */
       let finalRoom
       if (isChatPlanActive) {
         /* has private chat room */
         if (chatWindow === chatWindowOptions.PRIVATE) {
-          JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
-            if (room.includes("-private")) {
-              finalRoom = room
-            }
-          })
+          finalRoom = `${
+            window.location.pathname.split("/").reverse()[0]
+          }-private`
+          payLoad = {
+            to: finalRoom,
+            chat: {
+              by: authCtx.user.userType,
+              ts: Date.now(),
+              msg: message,
+            },
+            dbId: sessionStorage.getItem("privateChatDbId"),
+          }
         } else {
           JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
             if (room.includes("-public")) {
               finalRoom = room
             }
           })
+          payLoad = {
+            room: finalRoom,
+            message: message,
+            username: authCtx.user.user.username,
+            walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+          }
         }
       } else {
         /* logged in, not chat plan */
@@ -131,12 +140,12 @@ function LiveScreen(props) {
             finalRoom = room
           }
         })
-      }
-      payLoad = {
-        room: finalRoom,
-        message: message,
-        username: authCtx.user.user.username,
-        walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+        payLoad = {
+          room: finalRoom,
+          message: message,
+          username: authCtx.user.user.username,
+          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+        }
       }
     } else {
       /* un-authed user, no private room*/
@@ -155,6 +164,60 @@ function LiveScreen(props) {
       io.getSocket().emit("viewer-message-public-emitted", payLoad)
     }
     chatInputRef.current.value = ""
+  }
+
+  const onClickSendTipMenu = (activity) => {
+    /*  */
+    if (!authCtx.isLoggedIn) {
+      return alert("Please login first")
+    }
+
+    fetch("/api/website/stream/request-process-tip-menu-action", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        activity: activity,
+        modelId: window.location.pathname.split("/").reverse()[0],
+        room: JSON.parse(sessionStorage.getItem("socket-rooms")).filter(
+          (room) => room.includes("-public")
+        )[0],
+        socketData: {
+          chatType: "tipmenu-activity-superchat-public",
+          activity: activity,
+          username: `${authCtx.user.user.username} 👑`,
+          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+        },
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.actionStatus) {
+          updateCtx.updateNestedPaths((prevState) => {
+            return {
+              ...prevState,
+              user: {
+                ...prevState.user,
+                user: {
+                  ...prevState.user.user,
+                  relatedUser: {
+                    ...prevState.user.user.relatedUser,
+                    wallet: {
+                      ...prevState.user.user.relatedUser.wallet,
+                      currentAmount:
+                        prevState.user.user.relatedUser.wallet.currentAmount -
+                        activity.price,
+                    },
+                  },
+                },
+              },
+            }
+          })
+          setChatWindow(chatWindowOptions.PUBLIC)
+        }
+      })
+      .catch((err) => alert(err.message))
   }
 
   useEffect(() => {
@@ -343,17 +406,6 @@ function LiveScreen(props) {
                 </span>
               </button>
             )}
-            {authCtx.user.userType === "Model" ? (
-              <button
-                className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
-                onClick={() => setChatWindow(chatWindowOptions.USERS)}
-              >
-                <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
-                <span className="tw-font-normal sm:tw-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
-                  Users
-                </span>
-              </button>
-            ) : null}
             {/* pending call request  */}
           </div>
           {pendingCallRequest && (
@@ -377,7 +429,10 @@ function LiveScreen(props) {
                     chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
                 }}
               >
-                <PublicChat scrollOnChat={scrollOnChat} />
+                <PublicChat
+                  scrollOnChat={scrollOnChat}
+                  isModelOffline={isModelOffline}
+                />
               </div>
               <div
                 className=""
@@ -389,6 +444,8 @@ function LiveScreen(props) {
                 <PrivateChat
                   scrollOnChat={scrollOnChat}
                   hasActivePlan={isChatPlanActive}
+                  inFocus={chatWindow === chatWindowOptions.PRIVATE}
+                  modalCtx={modalCtx}
                 />
               </div>
               <div
@@ -403,6 +460,7 @@ function LiveScreen(props) {
                 <TipMenuActions
                   tipMenuActions={tipMenuActions}
                   setTipMenuActions={setTipMenuActions}
+                  onClickSendTipMenu={onClickSendTipMenu}
                 />
               </div>
               <div
@@ -419,7 +477,12 @@ function LiveScreen(props) {
 
           <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-z-[300]">
             <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
-              <img src="/tips.png" alt="" className=" tw-h-8 tw-pl-4" />
+              <img
+                src="/tips.png"
+                alt=""
+                className=" tw-h-8 tw-pl-4"
+                onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
+              />
               <input
                 className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                 placeholder="Enter your message here"

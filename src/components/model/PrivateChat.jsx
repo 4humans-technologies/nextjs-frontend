@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react"
 import {
   Stars,
   StarOutline,
@@ -14,6 +14,7 @@ import NormalChatMessage from "../ChatMessageTypes/NormalChat"
 import ModelChatMessage from "../ChatMessageTypes/ModelChatMessage"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
+import MessageContainer from "../PrivateChat/MessagesContainer"
 
 const ChooseChatPlan = dynamic(() => import("../ViewerScreen/ChooseChatPlan"))
 const data = []
@@ -36,19 +37,112 @@ const notLoggedInBanner = (
     </div>
     <div className="tw-text-center tw-mt-4">
       <Link href="/auth/login">
-        <button className="tw-capitalize tw-bg-dreamgirl-red tw-text-white tw-py-2 tw-px-8 tw-rounded-full tw-font-medium">
+        <a className="tw-capitalize tw-bg-dreamgirl-red tw-text-white tw-py-2 tw-px-8 tw-rounded-full tw-font-medium">
           <ExitToApp className="tw-text-white-color" fontSize="small" /> Login
-        </button>
+        </a>
       </Link>
     </div>
   </div>
 )
 
-let chatIndex = 0
-let username /* not using context because of closures */
 function PrivateChat(props) {
   const authCtx = useAuthContext()
   const ctx = useSocketContext()
+
+  const chatDataRef = useRef()
+  const inFocusRef = useRef()
+
+  const [chatsData, setChatsData] = useState({
+    chats: [],
+    highLightChat: false,
+    nos: 0,
+  })
+
+  const [privateChatDbId, setPrivateChatDbId] = useState(null)
+
+  const { inFocus, hasActivePlan } = props
+
+  useEffect(() => {
+    chatDataRef.current = chatsData
+  }, [chatsData])
+
+  useEffect(() => {
+    inFocusRef.current = inFocus
+  }, [inFocus])
+
+  useEffect(() => {
+    if (authCtx.isLoggedIn && hasActivePlan) {
+      fetch("/api/website/private-chat/find-or-create-private-chat", {
+        // fetch("/api/website/private-chat/check-if-private-chat-exists", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          modelId: window.location.pathname.split("/").reverse()[0],
+          viewerId: authCtx.relatedUserId,
+        }),
+        // body: JSON.stringify({
+        //   quickFindIndex: `${
+        //     window.location.pathname.split("/").reverse()[0]
+        //   }-${authCtx.relatedUserId}`,
+        // }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.privateChat) {
+            setPrivateChatDbId(data.privateChatDbId)
+            setChatsData(data.privateChat.chats)
+            sessionStorage.setItem("privateChatDbId", data.privateChatDbId)
+          } else {
+            setPrivateChatDbId(false)
+          }
+        })
+    } else {
+      setPrivateChatDbId(false)
+    }
+  }, [hasActivePlan, authCtx.isLoggedIn])
+
+  useEffect(() => {
+    if (ctx.socketSetupDone && hasActivePlan) {
+      /* viewer side  */
+      const socket = io.getSocket()
+      if (!socket.hasListeners("private-message-received-from-model")) {
+        socket.on("private-message-received-from-model", (data) => {
+          if (inFocusRef.current) {
+            setChatsData((prev) => {
+              prev.chats = [...prev.chats, { ...data.chat }]
+              prev.highLightChat = false
+              return prev
+            })
+          } else {
+            if (!prev.highLightChat && prev.nos === 0) {
+              /* no new chat beforehand */
+              setChatsData((prev) => {
+                prev.chats = [
+                  ...prev.chats,
+                  {
+                    by: "system",
+                    msg: "New Messages",
+                  },
+                  { ...data.chat },
+                ]
+                prev.nos = prev.nos + 1
+                prev.highLightChat = true
+                return prev
+              })
+            } else {
+              setChatsData((prev) => {
+                prev.chats = [...prev.chats, { ...data.chat }]
+                prev.nos = prev.nos + 1
+                return prev
+              })
+            }
+          }
+        })
+      }
+    }
+  }, [ctx.socketSetupDone, hasActivePlan])
 
   const noPlanBanner = (
     <div className="tw-mt-6 tw-py-20">
@@ -64,7 +158,7 @@ function PrivateChat(props) {
         </p>
         <p className="tw-text-text-black">to chat privately with any model</p>
       </div>
-      <div className="tw-my-6 tw-rounded tw-bg-first-color tw-text-text-black tw-p-3">
+      <div className="tw-my-6 tw-rounded tw-bg-first-color tw-text-text-black tw-p-3 tw-text-left">
         <p className="tw-mx-2 tw-my-1">
           <span className="tw-pr-2">
             <ChatBubble fontSize="small" />
@@ -102,147 +196,26 @@ function PrivateChat(props) {
 
   let chatContent
   if (authCtx.isLoggedIn) {
-    if (authCtx.user.userType !== "Model") {
-      if (props.hasActivePlan) {
-        chatContent = (
-          <NormalChatMessage
-            index={0}
-            displayName={"Model"}
-            message={"Start chatting with the model privately! 🔏🔏"}
-            walletCoins={"SECURE"}
-          />
-        )
+    if (authCtx.user.userType === "Viewer") {
+      if (hasActivePlan) {
+        chatContent = <MessageContainer currentViewer={chatsData} />
       } else {
         chatContent = noPlanBanner
       }
-    } else {
-      chatContent = (
-        <NormalChatMessage
-          index={0}
-          displayName={"Model"}
-          message={"Click on Go Live, To Start "}
-          walletCoins={"Not live"}
-        />
-      )
     }
   } else {
     chatContent = notLoggedInBanner
   }
 
-  const [privateChatMessages, setPrivateChatMessages] = useState([])
-
-  useEffect(() => {
-    //debugger
-    if (ctx.socketSetupDone) {
-      //debugger
-      /* 🟥 will it cause problem if i click on recommendation list */
-      const socket = io.getSocket()
-      if (!username) {
-        username = JSON.parse(localStorage.getItem("user"))?.username
-      }
-      if (!socket.hasListeners("model-message-private-received")) {
-        socket.on("model-message-private-received", (data) => {
-          setPrivateChatMessages((prevChats) => {
-            // document.dispatchEvent(chatScrollEvent)
-            const newChats = [
-              ...prevChats,
-              {
-                type: "model-private-message",
-                index: chatIndex,
-                message: data.message,
-              },
-            ]
-            chatIndex++
-            return newChats
-          })
-          props.scrollOnChat()
-        })
-      }
-      if (!socket.hasListeners("viewer-message-private-received")) {
-        socket.on("viewer-message-private-received", (data) => {
-          if (localStorage.getItem("userType") === "Model") {
-            setPrivateChatMessages((prevChats) => {
-              const newChats = [
-                ...prevChats,
-                {
-                  type: "normal-private-message",
-                  index: chatIndex,
-                  username: data.username,
-                  message: data.message,
-                  walletCoins: data.walletCoins,
-                },
-              ]
-              chatIndex++
-              return newChats
-            })
-            props.scrollOnChat()
-          } else {
-            if (data.username === username) {
-              setPrivateChatMessages((prevChats) => {
-                const newChats = [
-                  ...prevChats,
-                  {
-                    type: "normal-private-message",
-                    index: chatIndex,
-                    username: data.username,
-                    message: data.message,
-                    walletCoins: data.walletCoins,
-                  },
-                ]
-                chatIndex++
-                return newChats
-              })
-              props.scrollOnChat()
-            }
-          }
-        })
-      }
-    }
-  }, [ctx.socketSetupDone, io.getSocket(), username])
-
-  useEffect(() => {
-    /* why you have to remove the event listners any way */
-    //debugger
-    if (ctx.socketSetupDone) {
-      return () => {
-        // alert("removing Private listeners")
-        const socket = io.getSocket()
-        //debugger
-        if (socket.hasListeners("viewer-message-private-received")) {
-          socket.off("viewer-message-private-received")
-        }
-        if (socket.hasListeners("model-message-private-received")) {
-          socket.off("model-message-private-received")
-        }
-      }
-    }
-  }, [ctx.socketSetupDone, io.getSocket()])
-
-  return (
+  return privateChatDbId === null && authCtx.isLoggedIn ? (
+    <div className="tw-w-full tw-px-4 tw-py-3 tw-text-center">
+      <p className="tw-text-white-color tw-font-semibold">
+        Loading Your Private Chats...
+      </p>
+    </div>
+  ) : (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 tw-h-full tw-bg-dark-black tw-ml-1">
       {chatContent}
-      {privateChatMessages.map((chat, index) => {
-        switch (chat.type) {
-          case "normal-private-message":
-            return (
-              <NormalChatMessage
-                key={"*H^45%8H" + chat.index}
-                index={chat.index}
-                displayName={chat.username}
-                message={chat.message}
-                walletCoins={chat.walletCoins}
-              />
-            )
-          case "model-private-message":
-            return (
-              <ModelChatMessage
-                key={"*(78jht45k7" + chat.index}
-                index={chat.index}
-                message={chat.message}
-              />
-            )
-        }
-      })}
     </div>
   )
 }

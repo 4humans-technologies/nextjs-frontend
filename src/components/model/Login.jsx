@@ -10,7 +10,7 @@ import io from "../../socket/socket"
 import Logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
-import { imageDomainURL } from "../../../dreamgirl.config"
+import ErrorIcon from "@material-ui/icons/Error"
 
 //Validation is still left in this
 function Login() {
@@ -130,9 +130,10 @@ function Login() {
                 />
               </div>
               {loginError && (
-                <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3">
-                  <div className="tw-text-white-color tw-font-semibold">
-                    {loginError}
+                <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[230px]">
+                  <div className="tw-text-white-color tw-font-medium tw-text-sm">
+                    <ErrorIcon fontSize="small" />{" "}
+                    <span className="tw-pl-0.5">{loginError}</span>
                   </div>
                 </div>
               )}

@@ -11,6 +11,8 @@ import Logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
 import io from "../../socket/socket"
+import ErrorIcon from "@material-ui/icons/Error"
+
 
 function SignUp() {
   const modalCtx = useModalContext()
@@ -165,7 +167,8 @@ function SignUp() {
               {formError && (
                 <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[260px]">
                   <div className="tw-text-white-color tw-text-sm">
-                    <span>{formError}</span>
+                    <ErrorIcon fontSize="small" />{" "}
+                    <span className="">{formError}</span>
                   </div>
                 </div>
               )}

@@ -590,6 +590,15 @@ select {
   text-overflow: "";
 }
 
+.tipmenu-superchat-bg {
+  background: rgb(253, 30, 71);
+  background: linear-gradient(
+    45deg,
+    rgba(253, 30, 71, 0.5270483193277311) 47%,
+    rgba(253, 30, 71, 1) 88%
+  );
+}
+
 /* action grid  */
 .action_grid {
   grid-template-columns: 1fr 1fr auto;

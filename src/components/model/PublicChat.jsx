@@ -84,6 +84,33 @@ function CallRequestChat(props) {
   )
 }
 
+function TipMenuActivityRequest(props) {
+  return (
+    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tipmenu-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
+      <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
+        <div className="tw-flex-grow tw-pr-2">
+          <span className="user-message tw-text-sm tw-capitalize tw-font-semibold">
+            {props.message}
+          </span>
+        </div>
+        {props.showWallet && (
+          <p className="tw-flex-shrink tw-flex-grow-0 tw-pl-2 tw-text-yellow-400">
+            {props.walletCoins}
+          </p>
+        )}
+      </div>
+      <div className="tw-flex-grow tw-flex-shrink-0 tw-w-full tw-flex tw-items-center tw-justify-between tw-my-2 tw-border tw-border-white tw-py-1 tw-px-3">
+        <span className="tw-text-white-color tw-font-medium tw-flex-grow">
+          {props.activityName}
+        </span>
+        <span className="tw-text-white-color tw-font-medium tw-flex-shrink">
+          {props.activityPrice} coins
+        </span>
+      </div>
+    </div>
+  )
+}
+
 const initialMessages = [
   {
     type: "normal-public-message",
@@ -125,6 +152,34 @@ function PublicChatBox(props) {
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
+  const { isModelOffline } = props
+
+  useEffect(() => {
+    if (
+      !isModelOffline &&
+      authCtx.isLoggedIn &&
+      authCtx.user.userType === "Viewer"
+    ) {
+      setTimeout(() => {
+        setChatMessages((prevChats) => {
+          const newChats = [
+            ...prevChats,
+            {
+              type: "model-public-message",
+              index: chatIndex,
+              message: authCtx.isLoggedIn
+                ? `Hello my sweetheart ${
+                    authCtx.user.user.relatedUser.name.split(" ")[0]
+                  } 💘😘, welcome to me stream, check the tip menu (🔝) to see what can i do for you sweetheart 💘💘.`
+                : "Hello dear 💘, welcome to my stream i here to entertain you... 😘😘",
+            },
+          ]
+          chatIndex++
+          return newChats
+        })
+      }, [1000])
+    }
+  }, [isModelOffline, authCtx.isLoggedIn, authCtx.user.userType])
 
   useEffect(() => {
     //debugger
@@ -152,6 +207,15 @@ function PublicChatBox(props) {
               username: data.username,
               amountGiven: data.amountGiven,
               message: data.message,
+              walletCoins: data.walletCoins,
+            }
+          } else if (data.chatType === "tipmenu-activity-superchat-public") {
+            chat = {
+              type: data.chatType,
+              index: chatIndex,
+              username: data.username,
+              activityName: data.activity.action,
+              activityPrice: data.activity.price,
               walletCoins: data.walletCoins,
             }
           }
@@ -202,7 +266,7 @@ function PublicChatBox(props) {
           // document.dispatchEvent(chatEvent)
         })
       }
-      
+
       // if (!socket.hasListeners("viewer-requested-for-call-received")) {
       //   socket.on("viewer-requested-for-call-received", (data) => {
       //     setChatMessages((prevChats) => {
@@ -293,21 +357,6 @@ function PublicChatBox(props) {
 
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 max-w-[100vw] md:tw-max-w-[49vw]">
-      {authCtx.user.userType === "Model" ? (
-        <NormalChatMessage
-          index={0}
-          displayName={"Model"}
-          message={"Click on Go Live Button To Go "}
-          walletCoins={"Not live"}
-        />
-      ) : (
-        <NormalChatMessage
-          index={0}
-          displayName={"Model"}
-          message={"Start chatting with  me 💌💌🥰"}
-          walletCoins={"You are live"}
-        />
-      )}
       {chatMessages.map((chat, index) => {
         switch (chat.type) {
           case "normal-public-message":
@@ -356,6 +405,18 @@ function PublicChatBox(props) {
                 index={chat.index}
                 username={chat.username}
                 callType={chat.callType}
+              />
+            )
+          case "tipmenu-activity-superchat-public":
+            return (
+              <TipMenuActivityRequest
+                index={chat.index}
+                username={chat.username}
+                callType={chat.callType}
+                activityName={chat.activityName}
+                activityPrice={chat.activityPrice}
+                walletCoins={chat.walletCoins}
+                message={`${chat.username} requested activity`}
               />
             )
           default:

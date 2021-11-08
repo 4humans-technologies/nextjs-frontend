@@ -22,6 +22,7 @@ import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import useModalContext from "../../app/ModalContext"
 import CallEndDetails from "../Call/CallEndDetails"
+import MicIcon from "@material-ui/icons/Mic"
 
 /**
  * If this screen is being mounted then it is understood by default that,
@@ -71,7 +72,6 @@ const callTimer = {
 }
 function ViewerScreen(props) {
   const container = useRef()
-  const callTimerRef = useRef()
 
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
@@ -111,6 +111,16 @@ function ViewerScreen(props) {
     leaveAndCloseTracks,
   } = useAgora(client, "audience", props.callType || "")
 
+  const toggleMuteMic = () => {
+    if (localAudioTrack.muted) {
+      /* un mute audio */
+      localAudioTrack.setMuted(false)
+    } else {
+      /* mute the audio */
+      localAudioTrack.setMuted(true)
+    }
+  }
+
   const toggleFullscreen = useCallback(() => {
     /* fullscreen logic */
     const palyBackArea = document.getElementById("playback-area")
@@ -120,29 +130,6 @@ function ViewerScreen(props) {
       document.exitFullscreen()
     }
   }, [])
-
-  const startCallTimer = useCallback(() => {
-    callTimer.timerElement = document.getElementById("call-timer")
-    callTimerRef.current = setInterval(() => {
-      const totalSeconds = ++callTimer.value
-      let newTime
-      if (totalSeconds < 3600) {
-        newTime = new Date(totalSeconds * 1000).toISOString().substr(14, 5)
-      } else {
-        newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
-      }
-      // callTimer.timerElement.innerText = newTime
-    }, [1000])
-  }, [callTimerRef])
-
-  useEffect(() => {
-    if (joinState && callOnGoing) {
-      return () => {
-        clearInterval(callTimerRef.current)
-        callTimerRef.current = null
-      }
-    }
-  }, [joinState, callOnGoing])
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
@@ -367,40 +354,64 @@ function ViewerScreen(props) {
     tokenRequestDoneOnce,
   ])
 
-  const offCallListeners = () => {
-    const socket = io.getSocket()
-    if (!socket.hasListeners("model-call-end-request-init-received")) {
-      socket.off("model-call-end-request-init-received")
+  const offCallListeners = useCallback(() => {
+    if (socketCtx.socketSetupDone) {
+      const socket = io.getSocket()
+      if (socket.hasListeners("model-call-end-request-init-received")) {
+        socket.off("model-call-end-request-init-received")
+      }
+      if (socket.hasListeners("model-call-end-request-finished")) {
+        socket.off("model-call-end-request-finished")
+      }
     }
-  }
+  }, [socketCtx.socketSetupDone])
 
-  const setUpCallListeners = () => {
-    const socket = io.getSocket()
-    /* model has put call end request before you */
-    if (!socket.hasListeners("model-call-end-request-init-received")) {
-      socket.on("model-call-end-request-init-received", async (data) => {
-        alert("model ended call")
-        setCallOnGoing(false)
-        setPendingCallEndRequest(true)
-        await leaveAndCloseTracks()
-        setIsModelOffline(true)
-        offCallListeners()
-        /**
-         * now show spinner and wait for call-end-request-finished
-         * do a fetch request in that listener nad fetch the call end details/metrics
-         * then show the call metric/details page/modal
-         */
-      })
-    }
+  const setUpCallListeners = useCallback(() => {
+    if (socketCtx.socketSetupDone) {
+      const socket = io.getSocket()
+      /* model has put call end request before you */
+      if (!socket.hasListeners("model-call-end-request-init-received")) {
+        socket.on("model-call-end-request-init-received", (data) => {
+          alert("model ended call")
+          setPendingCallEndRequest(true)
+          spinnerCtx.setShowSpinner(true, "Processing transaction...")
+          /**
+           * now show spinner and wait for call-end-request-finished
+           * do a fetch request in that listener nad fetch the call end details/metrics
+           * then show the call metric/details page/modal
+           */
+        })
+      }
 
-    /* the, after call transaction is now complete, fetch the details of it now */
-    if (!socket.hasListeners("model-call-end-request-finished")) {
-      socket.on("model-call-end-request-finished", (data) => {
-        setCallEndDetails(data.callEndDetails)
-        setPendingCallEndRequest(false)
-      })
+      /* the, after call transaction is now complete, fetch the details of it now */
+      if (!socket.hasListeners("model-call-end-request-finished")) {
+        socket.on("model-call-end-request-finished", async (data) => {
+          if (data.ended === "ok") {
+            spinnerCtx.setShowSpinner(false, "Please wait...")
+            modalCtx.showModalWithContent(
+              <CallEndDetails
+                dateTime={data.dateTime}
+                viewerName={data.name}
+                totalCharges={data.totalCharges}
+                currentWalletAmount={data.currentAmount}
+                callType={data.callType}
+                callDuration={data.callDuration}
+                theCall={data.theCall}
+                totalCharges={data.totalCharges}
+                userType="Viewer"
+              />
+            )
+          }
+          // setCallEndDetails(data.callEndDetails)
+          setPendingCallEndRequest(false)
+          setCallOnGoing(false)
+          await leaveAndCloseTracks()
+          setIsModelOffline(true)
+          offCallListeners()
+        })
+      }
     }
-  }
+  }, [socketCtx.socketSetupDone, offCallListeners])
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
@@ -408,23 +419,15 @@ function ViewerScreen(props) {
       if (!socket.hasListeners("model-call-request-response-received")) {
         socket.on("model-call-request-response-received", async (data) => {
           alert("model response received")
+          socket.emit("add-oncall-status-on-viewer-socket-client", {
+            callId: data.callId,
+          })
           if (data.response !== "rejected") {
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               /* dont kick of, switch role to host */
-              // await leave() /* why leave?? */
               setPendingCallRequest(false)
               setCallOnGoing(true)
               setCallType(data.callType)
-              const startCallTimerAfter =
-                new Date(data.callStartTs).getTime() - Date.now()
-              if (startCallTimerAfter <= 1) {
-                /* start instantaneously */
-                startCallTimer()
-              } else {
-                setTimeout(() => {
-                  startCallTimer()
-                }, startCallTimerAfter)
-              }
               sessionStorage.removeItem("callId")
               sessionStorage.setItem("callId", data.callId)
               setUpCallListeners()
@@ -475,14 +478,12 @@ function ViewerScreen(props) {
         })
       }
     }
-  }, [ctx.relatedUserId, socketCtx.setSocketSetupDone, switchViewerToHost])
-
-  /* clear timer on component un-mounting */
-  useEffect(() => {
-    return () => {
-      clearInterval(callTimerRef.current)
-    }
-  }, [])
+  }, [
+    ctx.relatedUserId,
+    socketCtx.setSocketSetupDone,
+    switchViewerToHost,
+    setUpCallListeners,
+  ])
 
   /**
    * commented for client presentation only it's working
@@ -520,9 +521,10 @@ function ViewerScreen(props) {
       room: `${sessionStorage.getItem("streamId")}-public`,
     })
 
-    setPendingCallEndRequest(true)
     /* show spinner */
     spinnerCtx.setShowSpinner(true, "Processing transaction...")
+    setPendingCallEndRequest(true)
+
     //  commented because of client presentation
     fetch("/api/website/stream/handle-call-end-from-viewer", {
       method: "POST",
@@ -538,16 +540,27 @@ function ViewerScreen(props) {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        if (data.wasFirst === "no") {
-          /* wait for the */
+        if (data.wasFirst === "yes") {
+          // spinnerCtx.setShowSpinner(false, "Please wait...")
+          modalCtx.showModalWithContent(
+            <CallEndDetails
+              dateTime={data.dateTime}
+              viewerName={data.name}
+              totalCharges={data.totalCharges}
+              currentWalletAmount={data.currentAmount}
+              callType={data.callType}
+              callDuration={data.callDuration}
+              theCall={data.theCall}
+              totalCharges={data.totalCharges}
+              userType="Viewer"
+            />
+          )
         }
+        setPendingCallEndRequest(false)
         setCallOnGoing(false)
-        await leaveAndCloseTracks()
         setIsModelOffline(true)
         offCallListeners()
-        setPendingCallEndRequest(false)
-        modalCtx.showModalWithContent(<CallEndDetails theCall={data.theCall} />)
-        spinnerCtx.setShowSpinner(false, "Please wait...")
+        await leaveAndCloseTracks()
       })
       .catch((err) => alert(err.message))
 
@@ -568,7 +581,7 @@ function ViewerScreen(props) {
       ref={container}
       id="playback-area"
     >
-      {callOnGoing && (
+      {callOnGoing && callType === "videoCall" && (
         <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(22,22,22,0.35)] tw-z-[390] tw-backdrop-blur">
           <p id="call-timer" className="tw-text-center text-white">
             LIVE
@@ -586,7 +599,7 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* on "any-call" with model */}
-      {callOnGoing && remoteUsers?.length > 0 ? (
+      {callOnGoing && callType === "videoCall" && remoteUsers?.length > 0 ? (
         <VideoPlayer
           videoTrack={remoteUsers[0]?.videoTrack}
           audioTrack={remoteUsers[0].audioTrack} //error of session storage is going
@@ -595,7 +608,7 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* on audioCall with model */}
-      {callOnGoing && callType === "audioCall" && remoteUsers?.length ? (
+      {callOnGoing && callType === "audioCall" && remoteUsers?.length > 0 ? (
         <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
           <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
@@ -603,7 +616,7 @@ function ViewerScreen(props) {
                 <img
                   src={imageDomainURL + modelProfileData.profileImage}
                   alt=""
-                  className="tw-h-[100px] tw-w-[100px] md:tw-h-[150px] md:tw-w-[150px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
+                  className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
                 />
               </div>
             </div>
@@ -614,7 +627,7 @@ function ViewerScreen(props) {
       {/*  */}
 
       {/* not streaming && not on call | model circles | offline mode*/}
-      {isModelOffline && !callOnGoing ? (
+      {isModelOffline && !callOnGoing && !joinState ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4 md:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(70,70,70,0.1)]">
           <p className="tw-text-white-color tw-font-medium tw-text-center">
             The model is currently offline 😞😞
@@ -622,9 +635,18 @@ function ViewerScreen(props) {
         </div>
       ) : null}
 
+      {callOnGoing && callType === "audioCall" ? (
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4 md:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)]">
+          <p className="tw-text-white-color tw-font-medium tw-text-center">
+            AudioCall With Model
+          </p>
+        </div>
+      ) : null}
+
       {/* not streaming && not on call | model circles | offline mode*/}
       {/* model image */}
-      {isModelOffline && modelProfileData && (
+
+      {isModelOffline && modelProfileData && !joinState && (
         <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
           <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
@@ -651,7 +673,7 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* on call local preview */}
-      {callOnGoing && callType === "videoCall" ? (
+      {callOnGoing && callType === "videoCall" && joinState ? (
         <div
           id="self-video-container"
           className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"
@@ -678,9 +700,23 @@ function ViewerScreen(props) {
           >
             <CallEndIcon fontSize="medium" style={{ color: "red" }} />
           </button>
-          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
-            <MicOffIcon fontSize="medium" style={{ color: "white" }} />
-          </button>
+          {localAudioTrack && (
+            <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+              {localAudioTrack.muted ? (
+                <MicIcon
+                  fontSize="medium"
+                  style={{ color: "white" }}
+                  onClick={toggleMuteMic}
+                />
+              ) : (
+                <MicOffIcon
+                  fontSize="medium"
+                  style={{ color: "white" }}
+                  onClick={toggleMuteMic}
+                />
+              )}
+            </button>
+          )}
           <button
             className="tw-inline-block tw-mx-2 tw-z-[390]"
             onClick={toggleFullscreen}
@@ -696,8 +732,7 @@ function ViewerScreen(props) {
           </button>
         </div>
       )}
-
-      {
+      {!callOnGoing && joinState ? (
         <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
           <button className="tw-inline-block tw-mx-2 tw-z-[390]">
             <MicOffIcon fontSize="medium" style={{ color: "white" }} />
@@ -716,7 +751,7 @@ function ViewerScreen(props) {
             )}
           </button>
         </div>
-      }
+      ) : null}
     </div>
   )
 }

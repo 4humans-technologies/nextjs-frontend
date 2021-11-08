@@ -9,6 +9,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useAuthUpdateContext } from "../../app/AuthContext"
 import io from "../../socket/socket"
+import ErrorIcon from "@material-ui/icons/Error"
 
 //Validation is still left in this
 // I did blunder using multiple state ,rather than using single to create it
@@ -230,7 +231,8 @@ function Registration() {
               {formError && (
                 <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[260px]">
                   <div className="tw-text-white-color tw-text-sm">
-                    <span>{formError}</span>
+                    <ErrorIcon fontSize="small" />{" "}
+                    <span className="">{formError}</span>
                   </div>
                 </div>
               )}
