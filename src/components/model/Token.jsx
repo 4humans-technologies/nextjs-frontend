@@ -230,10 +230,16 @@ function Token() {
       <div className="tw-mx-auto tw-mt-4">
         <button
           type="submit"
-          className="tw-rounded-full tw-bg-green-color tw-px-4 tw-py-2"
+          className="tw-rounded-full tw-bg-green-color tw-px-4 tw-py-2 tw-inline-block tw-mr-3"
           onClick={() => handleBuyToken()}
         >
-          Buy Token
+          Send Coins
+        </button>
+        <button
+          type="submit"
+          className="tw-rounded-full tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-inline-block tw-ml-3"
+        >
+          Buy Coins
         </button>
       </div>
     </div>

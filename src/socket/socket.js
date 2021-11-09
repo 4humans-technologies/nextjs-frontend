@@ -54,17 +54,12 @@ export default {
     return socketConnectionInstance.id
   },
   globalListeners: (socket) => {
-
     // socket.onAny((eventName, ...args) => {
     //   alert(`${eventName} is fired`)
     // });
 
     socket.on("you-joined-a-room", (room) => {
-      if (
-        room.includes("-public") ||
-        room.includes("-socket-room") ||
-        room.includes("-private")
-      ) {
+      if (room.includes("-public") || room.includes("-private")) {
         /* dont't join the self rooms 😎😎 */
         const prevRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
@@ -95,7 +90,7 @@ export default {
     })
     // "model-public-message"
   },
-  modelListners: (socket) => { },
+  modelListners: (socket) => {},
   viewerListners: (socket) => {
     socket.on("model-audio-calling", (data) => {
       alert(data.message)
@@ -125,5 +120,5 @@ export default {
       console.log(data.roomSize)
     })
   },
-  unAuthedViewerListners: (socket) => { },
+  unAuthedViewerListners: (socket) => {},
 }

@@ -1,4 +1,6 @@
+import next from "next"
 import React, { useEffect, useState } from "react"
+import { useAuthUpdateContext } from "../../app/AuthContext"
 import ThePlanCard from "./ThePlanCard"
 
 const initialData = [
@@ -24,20 +26,49 @@ const initialData = [
 
 function ChooseChatPlan() {
   const [chatPlans, setChatPlans] = useState([...initialData])
+  const { setIsChatPlanActive } = props
+  const authUpdateCtx = useAuthUpdateContext()
 
   useEffect(() => {
-    /* fetch chat plans */
-    // fetch("/api/website/stream/get-private-chat-plans")
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     setChatPlans(data.plans)
-    //   })
-    //   .catch((err) => alert(err.message))
+    fetch("/api/website/privatechat/get-active-chat-plans")
+      .then((res) => res.json())
+      .then((data) => {
+        setChatPlans(data.plans)
+      })
+      .catch((err) => alert(err.message))
   }, [])
 
   const buyPlan = (planId) => {
-    /* fetch request to buy this plan */
-    alert("buying plan " + planId)
+    fetch("/api/website/stream/buy-chat-plan", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        planId: planId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.actionStatus === "success") {
+          setIsChatPlanActive(true)
+          const lcUser = JSON.parse(localStorage.getItem("user"))
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...lcUser,
+              relatedUser: {
+                ...data.updatedUser,
+                wallet: lcUser.relatedUser.wallet,
+              },
+            })
+          )
+          authUpdateCtx.readFromLocalStorage()
+        } else {
+          alert("Chat plan not brought!")
+        }
+      })
+      .catch((err) => next(err))
   }
 
   return (
@@ -45,6 +76,7 @@ function ChooseChatPlan() {
       <h2 className="tw-mb-4 tw-text-center tw-text-lg tw-text-white-color">
         Select The Plan
       </h2>
+      {/*  */}
       <div className="tw-border-t tw-border-text-black  tw-w-10/12 md:tw-w-9/12 lg:tw-w-7/12 tw-mx-auto"></div>
       <div className=" tw-mt-4 tw-flex tw-flex-wrap tw-justify-center tw-items-center tw-py-6">
         {chatPlans.map((plan, index) => {

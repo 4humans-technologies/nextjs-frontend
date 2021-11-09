@@ -113,6 +113,7 @@ function Live() {
   const chatBoxContainer = useRef()
   const streamTimerRef = useRef()
   const callTimerRef = useRef()
+  const newChatNotifierDotRef = useRef()
   const requestServerEndAndStreamLeaveRef = useRef()
   const leaveAndCloseTracksRef = useRef()
 
@@ -370,6 +371,18 @@ function Live() {
         document.dispatchEvent(customEvent)
         chatInputRef.current.value = ""
       }
+    }
+  }
+
+  const addAtTheRate = (username) => {
+    if (!chatInputRef.current) {
+      alert("ref not created, updated")
+      return
+    }
+    if (chatInputRef.current.value.trim() !== "") {
+      chatInputRef.current.value = `${chatInputRef.current.value} @${username}`
+    } else {
+      chatInputRef.current.value = `@${username} `
     }
   }
 
@@ -813,13 +826,20 @@ function Live() {
                 </span>
               </button>
               <button
-                className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
-                onClick={() => setChatWindow(chatWindowOptions.PRIVATE)}
+                className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-relative"
+                onClick={() => {
+                  setChatWindow(chatWindowOptions.PRIVATE)
+                  newChatNotifierDotRef.current.display = "none"
+                }}
               >
                 <MarkChatReadIcon className="tw-mr-2 tw-my-auto" />
                 <span className="tw-font-normal sm:-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
                   Private Chat
                 </span>
+                <span
+                  ref={newChatNotifierDotRef}
+                  className="tw-absolute tw-top-0 tw-left-0 tw-w-2 tw-h-2 tw-bg-dreamgirl-red tw-rounded-full tw-hidden"
+                ></span>
               </button>
               {ctx.user.userType !== "Model" && (
                 <button
@@ -859,7 +879,10 @@ function Live() {
                         : "none",
                   }}
                 >
-                  <PublicChat scrollOnChat={scrollOnChat} />
+                  <PublicChat
+                    scrollOnChat={scrollOnChat}
+                    addAtTheRate={addAtTheRate}
+                  />
                 </div>
                 <div
                   className="tw-relative"
@@ -870,7 +893,11 @@ function Live() {
                         : "none",
                   }}
                 >
-                  <PrivateChatWrapper scrollOnChat={scrollOnChat} />
+                  <PrivateChatWrapper
+                    scrollOnChat={scrollOnChat}
+                    inFocus={chatWindow === chatWindowOptions.PRIVATE}
+                    newChatNotifierDotRef={newChatNotifierDotRef}
+                  />
                 </div>
                 <div
                   className="tw-relative"

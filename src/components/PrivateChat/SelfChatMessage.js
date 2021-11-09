@@ -7,8 +7,7 @@ function SelfChatMessage(props) {
         You
       </span>
       <span className="tw-font-normal tw-text-white-color tw-text-left tw-text-sm">
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam,
-        reprehenderit?
+        {props.msg}
       </span>
     </div>
   )

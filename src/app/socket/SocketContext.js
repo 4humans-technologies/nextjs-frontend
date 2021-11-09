@@ -5,10 +5,10 @@ import { imageDomainURL } from "../../../dreamgirl.config"
 const SocketContext = createContext({
   socketInstance: null,
   isConnected: false,
-  setSocketInstance: () => { },
-  setIsConnected: () => { },
+  setSocketInstance: () => {},
+  setIsConnected: () => {},
   socketSetupDone: false,
-  setSocketSetupDone: () => { },
+  setSocketSetupDone: () => {},
 })
 
 let socketSetup = false
@@ -47,6 +47,11 @@ export const SocketContextProvider = ({ children }) => {
       console.log("socket disconnected! due to >>>", reason)
       localStorage.removeItem("socketId")
       setIsConnected(false)
+      if (reason === "transport close") {
+        setTimeout(() => {
+          io.connect()
+        })
+      }
     })
 
     socket.on("connect_failed", () => {

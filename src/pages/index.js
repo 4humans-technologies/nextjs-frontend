@@ -50,7 +50,7 @@ const Home = () => {
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
         const roomsToLeave = []
         socketRooms.forEach((room) => {
-          if (room.includes("-public") || room.includes("-private")) {
+          if (room.includes("-public")) {
             roomsToLeave.push(room)
           }
         })
@@ -112,9 +112,9 @@ const Home = () => {
               ...prev,
               {
                 title: "Online Models | Either onCall or onStream",
-                data: data.resultDocs.map(model => ({
+                data: data.resultDocs.map((model) => ({
                   ...model,
-                  relatedUserId: model._id
+                  relatedUserId: model._id,
                 })),
               },
             ]
@@ -132,7 +132,6 @@ const Home = () => {
   //   alert(socket.connected)
   // }, [])
 
-
   useEffect(() => {
     if (socketContext.setSocketSetupDone) {
       const socket = io.getSocket()
@@ -140,8 +139,12 @@ const Home = () => {
         socket.on("new-model-started-stream", (socketData) => {
           // alert("New Model Started Streaming..." + JSON.stringify(socketData))
           debugger
-          setBoxGroupData(prev => {
-            if (prev[prev.length - 1].data.map(stream => stream.relatedUserId).includes(socketData.modelId)) {
+          setBoxGroupData((prev) => {
+            if (
+              prev[prev.length - 1].data
+                .map((stream) => stream.relatedUserId)
+                .includes(socketData.modelId)
+            ) {
               return prev
             }
             // prev[prev.length - 1].data.forEach(stream => {
@@ -154,12 +157,15 @@ const Home = () => {
               ...prev,
               {
                 ...prevLastPopped,
-                data: [...prevLastPopped.data, {
-                  relatedUserId: socketData.modelId,
-                  profileImage: socketData.profileImage,
-                  isStreaming: true
-                }]
-              }
+                data: [
+                  ...prevLastPopped.data,
+                  {
+                    relatedUserId: socketData.modelId,
+                    profileImage: socketData.profileImage,
+                    isStreaming: true,
+                  },
+                ],
+              },
             ]
           })
         })
@@ -168,15 +174,17 @@ const Home = () => {
         socket.on("delete-stream-room", (socketData) => {
           // alert("Model Ended Streaming..." + JSON.stringify(socketData))
           debugger
-          setBoxGroupData(prev => {
+          setBoxGroupData((prev) => {
             const prevLastPopped = prev.pop()
-            const poppedModelDataList = prevLastPopped.data.filter(stream => stream.relatedUserId !== socketData.modelId)
+            const poppedModelDataList = prevLastPopped.data.filter(
+              (stream) => stream.relatedUserId !== socketData.modelId
+            )
             return [
               ...prev,
               {
                 ...prevLastPopped,
-                data: [...poppedModelDataList]
-              }
+                data: [...poppedModelDataList],
+              },
             ]
           })
         })

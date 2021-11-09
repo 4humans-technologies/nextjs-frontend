@@ -14,7 +14,7 @@ import NormalChatMessage from "../ChatMessageTypes/NormalChat"
 import ModelChatMessage from "../ChatMessageTypes/ModelChatMessage"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import MessageContainer from "../PrivateChat/MessagesContainer"
+import ViewerMessageContainer from "../PrivateChat/viewer/ViewerMessageContainer"
 
 const ChooseChatPlan = dynamic(() => import("../ViewerScreen/ChooseChatPlan"))
 const data = []
@@ -91,9 +91,19 @@ function PrivateChat(props) {
         .then((res) => res.json())
         .then((data) => {
           if (data.privateChat) {
-            setPrivateChatDbId(data.privateChatDbId)
-            setChatsData(data.privateChat.chats)
-            sessionStorage.setItem("privateChatDbId", data.privateChatDbId)
+            setPrivateChatDbId(data.privateChat._id)
+            setChatsData((prev) => {
+              return {
+                ...prev,
+                chats: data.privateChat.chats.map((chat) => {
+                  return {
+                    ...chat,
+                    by: chat.by === "Viewer" ? "self" : "other",
+                  }
+                }),
+              }
+            })
+            sessionStorage.setItem("privateChatDbId", data.privateChat._id)
           } else {
             setPrivateChatDbId(false)
           }
@@ -107,8 +117,8 @@ function PrivateChat(props) {
     if (ctx.socketSetupDone && hasActivePlan) {
       /* viewer side  */
       const socket = io.getSocket()
-      if (!socket.hasListeners("private-message-received-from-model")) {
-        socket.on("private-message-received-from-model", (data) => {
+      if (!socket.hasListeners("model-private-message-received")) {
+        socket.on("model-private-message-received", (data) => {
           if (inFocusRef.current) {
             setChatsData((prev) => {
               prev.chats = [...prev.chats, { ...data.chat }]
@@ -143,6 +153,17 @@ function PrivateChat(props) {
       }
     }
   }, [ctx.socketSetupDone, hasActivePlan])
+
+  useEffect(() => {
+    if (ctx.socketSetupDone) {
+      return () => {
+        const socket = io.getSocket()
+        if (socket.hasListeners("model-private-message-received")) {
+          socket.off("model-private-message-received")
+        }
+      }
+    }
+  }, [ctx.socketSetupDone])
 
   const noPlanBanner = (
     <div className="tw-mt-6 tw-py-20">
@@ -184,7 +205,11 @@ function PrivateChat(props) {
           <span
             className="tw-pl-2"
             onClick={() =>
-              props.modalCtx.showModalWithContent(<ChooseChatPlan />)
+              props.modalCtx.showModalWithContent(
+                <ChooseChatPlan
+                  setIsChatPlanActive={props.setIsChatPlanActive}
+                />
+              )
             }
           >
             Get Pro Chat Plan
@@ -198,7 +223,7 @@ function PrivateChat(props) {
   if (authCtx.isLoggedIn) {
     if (authCtx.user.userType === "Viewer") {
       if (hasActivePlan) {
-        chatContent = <MessageContainer currentViewer={chatsData} />
+        chatContent = <ViewerMessageContainer chatsData={chatsData} />
       } else {
         chatContent = noPlanBanner
       }
@@ -206,6 +231,10 @@ function PrivateChat(props) {
   } else {
     chatContent = notLoggedInBanner
   }
+
+  useEffect(() => {
+    return () => sessionStorage.removeItem("privateChatDbId")
+  }, [])
 
   return privateChatDbId === null && authCtx.isLoggedIn ? (
     <div className="tw-w-full tw-px-4 tw-py-3 tw-text-center">

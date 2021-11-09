@@ -90,7 +90,6 @@ function LiveScreen(props) {
   }, [authCtx.isLoggedIn])
 
   const sendChatMessage = () => {
-    //debugger
     if (!chatInputRef.current) {
       alert("ref not created, updated")
       return
@@ -105,9 +104,9 @@ function LiveScreen(props) {
     if (authCtx.isLoggedIn) {
       /* can have private room */
       let finalRoom
-      if (isChatPlanActive) {
-        /* has private chat room */
-        if (chatWindow === chatWindowOptions.PRIVATE) {
+      if (chatWindow === chatWindowOptions.PRIVATE) {
+        if (isChatPlanActive) {
+          /* loggedIn & has private chat room */
           finalRoom = `${
             window.location.pathname.split("/").reverse()[0]
           }-private`
@@ -119,22 +118,12 @@ function LiveScreen(props) {
               msg: message,
             },
             dbId: sessionStorage.getItem("privateChatDbId"),
+            viewerId: localStorage.getItem("relatedUserId"),
           }
-        } else {
-          JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
-            if (room.includes("-public")) {
-              finalRoom = room
-            }
-          })
-          payLoad = {
-            room: finalRoom,
-            message: message,
-            username: authCtx.user.user.username,
-            walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
-          }
+          io.getSocket().emit("viewer-private-message-emitted", payLoad)
         }
-      } else {
-        /* logged in, not chat plan */
+      } else if (chatWindow === chatWindowOptions.PUBLIC) {
+        /* logged in, on public tab */
         JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
           if (room.includes("-public")) {
             finalRoom = room
@@ -146,6 +135,7 @@ function LiveScreen(props) {
           username: authCtx.user.user.username,
           walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
         }
+        io.getSocket().emit("viewer-message-public-emitted", payLoad)
       }
     } else {
       /* un-authed user, no private room*/
@@ -155,15 +145,21 @@ function LiveScreen(props) {
         username: localStorage.getItem("unAuthed-user-chat-name"),
         walletCoins: 0,
       }
-    }
-    if (chatWindow === chatWindowOptions.PRIVATE) {
-      console.log("sent message to room >>> ", "private")
-      io.getSocket().emit("viewer-message-private-emitted", payLoad)
-    } else {
-      console.log("sent message to room >>> ", "public")
       io.getSocket().emit("viewer-message-public-emitted", payLoad)
     }
     chatInputRef.current.value = ""
+  }
+
+  const addAtTheRate = (username) => {
+    if (!chatInputRef.current) {
+      alert("ref not created, updated")
+      return
+    }
+    if (chatInputRef.current.value.trim() !== "") {
+      chatInputRef.current.value = `${chatInputRef.current.value} @${username}`
+    } else {
+      chatInputRef.current.value = `@${username} `
+    }
   }
 
   const onClickSendTipMenu = (activity) => {
@@ -296,7 +292,9 @@ function LiveScreen(props) {
                     }}
                   >
                     <CardGiftcardIcon fontSize="small" />
-                    <span className="tw-pl-1 tw-tracking-tight">Send Gift</span>
+                    <span className="tw-pl-1 tw-tracking-tight">
+                      Send Coins
+                    </span>
                   </Button>
                 </div>
                 <div className="tw-col-span-1 tw-row-span-1">
@@ -368,7 +366,9 @@ function LiveScreen(props) {
                     }}
                   >
                     <CardGiftcardIcon fontSize="small" />
-                    <span className="tw-pl-1 tw-tracking-tight">Send Gift</span>
+                    <span className="tw-pl-1 tw-tracking-tight">
+                      Send Coins
+                    </span>
                   </Button>
                 </div>
               </div>
@@ -432,6 +432,7 @@ function LiveScreen(props) {
                 <PublicChat
                   scrollOnChat={scrollOnChat}
                   isModelOffline={isModelOffline}
+                  addAtTheRate={addAtTheRate}
                 />
               </div>
               <div
@@ -444,6 +445,7 @@ function LiveScreen(props) {
                 <PrivateChat
                   scrollOnChat={scrollOnChat}
                   hasActivePlan={isChatPlanActive}
+                  setIsChatPlanActive={setIsChatPlanActive}
                   inFocus={chatWindow === chatWindowOptions.PRIVATE}
                   modalCtx={modalCtx}
                 />

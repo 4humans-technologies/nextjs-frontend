@@ -23,10 +23,10 @@ function GiftSuperChat(props) {
       </div>
       <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
         <div className="tw-flex-grow tw-pr-2">
-          <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
-            {props.displayName}:
-          </span>
-          <span className="user-message tw-text-sm tw-font-normal">
+          {/* <span className="display-name tw-capitalize tw-inline-block tw-pr-3">
+            @{props.displayName}:
+          </span> */}
+          <span className="user-message tw-font-semibold tw-capitalize">
             {props.message}
           </span>
         </div>
@@ -329,8 +329,14 @@ function PublicChatBox(props) {
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
         const roomsToLeave = []
         socketRooms.forEach((room) => {
-          if (room.endsWith("-public") || room.endsWith("-private")) {
-            roomsToLeave.push(room)
+          if (localStorage.getItem("userType") === "Model") {
+            if (room.endsWith("-public")) {
+              roomsToLeave.push(room)
+            }
+          } else if (localStorage.getItem("userType") === "Viewer") {
+            if (room.endsWith("-public") || room.endsWith("-private")) {
+              roomsToLeave.push(room)
+            }
           }
         })
         socket.emit(
@@ -367,6 +373,16 @@ function PublicChatBox(props) {
                 displayName={chat.username}
                 message={chat.message}
                 walletCoins={chat.walletCoins}
+                highlight={
+                  authCtx.user.userType === "Model"
+                    ? chat.message.includes("@Model")
+                      ? true
+                      : false
+                    : chat.message.includes(`@${authCtx.user.user.username}`)
+                    ? true
+                    : false
+                }
+                addAtTheRate={() => props.addAtTheRate(chat.username)}
               />
             )
           case "model-public-message":
@@ -375,6 +391,14 @@ function PublicChatBox(props) {
                 key={"*(78jhk7" + chat.index}
                 index={chat.index}
                 message={chat.message}
+                highlight={
+                  authCtx.user.userType === "Viewer"
+                    ? chat.message.includes(`@${authCtx.user.user.username}`)
+                      ? true
+                      : false
+                    : false
+                }
+                addAtTheRate={() => props.addAtTheRate("Model")}
               />
             )
           case "gift-superchat-public":
