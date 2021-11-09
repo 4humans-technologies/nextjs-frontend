@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from "react"
 function VideoPlayer({ videoTrack, audioTrack, playAudio }) {
   const container = useRef()
   const [full, setFull] = useState(false)
+ 
   useEffect(() => {
     if (!container.current) return
     videoTrack?.play(container.current)

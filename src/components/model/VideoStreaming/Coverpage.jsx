@@ -7,7 +7,7 @@ function Coverpage() {
     <div>
       <div className="tw-bg-first-color tw-text-white tw-mx-4 tw-rounded-t-2xl tw-rounded-b-2xl tw-mt-6   tw-font-normal sm:-font-medium ">
         <div className="tw-border-b-[1px] tw-border-text-black tw-mb-4 tw-py-2 tw-mx-auto">
-          <VolumeMuteIcon /> Topic
+          <VolumeMuteIcon /> Cover Page
         </div>
         <div className="tw-border-b-[1px] tw-border-text-black tw-mb-4 tw-ml-[30%] ">
           <div className="">

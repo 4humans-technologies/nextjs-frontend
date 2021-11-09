@@ -3,6 +3,8 @@
 
 export const imageDomainURL = "http://localhost:8080"
 export const imageDomainHost = "localhost"
+// export const imageDomainURL = "http://localhost:8080"
+// export const imageDomainHost = "localhost"
 
 /* Vishal prajapati network - http */
 // export const imageDomainURL = "http://192.168.1.104:8080"

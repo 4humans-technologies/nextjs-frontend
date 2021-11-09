@@ -4,10 +4,15 @@ import Footer from "../../components/Mainpage/Footer"
 import Header from "../../components/Mainpage/Header"
 import SecondHeader from "../../components/Mainpage/SecondHeader"
 import Sidebar from "../../components/Mainpage/Sidebar"
-import LiveScreen from "../../components/model/LiveScreen"
 import ModelProfile from "../../components/model/ModelProfile"
 import Recommendation from "../../components/ViewerScreen/Recommendation"
 import CallEndDetails from "../../components/Call/CallEndDetails"
+
+import dynamic from "next/dynamic"
+
+const LiveScreen = dynamic(() => import("../../components/model/LiveScreen"), {
+  ssr: false,
+})
 
 function ViewModelStream() {
   // 👇👇👇 store the models profile value in a state here
