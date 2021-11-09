@@ -3,6 +3,47 @@ import VolumeMuteIcon from "@material-ui/icons/VolumeMute"
 
 function Coverpage() {
   const [coverImage, setCoverImage] = useState("/pp.jpg")
+  // function to handle cover image change
+  const changeCover = async (e) => {
+    const image_1 = await e.target.files[0]
+    const image_2 = await URL.createObjectURL(e.target.files[0])
+    setCoverImage(image_2)
+    // To send image to url and the make things possible
+    // There I have to send with type of url that we uplode
+    const res = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + image_1.type
+    )
+    const data_2 = await res.json()
+    const cover_url = await data_2.uploadUrl
+
+    console.log(`Bro this is cover page url, ${cover_url.split("?")[0]}`) //The place where it needed to be uploded
+
+    // Then this uplode uplode the Image in the S3 bucket
+    const resp = await fetch(cover_url, {
+      method: "PUT",
+      body: image_1,
+    })
+    console.log(resp)
+
+    // if response is 200 then send the data to your own server
+    if (!resp.ok) {
+      return alert("What is this Bakloli")
+    }
+    const coverUrl = cover_url.split("?")[0]
+    console.log(coverUrl)
+    const re = await fetch("/api/website/profile/update-model-basic-details", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        coverImage: coverUrl,
+      }),
+    })
+    const jsonResp = await re.json()
+    console.log(jsonResp)
+  }
+
   return (
     <div>
       <div className="tw-bg-first-color tw-text-white tw-mx-4 tw-rounded-t-2xl tw-rounded-b-2xl tw-mt-6   tw-font-normal sm:-font-medium ">
@@ -20,9 +61,7 @@ function Coverpage() {
               name="document_1"
               id="file-input"
               className="file-input__input"
-              onChange={(e) =>
-                setCoverImage(URL.createObjectURL(e.target.files[0]))
-              }
+              onChange={(e) => changeCover(e)}
             />
             <label className="file-input__label " htmlFor="file-input">
               <svg

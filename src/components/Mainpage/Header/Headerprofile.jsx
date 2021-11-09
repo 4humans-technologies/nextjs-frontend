@@ -13,7 +13,7 @@ function Headerprofile(props) {
   const router = useRouter()
   const profileRouter = () => {
     if (authContext.user.userType == "Model") {
-      router.push("/name/profile")
+      router.push(`/${authContext.user.user.username}/profile`)
     }
     router.push("/user/ravi")
   }

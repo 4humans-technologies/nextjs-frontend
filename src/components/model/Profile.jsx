@@ -206,6 +206,8 @@ function Profile() {
     profileImage = authContext.user.user.relatedUser.profileImage
   }
 
+  console.log(`profile image ---${profileImage}`)
+
   return (
     <div>
       {/* Cover page */}
@@ -214,7 +216,7 @@ function Profile() {
       <div
         className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
         style={{
-          backgroundImage: `url(${profileImage})`,
+          backgroundImage: `url(/profile_header.jpeg)`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
@@ -229,10 +231,17 @@ function Profile() {
       </div>
       {/* corcle for profile picture */}
       <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative">
-        <img
-          className="tw-rounded-full tw-w-32 tw-h-32 flex tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
-          src={profileImage}
-        ></img>
+        {profileImage.length > 1 ? (
+          <img
+            className="tw-rounded-full tw-w-32 tw-h-32  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
+            src={"/profile_header.jpeg"}
+          ></img>
+        ) : (
+          <div className="tw-rounded-full tw-w-32 tw-h-32  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg tw-bg-green-color">
+            {authContext.user.user.username.charAt(0).toUpperCase()}
+          </div>
+        )}
+
         <CreateIcon
           className="md:tw-ml-24 md:tw-mt-12 tw-mt-16 tw-ml-28 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
           fontSize="medium"

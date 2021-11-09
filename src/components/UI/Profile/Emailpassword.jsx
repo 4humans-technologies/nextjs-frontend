@@ -142,6 +142,8 @@ const CoverUpdate = () => {
     )
     const data_2 = await res.json()
     const cover_url = await data_2.uploadUrl
+    // Now change coverImage to url
+    oldCover: image_2
 
     console.log(`Bro this is cover page url, ${cover_url.split("?")[0]}`) //The place where it needed to be uploded
 
@@ -162,7 +164,6 @@ const CoverUpdate = () => {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: JSON.stringify({
         coverImage: coverUrl,

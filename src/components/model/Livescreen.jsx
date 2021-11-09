@@ -25,8 +25,6 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 import io from "../../socket/socket"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
-import Image from "next/image"
-import TipMenuIcon from "../../../public/tips.png"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,

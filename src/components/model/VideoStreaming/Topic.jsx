@@ -5,6 +5,22 @@ function Topic(props) {
   const [childState, setChildState] = useState([])
   //  Topic set while streaming
 
+
+
+  const topicSetter = async () => {
+    const res = await fetch("url", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        topic: childState,
+      }),
+    })
+    const data = await res.json()
+    console.log(data)
+  }
+
   fetch("url", {
     method: "POST",
     headers: {
@@ -32,7 +48,10 @@ function Topic(props) {
             onChange={(e) => setChildState(e.target.value)}
           />
           <div className="tw-flex tw-my-4">
-            <button className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-dreamgirl-red tw-mr-4 tw-outline-none">
+            <button
+              className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-dreamgirl-red tw-mr-4 tw-outline-none"
+              onClick={topicSetter}
+            >
               Save
             </button>
             <button className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color">
@@ -41,7 +60,7 @@ function Topic(props) {
           </div>
         </div>
         <br />
-        <p>Bhojpuri singer Neeraj Rai </p>
+        <p>Topic for live perfomence</p>
       </div>
     </div>
   )
