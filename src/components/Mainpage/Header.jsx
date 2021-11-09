@@ -18,6 +18,7 @@ import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
 import SecondHeader from "./SecondHeader"
+import ProfileHeader from "../model/ProfileHeader"
 
 function Header(props) {
   const [menu, setMenu] = useState(false)
@@ -51,6 +52,15 @@ function Header(props) {
       })
       .then((data) => setSearchData(data.products))
   }, [query])
+
+  // search result
+
+  const profileImage = ""
+  if (authContext.user.user) {
+    const profileImage = authContext.user.user.relatedUser.profileImage
+  }
+
+  // When ever the Heder reloada sidebarshow is false
 
   return (
     <div>
@@ -165,12 +175,18 @@ function Header(props) {
                         >
                           logout
                         </button>
-                        <div className="tw-mx-8">
+                        <div className="tw-mx-8 tw-flex">
                           <img
                             src="/coins.png"
                             alt=""
                             className="tw-w-10 tw-h-10 tw-text-white"
                           />
+                          <div>
+                            {
+                              authContext.user.user.relatedUser.wallet
+                                .currentAmount
+                            }
+                          </div>
                         </div>
                         <div
                           className="tw-mr-4"
@@ -178,7 +194,7 @@ function Header(props) {
                         >
                           <img
                             className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 "
-                            src="/pp.jpg"
+                            src={profileImage}
                           ></img>
                           {/* profile */}
                           <div
@@ -186,7 +202,7 @@ function Header(props) {
                               headerProfileShow ? "" : "tw-hidden"
                             }`}
                           >
-                            <Headerprofile type="Viewer" />
+                            <Headerprofile userType="Viewer" />
                           </div>
                           {/* profile */}
                         </div>
@@ -214,17 +230,28 @@ function Header(props) {
                           className="tw-mr-4 tw-cursor-pointer"
                           onClick={() => setHeaderProfileShow((prev) => !prev)}
                         >
-                          <img
-                            className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 "
-                            src="/pp.jpg"
-                          ></img>
+                          {/* if image is not available then show the Name else show the image */}
+                          {profileImage ? (
+                            <img
+                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-text-4xl  "
+                              src={profileImage}
+                              alt="N"
+                            />
+                          ) : (
+                            <div className="tw-text-4xl tw-text-black tw-font-bold tw-bg-green-400 tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-pl-3">
+                              {authContext.user.user.username
+                                .charAt(0)
+                                .toUpperCase()}
+                            </div>
+                          )}
+
                           {/* Profile  */}
                           <div
                             className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-right-4 ${
                               headerProfileShow ? "" : "tw-hidden"
                             }`}
                           >
-                            <Headerprofile type="Model" />
+                            <Headerprofile userType="Model" />
                           </div>
                           {/* Profile  */}
                         </div>
@@ -295,6 +322,12 @@ function Header(props) {
           <MoreVertIcon />
         </div>
       </div>
+      {/* --------------------------------------------------------------*/}
+      {/* {router.pathname.includes("/profile") ? (
+        <ProfileHeader />
+      ) : (
+        <SecondHeader />
+      )} */}
       <SecondHeader />
     </div>
   )

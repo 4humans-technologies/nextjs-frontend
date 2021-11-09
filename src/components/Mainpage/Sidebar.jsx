@@ -57,7 +57,6 @@ function Sidebar(props) {
             key={index}
             className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  "
           >
-            {/* <FavoriteIcon className="tw-mr-2" /> */}
             {item.icon}
             <p id="sidebar_item_name">{item.name}</p>
             <p className="tw-font-normal tw-text-sm tw-self-center sidebar_item_number tw-text-left">

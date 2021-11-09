@@ -7,15 +7,19 @@ import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Headerprofile(props) {
-  const ctx = useAuthUpdateContext()
+  const updateAuthContext = useAuthUpdateContext()
+  const authContext = useAuthContext()
 
   const router = useRouter()
   const profileRouter = () => {
-    if (props.type == "Model") {
-      router.push("/name/profile")
+    if (authContext.user.userType == "Model") {
+      router.push(`/${authContext.user.user.username}/profile`)
     }
     router.push("/user/ravi")
   }
+
+  // first data will be get by the context
+
   return (
     <div>
       <ul>
@@ -33,7 +37,7 @@ function Headerprofile(props) {
         </div>
         <div
           className="tw-flex tw-my-4 tw-px-2 tw-border-t-[1px] tw-border-gray-600"
-          onClick={ctx.logout}
+          onClick={updateAuthContext.logout}
         >
           <PowerSettingsNewIcon />
           <p className="tw-ml-4">Logout</p>

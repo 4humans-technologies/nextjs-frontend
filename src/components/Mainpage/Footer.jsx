@@ -2,6 +2,7 @@ import React from "react";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import logo from "../../../public/logo.png";
 import Image from "next/image";
+import Link from "next/link";
 
 function Footer() {
   return (
@@ -30,16 +31,16 @@ function Footer() {
           </h2>
           <div className="mt-1">
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              Privacy policy
+              <Link href="/footer/Privacypolicy">Privacy policy</Link>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              Term of use
+              <Link href="/footer/Terms">Term of use</Link>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              DMCA policy
+              <Link href="">DMCA policy</Link>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              Cookies policy
+              <Link href="/footer/Cookies">Cookies policy</Link>
             </p>
           </div>
         </div>
@@ -49,13 +50,13 @@ function Footer() {
           </h2>
           <div className="mt-1">
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              become a model
+              <Link href="/footer/Careers"> become a model</Link>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
               affiliate program
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              tips for best result
+              <Link href="/footer/Resulttip"> Tips for best result</Link>
             </p>
           </div>
         </div>
@@ -65,10 +66,10 @@ function Footer() {
           </h2>
           <div className="mt-1">
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              contact & support
+              <Link href="/footer/Contact">contact & support</Link>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              billing support
+              <Link href="/footer/Billing"> billing support</Link>
             </p>
           </div>
         </div>

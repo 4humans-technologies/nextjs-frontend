@@ -3,7 +3,6 @@ import CreateIcon from "@material-ui/icons/Create"
 import { Button } from "react-bootstrap"
 import Card from "../UI/Card"
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
-import Callhistory from "./CallHistory"
 import modalContext from "../../app/ModalContext"
 import ClearIcon from "@material-ui/icons/Clear"
 import {
@@ -13,21 +12,30 @@ import {
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import Header from "../Mainpage/Header"
 
+// ========================================================
 function Profile() {
   const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
-  const [dynamicData, setDynamicData] = useState([1])
+  const [priceEdit, setPriceEdited] = useState(false)
+  const [dynamicData, setDynamicData] = useState([2])
   const [imageVideo, setImageVideo] = useState({
     images: [],
     videos: [],
   })
+
   const [modelData, setModelData] = useState()
   const [modelDetails, setModelDetails] = useState(null)
   const [callData, setCallData] = useState()
   const modalCtx = modalContext()
   const authContext = useAuthContext()
   const updateAuth = useAuthUpdateContext()
+
+  const [audioVideoPrice, setAudioVideoPrice] = useState({
+    audio: authContext.user.user.relatedUser.charges.audioCall,
+    video: authContext.user.user.relatedUser.charges.videoCall,
+  })
 
   useEffect(() => {
     fetch("/model.json")
@@ -38,68 +46,109 @@ function Profile() {
     return {}
   }, [])
 
-  // s3 bucket image upload
-  // to get url from domain and then uplode to aws
-  // const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
-  //   (resp) => resp.json()
-  // ) //this is the url where to uplode to aws
+  const callChangeHandler = (e) => {
+    const { name, value } = e.target
+    setAudioVideoPrice({ ...audioVideoPrice, [name]: value })
+    setPriceEdited(true)
+  }
+
+  //  ============================================================================================
+
+  const priceSetting = async () => {
+    const res = await fetch("/model.json", {
+      method: "PUT",
+      body: JSON.stringify({
+        audio: audioVideoPrice.audio,
+        video: audioVideoPrice.video,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    const data = await res.json()
+    console.log(data)
+  }
+  //  ============================================================================================
 
   // s3 bucket image upload
 
   // PhotoUplode Handler
   const photoUpdateHandler = async (e) => {
-    setImageVideo.images((prev) => [
-      ...prev,
-      URL.createObjectURL(e.target.files[0]),
-    ])
+    // setImageVideo.images((prev) => [
+    //   ...prev,
+    //   URL.createObjectURL(e.target.files[0]),
+    // ])
+    const image = e.target.files[0]
     // to get url from domain and then uplode to aws
-    // const { url } = await fetch("/api/website/aws/get-s3-upload-url").then(
-    //   (resp) => resp.json() //this is the url where to uplode to aws
-    // )
-    let req = await fetch("url", {
+    const url = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + image.type
+    )
+    const urlJson = await url.json()
+    const imageUrl = await urlJson.uploadUrl
+
+    const profileUrl = imageUrl.split("?")[0]
+
+    // below is the data uplode to aws
+    let req = await fetch(imageUrl, {
       method: "PUT",
-      headers: {
-        "Content-type": "multipart/form-data",
-      },
-      body: {
-        modelImage: imageVideo.images,
-      },
+      body: image,
     })
-    let resp = await req.json()
-    return resp
+    if (!req.ok) {
+      return alert("OK BRO")
+    }
     // send data back to node serve as success report with user id and url for the data
 
-    // let serverReq = await fetch("url", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     rootUserId: authContext.rootUserId,
-    //     // there we need to pass the image url to save in local data base
-    //   }),
-    // })
-    //   .then((resp) => resp.json())
-    //   .then((data) => console.log(data))
+    let serverReq = await fetch(
+      "/api/website/profile/update-model-basic-details",
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          publicImages:
+            authContext.user.user.relatedUser.publicImages.push(profileUrl),
+        }),
+      }
+    )
+    let serverResp = await serverReq.json()
+    console.log(serverResp)
   }
 
   // VideoUplodeHandler videoUpdateHandler
   const videoUpdateHandler = async (e) => {
-    setImageVideo.videos((prev) => [
-      ...prev,
-      URL.createObjectURL(e.target.files[0]),
-    ])
-    let req = await fetch("url", {
+    const image = e.target.files[0]
+    // to get url from domain and then uplode to aws
+    const url = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + image.type
+    )
+    const urlJson = await url.json()
+    const imageUrl = await urlJson.uploadUrl
+
+    const profileUrl = imageUrl.split("?")[0]
+
+    let req = await fetch(imageUrl, {
       method: "POST",
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-      },
-      body: {
-        modelVideos: imageVideo.videos,
-      },
+      body: image,
     })
-    let resp = await req.json()
-    return resp
+    if (!req.ok) {
+      return alert("OK BRO")
+    }
+    // send data back to node serve as success report with user id and url for the data
+    const serverReq = await fetch(
+      "/api/website/profile/update-model-basic-details",
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          publicVideos:
+            authContext.user.user.relatedUser.publicVideos.push(profileUrl),
+        }),
+      }
+    )
+    const serverResp = await serverReq.json()
   }
 
   useEffect(() => {
@@ -153,43 +202,67 @@ function Profile() {
   let thisYear = today.getFullYear()
 
   // Data fetching which make things possible
+  let profileImage = ""
+  if (authContext.user.user) {
+    profileImage = authContext.user.user.relatedUser.profileImage
+  }
+
+  console.log(`profile image ---${profileImage}`)
+
   return (
     <div>
       {/* Cover page */}
-      <div className="tw-w-screen tw-relative  ">
-        <img
-          src="/swami_ji.jpg"
-          className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
-        />
+      <Header />
+
+      <div
+        className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
+        style={{
+          backgroundImage: `url(/profile_header.jpeg)`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+        }}
+      >
         <p
-          className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full "
+          className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full tw-cursor-pointer"
           onClick={() => modalCtx.showModalWithContent(<CoverUpdate />)}
         >
           <CreateIcon className="tw-mr-2" />
-          Background
+          Edit Background
         </p>
       </div>
       {/* corcle for profile picture */}
       <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative">
-        <img
-          className="tw-rounded-full tw-w-32 tw-h-32 flex tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
-          src="/pp.jpg"
-        ></img>
+        {profileImage.length > 1 ? (
+          <img
+            className="tw-rounded-full tw-w-32 tw-h-32  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
+            src={"/profile_header.jpeg"}
+          ></img>
+        ) : (
+          <div className="tw-rounded-full tw-w-32 tw-h-32  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg tw-bg-green-color">
+            {authContext.user.user.username.charAt(0).toUpperCase()}
+          </div>
+        )}
+
         <CreateIcon
-          className="tw-ml-24 tw-mt-14 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full "
+          className="md:tw-ml-24 md:tw-mt-12 tw-mt-16 tw-ml-28 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
           fontSize="medium"
           onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
         />
-        <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44  ">
+        <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44 tw-flex  md:tw-mt-4 tw-mt-8">
           {modelDetails ? modelDetails.model.name : null}
+          {authContext.user.user.relatedUser.gender == "Female" ? (
+            <img src="/femaleIcon.png" className="tw-w-8 tw-h-8 tw-ml-4" />
+          ) : (
+            <img src="/maleIcon.png" className="tw-w-8 tw-h-8 tw-ml-4" />
+          )}
         </div>
       </div>
       {/* horizontal bar */}
       {/* Profile compy from grid */}
-      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background">
+      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background tw-w-screen">
         <div className="md:tw-col-span-4 tw-col-span-1">
           <div className="  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
-            <h1 className="tw-ml-4">My Information</h1>
+            <h1 className="tw-ml-4 tw-mb-4">My Information</h1>
             <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
               <div className=" md:tw-col-span-1 tw-col-span-2 ">
                 <p>Intrested in</p>
@@ -207,30 +280,41 @@ function Profile() {
                 ? modelData.map((item) => (
                     <div
                       className="md:tw-col-span-5 tw-col-span-4 "
-                      onChange={console.log("changed")}
+                      onChange={() => setInfoedited(true)}
                     >
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Interest}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.From}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {/* {item.Language} */}
                         {modelDetails ? modelDetails.model.languages[0] : null}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
-                        contentEditable="true"
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                       >
                         {/* {item.Age} */}
                         {modelDetails
@@ -238,31 +322,46 @@ function Profile() {
                           : null}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Body}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Hair}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Eye}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Call}
                       </p>
                       <p
-                        onInput={(e) => e.currentTarget.textContent}
+                        onInput={
+                          ((e) => e.currentTarget.textContent,
+                          () => setInfoedited(true))
+                        }
                         contentEditable="true"
                       >
                         {item.Call}
@@ -273,9 +372,13 @@ function Profile() {
 
               <br />
               {infoedited && (
-                <Button type="submit" onClick={() => setInfoedited(false)}>
+                <button
+                  type="submit"
+                  onClick={() => setInfoedited(false)}
+                  className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color"
+                >
                   Save
-                </Button>
+                </button>
               )}
             </div>
             {/* removed epic goal and Broadcast shedule */}
@@ -323,58 +426,43 @@ function Profile() {
             <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
               <div className="tw-col-span-1">
                 <p>Private Audio Call</p>
-                <p className="tw-my-2">Private video Call</p>
+                <p className="md:tw-my-2">Private video Call</p>
               </div>
               <div className="tw-col-span-2">
                 <div className="tw-flex ">
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
-                    {audio.length > 0
-                      ? audio.map((item) => (
-                          <option value={item}>
-                            {item} <span>tk</span>
-                          </option>
-                        ))
-                      : null}
-                  </select>
-                  {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
-                    <option value="200tk">200tk </option>
-                    <option value="300tk">300tk </option>
-                    <option value="400tk">400tk </option>
-                    <option value="500tk">500tk </option>
-                  </select> */}
-
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4">
-                    <option value="1"> 1 minute </option>
-                    <option value="2"> 2 minute </option>
-                    <option value="3"> 3 minute </option>
-                    <option value="4"> 4 minute </option>
-                  </select>
+                  <input
+                    type="number"
+                    name="audio"
+                    onChange={(e) => callChangeHandler(e)}
+                    id=""
+                    max="100"
+                    min="20"
+                    className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
+                    value={audioVideoPrice.audio}
+                  />
                 </div>
                 {/*  */}
 
-                <div className="tw-flex  tw-my-2">
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center  tw-py-2">
-                    {video.length > 0 &&
-                      video.map((item) => (
-                        <option value={item}>
-                          {item} <span>tk</span>
-                        </option>
-                      ))}
-                  </select>
-                  {/* <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-py-2 ">
-                    <option value="200tk">200tk </option>
-                    <option value="300tk">300tk </option>
-                    <option value="400tk">400tk </option>
-                    <option value="500tk">500tk </option>
-                  </select> */}
-
-                  <select className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-ml-4 tw-py-2">
-                    <option value="1"> 1 minute </option>
-                    <option value="2"> 2 minute </option>
-                    <option value="3"> 3 minute </option>
-                    <option value="4"> 4 minute </option>
-                  </select>
+                <div className="tw-flex  md:tw-my-2 tw-my-10">
+                  <input
+                    type="number"
+                    name="video"
+                    onChange={(e) => callChangeHandler(e)}
+                    id=""
+                    max="100"
+                    min="20"
+                    className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
+                    value={audioVideoPrice.video}
+                  />
                 </div>
+                {priceEdit && (
+                  <button
+                    className="tw-bg-green-color tw-text-white tw-px-4  tw-my-2 tw-rounded-full"
+                    onClick={priceSetting}
+                  >
+                    Save
+                  </button>
+                )}
               </div>
             </div>
             {/* scroll*/}
@@ -388,7 +476,9 @@ function Profile() {
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
-                  <h1 className="tw-font-extrabold tw-text-4xl">123</h1>
+                  <h1 className="tw-font-extrabold tw-text-4xl">
+                    {authContext.user.user.relatedUser.wallet.currentAmount}
+                  </h1>
                   <span className="tw-self-center">Token</span>
                 </div>
               </Card>
@@ -401,7 +491,9 @@ function Profile() {
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
-                  <h1 className="tw-font-extrabold tw-text-4xl">123</h1>
+                  <h1 className="tw-font-extrabold tw-text-4xl">
+                    {authContext.user.user.relatedUser.numberOfFollowers}
+                  </h1>
                 </div>
               </Card>
               <Card>
@@ -413,7 +505,9 @@ function Profile() {
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
-                  <h1 className="tw-font-extrabold tw-text-4xl">123</h1>
+                  <h1 className="tw-font-extrabold tw-text-4xl">
+                    {authContext.user.user.relatedUser.rating}
+                  </h1>
                   <span className="tw-self-center">Stars</span>
                 </div>
               </Card>
@@ -433,108 +527,7 @@ function Profile() {
             </div>
             {/* Call History */}
             {/* give width and apply scroll-y this is still not implimented */}
-            <table className="tw-border-solid  tw-border-4 tw-text-center tw-mt-8 tw-w-full tw-bg-first-color">
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4 tw-px-2">
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4  ">
-                  No
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Date Joined
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Call Type
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Duration
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Rate
-                </th>
-                <th className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  Viewer
-                </th>
-              </tr>
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  1
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  2
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  3
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  4
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  5
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4 ">
-                  6
-                </td>
-              </tr>
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4 tw-text-center">
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  1
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  2
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  3
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  4
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  5
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  6
-                </td>
-              </tr>
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  1
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  2
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  3
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  4
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  5
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  6
-                </td>
-              </tr>
-              <tr className="tw-border-solid tw-bg-dark-black tw-border-4">
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  1
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  2
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  3
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  4
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  5
-                </td>
-                <td className="tw-border-solid tw-bg-dark-black tw-border-4">
-                  6
-                </td>
-              </tr>
-            </table>
+
             {/* Call History */}
           </div>
           {/* Scroll */}
@@ -543,7 +536,6 @@ function Profile() {
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             <div className="tw-flex tw-justify-between">
               <h1>My Photos</h1>
-              <CreateIcon className="tw-mr-2 tw-underline tw-text-white" />
             </div>
             {/* Make Model Clickeble in model */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1  tw-flex tw-flex-wrap tw-justify-around tw-py-4">
@@ -590,7 +582,6 @@ function Profile() {
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
             <div className="tw-flex tw-justify-between">
               <h1>My videos</h1>
-              <CreateIcon className="tw-mr-2 tw-underline tw-text-white" />
             </div>
             {/* Make Model Clickeble in model */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1  tw-flex tw-flex-wrap tw-justify-around tw-py-4">
@@ -637,54 +628,59 @@ function Profile() {
               </div>
             </div>
           </div>
-          <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <h1 className="tw-mb-3 tw-font-semibold tw-text-lg">Set Actions</h1>
-            <form
-              id="action-form"
-              className="tw-max-h-64  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
-            >
-              {dynamicData.map((item, index) => {
-                return (
-                  <div
-                    className="tw-grid tw-my-4 tw-text-white-color action_grid "
-                    id={index}
-                    key={index}
-                  >
-                    <input
-                      className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
-                      placeholder={index}
-                    />
-                    <input
-                      className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
-                      placeholder={dynamicData}
-                    />
-                    {/* Amazing ninja technique for dom menupulation */}
-                    <ClearIcon
-                      className="tw-text-white tw-my-auto"
-                      onClick={() => {
-                        document.getElementById(index).remove()
-                      }}
-                    />
-                  </div>
-                )
-              })}
-            </form>
-            <Button
-              className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
-              onClick={() => setDynamicData((prev) => [...prev, 1])}
-            >
-              add new action
-            </Button>
-            <Button
-              onClick={saveData}
-              className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
-            >
-              Save
-            </Button>
-          </div>
+          {/* ---------------------------------------------------- */}
           <div>
-            <Callhistory />
+            <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+              <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
+                Set Actions
+              </h1>
+              <form
+                id="action-form"
+                className="tw-max-h-64  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
+              >
+                {dynamicData.map((item, index) => {
+                  return (
+                    <div
+                      className="tw-grid tw-my-4 tw-text-white-color action_grid "
+                      id={index}
+                      key={index}
+                    >
+                      <input
+                        className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
+                        placeholder={index}
+                      />
+                      <input
+                        className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
+                        placeholder={dynamicData}
+                      />
+                      {/* Amazing ninja technique for dom menupulation */}
+                      <ClearIcon
+                        className="tw-text-white tw-my-auto"
+                        onClick={() => {
+                          document.getElementById(index).remove()
+                        }}
+                      />
+                    </div>
+                  )
+                })}
+              </form>
+              <Button
+                className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
+                onClick={() => setDynamicData((prev) => [...prev, 1])}
+              >
+                add new action
+              </Button>
+              <Button
+                onClick={() => saveData()}
+                className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
+              >
+                Save
+              </Button>
+            </div>
           </div>
+          {/* ---------------------------------------------------- */}
+          <div>{/* <Callhistory /> */}</div>
+          {/* Bro in this call table and history has been removed,so you have to check all the thing carefully before procedure */}
         </div>
       </div>
     </div>

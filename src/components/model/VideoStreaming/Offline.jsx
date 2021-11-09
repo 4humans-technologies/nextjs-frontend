@@ -45,7 +45,7 @@ function Topic(props) {
           </div>
         </div>
         <br />
-        <p>Neeraj Rai's ex-girlfreind has 2 children</p>
+        <p>This status will be shown to when you are Offline</p>
       </div>
     </div>
   )

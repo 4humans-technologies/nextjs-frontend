@@ -5,6 +5,7 @@ import { PlayCircleFilled } from "@material-ui/icons"
 // import CallDetailsPopUp from "../Call/CallDetailsPopUp";
 import useModalContext from "../../app/ModalContext"
 import { imageDomainURL } from "../../../dreamgirl.config"
+// import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
 function ChipArea(props) {
   return (
@@ -18,7 +19,7 @@ function ProfileRow(props) {
   /**
    * ment for use in here only
    */
-  return (
+    return (
     <div className="tw-grid tw-w-full tw-grid-cols-4 tw-mb-3">
       <h4 className="tw-grid-cols-1">
         <span className="tw-font-semibold tw-pr-1 tw-capitalize">

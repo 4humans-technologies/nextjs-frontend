@@ -14,6 +14,18 @@ export const imageDomainHost = "localhost"
 // export const imageDomainURL = "https://192.168.1.104:8080"
 // export const imageDomainHost = "192.168.1.104"
 
+// export const imageDomainURL = "https://51e5-103-238-105-71.ngrok.io"
+// export const imageDomainHost = "51e5-103-238-105-71.ngrok.io"
+
+// export const imageDomainURL = "https://dreamgirl-backend.in.ngrok.io"
+// export const imageDomainHost = "dreamgirl-backend.in.ngrok.io"
+
+/* ====================================================== */
+/* Vishal prajapati network */
+// export const imageDomainURL = "http://192.168.1.104:8080"
+// export const imageDomainHost = "192.168.1.104"
+/* ====================================================== */
+/* ====================================================== */
 /* Airtel asuz network */
 // export const imageDomainURL = "http://192.168.43.85:8080/"
 // export const imageDomainHost = "192.168.1.104"

@@ -27,24 +27,53 @@ function Registration() {
 
   const updateCtx = useAuthUpdateContext()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const formData = new FormData()
-    formData.append("name", name)
-    formData.append("username", username)
-    formData.append("age", age)
-    formData.append("password", password)
-    formData.append("email", email)
-    formData.append("phone", phone)
-    formData.append("gender", gender)
-    formData.append("profileImage", profile)
-    formData.append("languages", "marwadi")
+    // In this get we url from to uplode profile image to s3 bucket ,first get url from server and then use that url to uplode directly to aws
+    const res = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + profile.type
+    )
+    const data_2 = await res.json()
+    const profile_url = await data_2.uploadUrl
 
-    // model Creation -------------- //////////////
+    // console.log(`This is profile url bro ${profile_url}`)
+    // console.log(`This is profile url bro ${profile_url.split("?")[0]}`)
+
+    // Now use this url to uplode the
+
+    const resp = await fetch(profile_url, {
+      method: "PUT",
+      // When I was using multipart form data the data needed to be downloaded
+      body: profile,
+    })
+
+    console.log(resp.ok)
+
+    // // model Creation --------------
+    // Now profile is url and you have to fetch the data from aws for profile image
+    if (!resp.ok) {
+      return alert("Betaa data is wrong")
+    }
+
+    const imageUrl = profile_url.split("?")[0]
+
     fetch("/api/website/register/model/create", {
       method: "POST",
       cors: "include",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        username,
+        age,
+        phone,
+        gender,
+        password,
+        languages: "Bhojpuri",
+        email,
+        profileImage: imageUrl,
+      }),
     })
       .then((resp) => resp.json())
       .then((data) => {
@@ -121,13 +150,12 @@ function Registration() {
         <div className="tw-grid sm:tw-grid-cols-2 tw-grid-cols-1  tw-grid-rows-1 sm:tw-w-full   tw-h-full tw-w-[100vw]  ">
           <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-10 tw-pb-10 tw-rounded-md">
             <h1 className="tw-text-3xl tw-font-medium tw-text-white-color tw-mb-4 tw-text-center tw-ml-3 tw-z-20">
-              {" "}
               Registration Model
             </h1>
             <form
               onSubmit={handleSubmit}
               className="tw-mb-4"
-              encType="multipart/form-data"
+              // encType="multipart/form-data"
             >
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
                 <input

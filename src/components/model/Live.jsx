@@ -93,6 +93,7 @@ function Live() {
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
   const spinnerCtx = useSpinnerContext()
+  const updateCtx = useAuthUpdateContext()
   const modalCtx = useModalContext()
   const [fullScreen, setFullScreen] = useState(false)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
