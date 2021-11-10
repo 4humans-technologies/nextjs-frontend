@@ -1,7 +1,5 @@
 // import { store } from "../app/store";
 // import { Provider } from 'react-redux'
-import "bootstrap/dist/css/bootstrap.min.css"
-import "../styles/global.css"
 import React, { useEffect } from "react"
 import { ContextProvider } from "../app/Context"
 import { SidebarContextProvider } from "../app/Sidebarcontext"
@@ -11,6 +9,8 @@ import { ErrorContextProvider } from "../app/Error/ErrorContext"
 import { SpinnerContextProvider } from "../app/Loading/SpinnerContext"
 import { SocketContextProvider } from "../app/socket/SocketContext"
 import TestComponent from "./text"
+import "bootstrap/dist/css/bootstrap.min.css"
+import "../styles/global.css"
 // import dynamic from "next/dynamic";
 // const io = dynamic(() => import("../socket/socket"), { ssr: false })
 
