@@ -5,7 +5,7 @@ import Header from "../../components/Mainpage/Header"
 import Sidebar from "../../components/Mainpage/Sidebar"
 import ModelProfile from "../../components/model/ModelProfile"
 import Recommendation from "../../components/ViewerScreen/Recommendation"
-import LiveScreen from "../../components/model/LiveScreen"
+import LiveScreen from "../../components/model/Livescreen"
 // import dynamic from "next/dynamic"
 
 // const LiveScreen = dynamic(() => import("../../components/model/LiveScreen"), {

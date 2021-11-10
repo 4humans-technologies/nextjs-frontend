@@ -47,7 +47,6 @@ function LiveScreen(props) {
   const modalCtx = useModalContext()
   const authCtx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
-  const router = useRouter()
 
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [tipMenuActions, setTipMenuActions] = useState([])
