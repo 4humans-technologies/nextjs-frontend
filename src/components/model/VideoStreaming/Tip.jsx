@@ -4,6 +4,7 @@ import ClearIcon from "@material-ui/icons/Clear"
 
 function Tip() {
   const [dynamicData, setDynamicData] = useState([2])
+
   const saveData = () => {
     const allInputs = document.querySelectorAll("#action-form input")
     const actionArray = []
@@ -26,11 +27,6 @@ function Tip() {
       .then((resp) => resp.json())
       .then((data) => console.log(data))
   }
-
-  // data will be loaded once the Item will mount
-  fetch("url")
-    .then((resp) => resp.json())
-    .then((data) => actionArray(JSON.parse(data)))
 
   return (
     <div>

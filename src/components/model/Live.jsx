@@ -111,7 +111,6 @@ function Live() {
   /* Ref's */
   const container = useRef()
   const chatInputRef = useRef()
-  const chatBoxContainer = useRef()
   const streamTimerRef = useRef()
   const callTimerRef = useRef()
   const newChatNotifierDotRef = useRef()
@@ -152,11 +151,16 @@ function Live() {
   }, [])
 
   const scrollOnChat = useCallback(() => {
-    chatBoxContainer.current.scrollBy({
-      top: 400,
+    // document.getElementById("for-scroll-into-view").scrollIntoView({
+    //   behavior: "smooth",
+    //   block: "start",
+    // })
+    const containerElement = document.getElementById("chatBoxContainer")
+    containerElement.scrollBy({
+      top: containerElement.scrollHeight,
       behavior: "smooth",
     })
-  }, [chatBoxContainer])
+  }, [])
 
   const startCallTimer = useCallback(() => {
     callTimer.timerElement = document.getElementById("call-timer")
@@ -367,7 +371,7 @@ function Live() {
         chatInputRef.current.value = ""
       } else if (chatWindow === chatWindowOptions.PRIVATE) {
         const customEvent = new CustomEvent("send-private-message", {
-          message: message,
+          detail: { message: message },
         })
         document.dispatchEvent(customEvent)
         chatInputRef.current.value = ""
@@ -443,20 +447,21 @@ function Live() {
       if (!socket.hasListeners("viewer-call-end-request-finished")) {
         socket.on("viewer-call-end-request-finished", async (data) => {
           if (data.ended === "ok") {
+            sessionStorage.setItem("callEndDetails", JSON.stringify(data))
             spinnerCtx.setShowSpinner(true, "Processing transaction...")
-            modalCtx.showModalWithContent(
-              <CallEndDetails
-                dateTime={data.dateTime}
-                viewerName={data.name}
-                amountAdded={data.amountAmount}
-                currentAmount={data.currentAmount}
-                callType={data.callType}
-                callDuration={data.callDuration}
-                theCall={data.theCall}
-                totalCharges={data.totalCharges}
-                userType="Model"
-              />
-            )
+            // modalCtx.showModalWithContent(
+            //   <CallEndDetails
+            //     dateTime={data.dateTime}
+            //     viewerName={data.name}
+            //     amountAdded={data.amountAmount}
+            //     currentAmount={data.currentAmount}
+            //     callType={data.callType}
+            //     callDuration={data.callDuration}
+            //     theCall={data.theCall}
+            //     totalCharges={data.totalCharges}
+            //     userType="Model"
+            //   />
+            // )
           }
           setPendingCallEndRequest(false)
           // setCallEndDetails(data.callEndDetails)
@@ -579,20 +584,21 @@ function Live() {
       .then(async (data) => {
         if (data.wasFirst === "yes" && data.actionStatus === "success") {
           /* */
+          sessionStorage.setItem("callEndDetails", JSON.stringify(data))
           spinnerCtx.setShowSpinner(false, "Please wait...")
-          modalCtx.showModalWithContent(
-            <CallEndDetails
-              dateTime={data.dateTime}
-              viewerName={data.name}
-              amountAdded={data.amountAmount}
-              currentAmount={data.currentAmount}
-              callType={data.callType}
-              callDuration={data.callDuration}
-              theCall={data.theCall}
-              totalCharges={data.totalCharges}
-              userType="Model"
-            />
-          )
+          // modalCtx.showModalWithContent(
+          //   <CallEndDetails
+          //     dateTime={data.dateTime}
+          //     viewerName={data.name}
+          //     amountAdded={data.amountAmount}
+          //     currentAmount={data.currentAmount}
+          //     callType={data.callType}
+          //     callDuration={data.callDuration}
+          //     theCall={data.theCall}
+          //     totalCharges={data.totalCharges}
+          //     userType="Model"
+          //   />
+          // )
         }
         setCallOnGoing(false)
         await leaveAndCloseTracks()
@@ -647,7 +653,7 @@ function Live() {
           className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28 "}
         >
           <div
-            className="tw-bg-gray-800 tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2 tw-relative"
+            className="tw-bg-first-color tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2 tw-relative"
             ref={container}
             id="playback-area"
           >
@@ -867,7 +873,7 @@ function Live() {
             </div>
 
             <div
-              ref={chatBoxContainer}
+              id="chatBoxContainer"
               className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
             >
               <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color">
@@ -921,6 +927,7 @@ function Live() {
                   <div className="">USERS</div>
                 </div>
               </div>
+              <div id="for-scroll-into-view"></div>
             </div>
 
             <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-border-b tw-border-first-color">
@@ -929,6 +936,7 @@ function Live() {
                   className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                   placeholder="Enter your message here"
                   ref={chatInputRef}
+                  id="chat-message-input"
                 ></input>
                 <button
                   onClick={sendChatMessage}

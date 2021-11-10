@@ -43,7 +43,6 @@ const chatWindowOptions = {
 
 function LiveScreen(props) {
   const chatInputRef = useRef()
-  const chatBoxContainer = useRef()
 
   const modalCtx = useModalContext()
   const authCtx = useAuthContext()
@@ -59,12 +58,17 @@ function LiveScreen(props) {
   const [pendingCallRequest, setPendingCallRequest] = useState(false)
   const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
 
-  const scrollOnChat = () => {
-    chatBoxContainer.current.scrollBy({
-      top: 400,
+  const scrollOnChat = useCallback(() => {
+    // document.getElementById("for-scroll-into-view").scrollIntoView({
+    //   behavior: "smooth",
+    //   block: "start",
+    // })
+    const containerElement = document.getElementById("chatBoxContainer")
+    containerElement.scrollBy({
+      top: containerElement.scrollHeight,
       behavior: "smooth",
     })
-  }
+  }, [])
 
   const handleModelFollow = useCallback(() => {
     if (!authCtx.isLoggedIn) {
@@ -108,17 +112,25 @@ function LiveScreen(props) {
           finalRoom = `${
             window.location.pathname.split("/").reverse()[0]
           }-private`
+          const ts = Date.now()
           payLoad = {
             to: finalRoom,
             chat: {
               by: authCtx.user.userType,
-              ts: Date.now(),
+              ts: ts,
               msg: message,
             },
             dbId: sessionStorage.getItem("privateChatDbId"),
             viewerId: localStorage.getItem("relatedUserId"),
           }
           io.getSocket().emit("viewer-private-message-emitted", payLoad)
+          const customEvent = new CustomEvent("send-private-message", {
+            detail: {
+              msg: message,
+              ts: ts,
+            },
+          })
+          document.dispatchEvent(customEvent)
         }
       } else if (chatWindow === chatWindowOptions.PUBLIC) {
         /* logged in, on public tab */
@@ -416,7 +428,7 @@ function LiveScreen(props) {
             </div>
           )}
           <div
-            ref={chatBoxContainer}
+            id="chatBoxContainer"
             className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
           >
             <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color">

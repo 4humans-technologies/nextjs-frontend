@@ -77,7 +77,7 @@ const initialChatState = [
 ]
 
 function PrivateChatWrapper(props) {
-  const { scrollOnChat, inFocus, newChatNotifierDotRef } = props
+  const { inFocus, newChatNotifierDotRef, scrollOnChat } = props
 
   const socketCtx = useSocketContext()
   const currentChatScreenStateRef = useRef()
@@ -122,14 +122,11 @@ function PrivateChatWrapper(props) {
 
   const handleViewerTileClick = (viewerId) => {
     sessionStorage.setItem("viewerId", viewerId)
-    /* merge new chats in the main chats */
-    let foundViewer
     setChatState((prev) => {
       /* merge new chats in the main chats */
       return prev.map((chatData) => {
         if (chatData.viewerId === viewerId) {
-          foundViewer = chatData
-          if (chatData.highLightNewChat && chatData.newChats.nos > 0) {
+          if (chatData.newChats.nos > 0) {
             /* add new messages tag and merge new chats below it */
             return {
               ...chatData,
@@ -155,7 +152,8 @@ function PrivateChatWrapper(props) {
 
     /* find that viewers chat data */
     /* isolate that viewers chat data in currentViewer */
-    setCurrentViewer(foundViewer)
+    setCurrentViewer(viewerId)
+
     /* mount detail screen with current viewer */
     setCurrentChatScreen(chatScreens.SINGLE_VIEWER_DETAIL_CHAT)
   }
@@ -227,6 +225,7 @@ function PrivateChatWrapper(props) {
               })
               return prevIds
             })
+            /* init chat state for this viewer,meanwhile we fetch chats data from database */
             setChatState((prevChats) => {
               prevChats.push({
                 viewerId: data.viewerId,
@@ -238,7 +237,7 @@ function PrivateChatWrapper(props) {
                 },
                 highLightNewChat: true,
               })
-              return prevChats
+              return [...prevChats]
             })
             /* request to fetch private chat from database */
             fetch("/api/website/private-chat/get-my-private-cht-by-id", {
@@ -263,84 +262,89 @@ function PrivateChatWrapper(props) {
                           name: result.privateChat.viewer.name,
                           username: result.privateChat.viewer.rootUser.username,
                           profileImage: result.privateChat.viewer.profileImage,
-                          chats: result.privateChat.chats,
+                          chats: result.privateChat.chats.map((theChat) => ({
+                            ...theChat,
+                            by: theChat.by === "Model" ? "self" : "other",
+                          })),
                         }
+                      } else {
+                        /* return other chats as it is */
+                        return chatMsg
                       }
                     })
                   })
                 } else {
                   alert("Error chats not fetched!")
                 }
+                scrollOnChat()
               })
+              .catch((err) => alert(err.message))
           } else {
+            /* if chat already fetched from database */
             if (
               currentChatScreenStateRef.current === chatScreens.VIEWERS_LIST &&
-              currentViewerRef.current.viewerId !== data.viewerId &&
+              currentViewerRef.current !== data.viewerId &&
               !inFocusRef.current
             ) {
               /* in background add new chat message to new chats */
               newChatNotifierDotRef.current.display = "inline"
               setChatState((prev) => {
-                return (
-                  prev
-                    .map((chatData) => {
-                      if (chatData.viewerId === data.viewerId) {
-                        return {
-                          ...chatData,
-                          newChats: {
-                            chats: [
-                              ...chatData.newChats.chats,
-                              {
-                                ...data.chat,
-                                by: "Model" === data.chat.by ? "self" : "other",
-                              },
-                            ],
-                            nos: chatData.newChats.nos + 1,
-                          },
-                          highLightNewChat: true,
-                        }
-                      } else {
-                        return chatData
-                      }
-                    })
-                    /* sort everyTime a new message is added */
-                    .sort((a, b) =>
-                      a.newChats.nos > b.newChats.nos
-                        ? 1
-                        : b.newChats.nos > a.newChats.nos
-                        ? -1
-                        : 0
-                    )
-                )
-              })
-              scrollOnChat()
-            } else {
-              /* directly add in latest chats */
-              setChatState((prev) => {
-                return prev
-                  .map((chatData) => {
-                    if (chatData.viewerId === data.viewerId) {
-                      return {
-                        ...chatData,
+                return prev.map((chatData) => {
+                  if (chatData.viewerId === data.viewerId) {
+                    return {
+                      ...chatData,
+                      newChats: {
                         chats: [
-                          ...chatData.chats,
+                          ...chatData.newChats.chats,
                           {
                             ...data.chat,
                             by: "Model" === data.chat.by ? "self" : "other",
                           },
                         ],
-                      }
-                    } else {
-                      return chatData
+                        nos: chatData.newChats.nos + 1,
+                      },
+                      highLightNewChat: true,
                     }
-                  })
-                  .sort((a, b) =>
-                    a.newChats.nos > b.newChats.nos
-                      ? 1
-                      : b.newChats.nos > a.newChats.nos
-                      ? -1
-                      : 0
-                  )
+                  } else {
+                    return chatData
+                  }
+                })
+                /* sort everyTime a new message is added */
+                // .sort((a, b) =>
+                //   a.newChats.nos > b.newChats.nos
+                //     ? 1
+                //     : b.newChats.nos > a.newChats.nos
+                //     ? -1
+                //     : 0
+                // )
+              })
+              scrollOnChat()
+            } else {
+              /* directly add in latest chats */
+              setChatState((prev) => {
+                return prev.map((chatData) => {
+                  if (chatData.viewerId === data.viewerId) {
+                    return {
+                      ...chatData,
+                      chats: [
+                        ...chatData.chats,
+                        {
+                          ...data.chat,
+                          by: "Model" === data.chat.by ? "self" : "other",
+                        },
+                      ],
+                    }
+                  } else {
+                    return chatData
+                  }
+                })
+                // .sort((a, b) =>
+                //   a.newChats.nos > b.newChats.nos
+                //     ? 1
+                //     : b.newChats.nos > a.newChats.nos
+                //     ? -1
+                //     : 0
+                // )
               })
               scrollOnChat()
             }
@@ -366,27 +370,53 @@ function PrivateChatWrapper(props) {
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
-      document.addEventListener("send-private-message", ({ message }) => {
-        alert("send private chat message")
+      const sendChatAndPushLocally = (e) => {
         if (
           currentChatScreenStateRef.current ===
             chatScreens.SINGLE_VIEWER_DETAIL_CHAT &&
           currentViewerRef.current
         ) {
+          // alert("sending private chat message")
           /* if on message screen, not on viewer list */
+          const ts = Date.now()
+          const theChat = {
+            by: "Model",
+            ts: ts,
+            msg: e.detail.message,
+          }
           socket.emit("model-private-message-emitted", {
-            to: currentViewerRef.current.viewerId,
+            to: `${currentViewerRef.current}-private`,
             dbId: dbChatIdsRef.current.filter(
-              (id) => id.viewerId === currentViewerRef.current.viewerId
+              (id) => id.viewerId === currentViewerRef.current
             )[0].dbChatId,
-            chat: {
-              by: "Model",
-              ts: Date.now(),
-              msg: message,
-            },
+            chat: theChat,
           })
+          setChatState((prev) => {
+            return prev.map((chatData) => {
+              if (chatData.viewerId === currentViewerRef.current) {
+                return {
+                  ...chatData,
+                  chats: [...chatData.chats, { ...theChat, by: "self" }],
+                }
+              } else {
+                return chatData
+              }
+            })
+          })
+          scrollOnChat()
+        } else {
+          document.getElementById("chat-message-input").value = e.detail.message
+          return alert("Please click on the viewer to send this message")
         }
-      })
+      }
+
+      document.addEventListener("send-private-message", sendChatAndPushLocally)
+      return () => {
+        document.removeEventListener(
+          "send-private-message",
+          sendChatAndPushLocally
+        )
+      }
     }
   }, [socketCtx.socketSetupDone])
 
@@ -401,6 +431,7 @@ function PrivateChatWrapper(props) {
               return (
                 <>
                   <ViewerTile
+                    key={viewer.viewerId}
                     profileImage={viewer.profileImage}
                     username={viewer.username}
                     name={viewer.name}
@@ -426,9 +457,12 @@ function PrivateChatWrapper(props) {
       {currentChatScreen === chatScreens.SINGLE_VIEWER_DETAIL_CHAT && (
         <div className="tw-h-full tw-w-full">
           <MessageContainer
-            currentViewer={currentViewer}
+            currentViewer={chatState.find(
+              (chatData) => chatData.viewerId === currentViewer
+            )}
             removeNewChatTag={removeNewChatTag}
             goBack={goBack}
+            scrollOnChat={scrollOnChat}
           />
         </div>
       )}

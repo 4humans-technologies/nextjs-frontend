@@ -14,6 +14,7 @@ function MessageContainer(props) {
   }, [removeNewChatTag])
 
   useEffect(() => {
+    props.scrollOnChat()
     return () => {
       /* clear current viewer also */
       sessionStorage.removeItem("viewerId")
@@ -47,7 +48,7 @@ function MessageContainer(props) {
         </button>
       </div>
       {/* ==========chats area======= */}
-      {currentViewer.chats ? (
+      {currentViewer?.chats ? (
         currentViewer.chats.map((chat) => {
           switch (chat.by) {
             case "self":

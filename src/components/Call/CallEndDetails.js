@@ -1,34 +1,26 @@
 import React from "react"
 
 function CallEndDetails(props) {
-  if (props.userType === "Model") {
-    const {
-      callDuration,
-      callType,
-      currentAmount,
-      amountAdded,
-      username,
-      viewerName,
-      dateTime,
-      totalCharges,
-    } = props
-  } else {
-    const {
-      callDuration,
-      callType,
-      currentAmount,
-      amountDeducted,
-      modelName,
-      modelUsername,
-      dateTime,
-      totalCharges,
-    } = props
-  }
+  let {
+    amountAdded,
+    username,
+    viewerName,
+    callDuration,
+    callType,
+    currentAmount,
+    amountDeducted,
+    modelName,
+    modelUsername,
+    dateTime,
+    totalCharges,
+    userType,
+  } = props
+
   return (
     <div className="">
       <div className="tw-px-4 tw-py-6 tw-bg-first-color tw-w-6/12 tw-mx-auto">
         <h3 className="tw-text-white-color tw-mx-0 tw-text-center tw-text-xl">
-          Call Details
+          Call Details - ({callType})
         </h3>
         <div className="tw-w-8/12 tw-border-text-black tw-border-t tw-mx-auto tw-my-4"></div>
         <div className="tw-grid tw-grid-cols-2 tw-gap-x-3 tw-gap-y-3 tw-mb-3">

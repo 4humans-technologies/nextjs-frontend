@@ -54,10 +54,9 @@ function Header(props) {
   }, [query])
 
   // search result
-
-  const profileImage = ""
+  let profileImage
   if (authContext.user.user) {
-    const profileImage = authContext.user.user.relatedUser.profileImage
+    profileImage = authContext.user.user.relatedUser.profileImage
   }
 
   // When ever the Heder reloada sidebarshow is false

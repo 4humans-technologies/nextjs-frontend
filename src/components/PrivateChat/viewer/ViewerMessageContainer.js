@@ -14,6 +14,10 @@ function ViewerMessageContainer(props) {
   }, [removeNewChatTag])
 
   useEffect(() => {
+    props.scrollOnChat()
+  }, [chatsData])
+
+  useEffect(() => {
     return () => {
       /* clear current viewer also */
       sessionStorage.removeItem("viewerId")

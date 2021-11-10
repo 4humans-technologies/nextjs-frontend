@@ -19,7 +19,7 @@ function ProfileRow(props) {
   /**
    * ment for use in here only
    */
-    return (
+  return (
     <div className="tw-grid tw-w-full tw-grid-cols-4 tw-mb-3">
       <h4 className="tw-grid-cols-1">
         <span className="tw-font-semibold tw-pr-1 tw-capitalize">
@@ -65,7 +65,7 @@ function ModelProfile(props) {
             <div
               className="tw-w-44 tw-h-44 tw-rounded-full tw-border-second-color tw-border-4"
               style={{
-                backgroundImage: `url(${imageDomainURL}${profileImage})`,
+                backgroundImage: `url(${profileImage})`,
                 backgroundSize: "cover",
               }}
             ></div>

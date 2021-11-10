@@ -20,12 +20,19 @@ import io from "../../socket/socket"
 import { useAuthContext } from "../../app/AuthContext"
 import { useSocketContext } from "../../app/socket/SocketContext"
 
-
 let token
 let channel
 function CallDetailsPopUp(props) {
   const router = useRouter()
-  const { name, username, profileImage, rating, minCallDuration, audioCallCharges, videoCallCharges } = props
+  const {
+    name,
+    username,
+    profileImage,
+    rating,
+    minCallDuration,
+    audioCallCharges,
+    videoCallCharges,
+  } = props
   const authCtx = useAuthContext()
   const socketCtx = useSocketContext()
 
@@ -59,16 +66,16 @@ function CallDetailsPopUp(props) {
           modelId: window.location.pathname.split("/").reverse()[0],
           walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
           username: authCtx.user.user.username,
-          streamId: sessionStorage.getItem("streamId")
-        })
+          streamId: sessionStorage.getItem("streamId"),
+        }),
       })
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           props.setPendingCallRequest(true)
           props.setCallType(callType)
           props.closeModal()
         })
-        .catch(err => alert("call request not sent"))
+        .catch((err) => alert(err.message))
     }
   }
 

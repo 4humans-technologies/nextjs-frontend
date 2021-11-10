@@ -238,7 +238,9 @@ const ProfileUpdate = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        profileImage: profileUrl,
+        updatedData: {
+          profileImage: profileUrl,
+        },
       }),
     })
     const jsonRe = await re.json()

@@ -387,20 +387,21 @@ function ViewerScreen(props) {
       if (!socket.hasListeners("model-call-end-request-finished")) {
         socket.on("model-call-end-request-finished", async (data) => {
           if (data.ended === "ok") {
+            sessionStorage.setItem("callEndDetails", JSON.stringify(data))
             spinnerCtx.setShowSpinner(false, "Please wait...")
-            modalCtx.showModalWithContent(
-              <CallEndDetails
-                dateTime={data.dateTime}
-                viewerName={data.name}
-                totalCharges={data.totalCharges}
-                currentWalletAmount={data.currentAmount}
-                callType={data.callType}
-                callDuration={data.callDuration}
-                theCall={data.theCall}
-                totalCharges={data.totalCharges}
-                userType="Viewer"
-              />
-            )
+            // modalCtx.showModalWithContent(
+            //   <CallEndDetails
+            //     dateTime={data.dateTime}
+            //     viewerName={data.name}
+            //     totalCharges={data.totalCharges}
+            //     currentWalletAmount={data.currentAmount}
+            //     callType={data.callType}
+            //     callDuration={data.callDuration}
+            //     theCall={data.theCall}
+            //     totalCharges={data.totalCharges}
+            //     userType="Viewer"
+            //   />
+            // )
           }
           // setCallEndDetails(data.callEndDetails)
           setPendingCallEndRequest(false)
@@ -542,19 +543,20 @@ function ViewerScreen(props) {
       .then(async (data) => {
         if (data.wasFirst === "yes") {
           // spinnerCtx.setShowSpinner(false, "Please wait...")
-          modalCtx.showModalWithContent(
-            <CallEndDetails
-              dateTime={data.dateTime}
-              viewerName={data.name}
-              totalCharges={data.totalCharges}
-              currentWalletAmount={data.currentAmount}
-              callType={data.callType}
-              callDuration={data.callDuration}
-              theCall={data.theCall}
-              totalCharges={data.totalCharges}
-              userType="Viewer"
-            />
-          )
+          sessionStorage.setItem("callEndDetails", JSON.stringify(data))
+          // modalCtx.showModalWithContent(
+          //   <CallEndDetails
+          //     dateTime={data.dateTime}
+          //     viewerName={data.name}
+          //     totalCharges={data.totalCharges}
+          //     currentWalletAmount={data.currentAmount}
+          //     callType={data.callType}
+          //     callDuration={data.callDuration}
+          //     theCall={data.theCall}
+          //     totalCharges={data.totalCharges}
+          //     userType="Viewer"
+          //   />
+          // )
         }
         setPendingCallEndRequest(false)
         setCallOnGoing(false)
@@ -574,7 +576,7 @@ function ViewerScreen(props) {
   return (
     <div
       className={
-        isModelOffline
+        isModelOffline || (callOnGoing && callType === "audioCall")
           ? "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10 tw-flex tw-items-center tw-justify-center"
           : "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10"
       }
@@ -608,13 +610,16 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* on audioCall with model */}
-      {callOnGoing && callType === "audioCall" && remoteUsers?.length > 0 ? (
+      {callOnGoing &&
+      callType === "audioCall" &&
+      !isModelOffline &&
+      remoteUsers?.length > 0 ? (
         <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
           <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
               <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
                 <img
-                  src={imageDomainURL + modelProfileData.profileImage}
+                  src={modelProfileData.profileImage}
                   alt=""
                   className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
                 />
@@ -627,7 +632,7 @@ function ViewerScreen(props) {
       {/*  */}
 
       {/* not streaming && not on call | model circles | offline mode*/}
-      {isModelOffline && !callOnGoing && !joinState ? (
+      {isModelOffline && modelProfileData && !joinState && !callOnGoing ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4 md:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(70,70,70,0.1)]">
           <p className="tw-text-white-color tw-font-medium tw-text-center">
             The model is currently offline 😞😞
@@ -646,13 +651,13 @@ function ViewerScreen(props) {
       {/* not streaming && not on call | model circles | offline mode*/}
       {/* model image */}
 
-      {isModelOffline && modelProfileData && !joinState && (
+      {isModelOffline && modelProfileData && !joinState && !callOnGoing && (
         <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
           <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
               <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
                 <img
-                  src={imageDomainURL + modelProfileData.profileImage}
+                  src={modelProfileData.profileImage}
                   alt=""
                   className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
                 />
@@ -664,7 +669,7 @@ function ViewerScreen(props) {
 
       {/* not streaming && not on call | model circles | offline mode*/}
       {/* model offline status */}
-      {isModelOffline && !callOnGoing && modelProfileData ? (
+      {isModelOffline && modelProfileData && !joinState && !callOnGoing ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-4 md:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(255,255,255,0.1)]">
           <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
             {modelProfileData.offlineStatus}
