@@ -3,6 +3,7 @@ import { useWidth } from "../../app/Context"
 import SearchIcon from "@material-ui/icons/Search"
 import ClearIcon from "@material-ui/icons/Clear"
 import { useRouter } from "next/router"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
 // Pending list
 // 1) Search list
@@ -11,10 +12,12 @@ function SecondHeader() {
   const [search, setSearch] = useState(false)
   const [isStream, setIsstream] = useState(false)
   const router = useRouter()
+  const authContext = useAuthContext()
   useEffect(() => {
     if (
       router.pathname.includes("view-stream") ||
-      router.pathname.includes("goLive")
+      router.pathname.includes("goLive") ||
+      router.pathname.includes("/user/[name]")
     ) {
       setIsstream(true)
     } else {
@@ -57,11 +60,8 @@ function SecondHeader() {
                   isStream ? (
                     <div className="tw-grid tw-grid-cols-8 tw-w-full tw-gap-x-2">
                       <div className=" tw-col-span-7 tw-flex tw-justify-around">
-                        <div
-                          className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2"
-                          onClick={scrollDown}
-                        >
-                          Name
+                        <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                          {authContext.user.user.username}
                         </div>
                         <div
                           className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"
@@ -126,7 +126,7 @@ function SecondHeader() {
               isStream ? (
                 <div className="tw-flex tw-my-auto">
                   <div className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer">
-                    Name
+                    {authContext.user.user.username}
                   </div>
                   <div
                     className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"

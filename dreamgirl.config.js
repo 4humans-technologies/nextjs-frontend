@@ -1,8 +1,8 @@
-// export const imageDomainURL = "https://dreamgirl-backend.in.ngrok.io"
-// export const imageDomainHost = "dreamgirl-backend.in.ngrok.io"
+export const imageDomainURL = "https://dreamgirl-backend.in.ngrok.io"
+export const imageDomainHost = "dreamgirl-backend.in.ngrok.io"
 
-export const imageDomainURL = "http://localhost:8080"
-export const imageDomainHost = "localhost"
+// export const imageDomainURL = "http://localhost:8080"
+// export const imageDomainHost = "localhost"
 // export const imageDomainURL = "http://localhost:8080"
 // export const imageDomainHost = "localhost"
 

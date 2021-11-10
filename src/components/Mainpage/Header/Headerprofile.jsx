@@ -15,7 +15,7 @@ function Headerprofile(props) {
     if (authContext.user.userType == "Model") {
       router.push(`/${authContext.user.user.username}/profile`)
     }
-    router.push("/user/ravi")
+    router.push(`/user/${authContext.user.user.username}`)
   }
 
   // first data will be get by the context
@@ -26,10 +26,6 @@ function Headerprofile(props) {
         <div className="tw-flex tw-my-2 tw-px-2 " onClick={profileRouter}>
           <PersonIcon />
           <p className="tw-ml-4">My Profile</p>
-        </div>
-        <div className="tw-flex tw-my-2 tw-px-2">
-          <PeopleIcon />
-          <p className="tw-ml-4">My Follower</p>
         </div>
         <div className="tw-flex tw-my-2 tw-px-2 tw-border-t-[1px] tw-border-gray-600">
           <SettingsIcon />
