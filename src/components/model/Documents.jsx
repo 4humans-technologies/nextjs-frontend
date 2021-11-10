@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react"
 import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
-import submitFile from "../Notifications/submitFile"
 import Header from "../Mainpage/Header"
 // import Headermodel from "./Headermodel"
 

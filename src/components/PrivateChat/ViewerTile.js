@@ -15,17 +15,19 @@ function ViewerTile(props) {
         />
       </div>
       <div className="tw-flex tw-flex-col tw-text-white-color tw-flex-grow tw-ml-2">
-        <p className="tw-font-semibold">Neeraj rai</p>
-        <p className="">@neeraj1</p>
+        <p className="tw-font-semibold">{name}</p>
+        <p className="">@{username}</p>
       </div>
-      <div className="tw-flex-grow-0 tw-flex-shrink tw-pl-2 tw-flex tw-items-center">
-        <span className="tw-text-sm tw-text-white-color tw-pr-2">
-          New Messages!
-        </span>
-        <span className="tw-bg-[#0cfc0ce0] tw-p-2 tw-text-white-color tw-rounded-full tw-font-semibold">
-          12
-        </span>
-      </div>
+      {hasNewMessages && (
+        <div className="tw-flex-grow-0 tw-flex-shrink tw-pl-2 tw-flex tw-items-center">
+          <span className="tw-text-sm tw-text-white-color tw-pr-2">
+            New Messages!
+          </span>
+          <span className="tw-bg-[#0cfc0ce0] tw-p-2 tw-text-white-color tw-rounded-full tw-font-semibold">
+            {newMessagesCount}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

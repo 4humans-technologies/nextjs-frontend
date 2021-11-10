@@ -71,6 +71,28 @@ function PrivateChat(props) {
   }, [inFocus])
 
   useEffect(() => {
+    const pushPrivateChatLocally = (e) => {
+      // alert("send private chat msg " + e.detail.msg)
+      setChatsData((prev) => {
+        prev.chats.push({
+          by: "self",
+          ts: e.detail.ts,
+          msg: e.detail.msg,
+        })
+        return { ...prev }
+      })
+    }
+    document.addEventListener("send-private-message", pushPrivateChatLocally)
+    return () => {
+      document.removeEventListener(
+        "send-private-message",
+        pushPrivateChatLocally
+      )
+    }
+  }, [])
+
+  /* fetch chats from the db */
+  useEffect(() => {
     if (authCtx.isLoggedIn && hasActivePlan) {
       fetch("/api/website/private-chat/find-or-create-private-chat", {
         // fetch("/api/website/private-chat/check-if-private-chat-exists", {
@@ -81,6 +103,9 @@ function PrivateChat(props) {
         body: JSON.stringify({
           modelId: window.location.pathname.split("/").reverse()[0],
           viewerId: authCtx.relatedUserId,
+          quickFindIndex: `${
+            window.location.pathname.split("/").reverse()[0]
+          }-${authCtx.relatedUserId}`,
         }),
         // body: JSON.stringify({
         //   quickFindIndex: `${
@@ -113,6 +138,7 @@ function PrivateChat(props) {
     }
   }, [hasActivePlan, authCtx.isLoggedIn])
 
+  /* listen for message from model */
   useEffect(() => {
     if (ctx.socketSetupDone && hasActivePlan) {
       /* viewer side  */
@@ -121,13 +147,19 @@ function PrivateChat(props) {
         socket.on("model-private-message-received", (data) => {
           if (inFocusRef.current) {
             setChatsData((prev) => {
-              prev.chats = [...prev.chats, { ...data.chat }]
+              prev.chats = [
+                ...prev.chats,
+                {
+                  ...data.chat,
+                  by: data.chat.by === "Viewer" ? "Self" : "other",
+                },
+              ]
               prev.highLightChat = false
-              return prev
+              return { ...prev }
             })
           } else {
             if (!prev.highLightChat && prev.nos === 0) {
-              /* no new chat beforehand */
+              /* no new chat beforehand, add new message tag also */
               setChatsData((prev) => {
                 prev.chats = [
                   ...prev.chats,
@@ -135,17 +167,26 @@ function PrivateChat(props) {
                     by: "system",
                     msg: "New Messages",
                   },
-                  { ...data.chat },
+                  {
+                    ...data.chat,
+                    by: data.chat.by === "Viewer" ? "Self" : "other",
+                  },
                 ]
                 prev.nos = prev.nos + 1
                 prev.highLightChat = true
-                return prev
+                return { ...prev }
               })
             } else {
               setChatsData((prev) => {
-                prev.chats = [...prev.chats, { ...data.chat }]
+                prev.chats = [
+                  ...prev.chats,
+                  {
+                    ...data.chat,
+                    by: data.chat.by === "Viewer" ? "Self" : "other",
+                  },
+                ]
                 prev.nos = prev.nos + 1
-                return prev
+                return { ...prev }
               })
             }
           }
@@ -223,7 +264,12 @@ function PrivateChat(props) {
   if (authCtx.isLoggedIn) {
     if (authCtx.user.userType === "Viewer") {
       if (hasActivePlan) {
-        chatContent = <ViewerMessageContainer chatsData={chatsData} />
+        chatContent = (
+          <ViewerMessageContainer
+            chatsData={chatsData}
+            scrollOnChat={props.scrollOnChat}
+          />
+        )
       } else {
         chatContent = noPlanBanner
       }

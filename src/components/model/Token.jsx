@@ -45,6 +45,21 @@ function Token() {
         // alert(data.message)
         // update the authCtx & localstorage with new wallet amount
         modalCtx.hideModal()
+        const lcUser = JSON.parse(localStorage.getItem("user"))
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...lcUser,
+            relatedUser: {
+              ...lcUser.relatedUser,
+              wallet: {
+                ...lcUser.relatedUser.wallet,
+                currentAmount:
+                  prevState.user.user.relatedUser.wallet.currentAmount - token,
+              },
+            },
+          })
+        )
         authUpdateCtx.updateNestedPaths((prevState) => {
           return {
             ...prevState,

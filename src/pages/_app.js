@@ -10,7 +10,7 @@ import { SpinnerContextProvider } from "../app/Loading/SpinnerContext"
 import { SocketContextProvider } from "../app/socket/SocketContext"
 import TestComponent from "./text"
 import "bootstrap/dist/css/bootstrap.min.css"
-import "../styles/globals.css"
+import "../styles/global.css"
 // import dynamic from "next/dynamic";
 // const io = dynamic(() => import("../socket/socket"), { ssr: false })
 

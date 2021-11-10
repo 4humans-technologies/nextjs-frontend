@@ -24,7 +24,7 @@ const initialData = [
   },
 ]
 
-function ChooseChatPlan() {
+function ChooseChatPlan(props) {
   const [chatPlans, setChatPlans] = useState([...initialData])
   const { setIsChatPlanActive } = props
   const authUpdateCtx = useAuthUpdateContext()

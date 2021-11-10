@@ -52,8 +52,7 @@ function Header(props) {
   }, [query])
 
   // search result
-
-  let profileImage = ""
+  let profileImage
   if (authContext.user.user) {
     profileImage = authContext.user.user.relatedUser.profileImage
   }

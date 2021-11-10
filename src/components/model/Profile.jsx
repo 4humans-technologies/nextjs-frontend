@@ -246,7 +246,7 @@ function Profile() {
       </div>
       {/* corcle for profile picture */}
       <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative">
-        {profileImage.length > 1 ? (
+        {profileImage ? (
           <img
             className="tw-rounded-full tw-w-32 tw-h-32  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
             src={profileImage}
