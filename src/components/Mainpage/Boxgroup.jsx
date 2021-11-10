@@ -12,11 +12,11 @@ function Boxgroup(props) {
   }, [])
 
   return (
-    <div className="tw-bg-first-color tw-px-3 tw-py-4 tw-border-b tw-border-second-color box-group">
+    <div className="tw-bg-first-color tw-px-3 tw-py-4 tw-border-b tw-border-second-color box-group tw-w-screen">
       <h1 className="tw-text-lg tw-font-medium tw-text-white tw-mb-4 tw-mt-4">
         {props.groupTitle}
       </h1>
-      <div className="tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 md:tw-grid-cols-4 lg:tw-grid-cols-5 xl:tw-grid-cols-6 2xl:tw-grid-cols-7 tw-gap-x-3 tw-gap-y-2 tw-justify-items-center">
+      <div className="tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 md:tw-grid-cols-4 lg:tw-grid-cols-5 xl:tw-grid-cols-6 2xl:tw-grid-cols-7 tw-gap-x-3 tw-gap-y-2 tw-justify-items-center ">
         {/* show more wala button,then this will */}
         {props.data.length === 0 ? (
           <div className="tw-px-4 tw-py-3 tw-rounded tw-bg-second-color">

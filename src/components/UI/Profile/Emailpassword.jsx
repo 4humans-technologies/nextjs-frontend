@@ -3,14 +3,13 @@ import useModalContext from "../../../app/ModalContext"
 import CancelIcon from "@material-ui/icons/Cancel"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
-const EmailChange = (props) => {
+const EmailChange = () => {
   const [email, setEmail] = useState({
     oldEmail: "",
     newEmail: "",
   })
   // Check type to change url according to change
   const changeHandler = (e) => {
-    setEmail({ ...email, [e.target.name]: e.target.value })
     if (email.oldEmail != email.newEmail) {
       fetch("/api/website/profile/update-model-basic-details", {
         method: "PUT",
@@ -40,7 +39,7 @@ const EmailChange = (props) => {
           }))
         )
       let store = JSON.parse(localStorage.getItem("user"))
-      store["relatedUser"]["email"] = newEmail
+      store["relatedUser"]["email"] = email.newEmail
       localStorage.setItem("user", JSON.stringify(store))
     }
   }
@@ -53,7 +52,7 @@ const EmailChange = (props) => {
         name="oldEmail"
         id=""
         placeholder="Last Email Id"
-        onChange={(e) => changeHandler(e)}
+        onChange={(e) => setEmail({ ...email, oldEmail: e.target.value })}
         className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
       />
       <input
@@ -61,11 +60,14 @@ const EmailChange = (props) => {
         name="newEmail"
         id=""
         placeholder="New Email Id"
-        onChange={(e) => changeHandler(e)}
+        onChange={(e) => setEmail({ ...email, newEmail: e.target.value })}
         className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
       />
       <br />
-      <button className="tw-bg-dreamgirl-red  tw-border-none tw-rounded-full tw-mx-auto tw-px-4 tw-py-2">
+      <button
+        className="tw-bg-dreamgirl-red  tw-border-none tw-rounded-full tw-mx-auto tw-px-4 tw-py-2"
+        onClick={changeHandler}
+      >
         Change
       </button>
     </div>

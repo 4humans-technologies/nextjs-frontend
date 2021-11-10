@@ -41,9 +41,7 @@ function Mainbox(props) {
               className="tw-object-cover tw-object-center tw-rounded-t tw-w-[211px] tw-h-[211px]"
               alt=""
             />
-            {/* <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-purple-600">
-              Busy
-            </p> */}
+
             <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5">
               Streaming
             </p>

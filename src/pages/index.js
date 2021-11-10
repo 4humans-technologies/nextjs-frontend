@@ -203,7 +203,7 @@ const Home = () => {
       </Head>
       <div className="tw-h-20"></div>
       <Header />
-      <div className="tw-flex tw-flex-grow-1 tw-flex-shrink-0">
+      <div className="tw-flex tw-w-screen tw-flex-grow">
         <Sidebar />
         <div>
           {boxGroupsData.map((data, index) => {
