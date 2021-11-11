@@ -2,7 +2,7 @@ import useSpinnerContext from "../app/Loading/SpinnerContext"
 import fetchIntercept from "fetch-intercept"
 import { useEffect } from "react"
 // import io from "../socket/socket"
-import { imageDomainURL, imageDomainHost } from "../../dreamgirl.config"
+import { imageDomainURL } from "../../dreamgirl.config"
 const useFetchInterceptor = (isAlreadyIntercepted) => {
   /**
    * if all i need is the access to the functions in the context(s) than,
@@ -11,7 +11,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
    * in closure will have no effect (no matter if "stale function")
    */
   const spinnerCtx = useSpinnerContext()
-  
+
   useEffect(() => {
     //debugger
     if (!isAlreadyIntercepted) {
@@ -28,28 +28,36 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             //debugger
             const latestCtx = JSON.parse(localStorage.getItem("authContext"))
             /* for GET requests when there is no config */
-            let baseUrl = imageDomainURL /* vishalprajapati */
-            // let baseUrl = "http://192.168.43.85:8080"; /* 👉 asus */
-
-            // if (
-            //   window.location.hostname !== "localhost" &&
-            //   window.location.hostname !== imageDomainHost
-            // ) {
-            //   baseUrl = "https://dreamgirl.live"
-            // }
+            let baseUrl
+            if (window.location.hostname.includes("dreamgirllive")) {
+              /* should use hosted backend */
+              baseUrl = "https://backend.dreamgirllive.com"
+            } else {
+              /* should use local or imageDomainUrl */
+              baseUrl = imageDomainURL
+            }
 
             let urlObj = new URL(`${baseUrl}${url}`)
-            urlObj.searchParams.append("socketId", localStorage.getItem("socketId"))
+            urlObj.searchParams.append(
+              "socketId",
+              localStorage.getItem("socketId")
+            )
             urlObj.searchParams.append("unAuthedUserId", "")
 
             if (typeof config === "undefined") {
               /* get request */
               config = {}
-              urlObj.searchParams.append("jwtToken", localStorage.getItem("jwtToken"))
+              urlObj.searchParams.append(
+                "jwtToken",
+                localStorage.getItem("jwtToken")
+              )
             }
 
             if (latestCtx.unAuthedUserId) {
-              urlObj.searchParams.set("unAuthedUserId", latestCtx.unAuthedUserId)
+              urlObj.searchParams.set(
+                "unAuthedUserId",
+                latestCtx.unAuthedUserId
+              )
             }
 
             /* attach jwtToken in the header */
@@ -60,16 +68,18 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                   ...config,
                   headers: {
                     ...config.headers,
-                    Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")
-                      }`,
+                    Authorization: `Bearer ${
+                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                    }`,
                   },
                 }
               } else {
                 finalConfig = {
                   ...config,
                   headers: {
-                    Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")
-                      }`,
+                    Authorization: `Bearer ${
+                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                    }`,
                   },
                 }
               }

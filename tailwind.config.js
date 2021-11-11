@@ -3,7 +3,7 @@ module.exports = {
   purge: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: false, // or 'media' or 'class'
   variants: {
-    transitionProperty: ["responsive", "motion-safe", "motion-reduce"],
+    transitionProperty: ["responsive"],
   },
   theme: {
     extend: {

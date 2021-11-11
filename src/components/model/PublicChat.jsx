@@ -378,11 +378,13 @@ function PublicChatBox(props) {
                     ? chat.message.includes("@Model")
                       ? true
                       : false
-                    : chat.message.includes(`@${authCtx.user.user.username}`)
-                    ? true
+                    : authCtx.user.userType === "Viewer"
+                    ? chat.message.includes(`@${authCtx.user.user?.username}`)
+                      ? true
+                      : false
                     : false
                 }
-                addAtTheRate={() => props.addAtTheRate(chat.username)}
+                addAtTheRate={() => props.addAtTheRate(chat?.username)}
               />
             )
           case "model-public-message":

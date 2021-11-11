@@ -1,5 +1,4 @@
 import React from "react"
-import useSetupSocket from "../socket/useSetupSocket"
 import useFetchInterceptor from "../hooks/useFetchInterceptor"
 
 let fetchIntercepted = false
