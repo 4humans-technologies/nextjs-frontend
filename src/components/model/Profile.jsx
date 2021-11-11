@@ -74,10 +74,6 @@ function Profile() {
 
   // PhotoUplode Handler
   const photoUpdateHandler = async (e) => {
-    // setImageVideo.images((prev) => [
-    //   ...prev,
-    //   URL.createObjectURL(e.target.files[0]),
-    // ])
     const image = e.target.files[0]
     // to get url from domain and then uplode to aws
     const url = await fetch(
@@ -106,14 +102,32 @@ function Profile() {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          publicImages:
-            authContext.user.user.relatedUser.publicImages.push(profileUrl),
+          updatedData: {
+            publicImages: profileUrl,
+          },
         }),
       }
     )
     let serverResp = await serverReq.json()
     console.log(serverResp)
   }
+
+  // Test for image upload
+  // authContext.user.user.relatedUser.publicImages.push("sankarcharya.jpg")
+  // authContext.user.user.relatedUser.publicImages = []
+  // authContext.user.user.relatedUser.publicImages.map((image) =>
+  //   console.log(image)
+  // )
+  // console.log(
+  //   `Authcontext ------${authContext.user.user.relatedUser.publicImages}`
+  // )
+  let store = JSON.parse(localStorage.getItem("user"))
+  // console.log(store)
+
+  store["relatedUser"]["email"] = "rss@gmail.com"
+
+  localStorage.setItem("user", JSON.stringify(store))
+  console.log(store)
 
   // VideoUplodeHandler videoUpdateHandler
   const videoUpdateHandler = async (e) => {
@@ -150,7 +164,7 @@ function Profile() {
     )
     const serverResp = await serverReq.json()
   }
-
+  // This can be use for the fetching model details
   useEffect(() => {
     fetch("/api/website/profile/get-model-profile-data")
       .then((resp) => resp.json())
@@ -203,11 +217,11 @@ function Profile() {
 
   // Data fetching which make things possible
   let profileImage = ""
+  let coverImage = ""
   if (authContext.user.user) {
     profileImage = authContext.user.user.relatedUser.profileImage
+    coverImage = authContext.user.user.relatedUser.coverImage
   }
-
-  console.log(`profile image ---${profileImage}`)
 
   return (
     <div>
@@ -217,7 +231,7 @@ function Profile() {
       <div
         className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
         style={{
-          backgroundImage: `url(${profileImage})`,
+          backgroundImage: `url(${coverImage})`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
@@ -289,7 +303,7 @@ function Profile() {
                         }
                         contentEditable="true"
                       >
-                        {item.Interest}
+                        EveryOne
                       </p>
                       <p
                         onInput={
@@ -298,7 +312,7 @@ function Profile() {
                         }
                         contentEditable="true"
                       >
-                        {item.From}
+                        {authContext.user.user.relatedUser.ethnicity}
                       </p>
                       <p
                         onInput={
@@ -308,7 +322,9 @@ function Profile() {
                         contentEditable="true"
                       >
                         {/* {item.Language} */}
-                        {modelDetails ? modelDetails.model.languages[0] : null}
+                        {authContext.user.user.relatedUser.languages.map(
+                          (item) => item
+                        )}
                       </p>
                       <p
                         onInput={
@@ -389,7 +405,9 @@ function Profile() {
                 <p className="tw-px-4">
                   My Email{" "}
                   <span className="tw-ml-4 tw-font-bold tw-text-xl">
-                    {modelDetails ? modelDetails.model.email : null}
+                    {modelDetails
+                      ? authContext.user.user.relatedUser.email
+                      : null}
                   </span>
                 </p>
                 <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
@@ -472,7 +490,9 @@ function Profile() {
                   <h2>Earning</h2>
                   <div className="help_1">
                     <HelpOutlineIcon />
-                    <p className="help_text_1 tw-hidden">Hello bro</p>
+                    <p className="help_text_1 tw-hidden">
+                      Total Earning by modle
+                    </p>
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
@@ -487,7 +507,7 @@ function Profile() {
                   <h2>Followers</h2>
                   <div className="help_1">
                     <HelpOutlineIcon />
-                    <p className="help_text_1 tw-hidden">Hello bro</p>
+                    <p className="help_text_1 tw-hidden">Your Followers</p>
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
@@ -501,7 +521,7 @@ function Profile() {
                   <h2>Rating</h2>
                   <div className="help_1">
                     <HelpOutlineIcon />
-                    <p className="help_text_1 tw-hidden">Hello bro</p>
+                    <p className="help_text_1 tw-hidden">Rating by Users</p>
                   </div>
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">

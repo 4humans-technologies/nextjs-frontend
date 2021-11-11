@@ -3,26 +3,44 @@ import useModalContext from "../../../app/ModalContext"
 import CancelIcon from "@material-ui/icons/Cancel"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
-const EmailChange = (props) => {
+const EmailChange = () => {
   const [email, setEmail] = useState({
     oldEmail: "",
     newEmail: "",
   })
   // Check type to change url according to change
   const changeHandler = (e) => {
-    setEmail({ ...email, [e.target.name]: e.target.value })
-    if (email.oldEmail != email.newMail) {
-      fetch("url", {
+    if (email.oldEmail != email.newEmail) {
+      fetch("/api/website/profile/update-model-basic-details", {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          email: email.newEmail,
+          updatedData: {
+            email: email.newEmail,
+          },
         }),
       })
         .then((resp) => resp.json())
-        .then((data) => console.log(data))
+        .then((data) =>
+          authUpdateContext.updateNestedPaths((prevState) => ({
+            ...prevState,
+            user: {
+              ...prevState.user,
+              user: {
+                ...prevState.user.user,
+                relatedUser: {
+                  ...prevState.user.user.relatedUser,
+                  email: newEmail,
+                },
+              },
+            },
+          }))
+        )
+      let store = JSON.parse(localStorage.getItem("user"))
+      store["relatedUser"]["email"] = email.newEmail
+      localStorage.setItem("user", JSON.stringify(store))
     }
   }
   return (
@@ -34,7 +52,7 @@ const EmailChange = (props) => {
         name="oldEmail"
         id=""
         placeholder="Last Email Id"
-        onChange={changeHandler}
+        onChange={(e) => setEmail({ ...email, oldEmail: e.target.value })}
         className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
       />
       <input
@@ -42,11 +60,14 @@ const EmailChange = (props) => {
         name="newEmail"
         id=""
         placeholder="New Email Id"
-        onChange={changeHandler}
+        onChange={(e) => setEmail({ ...email, newEmail: e.target.value })}
         className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
       />
       <br />
-      <button className="tw-bg-dreamgirl-red  tw-border-none tw-rounded-full tw-mx-auto tw-px-4 tw-py-2">
+      <button
+        className="tw-bg-dreamgirl-red  tw-border-none tw-rounded-full tw-mx-auto tw-px-4 tw-py-2"
+        onClick={changeHandler}
+      >
         Change
       </button>
     </div>
@@ -128,22 +149,22 @@ const PasswordChange = (props) => {
 const CoverUpdate = () => {
   const [coverImage, setCoverImage] = useState(null)
   const authContext = useAuthContext()
+  const authUpdateContext = useAuthUpdateContext()
   const modelCtx = useModalContext()
-  const oldCover = authContext.user.user.relatedUser.profileImage
+  // setCoverImage(authContext.user.user.relatedUser.coverImage)
 
   const changeCover = async (e) => {
     const image_1 = await e.target.files[0]
     const image_2 = await URL.createObjectURL(e.target.files[0])
     setCoverImage(image_2)
-    // To send image to url and the make things possible
-    // There I have to send with type of url that we uplode
+
+    // THis get url for send the image to the aws server
     const res = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + image_1.type
     )
     const data_2 = await res.json()
     const cover_url = await data_2.uploadUrl
     // Now change coverImage to url
-    oldCover: image_2
 
     console.log(`Bro this is cover page url, ${cover_url.split("?")[0]}`) //The place where it needed to be uploded
 
@@ -158,19 +179,45 @@ const CoverUpdate = () => {
     if (!resp.ok) {
       return alert("What is this Bakloli")
     }
+
     const coverUrl = cover_url.split("?")[0]
-    console.log(coverUrl)
+
+    // console.log(coverUrl)
+
     const re = await fetch("/api/website/profile/update-model-basic-details", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        coverImage: coverUrl,
+        updatedData: {
+          coverImage: coverUrl,
+        },
       }),
     })
+
+    // below is context update for coverImage
+    authUpdateContext.updateNestedPaths((prevState) => ({
+      ...prevState,
+      user: {
+        ...prevState.user,
+        user: {
+          ...prevState.user.user,
+          relatedUser: {
+            ...prevState.user.user.relatedUser,
+            coverImage: coverUrl,
+          },
+        },
+      },
+    }))
+
+    // Below is local storage update for covwerImage
+    let store = JSON.parse(localStorage.getItem("user"))
+    store["relatedUser"]["coverImage"] = coverUrl
+    localStorage.setItem("user", JSON.stringify(store))
+
     const jsonResp = await re.json()
-    console.log(jsonResp)
+    console.log(`This is json response -----${jsonResp}`)
   }
 
   // Now use this url to uploade to serve using url
@@ -183,7 +230,7 @@ const CoverUpdate = () => {
         onClick={modelCtx.hideModal}
       />
       <div className="tw-mx-auto">
-        <img src={oldCover} className="tw-w-96 tw-h-48 tw-my-4" />
+        <img src={coverImage} className="tw-w-96 tw-h-48 tw-my-4" />
         <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
           <input
             type="file"
@@ -201,6 +248,7 @@ const ProfileUpdate = () => {
   const [showImage, setshowImage] = useState()
   const modelCtx = useModalContext()
   const authContext = useAuthContext()
+  const authUpdateContext = useAuthUpdateContext()
   const oldCover = authContext.user.user.relatedUser.profileImage
 
   const changeCover = async (e) => {
@@ -243,10 +291,31 @@ const ProfileUpdate = () => {
         },
       }),
     })
+
+    authUpdateContext.updateNestedPaths((prevState) => ({
+      ...prevState,
+      user: {
+        ...prevState.user,
+        user: {
+          ...prevState.user.user,
+          relatedUser: {
+            ...prevState.user.user.relatedUser,
+            profileImage: profileUrl,
+          },
+        },
+      },
+    }))
+
+    // Local storage to update the image
+    let store = JSON.parse(localStorage.getItem("user"))
+    store["relatedUser"]["profileImage"] = profileUrl
+    localStorage.setItem("user", JSON.stringify(store))
+
     const jsonRe = await re.json()
 
     console.log(`This is json response -----${jsonRe}`)
   }
+  // console.log(`localstorage---- ${localStorage.getItem("user")}`)
   // Profile pic to aws
 
   return (

@@ -198,14 +198,14 @@ const Home = () => {
   }, [socketContext.setSocketSetupDone])
 
   return (
-    <div className="tw-min-h-screen">
+    <div className="tw-min-h-screen tw-max-w-screen-2xl">
       <Head>
         <title>DreamGirl Live Online Video Vhat</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="tw-h-20"></div>
       <Header />
-      <div className="tw-flex tw-flex-grow-1 tw-flex-shrink-0">
+      <div className="tw-flex tw-w-screen tw-flex-grow">
         <Sidebar />
         <div>
           {boxGroupsData.map((data, index) => {

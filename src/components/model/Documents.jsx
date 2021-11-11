@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react"
 import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
-import submitFile from "../Notifications/submitFile"
 import Header from "../Mainpage/Header"
 // import Headermodel from "./Headermodel"
 
@@ -14,35 +13,32 @@ function Documents() {
 
   //submit handler to send data
   const submitHandler = async (e) => {
-    // e.preventDefault()
     // s3 bucket image upload
     // to get url from domain and then uplode to aws
+    let image_1 = e.target.files[0]
     const resp = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + source.type
+      "/api/website/aws/get-s3-upload-url?type=" + image_1.type
     )
     const raw_url = await resp.json()
     const url = await raw_url.uploadUrl
 
-    // is it possible to uplode the two images together in s3 bucket. Thats what I want to get that
-
-    const imageUrl_1 = url.split("?")[0]
-    console.log(imageUrl_1)
+    // is it possible to uplode the two images together in s3 bucket. Thats what I want to get that url
 
     let respose = await fetch(url, {
       method: "PUT",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      body: {
-        source,
-      },
+      body: image_1,
     })
     let result = await respose.json()
     console.log(result)
 
+    // s3 bucket video upload
+    const imageUrl_1 = url.split("?")[0]
+    console.log(imageUrl_1)
+
     // Second image upload to s3 bucket
+    let image_2 = e.target.files[1]
     const resp_2 = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + source.type
+      "/api/website/aws/get-s3-upload-url?type=" + image_2.type
     )
     const raw_url_2 = await resp_2.json()
     const url_2 = await raw_url_2.uploadUrl
@@ -53,13 +49,8 @@ function Documents() {
     console.log(imageUrl_2)
 
     let respose_2 = await fetch(url_2, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      body: {
-        videoSource,
-      },
+      method: "POST",
+      body: image_2,
     })
     let result_2 = await respose_2.json()
     console.log(result_2)

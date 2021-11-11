@@ -8,7 +8,6 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import logo from "../../../public/logo.png"
 import NotificationsIcon from "@material-ui/icons/Notifications"
-import { Button } from "react-bootstrap"
 
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
@@ -18,7 +17,6 @@ import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
 import SecondHeader from "./SecondHeader"
-import ProfileHeader from "../model/ProfileHeader"
 
 function Header(props) {
   const [menu, setMenu] = useState(false)
@@ -180,7 +178,7 @@ function Header(props) {
                             alt=""
                             className="tw-w-10 tw-h-10 tw-text-white"
                           />
-                          <div>
+                          <div className="tw-my-auto tw-ml-2 tw-font-bold">
                             {
                               authContext.user.user.relatedUser.wallet
                                 .currentAmount
@@ -188,13 +186,21 @@ function Header(props) {
                           </div>
                         </div>
                         <div
-                          className="tw-mr-4"
-                          // onClick={() => router.push("/user/name")}
+                          className="tw-mr-4  tw-cursor-pointer"
+                          onClick={() => setHeaderProfileShow((prev) => !prev)}
                         >
-                          <img
-                            className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 "
-                            src={profileImage}
-                          ></img>
+                          {profileImage ? (
+                            <img
+                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-text-4xl  "
+                              src={profileImage}
+                            />
+                          ) : (
+                            <div className="tw-text-4xl tw-text-black tw-font-bold tw-bg-green-400 tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-pl-3">
+                              {authContext.user.user.username
+                                .charAt(0)
+                                .toUpperCase()}
+                            </div>
+                          )}
                           {/* profile */}
                           <div
                             className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-right-4 ${
@@ -234,7 +240,6 @@ function Header(props) {
                             <img
                               className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-text-4xl  "
                               src={profileImage}
-                              alt="N"
                             />
                           ) : (
                             <div className="tw-text-4xl tw-text-black tw-font-bold tw-bg-green-400 tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-pl-3">
