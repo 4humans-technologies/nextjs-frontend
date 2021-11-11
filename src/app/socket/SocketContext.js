@@ -19,7 +19,14 @@ export const SocketContextProvider = ({ children }) => {
 
   const initSocket = () => {
     //debugger
-    const url = imageDomainURL
+    let url
+    if (window.location.hostname.includes("dreamgirllive")) {
+      /* should use hosted backend */
+      url = "https://backend.dreamgirllive.com"
+    } else {
+      /* should use local or imageDomainUrl */
+      url = imageDomainURL
+    }
     const socket = io.connect(url)
     console.log("Initial socket id 🔴🔴", socket.id)
     if (!socketSetupDone) {

@@ -61,7 +61,9 @@ function SecondHeader() {
                     <div className="tw-grid tw-grid-cols-8 tw-w-full tw-gap-x-2">
                       <div className=" tw-col-span-7 tw-flex tw-justify-around">
                         <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
-                          {authContext.user.user.username}
+                          {authContext.isLoggedIn
+                            ? authContext.user.user?.username
+                            : null}
                         </div>
                         <div
                           className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"

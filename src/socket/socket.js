@@ -15,8 +15,17 @@ export default {
       )
       pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
     }
-    //debugger
-    socketConnectionInstance = io(url || "http://localhost:8080", {
+
+    /*  */
+    if (!url) {
+      if (window.location.hostname.includes("dreamgirllive")) {
+        url = "https://backend.dreamgirllive.com"
+      } else {
+        url = imageDomainURL
+      }
+    }
+
+    socketConnectionInstance = io(url, {
       auth: {
         // token will be fetched from local storage
         token: localStorage.getItem("jwtToken") || "",

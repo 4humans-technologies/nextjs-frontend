@@ -4,7 +4,6 @@ import Image from "next/image"
 import { PlayCircleFilled } from "@material-ui/icons"
 // import CallDetailsPopUp from "../Call/CallDetailsPopUp";
 import useModalContext from "../../app/ModalContext"
-import { imageDomainURL } from "../../../dreamgirl.config"
 // import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 
 function ChipArea(props) {

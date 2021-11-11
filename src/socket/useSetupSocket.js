@@ -5,13 +5,16 @@ import { useSocketContext } from "../app/socket/SocketContext"
 function useSetupSocket(url) {
   const ctx = useSocketContext()
   useEffect(() => {
-    //debugger
-    /* Init socket */
-    console.log("Initializing socket, status")
+    if (!url) {
+      if (window.location.hostname.includes("dreamgirllive")) {
+        url = "https://backend.dreamgirllive.com"
+      } else {
+        url = imageDomainURL
+      }
+    }
     const socket = io.connect(url)
-
     socket.on("connect_failed", () => {
-      console.log("socket connected!")
+      console.log("socket connect failed")
     })
 
     socket.on("connect_error ", (err) => {

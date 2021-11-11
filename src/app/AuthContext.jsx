@@ -2,7 +2,6 @@ import { useRouter } from "next/router"
 import React, { useCallback } from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 import io from "../socket/socket"
-import { imageDomainURL } from "../../dreamgirl.config"
 
 const initialState = {
   rootUserId: null,
