@@ -3,13 +3,6 @@ import Mainbox from "./Mainbox"
 
 function Boxgroup(props) {
   const [streams, setStreams] = useState([])
-  useEffect(() => {
-    // fetch("http://localhost:8080/api/website/compose-ui/get-streaming-models")
-    //   .then((res) => res.json)
-    //   .then((data) => {
-    //     setStreams(data.resultDoc);
-    //   });
-  }, [])
 
   return (
     <div className="tw-bg-first-color tw-px-3 tw-py-4 tw-border-b tw-border-second-color box-group tw-w-screen">

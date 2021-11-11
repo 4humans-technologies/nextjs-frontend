@@ -264,18 +264,6 @@ function Live() {
     goneLiveOnce,
   ])
 
-  // useEffect(() => {
-  //   if (joinState) {
-  //     if (!callOnGoing) {
-  //       startStreamTimer()
-  //       return () => {
-  //         clearInterval(streamTimer.ref)
-  //         streamTimer.value = 0
-  //         streamTimer.ref = null
-  //       }
-  //     }
-  //   }
-  // }, [streamTimer, joinState, callOnGoing])
 
   useEffect(() => {
     if (joinState && !callOnGoing) {
@@ -425,22 +413,6 @@ function Live() {
           spinnerCtx.setShowSpinner(true, "Processing transaction...")
           setPendingCallEndRequest(true)
         })
-
-        /* if response is not received for 6 seconds 
-          manually query the db with fetch request
-      */
-        // setTimeout(() => {
-        //   const url = "get-call-details"
-        //   fetch(url)
-        //     .then((res) => res.json())
-        //     .then((data) => {
-        //       setCallEndDetails(data.callEndDetails)
-        //       setPendingCallEndRequest(false)
-        //       if (socket.hasListeners("viewer-call-end-request-finished")) {
-        //         socket.off("viewer-call-end-request-finished")
-        //       }
-        //     })
-        // }, 6000)
       }
 
       /*  */
@@ -449,19 +421,6 @@ function Live() {
           if (data.ended === "ok") {
             sessionStorage.setItem("callEndDetails", JSON.stringify(data))
             spinnerCtx.setShowSpinner(true, "Processing transaction...")
-            // modalCtx.showModalWithContent(
-            //   <CallEndDetails
-            //     dateTime={data.dateTime}
-            //     viewerName={data.name}
-            //     amountAdded={data.amountAmount}
-            //     currentAmount={data.currentAmount}
-            //     callType={data.callType}
-            //     callDuration={data.callDuration}
-            //     theCall={data.theCall}
-            //     totalCharges={data.totalCharges}
-            //     userType="Model"
-            //   />
-            // )
           }
           setPendingCallEndRequest(false)
           // setCallEndDetails(data.callEndDetails)
@@ -586,19 +545,6 @@ function Live() {
           /* */
           sessionStorage.setItem("callEndDetails", JSON.stringify(data))
           spinnerCtx.setShowSpinner(false, "Please wait...")
-          // modalCtx.showModalWithContent(
-          //   <CallEndDetails
-          //     dateTime={data.dateTime}
-          //     viewerName={data.name}
-          //     amountAdded={data.amountAmount}
-          //     currentAmount={data.currentAmount}
-          //     callType={data.callType}
-          //     callDuration={data.callDuration}
-          //     theCall={data.theCall}
-          //     totalCharges={data.totalCharges}
-          //     userType="Model"
-          //   />
-          // )
         }
         setCallOnGoing(false)
         await leaveAndCloseTracks()

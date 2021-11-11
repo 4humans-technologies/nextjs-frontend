@@ -22,7 +22,7 @@ function Registration() {
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
   const [gender, setGender] = useState("Female")
-  const [profile, setProfile] = useState()
+  const [profile, setProfile] = useState("")
   const [formError, setFormError] = useState(null)
 
   const updateCtx = useAuthUpdateContext()
@@ -30,6 +30,7 @@ function Registration() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     // In this get we url from to uplode profile image to s3 bucket ,first get url from server and then use that url to uplode directly to aws
+
     const res = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + profile.type
     )
@@ -277,8 +278,19 @@ function Registration() {
                   variant="success"
                   className="tw-rounded-full tw-inline-block tw-w-11/12"
                   type="submit"
+                  onClick={() => {
+                    router.push("/auth/login")
+                  }}
                 >
                   Login
+                </Button>
+
+                <Button
+                  variant="danger"
+                  className="tw-rounded-full tw-inline-block tw-w-11/12 tw-mt-6"
+                  onClick={() => router.back()}
+                >
+                  Go Back
                 </Button>
               </div>
             </form>

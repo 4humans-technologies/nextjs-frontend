@@ -392,8 +392,12 @@ function PublicChatBox(props) {
                 index={chat.index}
                 message={chat.message}
                 highlight={
-                  authCtx.user.userType === "Viewer"
-                    ? chat.message.includes(`@${authCtx.user.user.username}`)
+                  authCtx.user.userType === "Model"
+                    ? chat.message.includes("@Model")
+                      ? true
+                      : false
+                    : authCtx.user.userType === "Viewer"
+                    ? chat.message.includes(`@${authCtx.user.user?.username}`)
                       ? true
                       : false
                     : false

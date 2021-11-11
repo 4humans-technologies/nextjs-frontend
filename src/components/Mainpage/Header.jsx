@@ -155,7 +155,9 @@ function Header(props) {
                           logout
                         </button>
                         <button className="tw-mx-4  tw-rounded-full tw-capitalize tw-px-4 tw-py-2 tw-bg-white-color tw-text-black">
-                          <Link href="/rohit/goLive">
+                          <Link
+                            href={`/${authContext.user.user.username}/goLive`}
+                          >
                             <a>live</a>
                           </Link>
                         </button>
@@ -225,7 +227,9 @@ function Header(props) {
                           <NotificationsIcon />
                         </div>
                         {hide ? null : (
-                          <Link href="/rohit/goLive">
+                          <Link
+                            href={`/${authContext.user.user.username}/goLive`}
+                          >
                             <a className="tw-bg-white-color text-sm lg:tw-text-base tw-text-black tw-outline-none tw-capitalize tw-px-4 tw-py-2 tw-inline-block tw-mx-4 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
                               Go Live
                             </a>

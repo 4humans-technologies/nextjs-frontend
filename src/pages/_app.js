@@ -9,6 +9,7 @@ import { ErrorContextProvider } from "../app/Error/ErrorContext"
 import { SpinnerContextProvider } from "../app/Loading/SpinnerContext"
 import { SocketContextProvider } from "../app/socket/SocketContext"
 import TestComponent from "./text"
+import SimpleReactLightbox from "simple-react-lightbox"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../styles/global.css"
 // import dynamic from "next/dynamic";
@@ -40,7 +41,9 @@ const MyApp = ({ Component, pageProps }) => {
               <SpinnerContextProvider>
                 <SocketContextProvider>
                   <TestComponent />
-                  <Component {...pageProps} />
+                  <SimpleReactLightbox>
+                    <Component {...pageProps} />
+                  </SimpleReactLightbox>
                 </SocketContextProvider>
               </SpinnerContextProvider>
             </ErrorContextProvider>

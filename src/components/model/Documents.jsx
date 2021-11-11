@@ -65,10 +65,10 @@ function Documents() {
   // submitHandler().then((data) => console.log(data))
 
   return (
-    <div className="tw-bg-first-color  tw-h-[100vh] tw-text-white tw-text-center ">
+    <div className="tw-bg-second-color  tw-h-[100vh]  tw-text-white tw-text-center  tw-relative">
       <Header />
-      <div className="tw-bg-third-color md:tw-w-1/2 tw-gap-2 md:tw-ml-[28%] tw-ml-0 md:tw-top-[20%] tw-mt-0 md:tw-absolute  document_rows_main tw-rounded-t-2xl tw-rounded-b-2xl">
-        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0   tw-m-4  ">
+      <div className="tw-bg-third-color md:tw-w-1/2 tw-gap-2 md:tw-ml-[28%] tw-ml-0 md:tw-top-[20%] tw-mt-0 tw-absolute  document_rows_main tw-rounded-t-2xl tw-rounded-b-2xl">
+        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0 tw-m-4  ">
           <div className=" ">
             <div className=" tw-min-h-full tw-relative tw-pt-4">
               {/* file input */}

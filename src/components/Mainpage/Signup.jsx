@@ -180,6 +180,14 @@ function SignUp() {
                 >
                   Login
                 </Button>
+
+                <Button
+                  variant="danger"
+                  className="tw-rounded-full tw-inline-block tw-w-11/12 tw-mt-6"
+                  onClick={() => router.back()}
+                >
+                  Go Back
+                </Button>
               </div>
             </form>
           </div>
