@@ -334,7 +334,7 @@ function PublicChatBox(props) {
               roomsToLeave.push(room)
             }
           } else if (localStorage.getItem("userType") === "Viewer") {
-            if (room.endsWith("-public") || room.endsWith("-private")) {
+            if (room.endsWith("-public")) {
               roomsToLeave.push(room)
             }
           }

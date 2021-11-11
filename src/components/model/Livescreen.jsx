@@ -58,7 +58,7 @@ function LiveScreen(props) {
   const [pendingCallRequest, setPendingCallRequest] = useState(false)
   const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
 
-  const scrollOnChat = useCallback(() => {
+  const scrollOnChat = useCallback((scrollType) => {
     // document.getElementById("for-scroll-into-view").scrollIntoView({
     //   behavior: "smooth",
     //   block: "start",
@@ -66,7 +66,7 @@ function LiveScreen(props) {
     const containerElement = document.getElementById("chatBoxContainer")
     containerElement.scrollBy({
       top: containerElement.scrollHeight,
-      behavior: "smooth",
+      behavior: scrollType ? scrollType : "smooth",
     })
   }, [])
 
@@ -107,6 +107,11 @@ function LiveScreen(props) {
       /* can have private room */
       let finalRoom
       if (chatWindow === chatWindowOptions.PRIVATE) {
+        if (isModelOffline) {
+          return alert(
+            "Live chat with model is only available when model is streaming/live. 📴 😘😘"
+          )
+        }
         if (isChatPlanActive) {
           /* loggedIn & has private chat room */
           finalRoom = `${
@@ -133,6 +138,11 @@ function LiveScreen(props) {
           document.dispatchEvent(customEvent)
         }
       } else if (chatWindow === chatWindowOptions.PUBLIC) {
+        if (isModelOffline) {
+          return alert(
+            "chat is only available when model is streaming/live. 📴 😘😘"
+          )
+        }
         /* logged in, on public tab */
         JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
           if (room.includes("-public")) {
@@ -148,6 +158,20 @@ function LiveScreen(props) {
         io.getSocket().emit("viewer-message-public-emitted", payLoad)
       }
     } else {
+      if (chatWindow === chatWindowOptions.PRIVATE) {
+        if (isModelOffline) {
+          return alert(
+            "Live chat with model is only available when model is streaming/live. 📴 😘😘"
+          )
+        }
+      }
+      if (chatWindow === chatWindowOptions.PUBLIC) {
+        if (isModelOffline) {
+          return alert(
+            "chat is only available when model is streaming/live. 📴 😘😘"
+          )
+        }
+      }
       /* un-authed user, no private room*/
       payLoad = {
         room: JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
@@ -458,6 +482,7 @@ function LiveScreen(props) {
                   setIsChatPlanActive={setIsChatPlanActive}
                   inFocus={chatWindow === chatWindowOptions.PRIVATE}
                   modalCtx={modalCtx}
+                  isModelOffline={isModelOffline}
                 />
               </div>
               <div

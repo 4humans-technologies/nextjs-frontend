@@ -150,7 +150,7 @@ function Live() {
     }
   }, [])
 
-  const scrollOnChat = useCallback(() => {
+  const scrollOnChat = useCallback((scrollType) => {
     // document.getElementById("for-scroll-into-view").scrollIntoView({
     //   behavior: "smooth",
     //   block: "start",
@@ -158,7 +158,7 @@ function Live() {
     const containerElement = document.getElementById("chatBoxContainer")
     containerElement.scrollBy({
       top: containerElement.scrollHeight,
-      behavior: "smooth",
+      behavior: scrollType ? scrollType : "smooth",
     })
   }, [])
 

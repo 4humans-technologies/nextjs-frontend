@@ -223,7 +223,7 @@ function PrivateChatWrapper(props) {
                 dbChatId: data.dbId,
                 viewerId: data.viewerId,
               })
-              return prevIds
+              return [...prevIds]
             })
             /* init chat state for this viewer,meanwhile we fetch chats data from database */
             setChatState((prevChats) => {

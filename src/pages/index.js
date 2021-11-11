@@ -47,29 +47,31 @@ const Home = () => {
         const socketRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
         const roomsToLeave = []
-        socketRooms.forEach((room) => {
-          if (room.includes("-public")) {
-            roomsToLeave.push(room)
-          }
-        })
-        socket.emit(
-          "take-me-out-of-these-rooms",
-          [...roomsToLeave],
-          (response) => {
-            if (response.status === "ok") {
-              /* remove this room from session storage also */
-              const rooms =
-                JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-              sessionStorage.setItem(
-                "socket-rooms",
-                JSON.stringify(
-                  rooms.filter((room) => !roomsToLeave.includes(room))
-                )
-              )
-              authUpdateCtx.updateViewer({ streamRoom: null })
+        if (socketRooms.length > 0) {
+          socketRooms.forEach((room) => {
+            if (room.includes("-public")) {
+              roomsToLeave.push(room)
             }
-          }
-        )
+          })
+          socket.emit(
+            "take-me-out-of-these-rooms",
+            [...roomsToLeave],
+            (response) => {
+              if (response.status === "ok") {
+                /* remove this room from session storage also */
+                const rooms =
+                  JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+                sessionStorage.setItem(
+                  "socket-rooms",
+                  JSON.stringify(
+                    rooms.filter((room) => !roomsToLeave.includes(room))
+                  )
+                )
+                authUpdateCtx.updateViewer({ streamRoom: null })
+              }
+            }
+          )
+        }
       } catch (error) {
         console.log("Client not in any room!")
       }

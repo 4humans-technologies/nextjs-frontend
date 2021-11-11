@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react"
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  useMemo,
+} from "react"
 import {
   Stars,
   StarOutline,
@@ -196,6 +202,12 @@ function PrivateChat(props) {
   }, [ctx.socketSetupDone, hasActivePlan])
 
   useEffect(() => {
+    if (inFocus) {
+      props.scrollOnChat("auto")
+    }
+  }, [inFocus])
+
+  useEffect(() => {
     if (ctx.socketSetupDone) {
       return () => {
         const socket = io.getSocket()
@@ -206,77 +218,75 @@ function PrivateChat(props) {
     }
   }, [ctx.socketSetupDone])
 
-  const noPlanBanner = (
-    <div className="tw-mt-6 tw-py-20">
-      <div className="tw-text-center">
-        <span className="tw-rounded-full tw-bg-dreamgirl-red tw-inline-grid tw-place-items-center tw-p-3 tw-mx-auto video-call-button">
-          <StarOutline
-            className="tw-text-white-color"
-            style={{ fontSize: "50px" }}
-          />
-        </span>
-        <p className="tw-font-semibold tw-text-red-500 tw-capitalize tw-mt-3">
-          go ultimate
-        </p>
-        <p className="tw-text-text-black">to chat privately with any model</p>
+  const noPlanBanner = useMemo(() => {
+    return (
+      <div className="tw-mt-6 tw-py-20">
+        <div className="tw-text-center">
+          <span className="tw-rounded-full tw-bg-dreamgirl-red tw-inline-grid tw-place-items-center tw-p-3 tw-mx-auto video-call-button">
+            <StarOutline
+              className="tw-text-white-color"
+              style={{ fontSize: "50px" }}
+            />
+          </span>
+          <p className="tw-font-semibold tw-text-red-500 tw-capitalize tw-mt-3">
+            go ultimate
+          </p>
+          <p className="tw-text-text-black">to chat privately with any model</p>
+        </div>
+        <div className="tw-my-6 tw-rounded tw-bg-first-color tw-text-text-black tw-p-3 tw-text-left">
+          <p className="tw-mx-2 tw-my-1">
+            <span className="tw-pr-2">
+              <ChatBubble fontSize="small" />
+            </span>
+            Unlimited Private Messages
+          </p>
+          <p className="tw-mx-2 tw-my-1">
+            <span className="tw-pr-2">
+              <SupervisedUserCircle fontSize="small" />
+            </span>
+            Chat With Any Model
+          </p>
+          <p className="tw-mx-2 tw-my-1">
+            <span className="tw-pr-2">
+              <CheckCircle fontSize="small" />
+            </span>
+            Model Can Focus On You More
+          </p>
+        </div>
+        <div className="tw-mt-3 tw-text-center">
+          <button className="tw-capitalize tw-bg-dreamgirl-red tw-text-white tw-py-2 tw-px-4 tw-rounded-full tw-font-medium video-call-button">
+            <Stars className="tw-text-white-color" fontSize="small" />
+            <span
+              className="tw-pl-2"
+              onClick={() =>
+                props.modalCtx.showModalWithContent(
+                  <ChooseChatPlan setIsChatPlanActive={hasActivePlan} />
+                )
+              }
+            >
+              Get Pro Chat Plan
+            </span>
+          </button>
+        </div>
       </div>
-      <div className="tw-my-6 tw-rounded tw-bg-first-color tw-text-text-black tw-p-3 tw-text-left">
-        <p className="tw-mx-2 tw-my-1">
-          <span className="tw-pr-2">
-            <ChatBubble fontSize="small" />
-          </span>
-          Unlimited Private Messages
-        </p>
-        <p className="tw-mx-2 tw-my-1">
-          <span className="tw-pr-2">
-            <SupervisedUserCircle fontSize="small" />
-          </span>
-          Chat With Any Model
-        </p>
-        <p className="tw-mx-2 tw-my-1">
-          <span className="tw-pr-2">
-            <CheckCircle fontSize="small" />
-          </span>
-          Model Can Focus On You More
-        </p>
-      </div>
-      <div className="tw-mt-3 tw-text-center">
-        <button className="tw-capitalize tw-bg-dreamgirl-red tw-text-white tw-py-2 tw-px-4 tw-rounded-full tw-font-medium video-call-button">
-          <Stars className="tw-text-white-color" fontSize="small" />
-          <span
-            className="tw-pl-2"
-            onClick={() =>
-              props.modalCtx.showModalWithContent(
-                <ChooseChatPlan
-                  setIsChatPlanActive={props.setIsChatPlanActive}
-                />
-              )
-            }
-          >
-            Get Pro Chat Plan
-          </span>
-        </button>
-      </div>
-    </div>
-  )
+    )
+  }, [props.modalCtx.showModalWithContent])
 
-  let chatContent
-  if (authCtx.isLoggedIn) {
-    if (authCtx.user.userType === "Viewer") {
-      if (hasActivePlan) {
-        chatContent = (
-          <ViewerMessageContainer
-            chatsData={chatsData}
-            scrollOnChat={props.scrollOnChat}
-          />
-        )
-      } else {
-        chatContent = noPlanBanner
+  let privateChatDynamicBlock = useMemo(() => {
+    let chatContent
+    if (authCtx.isLoggedIn) {
+      if (authCtx.user.userType === "Viewer") {
+        if (hasActivePlan) {
+          chatContent = <ViewerMessageContainer chatsData={chatsData} />
+        } else {
+          chatContent = noPlanBanner
+        }
       }
+    } else {
+      chatContent = notLoggedInBanner
     }
-  } else {
-    chatContent = notLoggedInBanner
-  }
+    return chatContent
+  }, [authCtx.isLoggedIn, hasActivePlan, authCtx.user.userType, chatsData])
 
   useEffect(() => {
     return () => sessionStorage.removeItem("privateChatDbId")
@@ -290,7 +300,7 @@ function PrivateChat(props) {
     </div>
   ) : (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 tw-h-full tw-bg-dark-black tw-ml-1">
-      {chatContent}
+      {privateChatDynamicBlock}
     </div>
   )
 }

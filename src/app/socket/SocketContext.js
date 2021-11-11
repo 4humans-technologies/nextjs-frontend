@@ -38,7 +38,7 @@ export const SocketContextProvider = ({ children }) => {
           }
         })
       } else {
-        /* if no rooms join beforehand */
+        /* if no rooms join beforehand, directly connect */
         setIsConnected(true)
       }
     })
@@ -55,7 +55,7 @@ export const SocketContextProvider = ({ children }) => {
     })
 
     socket.on("connect_failed", () => {
-      console.log("socket connected!")
+      console.log("socket connect_failed!")
     })
 
     socket.on("connect_error ", (err) => {

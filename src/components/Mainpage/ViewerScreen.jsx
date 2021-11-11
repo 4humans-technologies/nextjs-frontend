@@ -161,14 +161,22 @@ function ViewerScreen(props) {
           })
             .then((res) => res.json())
             .then((data) => {
-              join(
-                window.location.pathname.split("/").reverse()[0],
-                localStorage.getItem("rtcToken"),
-                ctx.relatedUserId
-              )
-              setIsModelOffline(false)
+              if (data.actionStatus === "success") {
+                join(
+                  window.location.pathname.split("/").reverse()[0],
+                  localStorage.getItem("rtcToken"),
+                  ctx.relatedUserId
+                )
+                props.setIsChatPlanActive(data.isChatPlanActive)
+                setIsModelOffline(false)
+              } else {
+                props.setIsChatPlanActive(data.isChatPlanActive)
+                setIsModelOffline(true)
+              }
             })
-            .catch((err) => alert(err.message))
+            .catch((err) => {
+              alert(err.message)
+            })
         })
       }
 
@@ -255,8 +263,11 @@ function ViewerScreen(props) {
             .then((resp) => resp.json())
             .then((data) => {
               props.setModelProfileData(data.theModel)
+              props.setIsChatPlanActive(data.isChatPlanActive)
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
+              } else {
+                setIsModelOffline(false)
               }
               setTipMenuActions(data.theModel.tipMenuActions.actions)
               token = data.rtcToken
@@ -309,8 +320,11 @@ function ViewerScreen(props) {
             .then((data) => {
               //debugger
               props.setModelProfileData(data.theModel)
+              props.setIsChatPlanActive(data.isChatPlanActive)
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
+              } else {
+                setIsModelOffline(false)
               }
               setTipMenuActions(data.theModel.tipMenuActions.actions)
               localStorage.setItem("rtcToken", data.rtcToken)

@@ -59,7 +59,7 @@ export default {
     // });
 
     socket.on("you-joined-a-room", (room) => {
-      if (room.includes("-public") || room.includes("-private")) {
+      if (room.endsWith("-public") || room.endsWith("-private")) {
         /* dont't join the self rooms 😎😎 */
         const prevRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
@@ -78,17 +78,6 @@ export default {
       const newRooms = prevRooms.filter((room) => room !== roomToLeave) || []
       sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
     })
-
-    socket.on("viewer-left", (data) => {
-      alert("Viewer left")
-      console.log(data.roomSize)
-    })
-
-    socket.on("viewer-joined", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-    // "model-public-message"
   },
   modelListners: (socket) => {},
   viewerListners: (socket) => {
