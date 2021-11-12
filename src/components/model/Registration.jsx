@@ -122,6 +122,8 @@ function Registration() {
           io.getSocket().close()
           io.getSocket().open()
           router.push("/document")
+        } else {
+          alert("code not redeemed! ☹☹")
         }
       })
       .catch((err) => {

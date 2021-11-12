@@ -1,6 +1,9 @@
 import io from "socket.io-client"
 let socketConnectionInstance
 let pendingCalls
+
+import { imageDomainURL } from "../../dreamgirl.config"
+
 export default {
   connect: (url) => {
     /**
