@@ -2,9 +2,9 @@ import React, { useReducer } from "react"
 import Neeraj from "../../../public/brandikaran.jpg"
 import Image from "next/image"
 import { PlayCircleFilled } from "@material-ui/icons"
-// import CallDetailsPopUp from "../Call/CallDetailsPopUp";
 import useModalContext from "../../app/ModalContext"
 // import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import { SRLWrapper } from "simple-react-lightbox"
 
 function ChipArea(props) {
   return (
@@ -113,54 +113,75 @@ function ModelProfile(props) {
       <>
         {/* <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6"></h2> */}
         <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3">
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
+          <SRLWrapper>
+            <a href={`${Neeraj}`}>
+              {/* <div className="tw-col-span-1 tw-row-span-1"> */}
+              <Image
+                src={Neeraj}
+                height={280}
+                width={280}
+                className="tw-rounded"
+                srl_gallery_image="true"
+              />
+              {/* </div> */}
+            </a>
+
+            <a href={`${Neeraj}`}>
+              <div className="tw-col-span-1 tw-row-span-1">
+                <Image
+                  src={Neeraj}
+                  height={280}
+                  width={280}
+                  className="tw-rounded"
+                  srl_gallery_image="true"
+                />
+              </div>
+            </a>
+            <a href={`${Neeraj}`}>
+              <div className="tw-col-span-1 tw-row-span-1">
+                <Image
+                  src={Neeraj}
+                  height={280}
+                  width={280}
+                  className="tw-rounded"
+                  srl_gallery_image="true"
+                />
+              </div>
+            </a>
+            <a href={`${Neeraj}`}>
+              <div className="tw-col-span-1 tw-row-span-1">
+                <Image
+                  src={Neeraj}
+                  height={280}
+                  width={280}
+                  className="tw-rounded"
+                  srl_gallery_image="true"
+                />
+              </div>
+            </a>
+            <a href={`${Neeraj}`}>
+              <div className="tw-col-span-1 tw-row-span-1">
+                <Image
+                  src={Neeraj}
+                  height={280}
+                  width={280}
+                  className="tw-rounded"
+                  srl_gallery_image="true"
+                />
+              </div>
+            </a>
+            <a href={`${Neeraj}`}>
+              <div className="tw-col-span-1 tw-row-span-1">
+                <Image
+                  src={Neeraj}
+                  height={280}
+                  width={280}
+                  className="tw-rounded"
+                  srl_gallery_image="true"
+                />
+              </div>
+            </a>
+          </SRLWrapper>
           <div className="tw-mt-4 tw-col-span-2 md:tw-col-span-3 lg:tw-col-span-5 xl:tw-col-span-6 tw-flex tw-justify-center tw-items-center">
             <div className="tw-h-1 tw-bg-second-color tw-mr-2 tw-flex-grow tw-rounded-sm"></div>
             <button className="tw-uppercase tw-px-3 tw-py-2 tw-rounded tw-bg-second-color tw-text-white-color tw-font-semibold hover:tw-bg-dark-black">

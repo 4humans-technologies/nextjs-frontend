@@ -30,7 +30,7 @@ function Profile() {
   const [callData, setCallData] = useState()
   const modalCtx = modalContext()
   const authContext = useAuthContext()
-  const updateAuth = useAuthUpdateContext()
+  const authUpdateContext = useAuthUpdateContext()
 
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
@@ -95,39 +95,41 @@ function Profile() {
     // send data back to node serve as success report with user id and url for the data
 
     let serverReq = await fetch(
-      "/api/website/profile/update-model-basic-details",
+      "/api/website/profile/handle-public-image-upload",
       {
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          updatedData: {
-            publicImages: profileUrl,
-          },
+          newImageUrl: profileUrl,
         }),
       }
     )
     let serverResp = await serverReq.json()
+    authUpdateContext.updateNestedPaths((prev) => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        user: {
+          ...prev.user.user,
+          relatedUser: {
+            ...prev.user.user.relatedUser,
+            publicImages: [
+              ...prev.user.user.relatedUser.publicImages,
+              profileUrl,
+            ],
+          },
+        },
+      },
+    }))
+
+    let store = JSON.parse(localStorage.getItem("user"))
+    store["relatedUser"]["publicImages"] = profileUrl
+    localStorage.setItem("user", JSON.stringify(store))
+
     console.log(serverResp)
   }
-
-  // Test for image upload
-  // authContext.user.user.relatedUser.publicImages.push("sankarcharya.jpg")
-  // authContext.user.user.relatedUser.publicImages = []
-  // authContext.user.user.relatedUser.publicImages.map((image) =>
-  //   console.log(image)
-  // )
-  // console.log(
-  //   `Authcontext ------${authContext.user.user.relatedUser.publicImages}`
-  // )
-  let store = JSON.parse(localStorage.getItem("user"))
-  // console.log(store)
-
-  store["relatedUser"]["email"] = "rss@gmail.com"
-
-  localStorage.setItem("user", JSON.stringify(store))
-  console.log(store)
 
   // VideoUplodeHandler videoUpdateHandler
   const videoUpdateHandler = async (e) => {
@@ -150,19 +152,41 @@ function Profile() {
     }
     // send data back to node serve as success report with user id and url for the data
     const serverReq = await fetch(
-      "/api/website/profile/update-model-basic-details",
+      "/api/website/profile/handle-public-video-upload",
       {
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          publicVideos:
-            authContext.user.user.relatedUser.publicVideos.push(profileUrl),
+          newVideoUrl: profileUrl,
         }),
       }
     )
     const serverResp = await serverReq.json()
+    authUpdateContext.updateNestedPaths((prev) => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        user: {
+          ...prev.user.user,
+          relatedUser: {
+            ...prev.user.user.relatedUser,
+            publicVideos: [
+              ...prev.user.user.relatedUser.publicVideos,
+              profileUrl,
+            ],
+          },
+        },
+      },
+    }))
+
+    let store = JSON.parse(localStorage.getItem("user"))
+    store["relatedUser"]["publicVideos"] = profileUrl
+    // store.user.user.relatedUser.publicVideos.push(profileUrl)
+    localStorage.setItem("user", JSON.stringify(store))
+
+    console.log(`Image uplode ${serverResp}`)
   }
   // This can be use for the fetching model details
   useEffect(() => {
@@ -558,8 +582,8 @@ function Profile() {
               <h1>My Photos</h1>
             </div>
             {/* Make Model Clickeble in model */}
-            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1  tw-flex tw-flex-wrap tw-justify-around tw-py-4">
-              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 ">
+            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
+              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
@@ -567,7 +591,7 @@ function Profile() {
                     name="file-input"
                     id="file-input"
                     className="file-input__input"
-                    onChange={() => photoUpdateHandler()}
+                    onChange={(e) => photoUpdateHandler(e)}
                   />
                   <label className="file-input__label" htmlFor="file-input">
                     <svg
@@ -591,12 +615,15 @@ function Profile() {
 
                 {/* file */}
               </div>
-              <div className="tw-w-32 tw-h-32 tw-bg-gray-300">
-                <img src="/pp.jpg" />
-              </div>
-              <div className="tw-w-32 tw-h-32 tw-bg-gray-300">
-                <img src="/pp.jpg" />
-              </div>
+              {authContext.user.user.relatedUser &&
+                authContext.user.user.relatedUser.publicImages.map((image) => (
+                  <div className=" tw-mb-4">
+                    <img
+                      src={image}
+                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                    />
+                  </div>
+                ))}
             </div>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
@@ -604,7 +631,8 @@ function Profile() {
               <h1>My videos</h1>
             </div>
             {/* Make Model Clickeble in model */}
-            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1  tw-flex tw-flex-wrap tw-justify-around tw-py-4">
+            {/* md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 */}
+            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4">
                 {/* input */}
                 <div className="file-input tw-mt-10 tw-ml-2 tw-grid">
@@ -617,7 +645,7 @@ function Profile() {
                       name="file-input"
                       id="file-input"
                       className="file-input__input"
-                      onChange={() => videoUpdateHandler()}
+                      onChange={(e) => videoUpdateHandler(e)}
                     />
                     <svg
                       aria-hidden="true"
@@ -640,12 +668,15 @@ function Profile() {
 
                 {/* input */}
               </div>
-              <div className="tw-w-32 tw-h-32 tw-bg-gray-300">
-                <img src="/pp.jpg" />
-              </div>
-              <div className="tw-w-32 tw-h-32 tw-bg-gray-300">
-                <img src="/pp.jpg" />
-              </div>
+              {authContext.user.user.relatedUser &&
+                authContext.user.user.relatedUser.publicVideos.map((image) => (
+                  <div className=" tw-mb-4">
+                    <img
+                      src={image}
+                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                    />
+                  </div>
+                ))}
             </div>
           </div>
           {/* ---------------------------------------------------- */}

@@ -128,7 +128,9 @@ function SecondHeader() {
               isStream ? (
                 <div className="tw-flex tw-my-auto">
                   <div className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer">
-                    {authContext.user.user.username}
+                    {authContext.user.user
+                      ? authContext.user.user.username
+                      : null}
                   </div>
                   <div
                     className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"
