@@ -27,27 +27,23 @@ function Mainbox(props) {
   }
 
   return (
-    <div className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full">
-      <div className="tw-relative tw-font-sans parent_transition tw-m-0">
-        <Link
-          href={
-            props.parent === "index" ? `/view-stream/${props.modelId}` : "/"
-          }
-          className="tw-cursor-pointer"
-        >
-          <span className="tw-cursor-pointer">
-            <img
-              src={imageUrl}
-              className="tw-object-cover tw-object-center tw-rounded-t tw-w-[211px] tw-h-[211px]"
-              alt=""
-            />
+    <div className="tw-font-sans  ">
+      <Link
+        href={props.parent === "index" ? `/view-stream/${props.modelId}` : "/"}
+        // className="tw-cursor-pointer"
+      >
+        <span className="tw-cursor-pointer tw-w-[211px] tw-h-[211px] tw-relative ">
+          <img
+            src={imageUrl}
+            className="tw-object-cover tw-object-center tw-rounded-t"
+            alt=""
+          />
 
-            <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5">
-              Streaming
-            </p>
-          </span>
-        </Link>
-      </div>
+          <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5  tw-relative tw-bottom-0 tw-w-full">
+            Streaming
+          </p>
+        </span>
+      </Link>
     </div>
   )
 }

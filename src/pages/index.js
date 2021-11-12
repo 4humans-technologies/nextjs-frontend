@@ -38,6 +38,7 @@ const Home = () => {
   const ctx = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
   const socketContext = useSocketContext()
+  const [liveModels, setLiveModels] = useState(0)
 
   useEffect(() => {
     /* client should not be connected to any public/private room  while on index page */
@@ -87,17 +88,6 @@ const Home = () => {
     },
   ])
 
-  const doRequest = () => {
-    //debugger
-    const id = socket.getSocketId()
-    console.log(`${socket.getSocketId()}`)
-    fetch("/api/website/compose-ui/get-ranking-online-models")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("request completed!")
-      })
-  }
-
   useEffect(() => {
     // fetch all live streams
     //debugger
@@ -117,6 +107,7 @@ const Home = () => {
               },
             ]
           })
+          setLiveModels(data.totalMatches)
         })
         .catch((error) => {
           console.error(error)
@@ -198,14 +189,14 @@ const Home = () => {
   return (
     <div className="tw-min-h-screen">
       <Head>
-        <title>DreamGirl Live Online Video Vhat</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>DreamGirl Live Online Video Chat</title>
+        <link rel="icon" href="/DG_icon.jpg" />
       </Head>
       <div className="tw-h-20"></div>
-      <Header />
-      <div className="tw-flex tw-w-screen tw-flex-grow">
+      <Header liveModels={liveModels} />
+      <div className="tw-flex  ">
         <Sidebar />
-        <div>
+        <div className="">
           {boxGroupsData.map((data, index) => {
             return (
               <Boxgroup

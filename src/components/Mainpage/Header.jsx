@@ -58,6 +58,7 @@ function Header(props) {
   }
 
   // When ever the Heder reloada sidebarshow is false
+  console.log(`Model in header ${props.liveModels}`)
 
   return (
     <div>
@@ -78,7 +79,9 @@ function Header(props) {
           {/* circle tailwind css */}
           <div className="tw-flex tw-items-center">
             <div className="tw-rounded-full tw-bg-green-400 tw-h-2 tw-w-2 tw-flex tw-items-center tw-justify-center"></div>
-            <p className="tw-pl-1 tw-pr-2">4555</p>
+            <p className="tw-pl-1 tw-pr-2">
+              {props.liveModels ? props.liveModels : 0}
+            </p>
             <p>LIVE </p>
           </div>
 
@@ -223,8 +226,18 @@ function Header(props) {
                         >
                           Logout
                         </button>
-                        <div className="tw-mx-4">
-                          <NotificationsIcon />
+                        <div className="tw-mx-4 tw-flex ">
+                          <img
+                            src="/coins.png"
+                            alt=""
+                            className="tw-w-10 tw-h-10 tw-text-white"
+                          />
+                          <p className="tw-my-auto tw-ml-2">
+                            {
+                              authContext.user.user.relatedUser.wallet
+                                .currentAmount
+                            }
+                          </p>
                         </div>
                         {hide ? null : (
                           <Link
