@@ -615,14 +615,15 @@ function Profile() {
 
                 {/* file */}
               </div>
-              {authContext.user.user.relatedUser.publicImages.map((image) => (
-                <div className=" tw-mb-4">
-                  <img
-                    src={image}
-                    className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                  />
-                </div>
-              ))}
+              {authContext.user.user.relatedUser &&
+                authContext.user.user.relatedUser.publicImages.map((image) => (
+                  <div className=" tw-mb-4">
+                    <img
+                      src={image}
+                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                    />
+                  </div>
+                ))}
             </div>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
@@ -667,14 +668,15 @@ function Profile() {
 
                 {/* input */}
               </div>
-              {authContext.user.user.relatedUser.publicVideos.map((image) => (
-                <div className=" tw-mb-4">
-                  <img
-                    src={image}
-                    className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                  />
-                </div>
-              ))}
+              {authContext.user.user.relatedUser &&
+                authContext.user.user.relatedUser.publicVideos.map((image) => (
+                  <div className=" tw-mb-4">
+                    <img
+                      src={image}
+                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                    />
+                  </div>
+                ))}
             </div>
           </div>
           {/* ---------------------------------------------------- */}
