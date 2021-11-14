@@ -1,6 +1,10 @@
-import React from "react";
-import UserProfile from "../../components/Mainpage/UserProfile";
+import React from "react"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import dynamic from "next/dynamic"
+
+const UserProfile = dynamic(() =>
+  import("../../components/Mainpage/UserProfile")
+)
 
 function name() {
   const user = useAuthContext()
@@ -16,4 +20,4 @@ function name() {
   )
 }
 
-export default name;
+export default name

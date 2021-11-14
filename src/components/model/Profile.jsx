@@ -578,7 +578,7 @@ function Profile() {
                 {/* file */}
               </div>
               {authContext.user.user.relatedUser
-                ? authContext.user.user.relatedUser.privateVideos.map(
+                ? authContext.user.user.relatedUser.publicImages.map(
                     (image) => (
                       <div className=" tw-mb-4" key={image}>
                         <img

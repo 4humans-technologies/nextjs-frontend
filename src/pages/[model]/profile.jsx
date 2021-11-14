@@ -1,5 +1,6 @@
 import React from "react"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import dynamic from "next/dynamic"
 
 const Profile = dynamic(() => import("../../components/model/Profile"))
 
