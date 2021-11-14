@@ -12,7 +12,8 @@ import {
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
-
+// import { SRLWrapper } from "simple-react-lightbox"
+// import Image from "next/image"
 // ========================================================
 function Profile() {
   const [infoedited, setInfoedited] = useState(false)
@@ -75,7 +76,7 @@ function Profile() {
       return alert("OK BRO")
     }
     // send data back to node serve as success report with user id and url for the data
-
+    console.log("Photo Update handler ")
     let serverReq = await fetch(
       "/api/website/profile/handle-public-image-upload",
       {
@@ -97,8 +98,8 @@ function Profile() {
           ...prev.user.user,
           relatedUser: {
             ...prev.user.user.relatedUser,
-            publicImages: [
-              ...prev.user.user.relatedUser.publicImages,
+            privateVideos: [
+              ...prev.user.user.relatedUser.privateVideos,
               profileUrl,
             ],
           },
@@ -107,10 +108,10 @@ function Profile() {
     }))
 
     let store = JSON.parse(localStorage.getItem("user"))
-    store["relatedUser"]["publicImages"] = profileUrl
+    store["relatedUser"]["privateVideos"] = profileUrl
     localStorage.setItem("user", JSON.stringify(store))
 
-    console.log(serverResp)
+    console.log("Photo handler")
   }
 
   // VideoUplodeHandler videoUpdateHandler
@@ -126,7 +127,7 @@ function Profile() {
     const profileUrl = imageUrl.split("?")[0]
 
     let req = await fetch(imageUrl, {
-      method: "POST",
+      method: "PUT",
       body: image,
     })
     if (!req.ok) {
@@ -167,10 +168,7 @@ function Profile() {
     store["relatedUser"]["publicVideos"] = profileUrl
     // store.user.user.relatedUser.publicVideos.push(profileUrl)
     localStorage.setItem("user", JSON.stringify(store))
-
-    console.log(`Image uplode ${serverResp}`)
   }
-  // This can be use for the fetching model details
 
   // console.log(modelDetails.model)
   // useEffect to make  button appear when change in information takes place
@@ -211,8 +209,6 @@ function Profile() {
 
   return (
     <div>
-      {/* Cover page */}
-
       <div
         className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
         style={{
@@ -543,10 +539,10 @@ function Profile() {
           {/* Scroll */}
         </div>
         <div className="md:tw-col-span-3 tw-col-span-1 tw-bg-dark-background  tw-text-white tw-py-8">
+          <div className="tw-flex tw-justify-between tw-ml-4 ">
+            <h1>My Photos</h1>
+          </div>
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
-            <div className="tw-flex tw-justify-between">
-              <h1>My Photos</h1>
-            </div>
             {/* Make Model Clickeble in model */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
@@ -581,10 +577,10 @@ function Profile() {
 
                 {/* file */}
               </div>
-              {authContext.user.user.relatedUser.publicImages
+              {authContext.user.user.relatedUser
                 ? authContext.user.user.relatedUser.privateVideos.map(
                     (image) => (
-                      <div className=" tw-mb-4">
+                      <div className=" tw-mb-4" key={image}>
                         <img
                           src={image}
                           className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
@@ -595,27 +591,27 @@ function Profile() {
                 : null}
             </div>
           </div>
+          <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
+            <h1>My videos</h1>
+          </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <div className="tw-flex tw-justify-between">
-              <h1>My videos</h1>
-            </div>
             {/* Make Model Clickeble in model */}
             {/* md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
-              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4">
-                {/* input */}
-                <div className="file-input tw-mt-10 tw-ml-2 tw-grid">
+              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+                {/* file */}
+                <div className="file-input tw-mt-10 tw-ml-2">
+                  <input
+                    type="file"
+                    name="file-input_video"
+                    id="file-input_video"
+                    className="file-input__input"
+                    onChange={(e) => videoUpdateHandler(e)}
+                  />
                   <label
-                    className="file-input__label tw-place-items-center"
-                    htmlFor="file-input"
+                    className="file-input__label"
+                    htmlFor="file-input_video"
                   >
-                    <input
-                      type="file"
-                      name="file-input"
-                      id="file-input"
-                      className="file-input__input"
-                      onChange={(e) => videoUpdateHandler(e)}
-                    />
                     <svg
                       aria-hidden="true"
                       focusable="false"
@@ -635,10 +631,10 @@ function Profile() {
                   </label>
                 </div>
 
-                {/* input */}
+                {/* file */}
               </div>
               {authContext.user.user.relatedUser?.publicVideos.map((image) => (
-                <div className=" tw-mb-4">
+                <div className=" tw-mb-4" key={image}>
                   <img
                     src={image}
                     className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
