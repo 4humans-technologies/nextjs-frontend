@@ -289,7 +289,9 @@ function Header(props) {
                       <div className="tw-flex tw-justify-between tw-px-2  ">
                         <div className="tw-flex tw-items-center">
                           <div className="tw-rounded-full tw-bg-green-400 tw-h-2 tw-w-2 tw-flex tw-items-center tw-justify-center"></div>
-                          <p className="tw-pl-1 tw-pr-2">4555</p>
+                          <p className="tw-pl-1 tw-pr-2">
+                            {props.liveModels ? props.liveModels : 0}
+                          </p>
                           <p>LIVE </p>
                         </div>
 
@@ -298,18 +300,26 @@ function Header(props) {
                           <p>Top Model</p>
                         </div>
                       </div>
-                      <button
-                        className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-2 sm:tw-px-6 tw-bg-white-color tw-text-black sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-my-4 tw-text-sm md:tw-text-base"
-                        onClick={() => router.push("/auth/viewerRegistration")}
-                      >
-                        Sign Up
-                      </button>
-                      <button
-                        className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-6 tw-text-white tw-border-2 sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-text-sm md:tw-text-base"
-                        onClick={() => router.push("auth/login")}
-                      >
-                        Login
-                      </button>
+                      <div className="tw-flex ">
+                        <button
+                          className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-4 sm:tw-px-6 tw-bg-white-color tw-text-black sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-my-4 tw-text-sm md:tw-text-base"
+                          onClick={() => {
+                            router.push("/auth/viewerRegistration")
+                            setMenu((prev) => !prev)
+                          }}
+                        >
+                          Sign Up
+                        </button>
+                        <button
+                          className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-4 sm:tw-px-6 tw-text-white tw-border-2 sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-text-sm md:tw-text-base"
+                          onClick={() => {
+                            router.push("auth/login")
+                            setMenu((prev) => !prev)
+                          }}
+                        >
+                          Login
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg"></div>
