@@ -13,7 +13,6 @@ function ModelProfile() {
   ) : (
     <div className="tw-mx-auto tw-mt-auto">
       <h1>You are not authorized to view this page</h1>
-      {/* tw-mx-auto tw-mt-auto tw-font-extrabold tw-capitalize tw-text-3xl */}
     </div>
   )
 }

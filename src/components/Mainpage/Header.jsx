@@ -58,7 +58,7 @@ function Header(props) {
   }
 
   // When ever the Heder reloada sidebarshow is false
-  console.log(`Model in header ${props.liveModels}`)
+  // console.log(`Model in header ${props.liveModels}`)
 
   return (
     <div>

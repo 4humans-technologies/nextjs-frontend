@@ -113,19 +113,19 @@ function ModelProfile(props) {
         {/* <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6"></h2> */}
         <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3">
           <SRLWrapper>
-            <a href={`${Neeraj}`}>
-              {/* <div className="tw-col-span-1 tw-row-span-1"> */}
-              <Image
-                src={Neeraj}
-                height={280}
-                width={280}
-                className="tw-rounded"
-                srl_gallery_image="true"
-              />
-              {/* </div> */}
+            <a href={Neeraj}>
+              <div className="tw-col-span-1 tw-row-span-1">
+                <Image
+                  src={Neeraj}
+                  height={280}
+                  width={280}
+                  className="tw-rounded"
+                  srl_gallery_image="true"
+                />
+              </div>
             </a>
 
-            <a href={`${Neeraj}`}>
+            <a href={Neeraj}>
               <div className="tw-col-span-1 tw-row-span-1">
                 <Image
                   src={Neeraj}
@@ -136,7 +136,7 @@ function ModelProfile(props) {
                 />
               </div>
             </a>
-            <a href={`${Neeraj}`}>
+            <a href={Neeraj}>
               <div className="tw-col-span-1 tw-row-span-1">
                 <Image
                   src={Neeraj}
@@ -147,7 +147,7 @@ function ModelProfile(props) {
                 />
               </div>
             </a>
-            <a href={`${Neeraj}`}>
+            <a href={Neeraj}>
               <div className="tw-col-span-1 tw-row-span-1">
                 <Image
                   src={Neeraj}
@@ -158,7 +158,7 @@ function ModelProfile(props) {
                 />
               </div>
             </a>
-            <a href={`${Neeraj}`}>
+            <a href={Neeraj}>
               <div className="tw-col-span-1 tw-row-span-1">
                 <Image
                   src={Neeraj}
@@ -169,7 +169,7 @@ function ModelProfile(props) {
                 />
               </div>
             </a>
-            <a href={`${Neeraj}`}>
+            <a href={Neeraj}>
               <div className="tw-col-span-1 tw-row-span-1">
                 <Image
                   src={Neeraj}

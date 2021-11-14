@@ -12,6 +12,8 @@ import Link from "next/link"
 import io from "../../socket/socket"
 import ErrorIcon from "@material-ui/icons/Error"
 import Header from "./Header"
+import ArrowBackIcon from "@material-ui/icons/ArrowBack"
+import LockOpenIcon from "@material-ui/icons/LockOpen"
 
 function SignUp() {
   const modalCtx = useModalContext()
@@ -174,21 +176,24 @@ function SignUp() {
                     Register
                   </Button>
                   <div className="tw-border-t tw-border-second-color tw-my-3 tw-w-full"></div>
-                  <Button
-                    variant="success"
-                    className="tw-rounded-full tw-inline-block tw-w-11/12"
-                    type="submit"
-                  >
-                    Login
-                  </Button>
+                  <p className="tw-text-white">Already Register ?</p>
+                  <Link href="/auth/login">
+                    <p className="tw-text-white tw-text-lg tw-font-bold tw-cursor-pointer">
+                      <span className="tw-flex tw-mt-4 ">
+                        <LockOpenIcon /> <p className="tw-ml-4">Login</p>
+                      </span>
+                    </p>
+                  </Link>
 
-                  <Button
-                    variant="danger"
-                    className="tw-rounded-full tw-inline-block tw-w-11/12 tw-mt-6"
-                    onClick={() => router.back()}
+                  <div
+                    className="tw-flex tw-text-white  tw-w-11/12 tw-mt-4  tw-justify-center tw-cursor-pointer"
+                    onClick={() => router.push("/")}
                   >
-                    Go Back
-                  </Button>
+                    <ArrowBackIcon fontSize="medium" />
+                    <p className="tw-ml-4 tw-font-bold tw-text-xl">
+                      Back to Home
+                    </p>
+                  </div>
                 </div>
               </form>
             </div>

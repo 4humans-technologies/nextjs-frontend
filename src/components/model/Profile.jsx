@@ -12,22 +12,13 @@ import {
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
-import Header from "../Mainpage/Header"
 
 // ========================================================
 function Profile() {
-  const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
   const [priceEdit, setPriceEdited] = useState(false)
   const [dynamicData, setDynamicData] = useState([2])
-  const [imageVideo, setImageVideo] = useState({
-    images: [],
-    videos: [],
-  })
 
-  const [modelData, setModelData] = useState()
-  const [modelDetails, setModelDetails] = useState(null)
-  const [callData, setCallData] = useState()
   const modalCtx = modalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
@@ -36,15 +27,6 @@ function Profile() {
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
   })
-
-  useEffect(() => {
-    fetch("/model.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setModelData(data.Personal), setCallData(data.Charges)
-      })
-    return {}
-  }, [])
 
   const callChangeHandler = (e) => {
     const { name, value } = e.target
@@ -189,29 +171,9 @@ function Profile() {
     console.log(`Image uplode ${serverResp}`)
   }
   // This can be use for the fetching model details
-  useEffect(() => {
-    fetch("/api/website/profile/get-model-profile-data")
-      .then((resp) => resp.json())
-      .then((data) => setModelDetails(data))
-  }, [])
 
   // console.log(modelDetails.model)
   // useEffect to make  button appear when change in information takes place
-  let audio = []
-  let video = []
-
-  useEffect(() => {
-    if (callData) {
-      for (let index = 1; index < 5; index++) {
-        audio.push(callData.Audio * index)
-        video.push(callData.Video * index)
-      }
-    }
-  }, [callData])
-
-  const toggleChecked = () => {
-    setChecked((prev) => !prev)
-  }
 
   // This will change data and fecth data and send to uper
   const saveData = () => {
@@ -250,7 +212,6 @@ function Profile() {
   return (
     <div>
       {/* Cover page */}
-      <Header />
 
       <div
         className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
@@ -287,7 +248,9 @@ function Profile() {
           onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
         />
         <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44 tw-flex  md:tw-mt-4 tw-mt-8">
-          {modelDetails ? modelDetails.model.name : null}
+          {authContext.user.user.relatedUser
+            ? authContext.user.user.relatedUser.name
+            : null}
           {authContext.user.user.relatedUser.gender == "Female" ? (
             <img src="/femaleIcon.png" className="tw-w-8 tw-h-8 tw-ml-4" />
           ) : (
@@ -314,101 +277,104 @@ function Profile() {
                 <p>SubCulture</p>
               </div>
 
-              {modelData
-                ? modelData.map((item) => (
-                    <div
-                      className="md:tw-col-span-5 tw-col-span-4 "
-                      onChange={() => setInfoedited(true)}
-                    >
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        EveryOne
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {authContext.user.user.relatedUser.ethnicity}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {/* {item.Language} */}
-                        {authContext.user.user.relatedUser.languages.map(
-                          (item) => item
-                        )}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                      >
-                        {/* {item.Age} */}
-                        {modelDetails
-                          ? thisYear - modelDetails.model.dob
-                          : null}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Body}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Hair}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Eye}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Call}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Call}
-                      </p>
-                    </div>
-                  ))
-                : null}
+              {
+                <div
+                  className="md:tw-col-span-5 tw-col-span-4 "
+                  onChange={() => setInfoedited(true)}
+                >
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    EveryOne
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    {authContext.user.user.relatedUser.ethnicity}
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    {/* {item.Language} */}
+                    {authContext.user.user.relatedUser.languages.map(
+                      (item) => item
+                    )}
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                  >
+                    {/* {item.Age} */}
+                    {authContext.user.user
+                      ? thisYear - authContext.user.user.relatedUser.dob
+                      : null}
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    Skin
+                    {/* {item.Body} */}
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    Black
+                    {/* {item.Hair} */}
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    {/* {item.Eye} */}
+                    Black
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    German
+                    {/* {item.Call} */}
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    German
+                    {/* {item.Call} */}
+                  </p>
+                </div>
+              }
 
               <br />
               {infoedited && (
@@ -429,7 +395,7 @@ function Profile() {
                 <p className="tw-px-4">
                   My Email{" "}
                   <span className="tw-ml-4 tw-font-bold tw-text-xl">
-                    {modelDetails
+                    {authContext.user.user
                       ? authContext.user.user.relatedUser.email
                       : null}
                   </span>
@@ -615,15 +581,18 @@ function Profile() {
 
                 {/* file */}
               </div>
-              {authContext.user.user.relatedUser &&
-                authContext.user.user.relatedUser.publicImages.map((image) => (
-                  <div className=" tw-mb-4">
-                    <img
-                      src={image}
-                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                    />
-                  </div>
-                ))}
+              {authContext.user.user.relatedUser.publicImages
+                ? authContext.user.user.relatedUser.privateVideos.map(
+                    (image) => (
+                      <div className=" tw-mb-4">
+                        <img
+                          src={image}
+                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                        />
+                      </div>
+                    )
+                  )
+                : null}
             </div>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
@@ -668,15 +637,14 @@ function Profile() {
 
                 {/* input */}
               </div>
-              {authContext.user.user.relatedUser &&
-                authContext.user.user.relatedUser.publicVideos.map((image) => (
-                  <div className=" tw-mb-4">
-                    <img
-                      src={image}
-                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                    />
-                  </div>
-                ))}
+              {authContext.user.user.relatedUser?.publicVideos.map((image) => (
+                <div className=" tw-mb-4">
+                  <img
+                    src={image}
+                    className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                  />
+                </div>
+              ))}
             </div>
           </div>
           {/* ---------------------------------------------------- */}

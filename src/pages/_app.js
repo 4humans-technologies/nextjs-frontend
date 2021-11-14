@@ -12,9 +12,7 @@ import TestComponent from "./text"
 import SimpleReactLightbox from "simple-react-lightbox"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../styles/global.css"
-// import dynamic from "next/dynamic";
-// const io = dynamic(() => import("../socket/socket"), { ssr: false })
-
+import Mainlayout from "../components/UI/Mainlayout"
 /**
  * RULES OF HOOKS
  * react hooks must be called in the same order in every render
@@ -42,7 +40,9 @@ const MyApp = ({ Component, pageProps }) => {
                 <SocketContextProvider>
                   <TestComponent />
                   <SimpleReactLightbox>
-                    <Component {...pageProps} />
+                    <Mainlayout>
+                      <Component {...pageProps} />
+                    </Mainlayout>
                   </SimpleReactLightbox>
                 </SocketContextProvider>
               </SpinnerContextProvider>

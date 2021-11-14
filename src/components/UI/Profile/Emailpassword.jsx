@@ -166,8 +166,6 @@ const CoverUpdate = () => {
     const cover_url = await data_2.uploadUrl
     // Now change coverImage to url
 
-    console.log(`Bro this is cover page url, ${cover_url.split("?")[0]}`) //The place where it needed to be uploded
-
     // Then this uplode uplode the Image in the S3 bucket
     const resp = await fetch(cover_url, {
       method: "PUT",
@@ -217,7 +215,6 @@ const CoverUpdate = () => {
     localStorage.setItem("user", JSON.stringify(store))
 
     const jsonResp = await re.json()
-    console.log(`This is json response -----${jsonResp}`)
   }
 
   // Now use this url to uploade to serve using url
@@ -274,9 +271,7 @@ const ProfileUpdate = () => {
       return alert("OK BRO")
     }
     // console.log(resp)
-    console.log(profile_url)
     const profileUrl = profile_url.split("?")[0]
-    console.log(profileUrl)
     // take this url from the aws and send it to your serve to access it in the future
     // console.log(`Profile url ------${profileUrl}`)
 
@@ -312,8 +307,6 @@ const ProfileUpdate = () => {
     localStorage.setItem("user", JSON.stringify(store))
 
     const jsonRe = await re.json()
-
-    console.log(`This is json response -----${jsonRe}`)
   }
   // console.log(`localstorage---- ${localStorage.getItem("user")}`)
   // Profile pic to aws

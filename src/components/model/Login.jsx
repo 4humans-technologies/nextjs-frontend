@@ -11,6 +11,8 @@ import Logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
 import ErrorIcon from "@material-ui/icons/Error"
+import ArrowBackIcon from "@material-ui/icons/ArrowBack"
+import LockOpenIcon from "@material-ui/icons/LockOpen"
 
 //Validation is still left in this
 function Login() {
@@ -145,22 +147,24 @@ function Login() {
                   Login
                 </Button>
                 <div className="tw-border-t tw-border-second-color tw-my-3 tw-w-full"></div>
-                <Button
-                  variant="success"
-                  className="tw-rounded-full tw-inline-block tw-w-11/12"
-                  type="submit"
-                  onClick={() => router.push("/auth/viewerRegistration")}
-                >
-                  Register
-                </Button>
+                <p className="tw-text-white">Are you Register ?</p>
+                <Link href="/auth/viewerRegistration">
+                  <p className="tw-text-white tw-text-lg tw-font-bold tw-cursor-pointer">
+                    <span className="tw-flex tw-mt-2 ">
+                      <LockOpenIcon /> <p className="tw-ml-4"> Sign Up</p>
+                    </span>
+                  </p>
+                </Link>
 
-                <Button
-                  variant="danger"
-                  className="tw-rounded-full tw-inline-block tw-w-11/12 tw-mt-6"
-                  onClick={() => router.back()}
+                <div
+                  className="tw-flex tw-text-white  tw-w-11/12 tw-mt-4  tw-justify-center tw-cursor-pointer"
+                  onClick={() => router.push("/")}
                 >
-                  Go Back
-                </Button>
+                  <ArrowBackIcon fontSize="medium" />
+                  <p className="tw-ml-4 tw-font-bold tw-text-xl">
+                    Back to Home
+                  </p>
+                </div>
               </div>
             </form>
           </div>

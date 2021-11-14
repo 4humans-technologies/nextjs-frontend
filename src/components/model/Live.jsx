@@ -1,5 +1,3 @@
-import Header from "../Mainpage/Header"
-import SecondHeader from "../Mainpage/SecondHeader"
 import Sidebar from "../Mainpage/Sidebar"
 import React, {
   useReducer,
@@ -9,27 +7,21 @@ import React, {
   useCallback,
 } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
 import { Button } from "react-bootstrap"
-import Footer from "../Mainpage/Footer"
 
 import PublicChat from "./PublicChat"
-import PrivateChat from "./PrivateChat"
-import LivePeople from "./LivePeople"
+
 import AgoraRTC from "agora-rtc-sdk-ng"
 import useAgora from "../../hooks/useAgora" //using agora from Hooks
 import VideoPlayer from "../UI/VideoPlayer"
-import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
 import { useAuthContext } from "../../app/AuthContext"
 import { useAuthUpdateContext } from "../../app/AuthContext"
-import Slider from "@material-ui/core/Slider"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { useRouter } from "next/router"
 import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
 import io from "../../socket/socket"
-import Showcontroler from "./VideoStreaming/Showcontroler"
 import Videoshowcontroller from "./VideoStreaming/Videoshowcontroller"
 import LiveTvIcon from "@material-ui/icons/LiveTv"
 import { useSocketContext } from "../../app/socket/SocketContext"
@@ -40,7 +32,6 @@ import MicIcon from "@material-ui/icons/Mic"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
-import CallEndDetails from "../Call/CallEndDetails"
 import PrivateChatWrapper from "../PrivateChat/PrivateChatWrapper"
 
 // Replace with your App ID.
@@ -263,7 +254,6 @@ function Live() {
     ctx.loadedFromLocalStorage,
     goneLiveOnce,
   ])
-
 
   useEffect(() => {
     if (joinState && !callOnGoing) {
@@ -557,7 +547,7 @@ function Live() {
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div>
-      <Header />
+      {/* <Header /> */}
       {pendingCallRequest.pending && (
         <div className="tw-px-6 tw-py-4 tw-text-white-color tw-font-semibold tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
           <div className="tw-flex tw-justify-center tw-items-center">
@@ -896,7 +886,7 @@ function Live() {
         </div>
       </div>
       <Videoshowcontroller />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   ) : (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">

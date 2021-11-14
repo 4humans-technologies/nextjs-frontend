@@ -486,22 +486,6 @@ function ViewerScreen(props) {
     setUpCallListeners,
   ])
 
-  /**
-   * commented for client presentation only it's working
-   */
-
-  // useEffect(() => {
-  //   const socket = io.getSocket()
-  //   if (socketCtx.setSocketSetupDone) {
-  //     if (!socket.hasListeners("model-call-end-request-init-received")) {
-  //       socket.off("model-call-end-request-init-received")
-  //     }
-  //     if (!socket.hasListeners("model-call-end-request-finished")) {
-  //       socket.off("model-call-end-request-finished")
-  //     }
-  //   }
-  // }, [socketCtx.setSocketSetupDone])
-
   /* handle call end */
   const handleCallEnd = async () => {
     if (pendingCallEndRequest) {
@@ -544,19 +528,6 @@ function ViewerScreen(props) {
         if (data.wasFirst === "yes") {
           // spinnerCtx.setShowSpinner(false, "Please wait...")
           sessionStorage.setItem("callEndDetails", JSON.stringify(data))
-          // modalCtx.showModalWithContent(
-          //   <CallEndDetails
-          //     dateTime={data.dateTime}
-          //     viewerName={data.name}
-          //     totalCharges={data.totalCharges}
-          //     currentWalletAmount={data.currentAmount}
-          //     callType={data.callType}
-          //     callDuration={data.callDuration}
-          //     theCall={data.theCall}
-          //     totalCharges={data.totalCharges}
-          //     userType="Viewer"
-          //   />
-          // )
         }
         setPendingCallEndRequest(false)
         setCallOnGoing(false)

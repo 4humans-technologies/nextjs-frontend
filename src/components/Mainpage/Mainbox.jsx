@@ -32,10 +32,10 @@ function Mainbox(props) {
         href={props.parent === "index" ? `/view-stream/${props.modelId}` : "/"}
         // className="tw-cursor-pointer"
       >
-        <span className="tw-cursor-pointer tw-w-[211px] tw-h-[211px] tw-relative ">
+        <span className="tw-cursor-pointer  tw-relative ">
           <img
             src={imageUrl}
-            className="tw-object-cover tw-object-center tw-rounded-t"
+            className="tw-object-cover tw-object-center tw-rounded-t   tw-w-[211px]  tw-h-[211px]"
             alt=""
           />
 

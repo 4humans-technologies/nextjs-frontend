@@ -1,7 +1,5 @@
-import { useRouter } from "next/router"
 import React, { useState } from "react"
-import Footer from "../../components/Mainpage/Footer"
-import Header from "../../components/Mainpage/Header"
+
 import Sidebar from "../../components/Mainpage/Sidebar"
 import ModelProfile from "../../components/model/ModelProfile"
 import Recommendation from "../../components/ViewerScreen/Recommendation"
@@ -13,7 +11,7 @@ function ViewModelStream() {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <Sidebar />
       <LiveScreen
         setModelProfileData={setModelProfileData}
@@ -52,7 +50,7 @@ function ViewModelStream() {
       )}
       {/* <CallEndDetails /> */}
       <Recommendation parent={"viewerScreen"} />
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }
