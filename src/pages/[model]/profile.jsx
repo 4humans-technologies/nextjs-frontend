@@ -1,6 +1,7 @@
 import React from "react"
-import Profile from "../../components/model/Profile"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+
+const Profile = dynamic(() => import("../../components/model/Profile"))
 
 function ModelProfile() {
   const user = useAuthContext()
