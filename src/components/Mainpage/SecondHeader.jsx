@@ -17,7 +17,8 @@ function SecondHeader() {
     if (
       router.pathname.includes("view-stream") ||
       router.pathname.includes("goLive") ||
-      router.pathname.includes("/user/[name]")
+      router.pathname.includes("/user/[name]") ||
+      router.pathname.includes("/profile")
     ) {
       setIsstream(true)
     } else {

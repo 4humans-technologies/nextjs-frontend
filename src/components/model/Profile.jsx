@@ -51,7 +51,7 @@ function Profile() {
 
   function openVideoboxOnSlide(number) {
     setVideoboxController({
-      toggler: !lightboxController.toggler,
+      toggler: !videoboxController.toggler,
       slide: number,
     })
   }
@@ -201,15 +201,35 @@ function Profile() {
   // useEffect to make  button appear when change in information takes place
 
   // This will change data and fecth data and send to uper
+  const actionArray = []
+  useEffect(() => {
+    if (authContext.loadedFromLocalStorage === true) {
+      fetch("/api/website/stream/get-model-tipmenu-actions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          modelId: localStorage.getItem("relatedUserId"),
+        }),
+      })
+        .then((resp) => resp.json())
+        .then((data) =>
+          data.tips.map((item) =>
+            actionArray.push({ action: item.action, price: item.price })
+          )
+        )
+    }
+    // console.log(actionArray.map((item) => item))
+  }, [authContext.loadedFromLocalStorage])
+  console.log(actionArray.map((item) => item["action"]))
   const saveData = () => {
     const allInputs = document.querySelectorAll("#action-form input")
-    const actionArray = []
     for (let index = 0; index < allInputs.length; index += 2) {
       const action = allInputs[index].value
       const actionValue = allInputs[index + 1].value
       actionArray.push({ action: action, price: actionValue })
     }
-
     fetch("/api/website/profile/update-model-tipmenu-actions", {
       method: "POST",
       headers: {
@@ -673,17 +693,31 @@ function Profile() {
 
                 {/* file */}
               </div>
-
-              {authContext.user.user.relatedUser?.publicVideos.map(
-                (image, index) => (
-                  <div className=" tw-mb-4" key={index}>
-                    <img
-                      src={image}
-                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                    />
-                  </div>
-                )
-              )}
+              <FsLightbox
+                toggler={videoboxController.toggler}
+                sources={authContext.user.user.relatedUser.publicVideos.map(
+                  (url) => {
+                    return <img src={url} />
+                  }
+                )}
+                slide={videoboxController.slide}
+              />
+              {authContext.user.user.relatedUser
+                ? authContext.user.user.relatedUser.publicVideos.map(
+                    (image, index) => (
+                      <div
+                        className=" tw-mb-4 tw-cursor-pointer"
+                        key={index}
+                        onClick={() => openVideoboxOnSlide(index + 1)}
+                      >
+                        <img
+                          src={image}
+                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                        />
+                      </div>
+                    )
+                  )
+                : null}
             </div>
           </div>
           {/* ---------------------------------------------------- */}
@@ -705,11 +739,12 @@ function Profile() {
                     >
                       <input
                         className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
-                        placeholder={index}
+                        placeholder="Actions"
                       />
                       <input
                         className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
-                        placeholder={dynamicData}
+                        placeholder="Price"
+                        type={Number}
                       />
                       {/* Amazing ninja technique for dom menupulation */}
                       <ClearIcon
