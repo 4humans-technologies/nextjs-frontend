@@ -11,7 +11,9 @@ import {
   CoverUpdate,
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
+
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import FsLightbox from "fslightbox-react"
 // import { SRLWrapper } from "simple-react-lightbox"
 // import Image from "next/image"
 // ========================================================
@@ -23,11 +25,36 @@ function Profile() {
   const modalCtx = modalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
-
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
   })
+
+  // this is for image uplode
+  const [lightboxController, setLightboxController] = useState({
+    toggler: false,
+    slide: 1,
+  })
+
+  function openLightboxOnSlide(number) {
+    setLightboxController({
+      toggler: !lightboxController.toggler,
+      slide: number,
+    })
+  }
+
+  // This is for videos uplode
+  const [videoboxController, setVideoboxController] = useState({
+    toggler: false,
+    slide: 1,
+  })
+
+  function openVideoboxOnSlide(number) {
+    setVideoboxController({
+      toggler: !lightboxController.toggler,
+      slide: number,
+    })
+  }
 
   const callChangeHandler = (e) => {
     const { name, value } = e.target
@@ -206,7 +233,7 @@ function Profile() {
     profileImage = authContext.user.user.relatedUser.profileImage
     coverImage = authContext.user.user.relatedUser.coverImage
   }
-
+  let arr = []
   return (
     <div>
       <div
@@ -576,11 +603,24 @@ function Profile() {
                 </div>
 
                 {/* file */}
+                <FsLightbox
+                  toggler={lightboxController.toggler}
+                  sources={authContext.user.user.relatedUser.publicImages.map(
+                    (url) => {
+                      return <img src={url} />
+                    }
+                  )}
+                  slide={lightboxController.slide}
+                />
               </div>
               {authContext.user.user.relatedUser
                 ? authContext.user.user.relatedUser.publicImages.map(
-                    (image) => (
-                      <div className=" tw-mb-4" key={image}>
+                    (image, index) => (
+                      <div
+                        className=" tw-mb-4 tw-cursor-pointer"
+                        key={index}
+                        onClick={() => openLightboxOnSlide(index + 1)}
+                      >
                         <img
                           src={image}
                           className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
@@ -633,14 +673,17 @@ function Profile() {
 
                 {/* file */}
               </div>
-              {authContext.user.user.relatedUser?.publicVideos.map((image) => (
-                <div className=" tw-mb-4" key={image}>
-                  <img
-                    src={image}
-                    className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                  />
-                </div>
-              ))}
+
+              {authContext.user.user.relatedUser?.publicVideos.map(
+                (image, index) => (
+                  <div className=" tw-mb-4" key={index}>
+                    <img
+                      src={image}
+                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                    />
+                  </div>
+                )
+              )}
             </div>
           </div>
           {/* ---------------------------------------------------- */}
