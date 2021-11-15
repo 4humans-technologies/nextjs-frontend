@@ -197,13 +197,9 @@ function Profile() {
     localStorage.setItem("user", JSON.stringify(store))
   }
 
-  // console.log(modelDetails.model)
-  // useEffect to make  button appear when change in information takes place
-
-  // This will change data and fecth data and send to uper
-  const actionArray = []
   useEffect(() => {
     if (authContext.loadedFromLocalStorage === true) {
+      let arr = []
       fetch("/api/website/stream/get-model-tipmenu-actions", {
         method: "POST",
         headers: {
@@ -214,16 +210,23 @@ function Profile() {
         }),
       })
         .then((resp) => resp.json())
-        .then((data) =>
+        .then((data) => {
           data.tips.map((item) =>
-            actionArray.push({ action: item.action, price: item.price })
+            arr.push({ action: item.action, price: item.price })
           )
-        )
+          setDynamicData(arr)
+        })
     }
-    // console.log(actionArray.map((item) => item))
   }, [authContext.loadedFromLocalStorage])
-  console.log(actionArray.map((item) => item["action"]))
+
+  // for the starting the
+
+  {
+    dynamicData.map((item) => console.log(item))
+  }
+
   const saveData = () => {
+    const actionArray = []
     const allInputs = document.querySelectorAll("#action-form input")
     for (let index = 0; index < allInputs.length; index += 2) {
       const action = allInputs[index].value
@@ -564,19 +567,6 @@ function Profile() {
                   <span className="tw-self-center">Stars</span>
                 </div>
               </Card>
-              <Card>
-                <div className="tw-flex tw-justify-between">
-                  <h2>Earning</h2>
-                  <div className="help_1">
-                    <HelpOutlineIcon />
-                    <p className="help_text_1 tw-hidden">Hello bro</p>
-                  </div>
-                </div>
-                <div className="tw-flex tw-mt-4 tw-text-center">
-                  <h1 className="tw-font-extrabold tw-text-4xl">123</h1>
-                  <span className="tw-self-center">Token</span>
-                </div>
-              </Card>
             </div>
             {/* Call History */}
             {/* give width and apply scroll-y this is still not implimented */}
@@ -721,6 +711,8 @@ function Profile() {
             </div>
           </div>
           {/* ---------------------------------------------------- */}
+
+          {console.log(dynamicData)}
           <div>
             <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
               <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
@@ -728,7 +720,7 @@ function Profile() {
               </h1>
               <form
                 id="action-form"
-                className="tw-max-h-64  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
+                className="tw-max-h-64 tw-min-h-[8rem]  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
               >
                 {dynamicData.map((item, index) => {
                   return (
@@ -740,11 +732,15 @@ function Profile() {
                       <input
                         className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
                         placeholder="Actions"
+                        value={item.action}
+                        required={true}
                       />
                       <input
                         className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
                         placeholder="Price"
                         type={Number}
+                        value={item.price}
+                        required={true}
                       />
                       {/* Amazing ninja technique for dom menupulation */}
                       <ClearIcon
@@ -759,7 +755,12 @@ function Profile() {
               </form>
               <Button
                 className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
-                onClick={() => setDynamicData((prev) => [...prev, 1])}
+                onClick={() =>
+                  setDynamicData((prev) => [
+                    ...prev,
+                    { action: null, price: null },
+                  ])
+                }
               >
                 add new action
               </Button>
