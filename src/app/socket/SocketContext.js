@@ -18,7 +18,6 @@ export const SocketContextProvider = ({ children }) => {
   const [socketSetupDone, setSocketSetupDone] = useState(false)
 
   const initSocket = () => {
-    //debugger
     let url
     if (window.location.hostname.includes("dreamgirllive")) {
       /* should use hosted backend */
@@ -27,8 +26,8 @@ export const SocketContextProvider = ({ children }) => {
       /* should use local or imageDomainUrl */
       url = imageDomainURL
     }
-    const socket = io.connect(url)
-    console.log("Initial socket id 🔴🔴", socket.id)
+    // const socket = io.connect(url)
+    const socket = io.connect(imageDomainURL)
     if (!socketSetupDone) {
       setSocketSetupDone(true)
     }
@@ -41,32 +40,34 @@ export const SocketContextProvider = ({ children }) => {
         // alert("put me in room")
         socket.emit("putting-me-in-these-rooms", socketRooms, (response) => {
           if (response.status === "ok") {
-            setIsConnected(true)
+            // setIsConnected(true)
           }
         })
       } else {
         /* if no rooms join beforehand, directly connect */
-        setIsConnected(true)
+        sessionStorage.setItem("socket-rooms", "[]")
+        // setIsConnected(true)
       }
+    })
+
+    socket.on("reconnect", (attempt) => {
+      /* connect event is also fired when reconnect is fired hance
+       *  getting my work done from the connect event.
+       */
+      console.log(`reconnect attempt number ${attempt}`)
     })
 
     socket.on("disconnect", (reason) => {
       console.log("socket disconnected! due to >>>", reason)
       localStorage.removeItem("socketId")
-      setIsConnected(false)
-      if (reason === "transport close") {
-        setTimeout(() => {
-          io.connect()
-        })
-      }
-    })
-
-    socket.on("connect_failed", () => {
-      console.log("socket connect_failed!")
+      // setIsConnected(false)
     })
 
     socket.on("connect_error ", (err) => {
-      alert("Error! from server " + err.message)
+      alert("Could not connect to server... " + err.message)
+      setTimeout(() => {
+        io.connect(url)
+      })
     })
 
     /* Global Listeners */

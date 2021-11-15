@@ -40,7 +40,7 @@ const AuthUpdateContext = createContext({
 
 let numberOfInits = 0
 export const AuthContextProvider = ({ children }) => {
-  console.log("Again initializing AUTHCONTEXT => ", numberOfInits)
+  console.log("Again initializing AUTHCONTEXT => ", ++numberOfInits)
   const [authState, setAuthState] = useState(initialState)
   const router = useRouter()
 
@@ -86,9 +86,21 @@ export const AuthContextProvider = ({ children }) => {
       jwtToken: "",
       rtcToken: "",
     })
-    io.getSocket().close()
-    io.getSocket().open()
-    router.replace("/")
+
+    // io.getSocket().close()
+    // io.getSocket().open()
+
+    io.getSocket().emit(
+      "update-client-info",
+      {
+        action: "logout",
+      },
+      (result) => {
+        if (result.ok) {
+          router.replace("/")
+        }
+      }
+    )
   }
 
   const readFromLocalStorage = () => {

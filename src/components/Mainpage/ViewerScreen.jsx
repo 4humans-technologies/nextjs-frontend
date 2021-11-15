@@ -69,6 +69,7 @@ const callTimer = {
   value: 0,
   timerElement: null,
 }
+
 function ViewerScreen(props) {
   const container = useRef()
 
@@ -79,6 +80,11 @@ function ViewerScreen(props) {
   const modalCtx = useModalContext()
 
   const [callEndDetails, setCallEndDetails] = useState(null)
+  const [othersCall, setOthersCall] = useState({
+    rejectedMyCall: null,
+    acceptedOthersCall: null,
+    othersUsername: null,
+  })
 
   const {
     modelProfileData,
@@ -149,6 +155,7 @@ function ViewerScreen(props) {
           } else {
             url = "/api/website/stream/re-join-models-currentstream-unauthed"
           }
+
           fetch(url, {
             method: "POST",
             headers: {
@@ -186,7 +193,7 @@ function ViewerScreen(props) {
         }
       }
     }
-  }, [ctx.isLoggedIn, io.getSocket()])
+  }, [ctx.isLoggedIn])
 
   useEffect(() => {
     /* listen for stream end events */
@@ -207,9 +214,7 @@ function ViewerScreen(props) {
           sessionStorage.setItem(
             "socket-rooms",
             JSON.stringify(
-              socketRooms.filter(
-                (room) => room.endsWith("-public") || room.endsWith("-private")
-              )
+              socketRooms.filter((room) => !room.endsWith("-public"))
             )
           )
         })
@@ -220,7 +225,7 @@ function ViewerScreen(props) {
         }
       }
     }
-  }, [io.getSocket(), setCallOnGoing])
+  }, [setCallOnGoing])
 
   useEffect(() => {
     //debugger
@@ -237,7 +242,11 @@ function ViewerScreen(props) {
   /* http fetch request for rtc token */
   useEffect(() => {
     //debugger
-    if (socketCtx.setSocketSetupDone && !tokenRequestDoneOnce) {
+    if (
+      socketCtx.setSocketSetupDone &&
+      !tokenRequestDoneOnce &&
+      ctx.loadedFromLocalStorage
+    ) {
       /* on first load fetch rtcToken and join */
       tokenRequestDoneOnce = true
       if (ctx.isLoggedIn === true) {
@@ -365,6 +374,7 @@ function ViewerScreen(props) {
     window.location.pathname,
     socketCtx.setSocketSetupDone,
     tokenRequestDoneOnce,
+    ctx.loadedFromLocalStorage,
   ])
 
   const offCallListeners = useCallback(() => {
@@ -385,7 +395,7 @@ function ViewerScreen(props) {
       /* model has put call end request before you */
       if (!socket.hasListeners("model-call-end-request-init-received")) {
         socket.on("model-call-end-request-init-received", (data) => {
-          alert("model ended call")
+          // alert("model ended call")
           setPendingCallEndRequest(true)
           spinnerCtx.setShowSpinner(true, "Processing transaction...")
           /**
@@ -432,7 +442,7 @@ function ViewerScreen(props) {
       const socket = io.getSocket()
       if (!socket.hasListeners("model-call-request-response-received")) {
         socket.on("model-call-request-response-received", async (data) => {
-          alert("model response received")
+          // alert("model response received")
           socket.emit("add-oncall-status-on-viewer-socket-client", {
             callId: data.callId,
           })
@@ -450,16 +460,21 @@ function ViewerScreen(props) {
               /* unsubscribe stream and close connection to agora */
               localStorage.removeItem("rtcToken")
               localStorage.removeItem("rtcTokenExpireIn")
+
               if (pendingCallRequest) {
-                alert(
-                  "Model rejected your call request and accepted other viewer's call request, Good luck next time 💘💘"
-                )
+                setOthersCall({
+                  acceptedOthersCall: true,
+                  othersUsername: data.username,
+                  rejectedMyCall: true,
+                })
+                setPendingCallRequest(false)
               } else {
-                alert(
-                  "Model accepted " +
-                    data?.username +
-                    " your call Request, streaming will be ended now."
-                )
+                setOthersCall({
+                  acceptedOthersCall: true,
+                  othersUsername: data.username,
+                  rejectedMyCall: false,
+                })
+                setPendingCallRequest(false)
               }
               /* 🔻🔻leave al socket rooms also 🔺🔺 */
               leaveDueToPrivateCall()
@@ -484,10 +499,8 @@ function ViewerScreen(props) {
             }
           } else {
             /* clear call type and pending call */
-            alert("Model rejected your call Request")
             setPendingCallRequest(false)
-            setCallOnGoing(false)
-            alert("Model rejected call request!")
+            // setCallOnGoing(false)
           }
         })
       }
@@ -614,9 +627,14 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* on "any-call" with model */}
-      {callOnGoing && callType === "videoCall" && remoteUsers?.length > 0 ? (
+      {callOnGoing &&
+      callType &&
+      !isModelOffline &&
+      remoteUsers?.length === 1 ? (
         <VideoPlayer
-          videoTrack={remoteUsers[0]?.videoTrack}
+          videoTrack={
+            callType === "videoCall" ? remoteUsers[0]?.videoTrack : null
+          }
           audioTrack={remoteUsers[0].audioTrack} //error of session storage is going
           playAudio={true}
         />
@@ -719,7 +737,7 @@ function ViewerScreen(props) {
             <CallEndIcon fontSize="medium" style={{ color: "red" }} />
           </button>
           {localAudioTrack && (
-            <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+            <button className="tw-inline-block tw-z-[390] tw-px-2">
               {localAudioTrack.muted ? (
                 <MicIcon
                   fontSize="medium"

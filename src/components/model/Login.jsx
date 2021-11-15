@@ -68,9 +68,11 @@ function Login() {
             streamRoom: data.streamRoom,
           })
           //debugger
-          sessionStorage.clear()
-          io.getSocket().close()
-          io.getSocket().open()
+          // sessionStorage.clear()
+
+          /* obselete now will update client info on the server itself */
+          // io.getSocket().close()
+          // io.getSocket().open()
 
           // 👇👇 abhi ke liye is feature ko pause pe rakhaa hai bro
           // router.push(ctx.loginSuccessUrl)

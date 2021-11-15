@@ -47,6 +47,12 @@ function LiveScreen(props) {
   const modalCtx = useModalContext()
   const authCtx = useAuthContext()
   const updateCtx = useAuthUpdateContext()
+  const router = useRouter()
+
+  if (authCtx.isLoggedIn && authCtx.user.userType === "Model") {
+    alert("currently only viewers are able to enter into the livestream!")
+    router.replace("/")
+  }
 
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [tipMenuActions, setTipMenuActions] = useState([])
@@ -279,7 +285,7 @@ function LiveScreen(props) {
   return (
     <>
       <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
-        <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-6/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
+        <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-8/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
 
           <ViewerScreen
@@ -408,7 +414,7 @@ function LiveScreen(props) {
             </div>
           ) : null}
         </div>
-        <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-6/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+        <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-4/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
           <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative">
             <button
               className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"

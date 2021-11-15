@@ -119,9 +119,24 @@ function Registration() {
             },
             jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
           })
-          sessionStorage.clear()
-          io.getSocket().close()
-          io.getSocket().open()
+          // sessionStorage.clear()
+
+          /* obselete now will update client info on the server itself */
+          // io.getSocket().close()
+          // io.getSocket().open()
+
+          /*  */
+          // io.getSocket().emit("update-client-info", {
+          //   action: "login",
+          //   jwtToken: data.token,
+          //   newData: {
+          //     userId: data.userId,
+          //     relatedUserId: data.model._id,
+          //     authed: true,
+          //     userType: data.userType,
+          //   },
+          // })
+
           router.push("/document")
         } else {
           alert("code not redeemed! ☹☹")
@@ -130,7 +145,16 @@ function Registration() {
       .catch((err) => {
         if (err.message && err?.data[0]) {
           /* validator.js error */
-          setFormError(err.data[0].msg)
+          const value = err.data[0].value
+          const param = err.data[0].param
+          if (value.trim() !== "") {
+            setFormError(`${err.data[0].msg} of field ${param} : ${value}`)
+          } else {
+            setFormError(
+              `${param} "CANNOT BE EMPTY", please enter a valid value`
+            )
+          }
+          document.getElementById("action-btn").scrollIntoView()
         } else if (err.message && !err?.data[0]) {
           setFormError(err.message)
         }
@@ -149,7 +173,7 @@ function Registration() {
           />
         </Link>
       </div>
-      <div className="tw-flex-shrink-0 tw-flex-grow-0  ">
+      <div className="tw-flex-shrink-0 tw-flex-grow-0">
         <div className="tw-grid sm:tw-grid-cols-2 tw-grid-cols-1  tw-grid-rows-1 sm:tw-w-full   tw-h-full tw-w-[100vw]  ">
           <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-10 tw-pb-10 tw-rounded-md">
             <h1 className="tw-text-3xl tw-font-medium tw-text-white-color tw-mb-4 tw-text-center tw-ml-3 tw-z-20">
@@ -230,6 +254,7 @@ function Registration() {
               <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
                 <input
                   type="file"
+                  required
                   name="profileImage"
                   id="image"
                   accept="image/*"
@@ -260,7 +285,7 @@ function Registration() {
                 </select>
               </div>
               {formError && (
-                <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[260px]">
+                <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[260px] tw-text-center tw-mx-auto">
                   <div className="tw-text-white-color tw-text-sm">
                     <ErrorIcon fontSize="small" />{" "}
                     <span className="">{formError}</span>
@@ -272,6 +297,7 @@ function Registration() {
                   variant="danger"
                   className="tw-rounded-full tw-inline-block tw-w-11/12"
                   type="submit"
+                  id="action-btn"
                 >
                   Register
                 </Button>

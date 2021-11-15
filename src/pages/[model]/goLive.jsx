@@ -30,8 +30,8 @@ function GoLive() {
     </div>
   ) : (
     <div className="tw-grid tw-place-items-center tw-min-h-screen">
-      <h1 className="tw-text-lg tw-font-medium tw-font-mono">
-        You Not LoggedIn As Model, Redirecting To The Login Screen...
+      <h1 className="tw-text-lg tw-font-medium text-center">
+        You Are Not LoggedIn As Model, Redirecting To The Login Screen...
       </h1>
     </div>
   )

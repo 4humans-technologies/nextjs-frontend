@@ -12,8 +12,8 @@ function ViewerToken() {
   const authCtx = useAuthContext()
 
   const handleRedeemRequest = () => {
-    if (!authCtx.isLoggedIn || authCtx.user.userType !== "viewer") {
-      return alert("Please login first!")
+    if (!authCtx.isLoggedIn || authCtx.user.userType !== "Viewer") {
+      return alert("Please login first! " + authCtx.user.userType)
     }
     fetch("/api/website/coupon/redeem-coupon-viewer", {
       method: "POST",
@@ -40,15 +40,26 @@ function ViewerToken() {
               },
             })
           )
-          authUpdateCtx.updateNestedPaths({
-            ...lcUser,
-            relatedUser: {
-              ...lcUser.relatedUser,
-              wallet: {
-                ...data.wallet,
+          setBuyStatus({
+            message: data.message,
+            requestedToBuy: true,
+            buySuccess: true,
+          })
+          authUpdateCtx.updateNestedPaths((prev) => ({
+            ...prev,
+            user: {
+              ...prev.user,
+              user: {
+                ...lcUser,
+                relatedUser: {
+                  ...lcUser.relatedUser,
+                  wallet: {
+                    ...data.wallet,
+                  },
+                },
               },
             },
-          })
+          }))
           alert("Coins redeem successful 😀😀")
         }
       })
@@ -59,7 +70,7 @@ function ViewerToken() {
     <div>
       <div className="tw-text-white tw-bg-first-color tw-h-screen tw-pt-[10rem]">
         <Header />
-        <div className="tw-text-center tw-mx-auto tw-w-6/12 tw-bg-second-color tw-rounded-md">
+        <div className="tw-text-center md:tw-mx-auto tw-w-full tw-mx-3 md:tw-w-6/12 tw-bg-second-color tw-rounded-md">
           <h1 className="tw-font-bold tw-text-xl tw-pt-4 tw-text-center tw-mb-4">
             Redeem Code
           </h1>
@@ -69,11 +80,14 @@ function ViewerToken() {
               name="payment"
               id="payment"
               placeholder="Enter your coupon code "
-              className="tw-rounded-full tw-w-96 tw-h-8  tw-outline-none tw-text-black tw-px-4 tw-font-medium tw-py-2"
+              className="tw-rounded tw-w-96 tw-h-8  tw-outline-none tw-text-black tw-px-4 tw-font-medium tw-py-2"
             />
           </div>
           <div className="">
-            <button className="tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-mt-10 tw-rounded-full tw-mb-8">
+            <button
+              onClick={handleRedeemRequest}
+              className="tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-mt-10 tw-rounded-full tw-mb-8"
+            >
               Redeem Code
             </button>
           </div>
@@ -93,8 +107,8 @@ function ViewerToken() {
         <h1 className="tw-font-bold tw-text-xl tw-pt-4 tw-text-center tw-mb-4">
           Buy New Coupon Code
         </h1>
-        <div className="tw-text-center tw-mx-auto tw-w-6/12 tw-bg-second-color tw-rounded-md tw-py-4">
-          <p className="tw-text-center tw-text-white">
+        <div className="tw-text-center md:tw-mx-auto tw-w-full tw-mx-3 md:tw-w-6/12 tw-bg-second-color tw-rounded-md tw-py-4">
+          <p className="tw-text-center tw-text-white tw-mb-3">
             You can Buy Coins Via Google Pay, Phone Pay, PayTM, UPI
           </p>
           <a

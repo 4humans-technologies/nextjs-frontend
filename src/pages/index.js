@@ -79,14 +79,14 @@ const Home = () => {
   }, [authUpdateCtx.updateViewer])
 
   const [boxGroupsData, setBoxGroupData] = useState([
-    {
-      title: "This just show the layout",
-      data: data.slice(0, 7),
-    },
-    {
-      title: "Check the layout",
-      data: data.slice(0, 7),
-    },
+    // {
+    //   title: "This just show the layout",
+    //   data: data.slice(0, 7),
+    // },
+    // {
+    //   title: "Check the layout",
+    //   data: data.slice(0, 7),
+    // },
   ])
 
   useEffect(() => {

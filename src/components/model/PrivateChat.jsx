@@ -87,6 +87,7 @@ function PrivateChat(props) {
         })
         return { ...prev }
       })
+      props.scrollOnChat()
     }
     document.addEventListener("send-private-message", pushPrivateChatLocally)
     return () => {
@@ -163,6 +164,7 @@ function PrivateChat(props) {
               prev.highLightChat = false
               return { ...prev }
             })
+            props.scrollOnChat()
           } else {
             if (!prev.highLightChat && prev.nos === 0) {
               /* no new chat beforehand, add new message tag also */

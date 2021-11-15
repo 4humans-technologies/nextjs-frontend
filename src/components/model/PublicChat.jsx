@@ -41,7 +41,7 @@ function GiftSuperChat(props) {
 function CoinSuperChat(props) {
   return (
     <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 coin-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
-      <div className="tw-flex-grow-0 tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-mr-auto">
+      <div className="tw-flex-grow-0 tw-flex-shrink tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-mr-auto tw-flex tw-items-center tw-justify-start">
         <Image
           src={coinsImage}
           width={25}
@@ -50,6 +50,9 @@ function CoinSuperChat(props) {
           objectPosition="center"
           className="tw-rounded tw-mr-auto"
         />
+        <span className="tw-pl-3 tw-text-lg tw-font-semibold tw-text-yellow-500">
+          {props.amountGiven} coins
+        </span>
         {/* <p className="tw-mt-1 tw-font-semibold tw-text-yellow-400">
           <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
             {props.displayName}:
@@ -59,7 +62,10 @@ function CoinSuperChat(props) {
       </div>
       <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
         <div className="tw-flex-grow tw-pr-2">
-          <span className="user-message tw-text-sm tw-font-normal">
+          <span
+            className="user-message tw-text-sm tw-font-normal hover:tw-underline tw-cursor-pointer"
+            onClick={props.addAtTheRate}
+          >
             {props.message}
           </span>
         </div>
@@ -89,7 +95,10 @@ function TipMenuActivityRequest(props) {
     <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tipmenu-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
       <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
         <div className="tw-flex-grow tw-pr-2">
-          <span className="user-message tw-text-sm tw-capitalize tw-font-semibold">
+          <span
+            className="user-message tw-text-sm tw-capitalize tw-font-semibold tw-cursor-pointer"
+            onClick={props.addAtTheRate}
+          >
             {props.message}
           </span>
         </div>
@@ -143,6 +152,7 @@ const initialMessages = [
 ]
 
 let chatIndex = 0
+let messageShowed = false
 function PublicChatBox(props) {
   let pageUrl
   if (typeof window !== "undefined") {
@@ -160,24 +170,27 @@ function PublicChatBox(props) {
       authCtx.isLoggedIn &&
       authCtx.user.userType === "Viewer"
     ) {
-      setTimeout(() => {
-        setChatMessages((prevChats) => {
-          const newChats = [
-            ...prevChats,
-            {
-              type: "model-public-message",
-              index: chatIndex,
-              message: authCtx.isLoggedIn
-                ? `Hello my sweetheart ${
-                    authCtx.user.user.relatedUser.name.split(" ")[0]
-                  } 💘😘, welcome to me stream, check the tip menu (🔝) to see what can i do for you sweetheart 💘💘.`
-                : "Hello dear 💘, welcome to my stream i here to entertain you... 😘😘",
-            },
-          ]
-          chatIndex++
-          return newChats
-        })
-      }, [1000])
+      if (!messageShowed) {
+        messageShowed = true
+        setTimeout(() => {
+          setChatMessages((prevChats) => {
+            const newChats = [
+              ...prevChats,
+              {
+                type: "model-public-message",
+                index: chatIndex,
+                message: authCtx.isLoggedIn
+                  ? `Hello my sweetheart ${
+                      authCtx.user.user.relatedUser.name.split(" ")[0]
+                    } 💘😘, welcome to me stream, check the tip menu (🔝) to see what can i do for you sweetheart 💘💘.`
+                  : "Hello dear 💘, welcome to my stream i here to entertain you... 😘😘",
+              },
+            ]
+            chatIndex++
+            return newChats
+          })
+        }, [1000])
+      }
     }
   }, [isModelOffline, authCtx.isLoggedIn, authCtx.user.userType])
 
@@ -324,6 +337,7 @@ function PublicChatBox(props) {
       return () => {
         //debugger
         // alert("getting out of rooms")
+        // alert("leaving public rooms..")
         const socket = io.getSocket()
         const socketRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
@@ -416,6 +430,7 @@ function PublicChatBox(props) {
                 giftImageUrl={chat.giftImageUrl}
                 walletCoins={chat.walletCoins}
                 showWallet={authCtx.user.userType === "Model"}
+                addAtTheRate={() => props.addAtTheRate(chat?.username)}
               />
             )
           case "coin-superchat-public":
@@ -427,6 +442,7 @@ function PublicChatBox(props) {
                 amountGiven={chat.amountGiven}
                 walletCoins={chat.walletCoins}
                 showWallet={authCtx.user.userType === "Model"}
+                addAtTheRate={() => props.addAtTheRate(chat?.username)}
               />
             )
           case "viewer-call-request":
@@ -447,6 +463,7 @@ function PublicChatBox(props) {
                 activityPrice={chat.activityPrice}
                 walletCoins={chat.walletCoins}
                 message={`${chat.username} requested activity`}
+                addAtTheRate={() => props.addAtTheRate(chat?.username)}
               />
             )
           default:

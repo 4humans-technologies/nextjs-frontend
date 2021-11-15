@@ -90,6 +90,8 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             }
             //debugger
             return [urlObj.toString(), finalConfig]
+          } else if (url.includes("amazonaws.com")) {
+            spinnerCtx.setShowSpinner(true)
           }
           return [url, config]
         },
@@ -100,8 +102,10 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
         },
         response: function (response) {
           /* Modify the response object */
-          if (response.url.includes("/api/website/")) {
-            //debugger
+          if (
+            response.url.includes("/api/website/") ||
+            response.url.includes("amazonaws.com")
+          ) {
             spinnerCtx.setShowSpinner(false)
             if (!response.ok) {
               return response.json().then((data) => Promise.reject(data))

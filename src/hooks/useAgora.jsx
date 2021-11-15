@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react"
 import AgoraRTC from "agora-rtc-sdk-ng"
+import useSpinnerContext from "../app/Loading/SpinnerContext"
 
-const appId = "ae3edf155f1a4e78a544d125c8f53137"
+const appId = "ee68eb6fcb93426e81c89f5ad6b0401f"
 function useAgora(client, role, callType) {
   // console.log("running useAgora!")
   const [localVideoTrack, setLocalVideoTrack] = useState(null)
@@ -9,6 +10,8 @@ function useAgora(client, role, callType) {
   const [joinState, setJoinState] = useState(false)
   const [remoteUsers, setRemoteUsers] = useState([])
   const [streamOnGoing, setStreamOnGoing] = useState(true)
+
+  const spinnerCtx = useSpinnerContext()
 
   async function createLocalTracks() {
     const tracks = []
@@ -43,23 +46,27 @@ function useAgora(client, role, callType) {
     //debugger
     /* relatedUserId Will Be the > uid */
     console.log("join running..")
-
     if (!client) {
       return
     }
     if (role === "host") {
+      spinnerCtx.setShowSpinner(true, "Going Live...")
       let track = await createLocalTracks(null, {
         optimizationMode: "detail",
         facingMode: "user",
-        encoderConfig: { height: 720, width: 720, frameRate: 23 },
+        encoderConfig: { height: 400, width: 400, frameRate: 23 },
       })
       //debugger
       await client.join(appId, channel, token, uid)
       await client.publish(track)
+      spinnerCtx.setShowSpinner(false, "Please wait...")
       return setJoinState(true)
     }
     // if client
+    // spinnerCtx.setShowSpinner(true, "Connecting...")
     await client.join(appId, channel, token, uid)
+    setJoinState(true)
+    // spinnerCtx.setShowSpinner(false, "Please wait...")
   }
 
   const startLocalCameraPreview = useCallback(async () => {
@@ -82,12 +89,7 @@ function useAgora(client, role, callType) {
     setJoinState(false)
   }, [client])
 
-  async function leaveDueToPrivateCall(username) {
-    alert(
-      "Model has accepted call request by " +
-        username +
-        " ,stream is ended now 🥺🥺"
-    )
+  async function leaveDueToPrivateCall() {
     await client?.leave()
     setRemoteUsers([])
     setJoinState(false)

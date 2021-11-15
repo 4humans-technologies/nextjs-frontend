@@ -12,10 +12,11 @@ import Link from "next/link"
 import io from "../../socket/socket"
 import ErrorIcon from "@material-ui/icons/Error"
 import Header from "./Header"
+import { useSpinnerContext } from "../../app/Loading/SpinnerContext"
 
 function SignUp() {
   const modalCtx = useModalContext()
-
+  const spinnerCtx = useSpinnerContext()
   const [email, setEmail] = useState()
   const [password, setPassword] = useState()
   const [username, setUsername] = useState()
@@ -46,6 +47,7 @@ function SignUp() {
     })
       .then((resp) => resp.json())
       .then((data) => {
+        /* update client info */
         updateCtx.updateViewer({
           rootUserId: data.user._id,
           relatedUserId: data.user.relatedUser._id,
@@ -57,15 +59,20 @@ function SignUp() {
           },
           jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
         })
-        sessionStorage.clear()
-        io.getSocket().close()
-        io.getSocket().open()
+
+        // sessionStorage.clear()
+
+        /* obselete now will update client info on the server itself */
+        // io.getSocket().close()
+        // io.getSocket().open()
+
         router.replace("/")
       })
       .catch((err) => {
         if (err.message && err?.data[0]) {
           /* validator.js error */
-          setFormError(err.data[0].msg)
+          setFormError(`${err.data[0].msg} of field ${param} : ${value}`)
+          document.getElementById("action-btn").scrollIntoView()
         }
         if (err.message && !err?.data[0]) {
           setFormError(err.message)
@@ -158,7 +165,7 @@ function SignUp() {
                   </select>
                 </div>
                 {formError && (
-                  <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[260px]">
+                  <div className="tw-flex tw-flex-col tw-px-6 tw-mt-3 tw-max-w-[260px] tw-mx-auto">
                     <div className="tw-text-white-color tw-text-sm">
                       <ErrorIcon fontSize="small" />{" "}
                       <span className="">{formError}</span>
@@ -170,10 +177,14 @@ function SignUp() {
                     variant="danger"
                     className="tw-rounded-full tw-inline-block tw-w-11/12"
                     type="submit"
+                    id="action-btn"
                   >
                     Register
                   </Button>
-                  <div className="tw-border-t tw-border-second-color tw-my-3 tw-w-full"></div>
+                  <div
+                    className="tw-border-t tw-border-second-color tw-my-3 tw-w-full"
+                    id="separator"
+                  ></div>
                   <Button
                     variant="success"
                     className="tw-rounded-full tw-inline-block tw-w-11/12"

@@ -3,7 +3,7 @@ import HomeIcon from "@material-ui/icons/Home"
 import FavoriteIcon from "@material-ui/icons/Favorite"
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt"
 import HistoryIcon from "@material-ui/icons/History"
-import { useSidebarStatus } from "../../app/Sidebarcontext"
+import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
 import { Button } from "react-bootstrap"
 import { useRouter } from "next/router"
 import ExitToAppIcon from "@material-ui/icons/ExitToApp"
@@ -28,6 +28,7 @@ const data = [
 
 function Sidebar(props) {
   const sidebarStatus = useSidebarStatus()
+  const updateSidebar = useSidebarUpdate()
   const route = useRouter()
 
   const top = `${props.top}rem` || "32rem"
@@ -46,6 +47,10 @@ function Sidebar(props) {
         <Button
           variant="secondary"
           className="tw-w-full tw-text-black tw-font-bold"
+          onClick={() => {
+            route.push("/user/payment")
+            updateSidebar()
+          }}
         >
           Buy Now
         </Button>
@@ -70,7 +75,10 @@ function Sidebar(props) {
         <ExitToAppIcon className="tw-mr-4" />
         <p
           id="sidebar_item_name"
-          onClick={() => route.push("/auth/modelRegisteration")}
+          onClick={() => {
+            route.push("/auth/modelRegisteration")
+            updateSidebar()
+          }}
           className="tw-cursor-pointer"
         >
           Model signup
@@ -82,7 +90,10 @@ function Sidebar(props) {
         <ExitToAppIcon className="tw-mr-4" />
         <p
           id="sidebar_item_name"
-          onClick={() => route.push("/auth/login")}
+          onClick={() => {
+            route.push("/auth/login")
+            updateSidebar()
+          }}
           className="tw-cursor-pointer"
         >
           Model Login

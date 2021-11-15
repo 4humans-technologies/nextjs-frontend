@@ -97,6 +97,7 @@ function Live() {
   const modalCtx = useModalContext()
   const [fullScreen, setFullScreen] = useState(false)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
+
   const [pendingCallRequest, setPendingCallRequest] = useState({
     pending: false,
     callType: "videoCall",
@@ -107,6 +108,7 @@ function Live() {
   const [callOnGoing, setCallOnGoing] = useState(false)
   const [callType, setCallType] = useState("videoCall")
   const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
+  const [muted, setMuted] = useState(false)
 
   /* Ref's */
   const container = useRef()
@@ -132,9 +134,11 @@ function Live() {
     if (localAudioTrack.muted) {
       /* un mute audio */
       localAudioTrack.setMuted(false)
+      setMuted(false)
     } else {
       /* mute the audio */
       localAudioTrack.setMuted(true)
+      setMuted(true)
     }
   }
 
@@ -264,7 +268,6 @@ function Live() {
     goneLiveOnce,
   ])
 
-
   useEffect(() => {
     if (joinState && !callOnGoing) {
       startStreamTimer()
@@ -284,7 +287,7 @@ function Live() {
     if (sessionStorage.getItem("liveNow") === "false") {
       return
     }
-    alert("will end stream now")
+    // alert("will end stream now")
     fetch("/api/website/stream/handle-stream-end", {
       method: "POST",
       cors: "include",
@@ -299,7 +302,7 @@ function Live() {
     })
       .then((res) => res.json())
       .then((data) => {
-        alert(data.message)
+        // alert(data.message)
         sessionStorage.setItem("liveNow", "false")
         sessionStorage.removeItem("streamId")
         setCallOnGoing(false)
@@ -409,9 +412,9 @@ function Live() {
       if (!socket.hasListeners("viewer-call-end-request-init-received")) {
         socket.on("viewer-call-end-request-init-received", (data) => {
           /* viewer has put call end request before you */
-          alert("viewer ended call")
-          spinnerCtx.setShowSpinner(true, "Processing transaction...")
+          // alert("viewer ended call")
           setPendingCallEndRequest(true)
+          spinnerCtx.setShowSpinner(true, "Processing transaction...")
         })
       }
 
@@ -420,12 +423,13 @@ function Live() {
         socket.on("viewer-call-end-request-finished", async (data) => {
           if (data.ended === "ok") {
             sessionStorage.setItem("callEndDetails", JSON.stringify(data))
-            spinnerCtx.setShowSpinner(true, "Processing transaction...")
+            spinnerCtx.setShowSpinner(false, "Processing transaction...")
           }
           setPendingCallEndRequest(false)
           // setCallEndDetails(data.callEndDetails)
           setCallOnGoing(false)
           offCallListeners()
+          spinnerCtx.setShowSpinner(false, "Processing transaction...")
           await leaveAndCloseTracks()
         })
       }
@@ -496,7 +500,7 @@ function Live() {
       const socket = io.getSocket()
       if (!socket.hasListeners("viewer-requested-for-call-received")) {
         socket.on("viewer-requested-for-call-received", (data) => {
-          alert("call request received from viewer!")
+          // alert("call request received from viewer!")
           setPendingCallRequest({
             callType: data.callType,
             pending: true,
@@ -622,14 +626,10 @@ function Live() {
             ) : null}
 
             {/* on call | viewer image */}
-            {callOnGoing &&
-            pendingCallRequest.callType === "videoCall" &&
-            remoteUsers[0] ? (
+            {callOnGoing && callType && remoteUsers[0] ? (
               <VideoPlayer
                 videoTrack={
-                  pendingCallRequest.callType === "videoCall"
-                    ? remoteUsers[0].videoTrack
-                    : null
+                  callType === "videoCall" ? remoteUsers[0].videoTrack : null
                 }
                 audioTrack={remoteUsers[0].audioTrack}
                 playAudio={true}
@@ -637,7 +637,7 @@ function Live() {
             ) : null}
 
             {/* on call | model's image */}
-            {callOnGoing && pendingCallRequest.callType === "videoCall" ? (
+            {callOnGoing && callType === "videoCall" ? (
               <div
                 id="self-video-container"
                 className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"
@@ -664,8 +664,8 @@ function Live() {
                 >
                   <CallEndIcon fontSize="medium" style={{ color: "red" }} />
                 </button>
-                <button className="tw-inline-block tw-mx-2 tw-z-[390]">
-                  {localAudioTrack.muted ? (
+                <button className="tw-inline-block tw-z-[390] tw-px-2">
+                  {!muted ? (
                     <MicIcon
                       fontSize="medium"
                       style={{ color: "white" }}
@@ -674,7 +674,7 @@ function Live() {
                   ) : (
                     <MicOffIcon
                       fontSize="medium"
-                      style={{ color: "white" }}
+                      style={{ color: "red" }}
                       onClick={toggleMuteMic}
                     />
                   )}
@@ -698,10 +698,10 @@ function Live() {
               </div>
             )}
 
-            {!callOnGoing && joinState && localAudioTrack ? (
-              <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-2 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(58,54,54,0.2)] tw-z-[390] tw-backdrop-blur">
-                <button className="tw-inline-block tw-mx-2 tw-z-[390]">
-                  {localAudioTrack.muted ? (
+            {/* {!callOnGoing && joinState && localAudioTrack ? (
+              <div className="tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(58,54,54,0.2)] tw-z-[300] tw-backdrop-blur">
+                <button className="tw-inline-block tw-px-2 tw-z-[390]">
+                  {!muted ? (
                     <MicIcon
                       fontSize="medium"
                       style={{ color: "white" }}
@@ -710,13 +710,13 @@ function Live() {
                   ) : (
                     <MicOffIcon
                       fontSize="medium"
-                      style={{ color: "white" }}
+                      style={{ color: "red" }}
                       onClick={toggleMuteMic}
                     />
                   )}
                 </button>
               </div>
-            ) : null}
+            ) : null} */}
 
             {/* on stream controls */}
             {!callOnGoing && (
@@ -747,10 +747,33 @@ function Live() {
                     </Button>
                   )}
                   {joinState && (
-                    <p
-                      className="tw-px-3 tw-py-1.5 tw-rounded tw-font-semibold tw-bg-[rgba(20,20,20,0.75)] tw-text-white-color"
-                      id="stream-timer"
-                    ></p>
+                    <span className="">
+                      <p
+                        className="tw-px-3 tw-py-1.5 tw-rounded tw-font-semibold tw-bg-[rgba(20,20,20,0.75)] tw-text-white-color"
+                        id="stream-timer"
+                      >
+                        00:00
+                      </p>
+                    </span>
+                  )}
+                  {joinState && (
+                    <div className="tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(58,54,54,0.2)] tw-z-[300] tw-backdrop-blur">
+                      <button className="tw-inline-block tw-px-2 tw-z-[390]">
+                        {!muted ? (
+                          <MicIcon
+                            fontSize="medium"
+                            style={{ color: "white" }}
+                            onClick={toggleMuteMic}
+                          />
+                        ) : (
+                          <MicOffIcon
+                            fontSize="medium"
+                            style={{ color: "red" }}
+                            onClick={toggleMuteMic}
+                          />
+                        )}
+                      </button>
+                    </div>
                   )}
                   <Button
                     className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110] tw-capitalize"
@@ -767,7 +790,7 @@ function Live() {
 
           {/* ================================================= */}
           {/* chat site | ex right side */}
-          <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-6/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+          <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-4/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
             <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
               <button
                 className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
