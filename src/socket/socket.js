@@ -4,13 +4,13 @@ import { imageDomainURL } from "../../dreamgirl.config"
 
 export default {
   connect: (url) => {
-    // if (!url) {
-    //   if (window.location.hostname.includes("dreamgirllive")) {
-    //     url = "https://backend.dreamgirllive.com"
-    //   } else {
-    //     url = imageDomainURL
-    //   }
-    // }
+    if (!url) {
+      if (window.location.hostname.includes("dreamgirllive")) {
+        url = "https://backend.dreamgirllive.com"
+      } else {
+        url = imageDomainURL
+      }
+    }
 
     socketConnectionInstance = io(imageDomainURL, {
       auth: {
