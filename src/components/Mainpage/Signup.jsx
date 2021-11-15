@@ -12,11 +12,9 @@ import Link from "next/link"
 import io from "../../socket/socket"
 import ErrorIcon from "@material-ui/icons/Error"
 import Header from "./Header"
-import { useSpinnerContext } from "../../app/Loading/SpinnerContext"
 
 function SignUp() {
   const modalCtx = useModalContext()
-  const spinnerCtx = useSpinnerContext()
   const [email, setEmail] = useState()
   const [password, setPassword] = useState()
   const [username, setUsername] = useState()
@@ -231,5 +229,4 @@ function SignUp() {
     </>
   )
 }
-
 export default SignUp
