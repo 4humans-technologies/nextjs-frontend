@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { Button } from "react-bootstrap"
 import ClearIcon from "@material-ui/icons/Clear"
+import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Tip() {
   const [dynamicData, setDynamicData] = useState([2])
+  const authContext = useAuthContext()
 
   useEffect(() => {
     if (authContext.loadedFromLocalStorage === true) {

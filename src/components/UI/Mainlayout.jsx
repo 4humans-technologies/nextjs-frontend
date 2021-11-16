@@ -15,7 +15,7 @@ function Mainlayout({ children }) {
   return (
     <div>
       <Header liveModels={liveModels} />
-      {children}
+      <div>{children}</div>
       <Footer />
     </div>
   )

@@ -109,6 +109,7 @@ function ModelProfile(props) {
   }
 
   const Images = () => {
+    const authContext = useAuthContext()
     const [lightboxController, setLightboxController] = useState({
       toggler: false,
       slide: 1,
@@ -124,13 +125,14 @@ function ModelProfile(props) {
       <>
         <FsLightbox
           toggler={lightboxController.toggler}
-          sources={authContext.user.user.relatedUser.publicImages.map((url) => {
-            return <img src={url} />
-          })}
+          sources={[Neeraj, Neeraj]}
+          // sources={authContext.user.user.relatedUser.publicImages.map((url) => {
+          //   return <img src={url} />
+          // })}
           slide={lightboxController.slide}
         />
         <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3">
-          {authContext.user.user.relatedUser?.publicImages.map(ima, (index) => (
+          {/* {authContext.user.user.relatedUser?.publicImages.map(ima, (index) => (
             <div
               className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer"
               onClick={() => openLightboxOnSlide(index + 1)}
@@ -142,9 +144,9 @@ function ModelProfile(props) {
                 className="tw-rounded"
               />
             </div>
-          ))}
+          ))} */}
 
-          {/* <div
+          <div
             className="tw-col-span-1 tw-row-span-1"
             onClick={() => openLightboxOnSlide(2)}
           >
@@ -190,7 +192,7 @@ function ModelProfile(props) {
               width={280}
               className="tw-rounded"
             />
-          </div> */}
+          </div>
 
           <div className="tw-mt-4 tw-col-span-2 md:tw-col-span-3 lg:tw-col-span-5 xl:tw-col-span-6 tw-flex tw-justify-center tw-items-center">
             <div className="tw-h-1 tw-bg-second-color tw-mr-2 tw-flex-grow tw-rounded-sm"></div>
