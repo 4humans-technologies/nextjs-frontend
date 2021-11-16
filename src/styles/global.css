@@ -609,3 +609,10 @@ select {
 }
 
 /* action grid  */
+
+/* Token Grid */
+.token_grid{
+  grid-template-columns: 40% 1fr 1fr 1fr;
+  -ms-grid-column: 40% 1fr 1fr 1fr;
+}
+/* Token Grid */

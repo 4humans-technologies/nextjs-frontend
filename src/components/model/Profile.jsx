@@ -65,19 +65,47 @@ function Profile() {
   //  ============================================================================================
 
   const priceSetting = async () => {
-    const res = await fetch("/model.json", {
-      method: "PUT",
-      body: JSON.stringify({
-        audio: audioVideoPrice.audio,
-        video: audioVideoPrice.video,
-      }),
+    const res = await fetch("/api/website/profile/update-info-fields", {
+      method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-type": "application/json",
       },
+      body: JSON.stringify([
+        {
+          field: "charges.audioCall",
+          value: audioVideoPrice.audio,
+        },
+        {
+          field: "charges.videoCall",
+          value: audioVideoPrice.video,
+        },
+      ]),
     })
     const data = await res.json()
-    console.log(data)
+    authUpdateContext.updateNestedPaths((prev) => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        user: {
+          ...prev.user.user,
+          relatedUser: {
+            ...prev.user.user.relatedUser,
+            charges: {
+              audioCall: audioVideoPrice.audio,
+              videoCall: audioVideoPrice.video,
+            },
+          },
+        },
+      },
+    }))
   }
+
+  let store = JSON.parse(localStorage.getItem("user"))
+  console.log(
+    (store["relatedUser"]["charges"] =
+      authContext.user.user.relatedUser.charges)
+  )
+  localStorage.setItem("user", JSON.stringify(store))
   //  ============================================================================================
 
   // s3 bucket image upload
@@ -197,6 +225,7 @@ function Profile() {
     localStorage.setItem("user", JSON.stringify(store))
   }
 
+  // This is to get the value of the of tip
   useEffect(() => {
     if (authContext.loadedFromLocalStorage === true) {
       let arr = []
@@ -225,6 +254,7 @@ function Profile() {
     dynamicData.map((item) => console.log(item))
   }
 
+  // This is for save the data for the tip menu
   const saveData = () => {
     const actionArray = []
     const allInputs = document.querySelectorAll("#action-form input")
@@ -256,7 +286,6 @@ function Profile() {
     profileImage = authContext.user.user.relatedUser.profileImage
     coverImage = authContext.user.user.relatedUser.coverImage
   }
-  let arr = []
   return (
     <div>
       <div
@@ -512,7 +541,9 @@ function Profile() {
                 {priceEdit && (
                   <button
                     className="tw-bg-green-color tw-text-white tw-px-4  tw-my-2 tw-rounded-full"
-                    onClick={priceSetting}
+                    onClick={() => {
+                      priceSetting(), setPriceEdited(false)
+                    }}
                   >
                     Save
                   </button>
