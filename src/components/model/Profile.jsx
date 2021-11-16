@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import CreateIcon from "@material-ui/icons/Create"
 import { Button } from "react-bootstrap"
 import Card from "../UI/Card"
@@ -22,6 +22,14 @@ function Profile() {
   const [priceEdit, setPriceEdited] = useState(false)
   const [dynamicData, setDynamicData] = useState([2])
 
+  const [profileEdit, setProfileEdit] = useState({
+    country: authContext?.user.user.relatedUser.country,
+    languages: authContext?.user.user.languages.map((item) => item),
+    bodyType: authContext?.user.user.bodyType,
+    skinColor: authContext?.user.user.skinColor,
+    hairColor: authContext?.user.user.hairColor,
+    eyeColor: authContext?.user.user.eyeColor,
+  })
   const modalCtx = modalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
@@ -98,14 +106,28 @@ function Profile() {
         },
       },
     }))
+
+    let store = JSON.parse(localStorage.getItem("user"))
+    console.log(
+      (store["relatedUser"]["charges"] =
+        authContext.user.user.relatedUser.charges)
+    )
+    localStorage.setItem("user", JSON.stringify(store))
   }
 
-  let store = JSON.parse(localStorage.getItem("user"))
-  console.log(
-    (store["relatedUser"]["charges"] =
-      authContext.user.user.relatedUser.charges)
-  )
-  localStorage.setItem("user", JSON.stringify(store))
+  // Profile editor
+  const profilEdit = async () => {
+    // fetch("/api/website/profile/update-info-fields", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-type": "application/json",
+    //   },
+    //   body: JSON.stringify(),
+    // })
+    console.log(profileref)
+  }
+
+  // Profile editor
   //  ============================================================================================
 
   // s3 bucket image upload
@@ -357,73 +379,70 @@ function Profile() {
                   className="md:tw-col-span-5 tw-col-span-4 "
                   onChange={() => setInfoedited(true)}
                 >
+                  <p>EveryOne</p>
                   <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
+                    onChange={
+                      ((e) => setProfileEdit.country(e.target.textContent),
                       () => setInfoedited(true))
                     }
                     contentEditable="true"
+                    value={profileEdit.country}
                   >
-                    EveryOne
+                    {/* {authContext.user.user.relatedUser.ethnicity} */}
                   </p>
                   <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
+                    onChange={
+                      ((e) =>
+                        setProfileEdit.languages((prev) => [
+                          ...prev,
+                          e.target.textContent,
+                        ]),
                       () => setInfoedited(true))
                     }
                     contentEditable="true"
-                  >
-                    {authContext.user.user.relatedUser.ethnicity}
-                  </p>
-                  <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
-                      () => setInfoedited(true))
-                    }
-                    contentEditable="true"
+                    value={profileEdit.languages}
                   >
                     {/* {item.Language} */}
                     {authContext.user.user.relatedUser.languages.map(
                       (item) => item
                     )}
                   </p>
-                  <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
-                      () => setInfoedited(true))
-                    }
-                  >
+                  <p>
                     {/* {item.Age} */}
                     {authContext.user.user
                       ? thisYear - authContext.user.user.relatedUser.dob
                       : null}
                   </p>
                   <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
+                    onChange={
+                      ((e) => setProfileEdit.skinColor(e.target.textContent),
                       () => setInfoedited(true))
                     }
                     contentEditable="true"
+                    value={profileEdit.skinColor}
                   >
                     Skin
                     {/* {item.Body} */}
                   </p>
                   <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
+                    onChange={
+                      ((e) => setProfileEdit(e.currentTarget.textContent),
                       () => setInfoedited(true))
                     }
                     contentEditable="true"
+                    value={profileEdit.hairColor}
                   >
                     Black
                     {/* {item.Hair} */}
                   </p>
                   <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
+                    onChange={
+                      ((e) =>
+                        setProfileEdit.eyeColor(e.currentTarget.textContent),
                       () => setInfoedited(true))
                     }
                     contentEditable="true"
+                    value={profileEdit.eyeColor}
                   >
                     {/* {item.Eye} */}
                     Black
@@ -455,7 +474,10 @@ function Profile() {
               {infoedited && (
                 <button
                   type="submit"
-                  onClick={() => setInfoedited(false)}
+                  onClick={() => {
+                    setInfoedited(false)
+                    profilEdit()
+                  }}
                   className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color"
                 >
                   Save
