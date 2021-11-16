@@ -17,6 +17,7 @@ import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
 import SecondHeader from "./SecondHeader"
+import Headerui from "../UI/HeaderUI"
 
 function Header(props) {
   const [menu, setMenu] = useState(false)
@@ -137,33 +138,58 @@ function Header(props) {
                 ? [
                     // login and at small screen and viwer
                     authContext.user.userType == "Viewer" ? (
-                      <div className="tw-flex tw-self-center">
-                        <button
-                          className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-px-2 tw-rounded-full"
-                          onClick={updateAuthContext.logout}
-                        >
-                          logout
-                        </button>
-                        <div className=" tw-ml-6">
-                          <NotificationsIcon />
+                      <div>
+                        {menu && (
+                          <Headerui
+                            manu={setMenu}
+                            liveModels={props.liveModels}
+                          />
+                        )}
+                        <div className="tw-flex tw-self-center">
+                          <img
+                            src="/coins.png"
+                            alt=""
+                            className="tw-w-10 tw-h-10 tw-text-white"
+                          />
+                          <p className="tw-self-center">
+                            {
+                              authContext.user.user.relatedUser.wallet
+                                .currentAmount
+                            }
+                          </p>
                         </div>
                       </div>
                     ) : (
                       // login at smaller screen and model
-                      <div className="tw-flex tw-self-center">
-                        <button
-                          className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-rounded-full tw-capitalize tw-px-4 tw-py-2"
-                          onClick={updateAuthContext.logout}
-                        >
-                          logout
-                        </button>
-                        <button className="tw-mx-4  tw-rounded-full tw-capitalize tw-px-4 tw-py-2 tw-bg-white-color tw-text-black">
-                          <Link
-                            href={`/${authContext.user.user.username}/goLive`}
-                          >
-                            <a>live</a>
-                          </Link>
-                        </button>
+                      <div>
+                        {menu && (
+                          <Headerui
+                            manu={setMenu}
+                            liveModels={props.liveModels}
+                          />
+                        )}
+                        <div className="tw-flex tw-self-center">
+                          <button className="tw-mx-4  tw-rounded-full tw-capitalize tw-px-4 tw-py-2 tw-bg-white-color tw-text-black">
+                            <Link
+                              href={`/${authContext.user.user.username}/goLive`}
+                            >
+                              <a>live</a>
+                            </Link>
+                          </button>
+                          <div className="tw-flex">
+                            <img
+                              src="/coins.png"
+                              alt=""
+                              className="tw-w-10 tw-h-10 tw-text-white"
+                            />
+                            <p className="tw-self-center">
+                              {
+                                authContext.user.user.relatedUser.wallet
+                                  .currentAmount
+                              }
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     ),
                   ]
@@ -283,48 +309,7 @@ function Header(props) {
           : // if not sign in is below
             [
               screenWidth < 600 ? (
-                [
-                  menu === true ? (
-                    <div className="tw-items-center sm:tw-flex-row tw-flex-col  tw-absolute tw-z-[105] sm:tw-top-0 tw-top-32 tw-right-1  tw-bg-second-color tw-w-9/12 tw-py-4 tw-px-4">
-                      <div className="tw-flex tw-justify-between tw-px-2  ">
-                        <div className="tw-flex tw-items-center">
-                          <div className="tw-rounded-full tw-bg-green-400 tw-h-2 tw-w-2 tw-flex tw-items-center tw-justify-center"></div>
-                          <p className="tw-pl-1 tw-pr-2">
-                            {props.liveModels ? props.liveModels : 0}
-                          </p>
-                          <p>LIVE </p>
-                        </div>
-
-                        <div className="tw-flex tw-items-center tw-pl-4">
-                          <BarChartIcon />
-                          <p>Top Model</p>
-                        </div>
-                      </div>
-                      <div className="tw-flex ">
-                        <button
-                          className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-4 sm:tw-px-6 tw-bg-white-color tw-text-black sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-my-4 tw-text-sm md:tw-text-base"
-                          onClick={() => {
-                            router.push("/auth/viewerRegistration")
-                            setMenu((prev) => !prev)
-                          }}
-                        >
-                          Sign Up
-                        </button>
-                        <button
-                          className="tw-rounded-full sm:tw-py-4 tw-py-2 tw-px-4 sm:tw-px-6 tw-text-white tw-border-2 sm:tw-mr-2 tw-m-2 md:tw-m-0 tw-text-center tw-text-sm md:tw-text-base"
-                          onClick={() => {
-                            router.push("auth/login")
-                            setMenu((prev) => !prev)
-                          }}
-                        >
-                          Login
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg"></div>
-                  ),
-                ]
+                <div>{menu && <Headerui manu={setMenu} />}</div>
               ) : (
                 <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
                   <button
@@ -344,12 +329,7 @@ function Header(props) {
               ),
             ]}
         {/* --------------------------------------------------------------*/}
-        <div
-          className={`sm:tw-hidden tw-mr-4 ${
-            authContext.isLoggedIn ? "tw-hidden" : null
-          }`}
-          onClick={() => setMenu(!menu)}
-        >
+        <div className={`sm:tw-hidden tw-mr-4l`} onClick={() => setMenu(!menu)}>
           <MoreVertIcon />
         </div>
       </div>
