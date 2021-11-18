@@ -1,8 +1,8 @@
 import useSpinnerContext from "../app/Loading/SpinnerContext"
 import fetchIntercept from "fetch-intercept"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 // import io from "../socket/socket"
-import { imageDomainURL } from "../../dreamgirl.config"
+import { useAuthUpdateContext } from "../app/AuthContext"
 const useFetchInterceptor = (isAlreadyIntercepted) => {
   /**
    * if all i need is the access to the functions in the context(s) than,
@@ -11,6 +11,12 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
    * in closure will have no effect (no matter if "stale function")
    */
   const spinnerCtx = useSpinnerContext()
+  const logoutRef = useRef()
+  const updateCtx = useAuthUpdateContext()
+
+  useEffect(() => {
+    logoutRef.current = updateCtx.logout
+  }, [updateCtx.logout])
 
   useEffect(() => {
     //debugger
@@ -22,20 +28,17 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
       fetchIntercept.register({
         request: function (url, config) {
           /* Only intercept app server request */
-          if (url.startsWith("/api/website/")) {
+          if (
+            url.startsWith("/api/website/") ||
+            url.startsWith("/api/admin/")
+          ) {
             /* SHOW SPINNER */
             spinnerCtx.setShowSpinner(true)
             //debugger
             const latestCtx = JSON.parse(localStorage.getItem("authContext"))
             /* for GET requests when there is no config */
-            let baseUrl
-            if (window.location.hostname.includes("dreamgirllive")) {
-              /* should use hosted backend */
-              baseUrl = "https://backend.dreamgirllive.com"
-            } else {
-              /* should use local or imageDomainUrl */
-              baseUrl = imageDomainURL
-            }
+
+            let baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 
             let urlObj = new URL(`${baseUrl}${url}`)
             urlObj.searchParams.append(
@@ -60,6 +63,14 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
               )
             }
 
+            /* 👑 check validity of the jwtToken before attaching it 👑 */
+            if (
+              parseInt(localStorage.getItem("jwtExpiresIn")) <=
+              Date.now() + 2000
+            ) {
+              /* logout the user */
+              return logoutRef.current()
+            }
             /* attach jwtToken in the header */
             let finalConfig
             if (latestCtx.isLoggedIn) {

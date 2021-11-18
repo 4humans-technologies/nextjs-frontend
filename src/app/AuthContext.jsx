@@ -67,7 +67,7 @@ export const AuthContextProvider = ({ children }) => {
     })
   }
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("jwtToken")
     localStorage.removeItem("jwtExpiresIn")
     localStorage.removeItem("rootUserId")
@@ -76,6 +76,7 @@ export const AuthContextProvider = ({ children }) => {
     localStorage.removeItem("authContext")
     localStorage.removeItem("unAuthedUserId")
     localStorage.removeItem("user")
+
     updateViewer({
       isLoggedIn: false,
       user: { userType: "UnAuthedViewer" },
@@ -86,9 +87,6 @@ export const AuthContextProvider = ({ children }) => {
       jwtToken: "",
       rtcToken: "",
     })
-
-    // io.getSocket().close()
-    // io.getSocket().open()
 
     io.getSocket().emit(
       "update-client-info",
@@ -101,7 +99,7 @@ export const AuthContextProvider = ({ children }) => {
         }
       }
     )
-  }
+  }, [router])
 
   const readFromLocalStorage = () => {
     localStorage.removeItem("socketId")

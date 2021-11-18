@@ -35,39 +35,22 @@ const data = Array(8)
 const Home = () => {
   console.log("rendering home")
   const ctx = useAuthContext()
-  const authUpdateCtx = useAuthUpdateContext()
   const socketContext = useSocketContext()
   const [liveModels, setLiveModels] = useState(0)
 
   useEffect(() => {
-    /* client should not be connected to any public/private room  while on index page */
+    /* client should not be connected to any public room  while on index page */
     if (JSON.parse(sessionStorage.getItem("socket-rooms"))) {
       try {
         const socket = io.getSocket()
-        const socketRooms =
-          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-        const roomsToLeave = []
-        if (socketRooms.length > 0) {
-          socketRooms.forEach((room) => {
-            if (room.includes("-public")) {
-              roomsToLeave.push(room)
-            }
-          })
+        const socketRooms = JSON.parse(sessionStorage.getItem("socket-rooms"))
+        if (socketRooms?.length > 0) {
           socket.emit(
             "take-me-out-of-these-rooms",
-            [...roomsToLeave],
+            [...socketRooms.filter((room) => room.endsWith("-public"))],
             (response) => {
               if (response.status === "ok") {
-                /* remove this room from session storage also */
-                const rooms =
-                  JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-                sessionStorage.setItem(
-                  "socket-rooms",
-                  JSON.stringify(
-                    rooms.filter((room) => !roomsToLeave.includes(room))
-                  )
-                )
-                authUpdateCtx.updateViewer({ streamRoom: null })
+                /* no action needed room will be removed automatically */
               }
             }
           )
@@ -76,7 +59,7 @@ const Home = () => {
         console.log("Client not in any room!")
       }
     }
-  }, [authUpdateCtx.updateViewer])
+  }, [])
 
   const [boxGroupsData, setBoxGroupData] = useState([
     // {
@@ -97,16 +80,31 @@ const Home = () => {
         .then((res) => res.json())
         .then((data) => {
           setBoxGroupData((prev) => {
-            return [
-              ...prev,
-              {
-                title: "Online Models | Either onCall or onStream",
-                data: data.resultDocs.map((model) => ({
-                  ...model,
-                  relatedUserId: model._id,
-                })),
-              },
-            ]
+            if (ctx.user.userType !== "Model") {
+              return [
+                ...prev,
+                {
+                  title: "Live Streaming Model",
+                  data: data.resultDocs.map((model) => ({
+                    ...model,
+                    relatedUserId: model._id,
+                  })),
+                },
+              ]
+            } else {
+              return [
+                ...prev,
+                {
+                  title: "Live Streaming Model",
+                  data: data.resultDocs
+                    .filter((model) => model._id !== ctx.relatedUserId)
+                    .map((model) => ({
+                      ...model,
+                      relatedUserId: model._id,
+                    })),
+                },
+              ]
+            }
           })
           setLiveModels(data.totalMatches)
         })
@@ -122,33 +120,33 @@ const Home = () => {
       const socket = io.getSocket()
       if (!socket.hasListeners("new-model-started-stream")) {
         socket.on("new-model-started-stream", (socketData) => {
-          // alert("New Model Started Streaming..." + JSON.stringify(socketData))
-          debugger
-          setBoxGroupData((prev) => {
-            if (
-              prev[prev.length - 1].data
-                .map((stream) => stream.relatedUserId)
-                .includes(socketData.modelId)
-            ) {
-              return prev
-            }
+          if (ctx?.relatedUserId !== socketData.modelId) {
+            setBoxGroupData((prev) => {
+              if (
+                prev[prev.length - 1].data
+                  .map((stream) => stream.relatedUserId)
+                  .includes(socketData.modelId)
+              ) {
+                return prev
+              }
 
-            const prevLastPopped = prev.pop()
-            return [
-              ...prev,
-              {
-                ...prevLastPopped,
-                data: [
-                  ...prevLastPopped.data,
-                  {
-                    relatedUserId: socketData.modelId,
-                    profileImage: socketData.profileImage,
-                    isStreaming: true,
-                  },
-                ],
-              },
-            ]
-          })
+              const prevLastPopped = prev.pop()
+              return [
+                ...prev,
+                {
+                  ...prevLastPopped,
+                  data: [
+                    ...prevLastPopped.data,
+                    {
+                      relatedUserId: socketData.modelId,
+                      profileImage: socketData.profileImage,
+                      isStreaming: true,
+                    },
+                  ],
+                },
+              ]
+            })
+          }
         })
       }
       if (!socket.hasListeners("delete-stream-room")) {

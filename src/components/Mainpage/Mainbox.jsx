@@ -5,7 +5,6 @@ import router, { useRouter } from "next/router"
 import dynamic from "next/dynamic"
 import StarIcon from "@material-ui/icons/Star"
 import Link from "next/link"
-import { imageDomainURL } from "../../../dreamgirl.config"
 
 function Mainbox(props) {
   const watch = () => {
@@ -23,7 +22,7 @@ function Mainbox(props) {
   if (props.photo.startsWith("http")) {
     imageUrl = props.photo
   } else {
-    imageUrl = `${imageDomainURL}${props.photo}`
+    imageUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${props.photo}`
   }
 
   return (

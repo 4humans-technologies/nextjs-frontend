@@ -66,15 +66,21 @@ function PrivateChat(props) {
 
   const [privateChatDbId, setPrivateChatDbId] = useState(null)
 
-  const { inFocus, hasActivePlan } = props
+  const { hasActivePlan } = props
+
+  const scrollOnChat = () => {
+    if (props.inFocus) {
+      props.scrollOnChat()
+    }
+  }
 
   useEffect(() => {
     chatDataRef.current = chatsData
   }, [chatsData])
 
   useEffect(() => {
-    inFocusRef.current = inFocus
-  }, [inFocus])
+    inFocusRef.current = props.inFocus
+  }, [props.inFocus])
 
   useEffect(() => {
     const pushPrivateChatLocally = (e) => {
@@ -87,7 +93,7 @@ function PrivateChat(props) {
         })
         return { ...prev }
       })
-      props.scrollOnChat()
+      scrollOnChat()
     }
     document.addEventListener("send-private-message", pushPrivateChatLocally)
     return () => {
@@ -164,7 +170,7 @@ function PrivateChat(props) {
               prev.highLightChat = false
               return { ...prev }
             })
-            props.scrollOnChat()
+            scrollOnChat()
           } else {
             if (!prev.highLightChat && prev.nos === 0) {
               /* no new chat beforehand, add new message tag also */
@@ -204,10 +210,10 @@ function PrivateChat(props) {
   }, [ctx.socketSetupDone, hasActivePlan])
 
   useEffect(() => {
-    if (inFocus) {
-      props.scrollOnChat("auto")
+    if (props.inFocus) {
+      scrollOnChat("auto")
     }
-  }, [inFocus])
+  }, [props.inFocus])
 
   useEffect(() => {
     if (ctx.socketSetupDone) {

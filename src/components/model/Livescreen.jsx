@@ -119,12 +119,9 @@ function LiveScreen(props) {
         }
         if (isChatPlanActive) {
           /* loggedIn & has private chat room */
-          finalRoom = `${
-            window.location.pathname.split("/").reverse()[0]
-          }-private`
           const ts = Date.now()
           payLoad = {
-            to: finalRoom,
+            to: `${window.location.pathname.split("/").reverse()[0]}-private`,
             chat: {
               by: authCtx.user.userType,
               ts: ts,
@@ -199,6 +196,9 @@ function LiveScreen(props) {
     } else {
       chatInputRef.current.value = `@${username} `
     }
+    document.getElementById("message-input").scrollIntoView({
+      block: "center",
+    })
   }
 
   const onClickSendTipMenu = (activity) => {
@@ -472,6 +472,7 @@ function LiveScreen(props) {
                   scrollOnChat={scrollOnChat}
                   isModelOffline={isModelOffline}
                   addAtTheRate={addAtTheRate}
+                  inFocus={chatWindow === chatWindowOptions.PUBLIC}
                 />
               </div>
               <div
@@ -503,6 +504,7 @@ function LiveScreen(props) {
                   tipMenuActions={tipMenuActions}
                   setTipMenuActions={setTipMenuActions}
                   onClickSendTipMenu={onClickSendTipMenu}
+                  inFocus={chatWindow === chatWindowOptions.PUBLIC}
                 />
               </div>
               <div
@@ -517,7 +519,10 @@ function LiveScreen(props) {
             </div>
           </div>
 
-          <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-z-[300]">
+          <div
+            id="message-input"
+            className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-z-[300]"
+          >
             <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
               <img
                 src="/tips.png"

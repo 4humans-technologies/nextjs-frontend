@@ -26,48 +26,7 @@ const initialChatState = [
     name: "",
     username: "",
     profileImage: "",
-    chats: [
-      {
-        by: "other" /* ["self","other"] */,
-        msg: "hello this is a dummy message",
-        ts: 54655646254654,
-      },
-      {
-        by: "other" /* ["self","other"] */,
-        msg: "hello this is a dummy message",
-        ts: 54655646543654,
-      },
-      {
-        by: "self" /* ["self","other"] */,
-        msg: "hello this is a dummy message",
-        ts: 5465564654654,
-      },
-      {
-        by: "self" /* ["self","other"] */,
-        msg: "hello this is a dummy message",
-        ts: 54655646546542,
-      },
-      {
-        by: "other" /* ["self","other"] */,
-        msg: "hello this is a dummy message",
-        ts: 54655646543654,
-      },
-      {
-        by: "self" /* ["self","other"] */,
-        msg: "hello this is a dummy message",
-        ts: 5465564654654,
-      },
-      {
-        by: "other" /* ["self","other"] */,
-        msg: "hello this is a dummy message",
-        ts: 54655646543654,
-      },
-      {
-        by: "self" /* ["self","other"] */,
-        msg: "hello this is a dummy message",
-        ts: 5465564654654,
-      },
-    ],
+    chats: [],
     highLightNewChat: false,
     newChats: {
       chats: [],
@@ -77,14 +36,19 @@ const initialChatState = [
 ]
 
 function PrivateChatWrapper(props) {
-  const { inFocus, newChatNotifierDotRef, scrollOnChat } = props
+  const { inFocus, newChatNotifierDotRef } = props
 
   const socketCtx = useSocketContext()
   const currentChatScreenStateRef = useRef()
   const currentViewerRef = useRef()
   const inFocusRef = useRef()
   const dbChatIdsRef = useRef()
-  const userType = useAuthContext().user.userType
+
+  const scrollOnChat = () => {
+    if (props.inFocus) {
+      props.scrollOnChat()
+    }
+  }
 
   const [currentChatScreen, setCurrentChatScreen] = useState(
     chatScreens.VIEWERS_LIST

@@ -1,155 +1,13 @@
-import React, { useState, useEffect } from "react"
-import Image from "next/image"
-import flowerImage from "../../../public/flower-rose-png.jpg"
-import coinsImage from "../../../public/coins.png"
+import React, { useState, useEffect, useCallback } from "react"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import { useAuthContext } from "../../app/AuthContext"
 import NormalChatMessage from "../ChatMessageTypes/NormalChat"
 import ModelChatMessage from "../ChatMessageTypes/ModelChatMessage"
-
-function GiftSuperChat(props) {
-  return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 gift-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
-      <div className="tw-flex-grow-0 tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-bg-second-color tw-mr-auto">
-        <Image
-          src={props.giftImageUrl}
-          width={90}
-          height={90}
-          objectFit="contain"
-          objectPosition="center"
-          className="tw-rounded tw-mr-auto"
-        />
-      </div>
-      <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
-        <div className="tw-flex-grow tw-pr-2">
-          {/* <span className="display-name tw-capitalize tw-inline-block tw-pr-3">
-            @{props.displayName}:
-          </span> */}
-          <span className="user-message tw-font-semibold tw-capitalize">
-            {props.message}
-          </span>
-        </div>
-        <p className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2 tw-text-yellow-400 tw-font-medium">
-          {props.walletCoins}
-        </p>
-      </div>
-    </div>
-  )
-}
-
-function CoinSuperChat(props) {
-  return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 coin-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
-      <div className="tw-flex-grow-0 tw-flex-shrink tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-mr-auto tw-flex tw-items-center tw-justify-start">
-        <Image
-          src={coinsImage}
-          width={25}
-          height={25}
-          objectFit="contain"
-          objectPosition="center"
-          className="tw-rounded tw-mr-auto"
-        />
-        <span className="tw-pl-3 tw-text-lg tw-font-semibold tw-text-yellow-500">
-          {props.amountGiven} coins
-        </span>
-        {/* <p className="tw-mt-1 tw-font-semibold tw-text-yellow-400">
-          <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
-            {props.displayName}:
-          </span>
-          {props.amountGiven}
-        </p> */}
-      </div>
-      <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
-        <div className="tw-flex-grow tw-pr-2">
-          <span
-            className="user-message tw-text-sm tw-font-normal hover:tw-underline tw-cursor-pointer"
-            onClick={props.addAtTheRate}
-          >
-            {props.message}
-          </span>
-        </div>
-        {props.showWallet && (
-          <p className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2 tw-text-yellow-400">
-            {props.walletCoins}
-          </p>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function CallRequestChat(props) {
-  return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 gift-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
-      <span className="tw-font-semibold tw-px-1 py-1 tw-rounded tw-bg-second-color">
-        @{props.username}
-      </span>
-      Requested {props.callType}
-    </div>
-  )
-}
-
-function TipMenuActivityRequest(props) {
-  return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tipmenu-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
-      <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
-        <div className="tw-flex-grow tw-pr-2">
-          <span
-            className="user-message tw-text-sm tw-capitalize tw-font-semibold tw-cursor-pointer"
-            onClick={props.addAtTheRate}
-          >
-            {props.message}
-          </span>
-        </div>
-        {props.showWallet && (
-          <p className="tw-flex-shrink tw-flex-grow-0 tw-pl-2 tw-text-yellow-400">
-            {props.walletCoins}
-          </p>
-        )}
-      </div>
-      <div className="tw-flex-grow tw-flex-shrink-0 tw-w-full tw-flex tw-items-center tw-justify-between tw-my-2 tw-border tw-border-white tw-py-1 tw-px-3">
-        <span className="tw-text-white-color tw-font-medium tw-flex-grow">
-          {props.activityName}
-        </span>
-        <span className="tw-text-white-color tw-font-medium tw-flex-shrink">
-          {props.activityPrice} coins
-        </span>
-      </div>
-    </div>
-  )
-}
-
-const initialMessages = [
-  {
-    type: "normal-public-message",
-    index: 1,
-    username: "ravi",
-    message: "Hello how is every one, feel very good here",
-    walletCoins: 100,
-  },
-  {
-    type: "model-public-message",
-    index: 2,
-    message: "Hello how is every one, feel very good here",
-  },
-  {
-    type: "gift-superchat-public",
-    index: 3,
-    username: "Neeraj rai",
-    giftImageUrl: flowerImage,
-    message: "Hello how is every one, feel very good here",
-    walletCoins: 100,
-  },
-  {
-    type: "coin-superchat-public",
-    username: "Vikas kumawat",
-    index: 6,
-    amountGiven: 100,
-    message: "Hello how is every one, feel very good here",
-    walletCoins: 50,
-  },
-]
+import CoinSuperChat from "../ChatMessageTypes/TokenGift"
+import TipMenuActivityRequest from "../ChatMessageTypes/TipMenuActivity"
+import CallRequestChat from "../ChatMessageTypes/CallRequest"
+import GiftSuperChat from "../ChatMessageTypes/GiftSuperChat"
 
 let chatIndex = 0
 let messageShowed = false
@@ -161,8 +19,13 @@ function PublicChatBox(props) {
   const [chatMessages, setChatMessages] = useState([])
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
-  const authUpdateCtx = useAuthUpdateContext()
   const { isModelOffline } = props
+
+  const scrollOnChat = () => {
+    if (props.inFocus) {
+      props.scrollOnChat()
+    }
+  }
 
   useEffect(() => {
     if (
@@ -236,14 +99,13 @@ function PublicChatBox(props) {
             // document.dispatchEvent(chatScrollEvent)
             return [...prevChats, chat]
           })
-          props.scrollOnChat()
+          scrollOnChat()
           // document.dispatchEvent(chatEvent)
         })
       }
       if (!socket.hasListeners("model-message-public-received")) {
         socket.on("model-message-public-received", (data) => {
           setChatMessages((prevChats) => {
-            // document.dispatchEvent(chatScrollEvent)
             const newChats = [
               ...prevChats,
               {
@@ -255,7 +117,7 @@ function PublicChatBox(props) {
             chatIndex++
             return newChats
           })
-          props.scrollOnChat()
+          scrollOnChat()
           // document.dispatchEvent(chatEvent)
         })
       }
@@ -275,7 +137,7 @@ function PublicChatBox(props) {
             chatIndex++
             return newChats
           })
-          props.scrollOnChat()
+          scrollOnChat()
           // document.dispatchEvent(chatEvent)
         })
       }
@@ -296,7 +158,7 @@ function PublicChatBox(props) {
       //       chatIndex++
       //       return newChats
       //     })
-      //     props.scrollOnChat()
+      //     scrollOnChat()
       //   })
       // }
     }
@@ -332,25 +194,15 @@ function PublicChatBox(props) {
 
   useEffect(() => {
     /* when the viwerscreen component un-mounts leave the public/private stream specific rooms */
-    //debugger
     if (ctx.socketSetupDone) {
       return () => {
-        //debugger
-        // alert("getting out of rooms")
-        // alert("leaving public rooms..")
         const socket = io.getSocket()
         const socketRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
         const roomsToLeave = []
         socketRooms.forEach((room) => {
-          if (localStorage.getItem("userType") === "Model") {
-            if (room.endsWith("-public")) {
-              roomsToLeave.push(room)
-            }
-          } else if (localStorage.getItem("userType") === "Viewer") {
-            if (room.endsWith("-public")) {
-              roomsToLeave.push(room)
-            }
+          if (room.endsWith("-public")) {
+            roomsToLeave.push(room)
           }
         })
         socket.emit(
@@ -358,16 +210,7 @@ function PublicChatBox(props) {
           [...roomsToLeave],
           (response) => {
             if (response.status === "ok") {
-              /* 👇 actually no need for manual removal it will be left automatically */
-              /* remove this room from session storage also */
-
-              // sessionStorage.setItem(
-              //   "socket-rooms",
-              //   JSON.stringify(
-              //     socketRooms.filter((room) => !roomsToLeave.includes(room))
-              //   )
-              // )
-              authUpdateCtx.updateViewer({ streamRoom: null })
+              /* nothing to be done */
             }
           }
         )
@@ -375,8 +218,25 @@ function PublicChatBox(props) {
     }
   }, [ctx.socketSetupDone, io.getSocket()])
 
+  const shouldHighLight = useCallback(
+    (message) => {
+      if (authCtx.user.userType === "Model") {
+        if (message.includes("@Model")) {
+          return true
+        }
+        return false
+      } else if (authCtx.user.userType === "Viewer") {
+        if (message.includes(`@${authCtx.user.user.username}`)) {
+          return true
+        }
+        return false
+      }
+    },
+    [authCtx.user.userType, authCtx.user.user?.username]
+  )
+
   return (
-    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 max-w-[100vw] md:tw-max-w-[49vw]">
+    <div className="chat-box tw-max-w-full tw-mb-14 tw-pr-2">
       {chatMessages.map((chat, index) => {
         switch (chat.type) {
           case "normal-public-message":
@@ -386,18 +246,10 @@ function PublicChatBox(props) {
                 index={chat.index}
                 displayName={chat.username}
                 message={chat.message}
-                walletCoins={chat.walletCoins}
-                highlight={
-                  authCtx.user.userType === "Model"
-                    ? chat.message.includes("@Model")
-                      ? true
-                      : false
-                    : authCtx.user.userType === "Viewer"
-                    ? chat.message.includes(`@${authCtx.user.user?.username}`)
-                      ? true
-                      : false
-                    : false
+                walletCoins={
+                  authCtx.user.userType === "Model" ? chat.walletCoins : null
                 }
+                highlight={shouldHighLight(chat.message)}
                 addAtTheRate={() => props.addAtTheRate(chat?.username)}
               />
             )
@@ -407,17 +259,7 @@ function PublicChatBox(props) {
                 key={"*(78jhk7" + chat.index}
                 index={chat.index}
                 message={chat.message}
-                highlight={
-                  authCtx.user.userType === "Model"
-                    ? chat.message.includes("@Model")
-                      ? true
-                      : false
-                    : authCtx.user.userType === "Viewer"
-                    ? chat.message.includes(`@${authCtx.user.user?.username}`)
-                      ? true
-                      : false
-                    : false
-                }
+                highlight={shouldHighLight(chat.message)}
                 addAtTheRate={() => props.addAtTheRate("Model")}
               />
             )

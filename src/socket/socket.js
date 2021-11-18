@@ -1,18 +1,12 @@
 import io from "socket.io-client"
 let socketConnectionInstance
-import { imageDomainURL } from "../../dreamgirl.config"
 
 export default {
   connect: (url) => {
     if (!url) {
-      if (window.location.hostname.includes("dreamgirllive")) {
-        url = "https://backend.dreamgirllive.com"
-      } else {
-        url = imageDomainURL
-      }
+      url = process.env.NEXT_PUBLIC_BACKEND_URL
     }
-
-    socketConnectionInstance = io(imageDomainURL, {
+    socketConnectionInstance = io(url, {
       auth: {
         // token will be fetched from local storage
         token: localStorage.getItem("jwtToken") || null,
@@ -48,27 +42,41 @@ export default {
 
   globalListeners: (socket) => {
     socket.on("you-joined-a-room", (room) => {
-      if (room.endsWith("-public") || room.endsWith("-private")) {
-        /* dont't join the self rooms 😎😎 */
-        let prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      /* dont't join the self rooms 😎😎 */
+      let prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      if (room.endsWith("-public")) {
         /* remove previous public room before joining new public room */
         prevRooms = prevRooms.filter((room) => !room.endsWith("-public"))
+
+        /* add unique rooms only */
         if (!prevRooms.includes(room)) {
-          /* add unique rooms only */
           sessionStorage.setItem(
             "socket-rooms",
             JSON.stringify([...prevRooms, room])
           )
           console.log("added in session room >> ", room)
         }
-        console.log("joined room >> ", room)
+      } else if (room.endsWith("-private")) {
+        /* add unique rooms only */
+        if (!prevRooms.includes(room)) {
+          sessionStorage.setItem(
+            "socket-rooms",
+            JSON.stringify([...prevRooms, room])
+          )
+          console.log("added in session room >> ", room)
+        }
       }
     })
 
     socket.on("you-left-a-room", (roomToLeave) => {
       const prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-      const newRooms = prevRooms.filter((room) => room !== roomToLeave) || []
-      sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
+      if (roomToLeave.endsWith("-public")) {
+        const newRooms = prevRooms.filter((room) => room !== roomToLeave) || []
+        sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
+      } else if (roomToLeave.endsWith("-private")) {
+        const newRooms = prevRooms.filter((room) => room !== roomToLeave) || []
+        sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
+      }
       console.log("left room >> ", roomToLeave)
     })
   },

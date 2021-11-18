@@ -1,9 +1,7 @@
 import React, { useState } from "react"
 import Image from "next/image"
-import {imageDomainURL} from "../../../dreamgirl.config"
 
 function SingleGift({ imageUrl, price, name, _id, selectHandler, selected }) {
-  const finalImageUrl = imageDomainURL + imageUrl
   return (
     <div
       className={`tw-mx-2 tw-py-2 tw-px-6 ${
@@ -14,7 +12,7 @@ function SingleGift({ imageUrl, price, name, _id, selectHandler, selected }) {
     >
       <div className="tw-h-[80px] tw-w-[80px] tw-grid tw-place-items-center tw-mb-4 tw-mx-auto">
         <Image
-          src={finalImageUrl}
+          src={imageUrl}
           width={80}
           height={80}
           objectFit="cover"

@@ -118,6 +118,7 @@ function Live() {
   const newChatNotifierDotRef = useRef()
   const requestServerEndAndStreamLeaveRef = useRef()
   const leaveAndCloseTracksRef = useRef()
+  const isLiveNowRef = useRef("not-init")
 
   const {
     localAudioTrack,
@@ -153,6 +154,71 @@ function Live() {
       setFullScreen(false)
     }
   }, [])
+
+  useEffect(() => {
+    isLiveNowRef.current = joinState || callOnGoing
+  }, [joinState, callOnGoing])
+
+  useEffect(() => {
+    const socket = io.getSocket()
+    let joinAttempts = 0
+    let joinRooms = []
+    const myKeepInRoomLoop = setInterval(() => {
+      /* can use this in here 😁😁😁 */
+      /* socket.connected */
+
+      /* if live then only check for rooms bro */
+      if (joinAttempts > 5) {
+        return console.log("more than five attempts")
+      }
+      if (isLiveNowRef.current) {
+        const myStreamId = sessionStorage.getItem("streamId")
+        console.log("Live and checking")
+        const socketRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        const myRelatedUserId = localStorage.getItem("relatedUserId")
+        if (
+          !socketRooms.includes(`${myStreamId}-public`) &&
+          !socketRooms.includes(`${myRelatedUserId}-private`)
+        ) {
+          /* noy in public and private room */
+          joinRooms.push(`${myStreamId}-public`)
+          joinRooms.push(`${myRelatedUserId}-private`)
+        } else if (!socketRooms.includes(`${myRelatedUserId}-private`)) {
+          /* only not in private */
+          joinRooms.push(`${myRelatedUserId}-private`)
+        } else if (!socketRooms.includes(`${myStreamId}-public`)) {
+          /* only not in public */
+          joinRooms.push(`${myStreamId}-public`)
+        }
+        if (joinRooms.length > 0) {
+          joinAttempts++
+          console.log(
+            "Have to join rooms >> ",
+            joinRooms,
+            ` attempt: ${joinAttempts}`
+          )
+          /* join rooms is any room to join */
+          socket.emit("putting-me-in-these-rooms", joinRooms, (response) => {
+            // sessionStorage.setItem(
+            //   "socket-rooms",
+            //   joinRooms,
+            //   JSON.stringify([...socketRooms, ...joinRooms])
+            // )
+            if (response.status === "ok") {
+              joinAttempts = 0
+              joinRooms = []
+            }
+          })
+        }
+      } else {
+        console.log("Not live but listening")
+      }
+    }, 3000)
+    return () => {
+      clearInterval(myKeepInRoomLoop)
+    }
+  }, [isLiveNowRef])
 
   const scrollOnChat = useCallback((scrollType) => {
     // document.getElementById("for-scroll-into-view").scrollIntoView({
@@ -380,6 +446,9 @@ function Live() {
     } else {
       chatInputRef.current.value = `@${username} `
     }
+    document.getElementById("message-input").scrollIntoView({
+      block: "center",
+    })
   }
 
   useEffect(() => {
@@ -507,6 +576,9 @@ function Live() {
             data: data,
           })
         })
+        return () => {
+          socket.off("viewer-requested-for-call-received")
+        }
       }
     }
   }, [socketCtx.socketSetupDone])
@@ -899,7 +971,10 @@ function Live() {
               <div id="for-scroll-into-view"></div>
             </div>
 
-            <div className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-border-b tw-border-first-color">
+            <div
+              id="message-input"
+              className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-border-b tw-border-first-color"
+            >
               <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
                 <input
                   className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"

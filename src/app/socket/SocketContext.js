@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react"
 import io from "../../socket/socket"
-import { imageDomainURL } from "../../../dreamgirl.config"
 
 const SocketContext = createContext({
   socketInstance: null,
@@ -14,20 +13,15 @@ const SocketContext = createContext({
 let socketSetup = false
 export const SocketContextProvider = ({ children }) => {
   const [socketInstance, setSocketInstance] = useState(null)
+  /**
+   * realtime knowledge of is socket connected or not will come when,
+   * when i will need to stock message to send when reconnection happens
+   */
   const [isConnected, setIsConnected] = useState(false)
   const [socketSetupDone, setSocketSetupDone] = useState(false)
 
   const initSocket = () => {
-    let url
-    if (window.location.hostname.includes("dreamgirllive")) {
-      /* should use hosted backend */
-      url = "https://backend.dreamgirllive.com"
-    } else {
-      /* should use local or imageDomainUrl */
-      url = imageDomainURL
-    }
-    // const socket = io.connect(url)
-    const socket = io.connect(imageDomainURL)
+    const socket = io.connect(process.env.NEXT_PUBLIC_BACKEND_URL)
     if (!socketSetupDone) {
       setSocketSetupDone(true)
     }
@@ -37,7 +31,6 @@ export const SocketContextProvider = ({ children }) => {
       const socketRooms =
         JSON.parse(sessionStorage.getItem("socket-rooms")) || []
       if (socketRooms.length > 0) {
-        // alert("put me in room")
         socket.emit("putting-me-in-these-rooms", socketRooms, (response) => {
           if (response.status === "ok") {
             // setIsConnected(true)

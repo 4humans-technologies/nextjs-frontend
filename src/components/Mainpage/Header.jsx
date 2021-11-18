@@ -153,7 +153,10 @@ function Header(props) {
                       </div>
                     ) : (
                       // login at smaller screen and model
-                      <div className="tw-flex tw-self-center" key="(49KJHjkh98kjjkHG&867678Jhklsd3jklJKh&*^">
+                      <div
+                        className="tw-flex tw-self-center"
+                        key="(49KJHjkh98kjjkHG&867678Jhklsd3jklJKh&*^"
+                      >
                         <button
                           className="tw-mx-4 tw-bg-dark-black tw-shadow-lg tw-rounded-full tw-capitalize tw-px-4 tw-py-2"
                           onClick={updateAuthContext.logout}
@@ -173,7 +176,10 @@ function Header(props) {
                 : [
                     // login at large screen viwer
                     authContext.user.userType == "Viewer" ? (
-                      <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black" key="(iuuiu*&7897687yuiyhy7&uy(*)*0_$R3#@@#!JI^">
+                      <div
+                        className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black"
+                        key="(iuuiu*&7897687yuiyhy7&uy(*)*0_$R3#@@#!JI^"
+                      >
                         <button
                           className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                           onClick={updateAuthContext.logout}
@@ -188,7 +194,7 @@ function Header(props) {
                           />
                           <div className="tw-my-auto tw-ml-2 tw-font-bold">
                             {
-                              authContext.user.user.relatedUser.wallet
+                              authContext.user?.user.relatedUser.wallet
                                 .currentAmount
                             }
                           </div>
@@ -222,7 +228,10 @@ function Header(props) {
                       </div>
                     ) : (
                       // login at large screen model
-                      <div key="(49KJHreii896&*^iokje56e4543455476&*^" className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
+                      <div
+                        key="(49KJHreii896&*^iokje56e4543455476&*^"
+                        className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  "
+                      >
                         <button
                           className="tw-mx-4 tw-px-4 tw-py-2 tw-rounded-full hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                           onClick={updateAuthContext.logout}
@@ -237,7 +246,7 @@ function Header(props) {
                           />
                           <p className="tw-my-auto tw-ml-2">
                             {
-                              authContext.user.user.relatedUser.wallet
+                              authContext.user.user?.relatedUser.wallet
                                 .currentAmount
                             }
                           </p>
@@ -288,7 +297,10 @@ function Header(props) {
               screenWidth < 600 ? (
                 [
                   menu === true ? (
-                    <div key="(49KJHreii896&*^dfsdfsdf9798&*(&pl&*^" className="tw-items-center sm:tw-flex-row tw-flex-col  tw-absolute tw-z-[105] sm:tw-top-0 tw-top-32 tw-right-1  tw-bg-second-color tw-w-9/12 tw-py-4 tw-px-4">
+                    <div
+                      key="(49KJHreii896&*^dfsdfsdf9798&*(&pl&*^"
+                      className="tw-items-center sm:tw-flex-row tw-flex-col  tw-absolute tw-z-[105] sm:tw-top-0 tw-top-32 tw-right-1  tw-bg-second-color tw-w-9/12 tw-py-4 tw-px-4"
+                    >
                       <div className="tw-flex tw-justify-between tw-px-2  ">
                         <div className="tw-flex tw-items-center">
                           <div className="tw-rounded-full tw-bg-green-400 tw-h-2 tw-w-2 tw-flex tw-items-center tw-justify-center"></div>
@@ -315,11 +327,17 @@ function Header(props) {
                       </button>
                     </div>
                   ) : (
-                    <div key="(49kljkl897897&*^786kjkj^%6jkhjh%^$&*^" className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg"></div>
+                    <div
+                      key="(49kljkl897897&*^786kjkj^%6jkhjh%^$&*^"
+                      className="tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 sm:tw-bg-first-color tw-bg-first-color tw-shadow-lg"
+                    ></div>
                   ),
                 ]
               ) : (
-                <div key="(sdsad54545as&*^786kjkj^%6jkhjh%^$&*^" className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
+                <div
+                  key="(sdsad54545as&*^786kjkj^%6jkhjh%^$&*^"
+                  className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg"
+                >
                   <button
                     className="tw-rounded-full md:tw-py-3 tw-py-2 tw-px-4 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2 tw-text-sm md:tw-text-base"
                     onClick={() => router.push("/auth/viewerRegistration")}

@@ -30,7 +30,6 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // console.log(password, username)
     fetch("/api/website/login", {
       method: "POST",
       cors: "include",
@@ -44,36 +43,48 @@ function Login() {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        //debugger
         if (data.actionStatus === "success") {
-          localStorage.setItem("jwtToken", data.token)
-          localStorage.setItem(
-            "jwtExpiresIn",
-            Date.now() + data.expiresIn * 60 * 60 * 1000
-          )
-          localStorage.setItem("rootUserId", data.rootUserId)
-          localStorage.setItem("relatedUserId", data.relatedUserId)
-          localStorage.setItem("userType", data.userType)
-          localStorage.setItem("user", JSON.stringify(data.user))
-          updateCtx.updateViewer({
-            rootUserId: data.userId,
-            relatedUserId: data.relatedUserId,
-            token: data.token,
-            isLoggedIn: true,
-            user: {
-              userType: data.userType,
-              user: data.user,
-            },
-            jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
-            streamRoom: data.streamRoom,
-          })
-          //debugger
-          // sessionStorage.clear()
+          const localLoginWork = () => {
+            localStorage.setItem("jwtToken", data.token)
+            localStorage.setItem(
+              "jwtExpiresIn",
+              Date.now() + data.expiresIn * 60 * 60 * 1000
+            )
+            localStorage.setItem("rootUserId", data.rootUserId)
+            localStorage.setItem("relatedUserId", data.relatedUserId)
+            localStorage.setItem("userType", data.userType)
+            localStorage.setItem("user", JSON.stringify(data.user))
+            updateCtx.updateViewer({
+              rootUserId: data.userId,
+              relatedUserId: data.relatedUserId,
+              token: data.token,
+              isLoggedIn: true,
+              user: {
+                userType: data.userType,
+                user: data.user,
+              },
+              jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
+            })
+          }
 
-          /* obselete now will update client info on the server itself */
-          // io.getSocket().close()
-          // io.getSocket().open()
-
+          if (!data.wasSocketUpdated) {
+            const socket = io.getSocket()
+            socket.emit(
+              "update-client-info",
+              {
+                action: "login",
+                token: data.token,
+              },
+              (result) => {
+                if (result.ok) {
+                  /* do action */
+                  localLoginWork()
+                }
+              }
+            )
+          } else {
+            localLoginWork()
+          }
           // 👇👇 abhi ke liye is feature ko pause pe rakhaa hai bro
           // router.push(ctx.loginSuccessUrl)
         }

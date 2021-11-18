@@ -78,6 +78,7 @@ function ViewerScreen(props) {
   const updateCtx = useAuthUpdateContext()
   const spinnerCtx = useSpinnerContext()
   const modalCtx = useModalContext()
+  const isLiveNowRef = useRef("not-init")
 
   const [callEndDetails, setCallEndDetails] = useState(null)
   const [othersCall, setOthersCall] = useState({
@@ -116,6 +117,107 @@ function ViewerScreen(props) {
     leaveAndCloseTracks,
   } = useAgora(client, "audience", props.callType || "")
 
+  useEffect(() => {
+    const tellIfLive = () => {
+      if (isModelOffline || remoteUsers?.length === 0) {
+        /* not live */
+        return false
+      } else {
+        if (!joinState) {
+          /* not live| iff isModelNotOffline && !joined */
+          return false
+        } else {
+          /* live| iff isModelNotOffline && joinState */
+          return true
+        }
+      }
+    }
+    isLiveNowRef.current = tellIfLive()
+  }, [joinState, isModelOffline, remoteUsers])
+
+  /* keep checking the rooms */
+  useEffect(() => {
+    const socket = io.getSocket()
+    let joinAttempts = 0
+    let joinRooms = []
+    const myKeepInRoomLoop = setInterval(() => {
+      /* can use this in here 😁😁😁 */
+      /* socket.connected */
+      if (joinAttempts > 5) {
+        return console.log("more than five attempts")
+      }
+
+      /* if live then only check for rooms bro */
+      if (isLiveNowRef.current) {
+        console.log("Live and checking")
+        const socketRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        const myStreamId = sessionStorage.getItem("streamId")
+        const myRelatedUserId = localStorage.getItem("relatedUserId")
+        if (myRelatedUserId) {
+          /* if logged in, check for both is private and public room */
+          if (
+            !socketRooms.includes(`${myStreamId}-public`) &&
+            !socketRooms.includes(`${myRelatedUserId}-private`)
+          ) {
+            /* noy in public and private room */
+            if (myStreamId) {
+              if (!joinRooms.includes(`${myStreamId}-public`)) {
+                joinRooms.push(`${myStreamId}-public`)
+              }
+            }
+            if (!joinRooms.includes(`${myRelatedUserId}-private`)) {
+              joinRooms.push(`${myRelatedUserId}-private`)
+            }
+          } else if (!socketRooms.includes(`${myRelatedUserId}-private`)) {
+            /* only not in private */
+            if (!joinRooms.includes(`${myRelatedUserId}-private`)) {
+              joinRooms.push(`${myRelatedUserId}-private`)
+            }
+          } else if (!socketRooms.includes(`${myStreamId}-public`)) {
+            /* only not in public */
+            if (myStreamId) {
+              if (!joinRooms.includes(`${myStreamId}-public`)) {
+                joinRooms.push(`${myStreamId}-public`)
+              }
+            }
+          }
+        } else {
+          /* if un authed */
+          if (!socketRooms.includes(`${myStreamId}-public`)) {
+            /* only not in public */
+            joinRooms.push(`${myStreamId}-public`)
+          }
+        }
+        if (joinRooms.length > 0) {
+          joinAttempts++
+          console.log(
+            "Have to join rooms >> ",
+            joinRooms,
+            ` attempt: ${joinAttempts}`
+          )
+          /* join rooms is any room to join */
+          socket.emit("putting-me-in-these-rooms", joinRooms, (response) => {
+            // sessionStorage.setItem(
+            //   "socket-rooms",
+            //   joinRooms,
+            //   JSON.stringify([...socketRooms, ...joinRooms])
+            // )
+            if (response.status === "ok") {
+              joinAttempts = 0
+              joinRooms = []
+            }
+          })
+        }
+      } else {
+        console.log("Not live but listening")
+      }
+    }, 3000)
+    return () => {
+      clearInterval(myKeepInRoomLoop)
+    }
+  }, [isLiveNowRef])
+
   const toggleMuteMic = () => {
     if (localAudioTrack.muted) {
       /* un mute audio */
@@ -147,8 +249,10 @@ function ViewerScreen(props) {
             return
           }
           if (!localStorage.getItem("rtcToken")) {
+            /* RELOAD */
             return window.location.reload()
           }
+          /*  */
           let url
           if (ctx.isLoggedIn) {
             url = "/api/website/stream/re-join-models-currentstream-authed"
@@ -168,11 +272,16 @@ function ViewerScreen(props) {
             .then((res) => res.json())
             .then((data) => {
               if (data.actionStatus === "success") {
+                sessionStorage.setItem("streamId", data.streamId)
                 join(
                   window.location.pathname.split("/").reverse()[0],
                   localStorage.getItem("rtcToken"),
                   ctx.relatedUserId
-                )
+                ).catch((err) => {
+                  console.error(
+                    "Error joining the stream, something is not right..!"
+                  )
+                })
                 props.setIsChatPlanActive(data.isChatPlanActive)
                 setIsModelOffline(false)
               } else {
@@ -193,7 +302,7 @@ function ViewerScreen(props) {
         }
       }
     }
-  }, [ctx.isLoggedIn])
+  }, [ctx.isLoggedIn, socketCtx.socketSetupDone])
 
   useEffect(() => {
     /* listen for stream end events */
@@ -209,14 +318,16 @@ function ViewerScreen(props) {
           setCallOnGoing(false)
           setPendingCallRequest(false)
           setIsModelOffline(true)
-          const socketRooms =
+          sessionStorage.setItem("streamId", "")
+          /* why need this any way will send room-left event */
+          /* const socketRooms =
             JSON.parse(sessionStorage.getItem("socket-rooms")) || []
           sessionStorage.setItem(
             "socket-rooms",
             JSON.stringify(
               socketRooms.filter((room) => !room.endsWith("-public"))
             )
-          )
+          ) */
         })
       }
       return () => {
@@ -225,7 +336,7 @@ function ViewerScreen(props) {
         }
       }
     }
-  }, [setCallOnGoing])
+  }, [setCallOnGoing, socketCtx.socketSetupDone])
 
   useEffect(() => {
     //debugger
@@ -241,7 +352,6 @@ function ViewerScreen(props) {
 
   /* http fetch request for rtc token */
   useEffect(() => {
-    //debugger
     if (
       socketCtx.setSocketSetupDone &&
       !tokenRequestDoneOnce &&
@@ -270,101 +380,132 @@ function ViewerScreen(props) {
           })
             .then((resp) => resp.json())
             .then((data) => {
+              /* model offline or online need to know chat plan status & get model data */
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
+
+              /* check if model is streaming */
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
               } else {
                 setIsModelOffline(false)
               }
-              setTipMenuActions(data.theModel.tipMenuActions.actions)
-              token = data.rtcToken
+
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
-              console.log("model profile 👉👉 ", data.theModel)
-              props.setIsChatPlanActive(data.isChatPlanActive)
-              const channel = window.location.pathname.split("/").reverse()[0]
-              join(channel, data.rtcToken, ctx.relatedUserId)
+
               sessionStorage.setItem("streamId", data.streamId)
-              updateCtx.updateViewer({
-                rtcToken: data.rtcToken,
-                streamRoom: `${data.streamId}-public`,
+
+              setTipMenuActions(data.theModel.tipMenuActions.actions)
+              join(
+                window.location.pathname.split("/").reverse()[0],
+                data.rtcToken,
+                ctx.relatedUserId
+              ).catch((err) => {
+                console.error(
+                  "Error joining the stream, something is not right..!"
+                )
               })
+              // updateCtx.updateViewer({
+              //   rtcToken: data.rtcToken,
+              //   streamRoom: `${data.streamId}-public`,
+              // })
             })
         } else {
           /* get token  from local storage */
-          const channel = window.location.pathname.split("/").reverse()[0]
-          join(channel, localStorage.getItem("rtcToken"), ctx.relatedUserId)
+          join(
+            window.location.pathname.split("/").reverse()[0],
+            localStorage.getItem("rtcToken"),
+            ctx.relatedUserId
+          ).catch((err) => {
+            console.error("Error joining the stream, something is not right..!")
+          })
         }
       } else {
         if (!localStorage.getItem("unAuthed-user-chat-name")) {
           localStorage.setItem(
             "unAuthed-user-chat-name",
-            `Guest User - ${nanoid(6)} ${
+            `Guest User-${nanoid(8)} ${
               unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
             }`
           )
         }
+        /* check if already have a valid rtc token */
         if (
           !localStorage.getItem("rtcToken") &&
           localStorage.getItem("rtcTokenExpireIn") < Date.now()
         ) {
           /**
-           * fetch RTC token as a un-authenticated user
+           * fetch RTC token as a un-authenticated user, as no valid rtc token found
            */
-          const payload = {
-            /* which models's stream to join */
-            modelId: window.location.pathname.split("/").reverse()[0],
-          }
           fetch("/api/website/token-builder/unauthed-viewer-join-stream", {
             method: "POST",
             cors: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+              modelId: window.location.pathname.split("/").reverse()[0],
+            }),
           })
             .then((resp) => resp.json())
             .then((data) => {
-              //debugger
+              /* 
+                is model offline or online, we need model data & chat plan stat
+              */
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
+
+              /* check if model is offline */
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
               } else {
                 setIsModelOffline(false)
               }
-              setTipMenuActions(data.theModel.tipMenuActions.actions)
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
-              console.log("model profile 👉👉 ", data.theModel)
-              props.setIsChatPlanActive(data.isChatPlanActive)
-              const channel = window.location.pathname.split("/").reverse()[0]
+
               sessionStorage.setItem("streamId", data.streamId)
-              join(channel, data.rtcToken, data.unAuthedUserId)
+
+              /* as 👇 this is async */
+              join(
+                window.location.pathname.split("/").reverse()[0],
+                data.rtcToken,
+                data.unAuthedUserId
+              ).catch((err) => {
+                console.error(
+                  "Error joining the stream, something is not right..!"
+                )
+              })
+              setTipMenuActions(data.theModel.tipMenuActions.actions)
+
+              /* if new Un-Authed user was registered */
               if (data.newUnAuthedUserCreated) {
                 /* if new viewer was created save the _id in localstorage */
                 localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
-                updateCtx.updateViewer({
-                  unAuthedUserId: data.unAuthedUserId,
-                  rtcToken: data.rtcToken,
-                  streamRoom: `${data.streamId}-public`,
-                })
+                // updateCtx.updateViewer({
+                //   unAuthedUserId: data.unAuthedUserId,
+                //   rtcToken: data.rtcToken,
+                //   // streamRoom: `${data.streamId}-public`,
+                // })
               } else {
-                updateCtx.updateViewer({
-                  rtcToken: data.rtcToken,
-                  streamRoom: `${data.streamId}-public`,
-                })
+                // updateCtx.updateViewer({
+                //   rtcToken: data.rtcToken,
+                //   // streamRoom: `${data.streamId}-public`,
+                // })
               }
             })
             .catch((err) => alert(err.message))
         } else {
+          /* if already have a token no need to fetch new one */
           const channel = window.location.pathname.split("/").reverse()[0]
           join(
             channel,
             localStorage.getItem("rtcToken"),
             localStorage.getItem("unAuthedUserId")
-          )
+          ).catch((err) => {
+            console.error("Error joining the stream, something is not right..!")
+          })
         }
       }
     }
@@ -663,7 +804,10 @@ function ViewerScreen(props) {
       {/*  */}
 
       {/* not streaming && not on call | model circles | offline mode*/}
-      {isModelOffline && modelProfileData && !joinState && !callOnGoing ? (
+      {isModelOffline &&
+      modelProfileData &&
+      !callOnGoing &&
+      remoteUsers?.length === 0 ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4 md:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(70,70,70,0.1)]">
           <p className="tw-text-white-color tw-font-medium tw-text-center">
             The model is currently offline 😞😞
@@ -682,25 +826,31 @@ function ViewerScreen(props) {
       {/* not streaming && not on call | model circles | offline mode*/}
       {/* model image */}
 
-      {isModelOffline && modelProfileData && !joinState && !callOnGoing && (
-        <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
-          <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
-            <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
-              <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
-                <img
-                  src={modelProfileData.profileImage}
-                  alt=""
-                  className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
-                />
+      {isModelOffline &&
+        modelProfileData &&
+        !callOnGoing &&
+        remoteUsers?.length === 0 && (
+          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
+            <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
+              <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
+                <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
+                  <img
+                    src={modelProfileData.profileImage}
+                    alt=""
+                    className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* not streaming && not on call | model circles | offline mode*/}
       {/* model offline status */}
-      {isModelOffline && modelProfileData && !joinState && !callOnGoing ? (
+      {isModelOffline &&
+      modelProfileData &&
+      !callOnGoing &&
+      remoteUsers?.length === 0 ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-4 md:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(255,255,255,0.1)]">
           <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
             {modelProfileData.offlineStatus}
