@@ -27,47 +27,31 @@ function ViewerToken() {
       .then((res) => res.json())
       .then((data) => {
         if (data.actionStatus === "success") {
-          const lcUser = JSON.parse(localStorage.getItem("user"))
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...lcUser,
-              relatedUser: {
-                ...lcUser.relatedUser,
-                wallet: {
-                  ...data.wallet,
-                },
-              },
-            })
-          )
+          document.getElementById("money-debit-audio").play()
+          authUpdateCtx.updateWallet(+data.wallet.currentAmount, "set")
           setBuyStatus({
             message: data.message,
             requestedToBuy: true,
             buySuccess: true,
           })
-          authUpdateCtx.updateNestedPaths((prev) => ({
-            ...prev,
-            user: {
-              ...prev.user,
-              user: {
-                ...lcUser,
-                relatedUser: {
-                  ...lcUser.relatedUser,
-                  wallet: {
-                    ...data.wallet,
-                  },
-                },
-              },
-            },
-          }))
-          alert("Coins redeem successful 😀😀")
         }
       })
-      .catch((err) => alert(err.message))
+      .catch((err) => {
+        setBuyStatus({
+          message: err.message,
+          requestedToBuy: true,
+          buySuccess: false,
+        })
+      })
   }
 
   return (
     <div>
+      <audio
+        preload = "true"
+        src="/audio/money-debit.mp3"
+        id="money-debit-audio"
+      ></audio>
       <div className="tw-text-white tw-bg-first-color tw-h-screen tw-pt-[10rem]">
         <Header />
         <div className="tw-text-center md:tw-mx-auto tw-w-full tw-mx-3 md:tw-w-6/12 tw-bg-second-color tw-rounded-md">
@@ -86,7 +70,7 @@ function ViewerToken() {
           <div className="">
             <button
               onClick={handleRedeemRequest}
-              className="tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-mt-10 tw-rounded-full tw-mb-8"
+              className="tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-mt-10 tw-rounded-full tw-mb-4"
             >
               Redeem Code
             </button>
@@ -95,11 +79,11 @@ function ViewerToken() {
             <p
               className={
                 buyStatus.buySuccess
-                  ? "tw-py-2 tw-text-green-600"
-                  : "tw-py-2 tw-text-red-600"
+                  ? "tw-py-2 tw-text-green-600 tw-font-semibold tw-text-xl"
+                  : "tw-py-2 tw-text-red-600 tw-font-semibold tw-text-xl"
               }
             >
-              {buyStatus}
+              {buyStatus.message}
             </p>
           )}
         </div>

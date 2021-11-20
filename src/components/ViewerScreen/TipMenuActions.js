@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 
 function TipAction(props) {
   return (
@@ -18,6 +18,7 @@ function TipAction(props) {
 
 function TipMenuActions(props) {
   const { tipMenuActions, setTipMenuActions, onClickSendTipMenu } = props
+
   return (
     <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-10 tw-h-full tw-ml-1 tw-pb-4">
       {tipMenuActions?.length > 0 ? (
@@ -38,4 +39,4 @@ function TipMenuActions(props) {
   )
 }
 
-export default TipMenuActions
+export default React.memo(TipMenuActions)

@@ -115,7 +115,7 @@ function ViewerScreen(props) {
     leaveDueToPrivateCall,
     switchViewerToHost,
     leaveAndCloseTracks,
-  } = useAgora(client, "audience", props.callType || "")
+  } = useAgora(client, "audience", "videoCall")
 
   useEffect(() => {
     const tellIfLive = () => {
@@ -571,6 +571,7 @@ function ViewerScreen(props) {
           setPendingCallEndRequest(false)
           setCallOnGoing(false)
           await leaveAndCloseTracks()
+          await client.setClientRole("audience")
           setIsModelOffline(true)
           offCallListeners()
         })
@@ -590,13 +591,13 @@ function ViewerScreen(props) {
           if (data.response !== "rejected") {
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               /* dont kick of, switch role to host */
-              setPendingCallRequest(false)
-              setCallOnGoing(true)
-              setCallType(data.callType)
               sessionStorage.removeItem("callId")
               sessionStorage.setItem("callId", data.callId)
+              setPendingCallRequest(false)
+              setCallType(data.callType)
+              setCallOnGoing(true)
               setUpCallListeners()
-              await switchViewerToHost()
+              await switchViewerToHost() /* actually switch viewer to host and create tracks */
             } else {
               /* unsubscribe stream and close connection to agora */
               localStorage.removeItem("rtcToken")
@@ -730,6 +731,7 @@ function ViewerScreen(props) {
         setIsModelOffline(true)
         offCallListeners()
         await leaveAndCloseTracks()
+        await client.setClientRole("audience")
       })
       .catch((err) => alert(err.message))
 
@@ -768,16 +770,14 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* on "any-call" with model */}
-      {callOnGoing &&
-      callType &&
-      !isModelOffline &&
-      remoteUsers?.length === 1 ? (
+      {callOnGoing && callType && !isModelOffline && remoteUsers[0] ? (
         <VideoPlayer
           videoTrack={
             callType === "videoCall" ? remoteUsers[0]?.videoTrack : null
           }
           audioTrack={remoteUsers[0].audioTrack} //error of session storage is going
           playAudio={true}
+          config={callType}
         />
       ) : null}
 
@@ -808,7 +808,7 @@ function ViewerScreen(props) {
       modelProfileData &&
       !callOnGoing &&
       remoteUsers?.length === 0 ? (
-        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4 md:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(70,70,70,0.1)]">
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-6  sm:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
           <p className="tw-text-white-color tw-font-medium tw-text-center">
             The model is currently offline 😞😞
           </p>
@@ -816,7 +816,7 @@ function ViewerScreen(props) {
       ) : null}
 
       {callOnGoing && callType === "audioCall" ? (
-        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4 md:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)]">
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4  sm:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
           <p className="tw-text-white-color tw-font-medium tw-text-center">
             AudioCall With Model
           </p>
@@ -830,7 +830,7 @@ function ViewerScreen(props) {
         modelProfileData &&
         !callOnGoing &&
         remoteUsers?.length === 0 && (
-          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
+          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px]">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
               <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
                 <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
@@ -851,7 +851,7 @@ function ViewerScreen(props) {
       modelProfileData &&
       !callOnGoing &&
       remoteUsers?.length === 0 ? (
-        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-4 md:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(255,255,255,0.1)]">
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-32 sm:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
           <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
             {modelProfileData.offlineStatus}
           </p>
@@ -859,7 +859,7 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* on call local preview */}
-      {callOnGoing && callType === "videoCall" && joinState ? (
+      {callOnGoing && callType === "videoCall" ? (
         <div
           id="self-video-container"
           className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"

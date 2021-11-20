@@ -43,6 +43,7 @@ const chatWindowOptions = {
 
 function LiveScreen(props) {
   const chatInputRef = useRef()
+  const chatWindowRef = useRef()
 
   const modalCtx = useModalContext()
   const authCtx = useAuthContext()
@@ -62,6 +63,10 @@ function LiveScreen(props) {
   const [callType, setCallType] = useState("videoCall")
   const [pendingCallRequest, setPendingCallRequest] = useState(false)
   const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
+
+  useEffect(() => {
+    chatWindowRef.current = chatWindow
+  }, [chatWindow])
 
   const scrollOnChat = useCallback((scrollType) => {
     // document.getElementById("for-scroll-into-view").scrollIntoView({
@@ -228,28 +233,11 @@ function LiveScreen(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.actionStatus) {
-          updateCtx.updateNestedPaths((prevState) => {
-            return {
-              ...prevState,
-              user: {
-                ...prevState.user,
-                user: {
-                  ...prevState.user.user,
-                  relatedUser: {
-                    ...prevState.user.user.relatedUser,
-                    wallet: {
-                      ...prevState.user.user.relatedUser.wallet,
-                      currentAmount:
-                        prevState.user.user.relatedUser.wallet.currentAmount -
-                        activity.price,
-                    },
-                  },
-                },
-              },
-            }
-          })
+        if (data.actionStatus === "success") {
+          updateCtx.updateWallet(activity.price, "dec")
           setChatWindow(chatWindowOptions.PUBLIC)
+        } else {
+          alert("Activity was not requested")
         }
       })
       .catch((err) => alert(err.message))
@@ -278,14 +266,40 @@ function LiveScreen(props) {
         setPendingCallRequest={setPendingCallRequest}
         pendingCallRequest={pendingCallRequest}
         setCallType={setCallType}
+        model={props.modelProfileData}
       />
     )
-  }, [modalCtx.showModalWithContent, pendingCallRequest, modalCtx.hideModal])
+  }, [
+    modalCtx.showModalWithContent,
+    pendingCallRequest,
+    modalCtx.hideModal,
+    props.modelProfileData,
+  ])
 
   return (
     <>
-      <div className="sm:tw-flex sm:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans  tw-mt-28">
-        <div className="tw-relative tw-bg-dark-black tw-mt-4 sm:tw-w-8/12 tw-w-full sm:tw-h-[37rem] tw-h-[30rem]">
+      <audio
+        preload="true"
+        src="/audio/call-request.mp3"
+        id="call-request-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/private-message.mp3"
+        id="private-message-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/superchat-2.mp3"
+        id="superchat-2-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/superchat.mp3"
+        id="superchat-audio"
+      ></audio>
+      <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans tw-mt-28">
+        <div className="tw-relative tw-bg-dark-black tw-mt-4 md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
 
           <ViewerScreen
@@ -297,7 +311,6 @@ function LiveScreen(props) {
             setTipMenuActions={setTipMenuActions}
             setModelProfileData={props.setModelProfileData}
             callOnGoing={callOnGoing}
-            callType={callType}
             pendingCallRequest={pendingCallRequest}
             isModelOffline={isModelOffline}
             modelProfileData={props.modelProfileData}
@@ -414,8 +427,8 @@ function LiveScreen(props) {
             </div>
           ) : null}
         </div>
-        <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-4/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-          <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative">
+        <div className="md:tw-mt-4 tw-mt-2 tw-bg-second-color md:tw-w-4/12 md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+          <div className="tw-flex tw-justify-around md:tw-justify-between tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative">
             <button
               className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
               onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
@@ -472,7 +485,7 @@ function LiveScreen(props) {
                   scrollOnChat={scrollOnChat}
                   isModelOffline={isModelOffline}
                   addAtTheRate={addAtTheRate}
-                  inFocus={chatWindow === chatWindowOptions.PUBLIC}
+                  chatWindowRef={chatWindowRef}
                 />
               </div>
               <div
@@ -486,9 +499,8 @@ function LiveScreen(props) {
                   scrollOnChat={scrollOnChat}
                   hasActivePlan={isChatPlanActive}
                   setIsChatPlanActive={setIsChatPlanActive}
-                  inFocus={chatWindow === chatWindowOptions.PRIVATE}
                   modalCtx={modalCtx}
-                  isModelOffline={isModelOffline}
+                  chatWindowRef={chatWindowRef}
                 />
               </div>
               <div
@@ -504,7 +516,6 @@ function LiveScreen(props) {
                   tipMenuActions={tipMenuActions}
                   setTipMenuActions={setTipMenuActions}
                   onClickSendTipMenu={onClickSendTipMenu}
-                  inFocus={chatWindow === chatWindowOptions.PUBLIC}
                 />
               </div>
               <div

@@ -7,7 +7,6 @@ import { useSocketContext } from "../../app/socket/SocketContext"
 
 function Token() {
   const [token, setToken] = useState("")
-  const ctx = useSocketContext()
   const modalCtx = useModalContext()
   const authContext = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
@@ -45,41 +44,7 @@ function Token() {
         // alert(data.message)
         // update the authCtx & localstorage with new wallet amount
         modalCtx.hideModal()
-        const lcUser = JSON.parse(localStorage.getItem("user"))
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...lcUser,
-            relatedUser: {
-              ...lcUser.relatedUser,
-              wallet: {
-                ...lcUser.relatedUser.wallet,
-                currentAmount:
-                  prevState.user.user.relatedUser.wallet.currentAmount - token,
-              },
-            },
-          })
-        )
-        authUpdateCtx.updateNestedPaths((prevState) => {
-          return {
-            ...prevState,
-            user: {
-              ...prevState.user,
-              user: {
-                ...prevState.user.user,
-                relatedUser: {
-                  ...prevState.user.user.relatedUser,
-                  wallet: {
-                    ...prevState.user.user.relatedUser.wallet,
-                    currentAmount:
-                      prevState.user.user.relatedUser.wallet.currentAmount -
-                      token,
-                  },
-                },
-              },
-            },
-          }
-        })
+        authUpdateCtx.updateWallet(token, "dec")
       })
       .catch((err) => console.log(err))
   }

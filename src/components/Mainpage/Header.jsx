@@ -57,9 +57,6 @@ function Header(props) {
     profileImage = authContext.user.user.relatedUser.profileImage
   }
 
-  // When ever the Heder reloada sidebarshow is false
-  console.log(`Model in header ${props.liveModels}`)
-
   return (
     <div>
       <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 tw-py-4 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[410]">

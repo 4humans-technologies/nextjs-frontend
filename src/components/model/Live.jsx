@@ -47,23 +47,14 @@ import PrivateChatWrapper from "../PrivateChat/PrivateChatWrapper"
 let token
 let client
 let rtcTokenExpireIn
-const callType =
-  "videoCall" /* to tell useAgora if want to create videoTrack/audioTrack */
 
 /**
  * CREATING AGORA CLIENT
  */
-const createAgoraClient = (extraOptions) => {
-  if (!extraOptions) {
-    extraOptions = {}
-  }
-  const clientOptions = { codec: "h264", mode: "live", ...extraOptions }
-  client = AgoraRTC.createClient(clientOptions)
-  client.setClientRole("host")
-}
 
-/* Init Client */
-createAgoraClient()
+const clientOptions = { codec: "h264", mode: "live" }
+client = AgoraRTC.createClient(clientOptions)
+client.setClientRole("host")
 
 const chatWindowOptions = {
   PRIVATE: "private",
@@ -90,6 +81,8 @@ const pendingCallInitialData = {
 }
 
 function Live() {
+  const chatWindowRef = useRef()
+
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
   const spinnerCtx = useSpinnerContext()
@@ -98,12 +91,20 @@ function Live() {
   const [fullScreen, setFullScreen] = useState(false)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
 
+  useEffect(() => {
+    chatWindowRef.current = chatWindow
+  }, [chatWindow])
+
   const [pendingCallRequest, setPendingCallRequest] = useState({
     pending: false,
-    callType: "videoCall",
-    data: {
-      relatedUserId: null,
-    },
+    callRequests: [],
+    /* requests: [
+      {
+        callType:null,
+        username:"string",
+        viewer:"viewerDoc"
+      }
+    ] */
   })
   const [callOnGoing, setCallOnGoing] = useState(false)
   const [callType, setCallType] = useState("videoCall")
@@ -129,7 +130,7 @@ function Live() {
     remoteUsers,
     startLocalCameraPreview,
     leaveAndCloseTracks,
-  } = useAgora(client, "host", callType)
+  } = useAgora(client, "host", "videoCall")
 
   const toggleMuteMic = () => {
     if (localAudioTrack.muted) {
@@ -166,55 +167,68 @@ function Live() {
     const myKeepInRoomLoop = setInterval(() => {
       /* can use this in here 😁😁😁 */
       /* socket.connected */
-
-      /* if live then only check for rooms bro */
-      if (joinAttempts > 5) {
-        return console.log("more than five attempts")
-      }
-      if (isLiveNowRef.current) {
-        const myStreamId = sessionStorage.getItem("streamId")
-        console.log("Live and checking")
-        const socketRooms =
-          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-        const myRelatedUserId = localStorage.getItem("relatedUserId")
-        if (
-          !socketRooms.includes(`${myStreamId}-public`) &&
-          !socketRooms.includes(`${myRelatedUserId}-private`)
-        ) {
-          /* noy in public and private room */
-          joinRooms.push(`${myStreamId}-public`)
-          joinRooms.push(`${myRelatedUserId}-private`)
-        } else if (!socketRooms.includes(`${myRelatedUserId}-private`)) {
-          /* only not in private */
-          joinRooms.push(`${myRelatedUserId}-private`)
-        } else if (!socketRooms.includes(`${myStreamId}-public`)) {
-          /* only not in public */
-          joinRooms.push(`${myStreamId}-public`)
+      if (socket.connected) {
+        /* if live then only check for rooms bro */
+        if (joinAttempts > 5) {
+          return console.log("more than five attempts")
         }
-        if (joinRooms.length > 0) {
-          joinAttempts++
-          console.log(
-            "Have to join rooms >> ",
-            joinRooms,
-            ` attempt: ${joinAttempts}`
-          )
-          /* join rooms is any room to join */
-          socket.emit("putting-me-in-these-rooms", joinRooms, (response) => {
-            // sessionStorage.setItem(
-            //   "socket-rooms",
-            //   joinRooms,
-            //   JSON.stringify([...socketRooms, ...joinRooms])
-            // )
-            if (response.status === "ok") {
-              joinAttempts = 0
-              joinRooms = []
-            }
-          })
+        if (isLiveNowRef.current) {
+          const myStreamId = sessionStorage.getItem("streamId")
+          console.log("Live and checking")
+          const socketRooms =
+            JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+          const myRelatedUserId = localStorage.getItem("relatedUserId")
+          if (
+            !socketRooms.includes(`${myStreamId}-public`) &&
+            !socketRooms.includes(`${myRelatedUserId}-private`)
+          ) {
+            /* noy in public and private room */
+            joinRooms.push(`${myStreamId}-public`)
+            joinRooms.push(`${myRelatedUserId}-private`)
+          } else if (!socketRooms.includes(`${myRelatedUserId}-private`)) {
+            /* only not in private */
+            joinRooms.push(`${myRelatedUserId}-private`)
+          } else if (!socketRooms.includes(`${myStreamId}-public`)) {
+            /* only not in public */
+            joinRooms.push(`${myStreamId}-public`)
+          }
+          if (joinRooms.length > 0) {
+            joinAttempts++
+            console.log(
+              "Have to join rooms >> ",
+              joinRooms,
+              ` attempt: ${joinAttempts}`
+            )
+            /* join rooms is any room to join */
+            socket.emit("putting-me-in-these-rooms", joinRooms, (response) => {
+              // sessionStorage.setItem(
+              //   "socket-rooms",
+              //   joinRooms,
+              //   JSON.stringify([...socketRooms, ...joinRooms])
+              // )
+              if (response.status === "ok") {
+                joinAttempts = 0
+                joinRooms = []
+              }
+            })
+          }
+        } else {
+          console.log("Not live but listening")
         }
       } else {
-        console.log("Not live but listening")
+        console.log("socket is not connected", "color:green")
       }
+      /* else if (!socket.connected && !reconnectInProgress) {
+        // connect to the socket it's nesscssery
+        reconnectInProgress = true
+        const resetOnReconnect = () => {
+          reconnectInProgress = false
+        }
+        socket.once("connect", resetOnReconnect)
+        io.connect()
+      } */
     }, 3000)
+
     return () => {
       clearInterval(myKeepInRoomLoop)
     }
@@ -278,9 +292,10 @@ function Live() {
 
     if (
       !localStorage.getItem("rtcToken") &&
-      localStorage.getItem("rtcTokenExpireIn") <= Date.now() + 10000 &&
+      +localStorage.getItem("rtcTokenExpireIn") <= Date.now() + 180000 &&
       ctx.loadedFromLocalStorage
     ) {
+      /* if no token or expired token, fetch new token */
       if (ctx.isLoggedIn === true && ctx.user.userType === "Model") {
         fetch("/api/website/token-builder/create-stream-and-gen-token", {
           method: "POST",
@@ -290,26 +305,24 @@ function Live() {
           },
         })
           .then((resp) => {
-            //debugger
             return resp.json()
           })
           .then((data) => {
-            //debugger
             sessionStorage.setItem("liveNow", "true")
             token = data.rtcToken
             rtcTokenExpireIn = data.privilegeExpiredTs
             localStorage.setItem("rtcToken", data.rtcToken)
-            localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+            localStorage.setItem(
+              "rtcTokenExpireIn",
+              +data.privilegeExpiredTs * 1000
+            )
             sessionStorage.setItem("streamId", data.streamId)
             return join(ctx.relatedUserId, token, ctx.relatedUserId)
-          })
-          .then((_result) => {
-            /* successfully joined the channel */
           })
           .catch((error) => console.log(error))
       }
     } else {
-      /* fetch request for status update not for rtc token */
+      /* have a valid token, fetch request for status update not for rtc token */
       fetch("/api/website/stream/create-stream-without-token")
         .then((resp) => {
           return resp.json()
@@ -318,7 +331,7 @@ function Live() {
           //debugger
           sessionStorage.setItem("liveNow", "true")
           sessionStorage.setItem("streamId", data.streamId)
-          join(
+          return join(
             ctx.relatedUserId,
             localStorage.getItem("rtcToken"),
             ctx.relatedUserId
@@ -507,20 +520,25 @@ function Live() {
 
   const handleModelResponse = (response, relatedUserId, callType) => {
     /* can set encryption config */
-    debugger
     if (response === "rejected") {
       /* 
-          if call rejected then directly emit
-        */
+          if call rejected then directly emit event via socket no need for http request
+      */
+
       io.getSocket().emit("model-call-request-response-emitted", {
         response: response,
         relatedUserId: relatedUserId,
         callType: callType,
         room: `${sessionStorage.getItem("streamId")}-public`,
       })
-      setPendingCallRequest({
-        pending: false,
-        callType: null,
+      setPendingCallRequest((prev) => {
+        prev.pending = false
+
+        prev.callRequests.filter(
+          (request) => request.viewer.relatedUser._id !== relatedUserId
+        )
+
+        return { ...prev }
       })
     } else {
       fetch("/api/website/stream/accepted-call-request", {
@@ -540,9 +558,13 @@ function Live() {
         .then((res) => res.json())
         .then((data) => {
           // data.callStartTs
-          setPendingCallRequest({
-            pending: false,
-            callType: null,
+          setPendingCallRequest((prev) => {
+            prev.pending = false
+            prev.callRequests.filter(
+              (request) => request.viewer.relatedUser._id !== relatedUserId
+            )
+
+            return { ...prev }
           })
           setCallType(callType)
           setCallOnGoing(true)
@@ -565,11 +587,12 @@ function Live() {
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
-      /* listen for viewer call request */
+      /* listen for viewer call request with all the details of the viewer */
       const socket = io.getSocket()
-      if (!socket.hasListeners("viewer-requested-for-call-received")) {
-        socket.on("viewer-requested-for-call-received", (data) => {
+      if (!socket.hasListeners("viewer-requested-for-call-received-private")) {
+        socket.on("viewer-requested-for-call-received-private", (data) => {
           // alert("call request received from viewer!")
+          document.getElementById("call-request-audio").play()
           setPendingCallRequest({
             callType: data.callType,
             pending: true,
@@ -577,7 +600,7 @@ function Live() {
           })
         })
         return () => {
-          socket.off("viewer-requested-for-call-received")
+          socket.off("viewer-requested-for-call-received-private")
         }
       }
     }
@@ -634,11 +657,37 @@ function Live() {
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div>
       <Header />
+      <audio
+        preload="true"
+        src="/audio/call-request.mp3"
+        id="call-request-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/private-message.mp3"
+        id="private-message-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/superchat-2.mp3"
+        id="superchat-2-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/superchat.mp3"
+        id="superchat-audio"
+      ></audio>
+      <audio
+        preload
+        src="/audio/money-debit.mp3"
+        id="money-debit-audio"
+      ></audio>
       {pendingCallRequest.pending && (
         <div className="tw-px-6 tw-py-4 tw-text-white-color tw-font-semibold tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
           <div className="tw-flex tw-justify-center tw-items-center">
             <p className="tw-mx-2">
-              Incoming {pendingCallRequest.callType} from viewer
+              Incoming {pendingCallRequest[0].callType} from{" "}
+              {pendingCallRequest[0].viewer.username}
             </p>
             <Button
               className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
@@ -646,8 +695,8 @@ function Live() {
               onClick={() =>
                 handleModelResponse(
                   "accepted",
-                  pendingCallRequest.data.relatedUserId,
-                  pendingCallRequest.callType
+                  pendingCallRequest[0].viewer.relatedUser._id,
+                  pendingCallRequest[0].callType
                 )
               }
             >
@@ -659,8 +708,8 @@ function Live() {
               onClick={() =>
                 handleModelResponse(
                   "rejected",
-                  pendingCallRequest.data.relatedUserId,
-                  pendingCallRequest.callType
+                  pendingCallRequest[0].viewer.relatedUser._id,
+                  pendingCallRequest[0].callType
                 )
               }
             >
@@ -705,6 +754,7 @@ function Live() {
                 }
                 audioTrack={remoteUsers[0].audioTrack}
                 playAudio={true}
+                config={"videoCall"}
               />
             ) : null}
 
@@ -819,9 +869,9 @@ function Live() {
                     </Button>
                   )}
                   {joinState && (
-                    <span className="">
+                    <span className="tw-relative tw-z-[390]">
                       <p
-                        className="tw-px-3 tw-py-1.5 tw-rounded tw-font-semibold tw-bg-[rgba(20,20,20,0.75)] tw-text-white-color"
+                        className="tw-px-3 tw-py-1.5 tw-rounded tw-font-semibold tw-bg-[rgba(20,20,20,0.75)] tw-text-white-color tw-z-[110]"
                         id="stream-timer"
                       >
                         00:00
@@ -930,6 +980,7 @@ function Live() {
                   <PublicChat
                     scrollOnChat={scrollOnChat}
                     addAtTheRate={addAtTheRate}
+                    chatWindowRef={chatWindowRef}
                   />
                 </div>
                 <div
@@ -943,7 +994,7 @@ function Live() {
                 >
                   <PrivateChatWrapper
                     scrollOnChat={scrollOnChat}
-                    inFocus={chatWindow === chatWindowOptions.PRIVATE}
+                    chatWindowRef={chatWindowRef}
                     newChatNotifierDotRef={newChatNotifierDotRef}
                   />
                 </div>

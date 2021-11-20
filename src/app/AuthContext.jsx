@@ -36,6 +36,7 @@ const AuthUpdateContext = createContext({
   updateViewer: () => {},
   readFromLocalStorage: () => {},
   updateNestedPaths: () => {},
+  updateWallet: (amount, operation = "add", updateFor = "both") => {},
 })
 
 let numberOfInits = 0
@@ -67,26 +68,36 @@ export const AuthContextProvider = ({ children }) => {
     })
   }
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("jwtToken")
-    localStorage.removeItem("jwtExpiresIn")
-    localStorage.removeItem("rootUserId")
-    localStorage.removeItem("relatedUserId")
-    localStorage.setItem("userType", "UnAuthedViewer")
-    localStorage.removeItem("authContext")
-    localStorage.removeItem("unAuthedUserId")
-    localStorage.removeItem("user")
+  const updateWallet = useCallback(
+    (amount, operation = "add", updateFor = "both") => {
+      /* for === ["lc" || "ctx" || "both"] */
+      if (updateFor === "both" || updateFor === "lc") {
+        const lcUser = JSON.parse(localStorage.getItem("user"))
+        lcUser.relatedUser.wallet.currentAmount =
+          operation === "set"
+            ? amount
+            : operation === "add"
+            ? lcUser.relatedUser.wallet.currentAmount + amount
+            : lcUser.relatedUser.wallet.currentAmount - amount
+        localStorage.setItem("user", JSON.stringify(lcUser))
+      }
+      if (updateFor === "both" || updateFor === "ctx") {
+        setAuthState((prev) => {
+          prev.user.user.relatedUser.wallet.currentAmount =
+            operation === "set"
+              ? amount
+              : operation === "add"
+              ? prev.user.user.relatedUser.wallet.currentAmount + amount
+              : prev.user.user.relatedUser.wallet.currentAmount - amount
+          return { ...prev }
+        })
+      }
+    },
+    []
+  )
 
-    updateViewer({
-      isLoggedIn: false,
-      user: { userType: "UnAuthedViewer" },
-      jwtExpiresIn: null,
-      rtcTokenExpireIn: null,
-      rootUserId: "",
-      relatedUserId: "",
-      jwtToken: "",
-      rtcToken: "",
-    })
+  const logout = useCallback(() => {
+    router.replace("/")
 
     io.getSocket().emit(
       "update-client-info",
@@ -95,7 +106,25 @@ export const AuthContextProvider = ({ children }) => {
       },
       (result) => {
         if (result.ok) {
-          router.replace("/")
+          updateViewer({
+            isLoggedIn: false,
+            user: { userType: "UnAuthedViewer" },
+            jwtExpiresIn: null,
+            rtcTokenExpireIn: null,
+            rootUserId: "",
+            relatedUserId: "",
+            jwtToken: "",
+            rtcToken: "",
+          })
+
+          localStorage.removeItem("jwtToken")
+          localStorage.removeItem("jwtExpiresIn")
+          localStorage.removeItem("rootUserId")
+          localStorage.removeItem("relatedUserId")
+          localStorage.setItem("userType", "UnAuthedViewer")
+          localStorage.removeItem("authContext")
+          localStorage.removeItem("unAuthedUserId")
+          localStorage.removeItem("user")
         }
       }
     )
@@ -194,6 +223,7 @@ export const AuthContextProvider = ({ children }) => {
           readFromLocalStorage,
           logout,
           updateNestedPaths,
+          updateWallet,
         }}
       >
         {children}

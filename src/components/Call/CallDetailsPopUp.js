@@ -20,21 +20,13 @@ import io from "../../socket/socket"
 import { useAuthContext } from "../../app/AuthContext"
 import { useSocketContext } from "../../app/socket/SocketContext"
 
-let token
-let channel
 function CallDetailsPopUp(props) {
   const router = useRouter()
-  const {
-    name,
-    username,
-    profileImage,
-    rating,
-    minCallDuration,
-    audioCallCharges,
-    videoCallCharges,
-  } = props
+
   const authCtx = useAuthContext()
   const socketCtx = useSocketContext()
+
+  const { model } = props
 
   const handleCallRequest = (callType) => {
     if (props.pendingCallRequest) {
@@ -86,22 +78,24 @@ function CallDetailsPopUp(props) {
           <div className="tw-col-span-1 md:tw-col-span-2">
             <div className="tw-flex tw-justify-between tw-items-center tw-px-3 tw-mb-2 tw-bg-second-color tw-rounded-md tw-py-2">
               <div className="tw-inline-flex tw-justify-between tw-items-center">
-                <Image
-                  src={neeraj}
-                  height={50}
-                  width={50}
-                  className="tw-rounded-full tw-border-white-color tw-border-2 tw-object-cover"
+                <img
+                  src={model.profileImage}
+                  height={60}
+                  width={60}
+                  className="tw-w-[60px] tw-h-[60px] tw-rounded-full tw-border-white-color tw-border-2 tw-object-cover"
                 />
-                <p className="tw-text-lg tw-text-white-color tw-font-bold tw-pl-3">
-                  <span className="tw-text-sm tw-font-medium">Call with </span>
-                  <br /> Neeraj Model
+                <p className="tw-text-sm tw-font-medium tw-text-white-color  tw-pl-3">
+                  <span className="tw-font-bold tw-text-lg tw-capitalize">
+                    {model.name}
+                  </span>
+                  <br />@{model.rootUser.username}
                 </p>
               </div>
               <div className="tw-flex tw-justify-center tw-items-center tw-flex-col tw-text-white-color">
-                <p>100 reviews</p>
+                <p>10 reviews</p>
                 <p>
                   <span className="tw-text-lg tw-pr-2 tw-font-semibold">
-                    4.5
+                    {model.rating || 5}
                   </span>{" "}
                   Stars
                 </p>
@@ -125,11 +119,11 @@ function CallDetailsPopUp(props) {
                   className="video-call-button tw-capitalize tw-font-semibold tw-text-sm tw-rounded-full tw-px-3 tw-py-2 tw-bg-dreamgirl-red tw-text-white-color"
                   onClick={() => handleCallRequest("videoCall")}
                 >
-                  Start 12 coins/min
+                  Start {model.charges.videoCall} coins/min
                 </button>
               </div>
               <p className="tw-text-sm tw-text-center tw-mt-4 tw-text-white-color tw-capitalize">
-                minimum call duration 5 min
+                minimum call duration {model.minCallDuration} min
               </p>
               <div className="tw-rounded tw-p-2 tw-mt-2">
                 <p className="tw-mt-1 tw-capitalize tw-flex tw-justify-center tw-items-center tw-text-white-color tw-text-xs">
@@ -166,11 +160,11 @@ function CallDetailsPopUp(props) {
                   className="audio-call-button tw-capitalize tw-font-semibold tw-text-sm tw-rounded-full tw-px-3 tw-py-2 tw-bg-dreamgirl-red tw-text-white-color"
                   onClick={() => handleCallRequest("audioCall")}
                 >
-                  Start 8 coins/min
+                  Start {model.charges.audioCall} coins/min
                 </button>
               </div>
               <p className="tw-text-sm tw-text-center tw-mt-4 tw-text-white-color tw-capitalize">
-                minimum call duration 5 min
+                minimum call duration {model.minCallDuration} min
               </p>
               <div className="tw-rounded tw-p-2 tw-mt-2">
                 <p className="tw-mt-1 tw-capitalize tw-flex tw-justify-center tw-items-center tw-text-white-color tw-text-xs">

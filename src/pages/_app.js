@@ -10,8 +10,6 @@ import TestComponent from "./text"
 import SimpleReactLightbox from "simple-react-lightbox"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../styles/global.css"
-// import dynamic from "next/dynamic";
-// const io = dynamic(() => import("../socket/socket"), { ssr: false })
 
 /**
  * RULES OF HOOKS
@@ -29,6 +27,7 @@ const MyApp = ({ Component, pageProps }) => {
       sessionStorage.clear()
     }
   }, [])
+
   return (
     // <Provider store={store}>
     <AuthContextProvider>

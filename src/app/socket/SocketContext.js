@@ -51,16 +51,19 @@ export const SocketContextProvider = ({ children }) => {
     })
 
     socket.on("disconnect", (reason) => {
-      console.log("socket disconnected! due to >>>", reason)
+      console.log("%csocket disconnected! due to >>>", reason)
       localStorage.removeItem("socketId")
-      // setIsConnected(false)
+      if (reason === "io server disconnect") {
+        /* if server manually disconnected */
+        io.connect()
+      }
     })
 
     socket.on("connect_error ", (err) => {
       alert("Could not connect to server... " + err.message)
       setTimeout(() => {
-        io.connect(url)
-      })
+        io.connect()
+      }, 2500)
     })
 
     /* Global Listeners */

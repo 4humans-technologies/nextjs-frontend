@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import AgoraRTC from "agora-rtc-sdk-ng"
 import useSpinnerContext from "../app/Loading/SpinnerContext"
 
@@ -12,6 +12,7 @@ function useAgora(client, role, callType) {
   const [streamOnGoing, setStreamOnGoing] = useState(true)
 
   const spinnerCtx = useSpinnerContext()
+  const statsRef = useRef()
 
   async function createLocalTracks() {
     const tracks = []
@@ -31,7 +32,15 @@ function useAgora(client, role, callType) {
           setLocalAudioTrack(microphoneTrack)
         }
         if (!localVideoTrack) {
-          const cameraTrack = await AgoraRTC.createCameraVideoTrack()
+          const cameraTrack = await AgoraRTC.createCameraVideoTrack({
+            optimizationMode: "detail",
+            encoderConfig: {
+              frameRate: 20,
+              height: 400,
+              width: 350,
+              bitrateMin: 600,
+            },
+          })
           tracks.push(cameraTrack)
           setLocalVideoTrack(cameraTrack)
         }
@@ -49,20 +58,36 @@ function useAgora(client, role, callType) {
     if (!client) {
       return
     }
-    if (role === "host") {
-      spinnerCtx.setShowSpinner(true, "Going Live...")
-      let track = await createLocalTracks(null, {
+    const createMyTrack = async () => {
+      return await createLocalTracks(null, {
         optimizationMode: "detail",
         facingMode: "user",
         encoderConfig: { height: 400, width: 400, frameRate: 23 },
       })
-      //debugger
+    }
+    if (role === "host") {
+      spinnerCtx.setShowSpinner(true, "Going Live...")
+      const track = await createMyTrack()
       await client.join(appId, channel, token, uid)
-      await client.publish(track)
-      spinnerCtx.setShowSpinner(false, "Please wait...")
-      return setJoinState(true)
+      if (track) {
+        await client.publish(track)
+        spinnerCtx.setShowSpinner(false, "Please wait...")
+        return setJoinState(true)
+      } else {
+        const newTrack = await createMyTrack()
+        if (
+          client.connectionState !== "CONNECTED" ||
+          client.connectionState !== "RECONNECTING"
+        ) {
+          await client.join(appId, channel, token, uid)
+        }
+        await client.publish(newTrack)
+        spinnerCtx.setShowSpinner(false, "Please wait...")
+        return setJoinState(true)
+      }
     }
     // if client
+    /* there is some error occurring even after completion of joining of the channel spinner is not showing */
     // spinnerCtx.setShowSpinner(true, "Connecting...")
     await client.join(appId, channel, token, uid)
     setJoinState(true)
@@ -78,10 +103,6 @@ function useAgora(client, role, callType) {
       return track
     }
   }, [])
-
-  async function changeClientRole(role) {
-    await client.setClientRole(role)
-  }
 
   const leave = useCallback(async () => {
     await client?.leave()
@@ -120,11 +141,11 @@ function useAgora(client, role, callType) {
 
   async function switchViewerToHost() {
     /* switch viewer to host and capture tracks */
-    await client.setClientRole("host")
     const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
     const cameraTrack = await AgoraRTC.createCameraVideoTrack()
     setLocalAudioTrack(microphoneTrack)
     setLocalVideoTrack(cameraTrack)
+    await client.setClientRole("host")
     await client.publish([microphoneTrack, cameraTrack])
     setJoinState(true)
   }
@@ -148,6 +169,14 @@ function useAgora(client, role, callType) {
     const handleUserPublished = async function (user, mediaType) {
       await client.subscribe(user, mediaType)
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
+
+      statsRef.current = setInterval(async () => {
+        const theStats = await client.getRemoteVideoStats()
+        console.log("Remote bitrate", theStats.receiveBitrate)
+        console.log("Remote transport-delay", theStats.transportDelay)
+        console.log("Remote receive-delay", theStats.receiveDelay)
+        console.log("Remote receive-framerate", theStats.receiveFrameRate)
+      }, [2500])
     }
 
     const handleUserUnpublished = async function (user) {
@@ -155,17 +184,20 @@ function useAgora(client, role, callType) {
     }
 
     const handleUsrJoined = async function (user) {
-      if (streamOnGoing && remoteUsers.length >= 2) {
-        alert(
-          "A user hacker has published 💀💀, please contact the admin otherwise all your money can be lost... fast."
-        )
-        return
-      }
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
     }
 
     const handleUserLeft = async function (user) {
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
+    }
+
+    const agoraExceptionHandler = (e) => {
+      console.warn(
+        "An Agora Exception Has Ocurred : ",
+        e.msg,
+        " faced by user : ",
+        e.uid
+      )
     }
 
     client.on("user-published", handleUserPublished)
@@ -174,6 +206,7 @@ function useAgora(client, role, callType) {
     client.on("user-joined", handleUsrJoined)
     client.on("user-left", handleUserLeft)
     client.on("token-privilege-will-expire", renewRtcToken)
+    client.on("exception", agoraExceptionHandler)
 
     return () => {
       client.off("user-published", handleUserPublished)
@@ -181,6 +214,9 @@ function useAgora(client, role, callType) {
 
       client.off("user-joined", handleUsrJoined)
       client.off("user-left", handleUserLeft)
+      if (statsRef.current) {
+        clearInterval(statsRef.current)
+      }
     }
   }, [client])
 
@@ -194,7 +230,6 @@ function useAgora(client, role, callType) {
     startLocalCameraPreview,
     leaveAndCloseTracks,
     leaveDueToPrivateCall,
-    changeClientRole,
     switchViewerToHost,
   }
 }

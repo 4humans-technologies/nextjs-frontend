@@ -11,6 +11,7 @@ import Logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
 import ErrorIcon from "@material-ui/icons/Error"
+import socket from "../../socket/socket"
 
 //Validation is still left in this
 function Login() {
@@ -45,6 +46,7 @@ function Login() {
       .then((data) => {
         if (data.actionStatus === "success") {
           const localLoginWork = () => {
+            /* login work : update the localStorage and the auth context for the new user */
             localStorage.setItem("jwtToken", data.token)
             localStorage.setItem(
               "jwtExpiresIn",
@@ -67,8 +69,7 @@ function Login() {
             })
           }
 
-          if (!data.wasSocketUpdated) {
-            const socket = io.getSocket()
+          const emitToUpdateClientData = () => {
             socket.emit(
               "update-client-info",
               {
@@ -77,11 +78,23 @@ function Login() {
               },
               (result) => {
                 if (result.ok) {
-                  /* do action */
+                  /* do login work on success */
                   localLoginWork()
                 }
               }
             )
+          }
+
+          if (!data.wasSocketUpdated) {
+            const socket = io.getSocket()
+            if (!socket.connected) {
+              /* if not connected then first connect and then emit to update */
+              socket.once("connect", emitToUpdateClientData)
+              io.connect()
+            } else {
+              /* update client info */
+              emitToUpdateClientData()
+            }
           } else {
             localLoginWork()
           }

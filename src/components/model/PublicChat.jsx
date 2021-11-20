@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import { useAuthContext } from "../../app/AuthContext"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import NormalChatMessage from "../ChatMessageTypes/NormalChat"
 import ModelChatMessage from "../ChatMessageTypes/ModelChatMessage"
 import CoinSuperChat from "../ChatMessageTypes/TokenGift"
@@ -11,19 +11,34 @@ import GiftSuperChat from "../ChatMessageTypes/GiftSuperChat"
 
 let chatIndex = 0
 let messageShowed = false
+const chatWindowOptions = {
+  PUBLIC: "public",
+}
 function PublicChatBox(props) {
   let pageUrl
   if (typeof window !== "undefined") {
     pageUrl = window.location.pathname
   }
+
+  const inFocusRef = useRef()
+
   const [chatMessages, setChatMessages] = useState([])
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
+  const authUpdateCtx = useAuthUpdateContext()
   const { isModelOffline } = props
 
-  const scrollOnChat = () => {
-    if (props.inFocus) {
-      props.scrollOnChat()
+  useEffect(() => {
+    inFocusRef.current =
+      props.chatWindowRef.current === chatWindowOptions.PUBLIC
+    if (inFocusRef.current) {
+      console.debug("Public chat in focus")
+    }
+  }, [props.chatWindowRef.current])
+
+  const scrollOnChat = (option) => {
+    if (inFocusRef.current) {
+      props.scrollOnChat(option)
     }
   }
 
@@ -85,6 +100,9 @@ function PublicChatBox(props) {
               message: data.message,
               walletCoins: data.walletCoins,
             }
+            if (authCtx.user.userType !== "Model") {
+              document.getElementById("superchat-audio").play()
+            }
           } else if (data.chatType === "tipmenu-activity-superchat-public") {
             chat = {
               type: data.chatType,
@@ -93,6 +111,9 @@ function PublicChatBox(props) {
               activityName: data.activity.action,
               activityPrice: data.activity.price,
               walletCoins: data.walletCoins,
+            }
+            if (authCtx.user.userType !== "Model") {
+              document.getElementById("superchat-audio").play()
             }
           }
           setChatMessages((prevChats) => {
@@ -316,4 +337,4 @@ function PublicChatBox(props) {
   )
 }
 
-export default PublicChatBox
+export default React.memo(PublicChatBox)

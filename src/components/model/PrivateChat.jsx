@@ -51,12 +51,24 @@ const notLoggedInBanner = (
   </div>
 )
 
+const chatWindowOptions = {
+  PRIVATE: "private",
+}
+
 function PrivateChat(props) {
   const authCtx = useAuthContext()
   const ctx = useSocketContext()
 
   const chatDataRef = useRef()
   const inFocusRef = useRef()
+
+  useEffect(() => {
+    inFocusRef.current =
+      props.chatWindowRef.current === chatWindowOptions.PRIVATE
+      if(inFocusRef.current){
+        console.debug("Private chat in focus")
+      }
+  }, [props.chatWindowRef.current])
 
   const [chatsData, setChatsData] = useState({
     chats: [],
@@ -68,19 +80,15 @@ function PrivateChat(props) {
 
   const { hasActivePlan } = props
 
-  const scrollOnChat = () => {
-    if (props.inFocus) {
-      props.scrollOnChat()
+  const scrollOnChat = (option) => {
+    if (inFocusRef.current) {
+      props.scrollOnChat(option)
     }
   }
 
   useEffect(() => {
     chatDataRef.current = chatsData
   }, [chatsData])
-
-  useEffect(() => {
-    inFocusRef.current = props.inFocus
-  }, [props.inFocus])
 
   useEffect(() => {
     const pushPrivateChatLocally = (e) => {
@@ -158,73 +166,74 @@ function PrivateChat(props) {
       const socket = io.getSocket()
       if (!socket.hasListeners("model-private-message-received")) {
         socket.on("model-private-message-received", (data) => {
+          document.getElementById("private-message-audio").play()
           if (inFocusRef.current) {
-            setChatsData((prev) => {
-              prev.chats = [
-                ...prev.chats,
-                {
-                  ...data.chat,
-                  by: data.chat.by === "Viewer" ? "Self" : "other",
-                },
-              ]
+            /* if in focus  */
+            setChatsData((prevChatData) => {
+              const prev = { ...prevChatData }
+              prev.chats.push({
+                ...data.chat,
+                by: data.chat.by === "Viewer" ? "Self" : "other",
+              })
+              prev.nos = 0
               prev.highLightChat = false
-              return { ...prev }
+              return prev
             })
             scrollOnChat()
           } else {
-            if (!prev.highLightChat && prev.nos === 0) {
+            /* if not in focus, viewing some other tab */
+            if (
+              !chatDataRef.current.highLightChat &&
+              chatDataRef.current.nos === 0
+            ) {
               /* no new chat beforehand, add new message tag also */
               setChatsData((prev) => {
-                prev.chats = [
-                  ...prev.chats,
-                  {
-                    by: "system",
-                    msg: "New Messages",
-                  },
-                  {
-                    ...data.chat,
-                    by: data.chat.by === "Viewer" ? "Self" : "other",
-                  },
-                ]
+                /* push new tag */
+                prev.chats.push({
+                  by: "system",
+                  msg: "New Messages",
+                })
+                /* push actual message */
+                prev.chats.push({
+                  ...data.chat,
+                  by: data.chat.by === "Viewer" ? "Self" : "other",
+                })
+
                 prev.nos = prev.nos + 1
                 prev.highLightChat = true
                 return { ...prev }
               })
             } else {
+              /* if not in focus, viewing some other tab, and new message tag already exists
+                 hence directly add the chat message
+              */
               setChatsData((prev) => {
-                prev.chats = [
-                  ...prev.chats,
-                  {
-                    ...data.chat,
-                    by: data.chat.by === "Viewer" ? "Self" : "other",
-                  },
-                ]
+                prev.chats.push({
+                  ...data.chat,
+                  by: data.chat.by === "Viewer" ? "Self" : "other",
+                })
                 prev.nos = prev.nos + 1
                 return { ...prev }
               })
             }
           }
         })
-      }
-    }
-  }, [ctx.socketSetupDone, hasActivePlan])
 
-  useEffect(() => {
-    if (props.inFocus) {
-      scrollOnChat("auto")
-    }
-  }, [props.inFocus])
-
-  useEffect(() => {
-    if (ctx.socketSetupDone) {
-      return () => {
-        const socket = io.getSocket()
-        if (socket.hasListeners("model-private-message-received")) {
-          socket.off("model-private-message-received")
+        /* remove listeners on unmount */
+        return () => {
+          if (socket.hasListeners("model-private-message-received")) {
+            socket.off("model-private-message-received")
+          }
         }
       }
     }
-  }, [ctx.socketSetupDone])
+  }, [ctx.socketSetupDone, hasActivePlan, chatDataRef])
+
+  useEffect(() => {
+    if (inFocusRef.current) {
+      scrollOnChat("auto")
+    }
+  }, [])
 
   const noPlanBanner = useMemo(() => {
     return (
@@ -313,4 +322,4 @@ function PrivateChat(props) {
   )
 }
 
-export default PrivateChat
+export default React.memo(PrivateChat)

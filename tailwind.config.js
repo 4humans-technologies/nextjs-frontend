@@ -7,6 +7,18 @@ module.exports = {
   },
   theme: {
     extend: {
+      screens: {
+        // prettier-ignore
+        "sm": "640px",
+        // prettier-ignore
+        "md": "780px",
+        // prettier-ignore
+        "lg": "1024px",
+        // prettier-ignore
+        "xl": "1280px",
+        // prettier-ignore
+        "2xl": "1536px",
+      },
       colors: {
         "first-color": "#232323", // #header
         "dark-black": "#1C1C1C", // #dark black

@@ -35,17 +35,30 @@ const initialChatState = [
   },
 ]
 
+const chatWindowOptions = {
+  PRIVATE: "private",
+}
+
 function PrivateChatWrapper(props) {
-  const { inFocus, newChatNotifierDotRef } = props
+  const { newChatNotifierDotRef } = props
 
   const socketCtx = useSocketContext()
   const currentChatScreenStateRef = useRef()
   const currentViewerRef = useRef()
-  const inFocusRef = useRef()
   const dbChatIdsRef = useRef()
 
+  const inFocusRef = useRef()
+
+  useEffect(() => {
+    inFocusRef.current =
+      props.chatWindowRef.current === chatWindowOptions.PRIVATE
+    if (inFocusRef.current) {
+      console.debug("Private chat in focus")
+    }
+  }, [props.chatWindowRef.current])
+
   const scrollOnChat = () => {
-    if (props.inFocus) {
+    if (inFocusRef.current) {
       props.scrollOnChat()
     }
   }
@@ -75,10 +88,6 @@ function PrivateChatWrapper(props) {
   useEffect(() => {
     currentViewerRef.current = currentViewer
   }, [currentViewer])
-
-  useEffect(() => {
-    inFocusRef.current = inFocus
-  }, [inFocus])
 
   useEffect(() => {
     dbChatIdsRef.current = dbChatIds
@@ -216,6 +225,7 @@ function PrivateChatWrapper(props) {
               .then((res) => res.json())
               .then((result) => {
                 if (result.actionStatus === "success") {
+                  document.getElementById("private-message-audio").play()
                   setChatState((prev) => {
                     return prev.map((chatMsg) => {
                       if (chatMsg.viewerId === data.viewerId) {
@@ -245,6 +255,7 @@ function PrivateChatWrapper(props) {
               .catch((err) => alert(err.message))
           } else {
             /* if chat already fetched from database */
+            document.getElementById("private-message-audio").play()
             if (
               currentChatScreenStateRef.current === chatScreens.VIEWERS_LIST &&
               currentViewerRef.current !== data.viewerId &&
