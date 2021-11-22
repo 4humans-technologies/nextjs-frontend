@@ -535,7 +535,7 @@ function Live() {
         prev.pending = false
 
         prev.callRequests.filter(
-          (request) => request.viewer.relatedUser._id !== relatedUserId
+          (request) => request.viewer._id !== relatedUserId
         )
 
         return { ...prev }
@@ -561,7 +561,7 @@ function Live() {
           setPendingCallRequest((prev) => {
             prev.pending = false
             prev.callRequests.filter(
-              (request) => request.viewer.relatedUser._id !== relatedUserId
+              (request) => request.viewer._id !== relatedUserId
             )
 
             return { ...prev }
@@ -592,11 +592,22 @@ function Live() {
       if (!socket.hasListeners("viewer-requested-for-call-received-private")) {
         socket.on("viewer-requested-for-call-received-private", (data) => {
           // alert("call request received from viewer!")
+          /* check if call request form this viewer already exists */
+          if (
+            !pendingCallRequest.callRequests.find(
+              (request) => request.username === data.username
+            )
+          ) {
+          }
           document.getElementById("call-request-audio").play()
-          setPendingCallRequest({
-            callType: data.callType,
-            pending: true,
-            data: data,
+          setPendingCallRequest((prev) => {
+            prev.pending = true
+            prev.callRequests.push({
+              callType: data.callType,
+              username: data.username,
+              viewer: data.viewer,
+            })
+            return { ...prev }
           })
         })
         return () => {
@@ -641,10 +652,41 @@ function Live() {
       .then((res) => res.json())
       .then(async (data) => {
         if (data.wasFirst === "yes" && data.actionStatus === "success") {
-          /* */
-          sessionStorage.setItem("callEndDetails", JSON.stringify(data))
           spinnerCtx.setShowSpinner(false, "Please wait...")
+          spinnerCtx.setShowSpinner(false, "Please wait...")
+          await leaveAndCloseTracks()
+          offCallListeners()
+          setPendingCallEndRequest(false)
+          // setCallEndDetails(data.callEndDetails)
+          offCallListeners()
+        } else {
+          setTimeout(async () => {
+            let hasCallEnded = true
+            setCallOnGoing((prev) => {
+              if (prev !== true) {
+                hasCallEnded = false
+                return false
+              } else {
+                return prev
+              }
+            })
+            if (!hasCallEnded) {
+              alert(
+                "Viewer request for call end before you, call not ended successfully"
+              )
+              spinnerCtx.setShowSpinner(false, "Please wait...")
+              await leaveAndCloseTracks()
+              offCallListeners()
+              setPendingCallEndRequest(false)
+              // setCallEndDetails(data.callEndDetails)
+              offCallListeners()
+            }
+          }, [10000])
         }
+      })
+      .catch(async (err) => {
+        spinnerCtx.setShowSpinner(false, "Please wait...")
+        alert("Call was not ended successfully!")
         setCallOnGoing(false)
         await leaveAndCloseTracks()
         offCallListeners()
@@ -686,8 +728,14 @@ function Live() {
         <div className="tw-px-6 tw-py-4 tw-text-white-color tw-font-semibold tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
           <div className="tw-flex tw-justify-center tw-items-center">
             <p className="tw-mx-2">
-              Incoming {pendingCallRequest[0].callType} from{" "}
-              {pendingCallRequest[0].viewer.username}
+              Incoming{" "}
+              <span className="tw-text-dreamgirl-red">
+                {pendingCallRequest.callRequests[0].callType}
+              </span>{" "}
+              from{" "}
+              <span className="tw-font-semibold">
+                {pendingCallRequest.callRequests[0].viewer.rootUser.username}
+              </span>
             </p>
             <Button
               className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
@@ -695,8 +743,8 @@ function Live() {
               onClick={() =>
                 handleModelResponse(
                   "accepted",
-                  pendingCallRequest[0].viewer.relatedUser._id,
-                  pendingCallRequest[0].callType
+                  pendingCallRequest.callRequests[0].viewer._id,
+                  pendingCallRequest.callRequests[0].callType
                 )
               }
             >
@@ -708,8 +756,8 @@ function Live() {
               onClick={() =>
                 handleModelResponse(
                   "rejected",
-                  pendingCallRequest[0].viewer.relatedUser._id,
-                  pendingCallRequest[0].callType
+                  pendingCallRequest.callRequests[0].viewer._id,
+                  pendingCallRequest.callRequests[0].callType
                 )
               }
             >

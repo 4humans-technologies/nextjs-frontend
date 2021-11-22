@@ -316,6 +316,7 @@ function LiveScreen(props) {
             modelProfileData={props.modelProfileData}
             pendingCallEndRequest={pendingCallEndRequest}
             setPendingCallEndRequest={setPendingCallEndRequest}
+            callType={callType}
           />
 
           {!callOnGoing ? (

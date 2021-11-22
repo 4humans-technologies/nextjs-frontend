@@ -64,7 +64,6 @@ const unAuthedUserEmojis = [
   "🦄",
 ]
 let modelEndedStreamOnce = false
-let streamId
 const callTimer = {
   value: 0,
   timerElement: null,
@@ -82,9 +81,12 @@ function ViewerScreen(props) {
 
   const [callEndDetails, setCallEndDetails] = useState(null)
   const [othersCall, setOthersCall] = useState({
-    rejectedMyCall: null,
-    acceptedOthersCall: null,
-    othersUsername: null,
+    rejectedMyCall: false,
+    acceptedOthersCall: false,
+    otherUserData: {
+      username: "",
+      profileImage: "",
+    },
   })
 
   const {
@@ -273,6 +275,16 @@ function ViewerScreen(props) {
             .then((data) => {
               if (data.actionStatus === "success") {
                 sessionStorage.setItem("streamId", data.streamId)
+                setPendingCallRequest(false)
+                setOthersCall({
+                  acceptedOthersCall: false,
+                  rejectedMyCall: false,
+                  otherUserData: {
+                    username: "",
+                    profileImage: "",
+                    callType: "",
+                  },
+                })
                 join(
                   window.location.pathname.split("/").reverse()[0],
                   localStorage.getItem("rtcToken"),
@@ -286,6 +298,7 @@ function ViewerScreen(props) {
                 setIsModelOffline(false)
               } else {
                 props.setIsChatPlanActive(data.isChatPlanActive)
+                setPendingCallRequest(false)
                 setIsModelOffline(true)
               }
             })
@@ -583,66 +596,109 @@ function ViewerScreen(props) {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
       if (!socket.hasListeners("model-call-request-response-received")) {
-        socket.on("model-call-request-response-received", async (data) => {
+        socket.on("model-call-request-response-received", (data) => {
           // alert("model response received")
           socket.emit("add-oncall-status-on-viewer-socket-client", {
             callId: data.callId,
           })
           if (data.response !== "rejected") {
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
-              /* dont kick of, switch role to host */
-              sessionStorage.removeItem("callId")
-              sessionStorage.setItem("callId", data.callId)
-              setPendingCallRequest(false)
-              setCallType(data.callType)
-              setCallOnGoing(true)
-              setUpCallListeners()
-              await switchViewerToHost() /* actually switch viewer to host and create tracks */
+              /* dont kick of, switch role to host start the call 📞📞 */
+              /* do a fetch request and update the status of the call as ongoing */
+              fetch("/api/website/stream/set-call-ongoing", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: {
+                  callId: data.callId,
+                  callType: data.callType,
+                },
+              })
+                .then((res) => res.json())
+                .then(async (result) => {
+                  if (result.actionStatus === "success") {
+                    sessionStorage.removeItem("callId")
+                    sessionStorage.setItem("callId", data.callId)
+                    setPendingCallRequest(false)
+                    setCallType(data.callType)
+                    setCallOnGoing(true)
+                    setIsModelOffline(false)
+                    setUpCallListeners()
+                    await switchViewerToHost() /* actually switch viewer to host and create tracks */
+                  }
+                })
+                .catch((err) => {
+                  alert(err.message)
+                  setPendingCallRequest(false)
+                  setCallType(null)
+                  setCallOnGoing(false)
+                  setIsModelOffline(true)
+                })
             } else {
               /* unsubscribe stream and close connection to agora */
               localStorage.removeItem("rtcToken")
               localStorage.removeItem("rtcTokenExpireIn")
 
               if (pendingCallRequest) {
+                /* accepted others call, and rejected mine */
+                setPendingCallRequest(false)
+                setCallOnGoing(false)
+                setIsModelOffline(false)
+                setCallType(null)
                 setOthersCall({
-                  acceptedOthersCall: true,
-                  othersUsername: data.username,
                   rejectedMyCall: true,
-                })
-                setPendingCallRequest(false)
-              } else {
-                setOthersCall({
                   acceptedOthersCall: true,
-                  othersUsername: data.username,
-                  rejectedMyCall: false,
+                  otherUserData: {
+                    username: data.username,
+                    /* as current viewers don't have a profileimg, using placeholder */
+                    // profileImage: data.profileImage,
+                    profileImage: "/male-model.jpeg",
+                    callType: data.callType,
+                  },
                 })
+              } else {
+                /* accepted someone's call hance have to leave */
                 setPendingCallRequest(false)
+                setCallOnGoing(false)
+                setIsModelOffline(false)
+                setCallType(null)
+                setOthersCall({
+                  rejectedMyCall: true,
+                  acceptedOthersCall: true,
+                  otherUserData: {
+                    username: data.username,
+                    /* as current viewers don't have a profileimg, using placeholder */
+                    // profileImage: data.profileImage,
+                    profileImage: "/male-model.jpeg",
+                    callType: data.callType,
+                  },
+                })
               }
               /* 🔻🔻leave al socket rooms also 🔺🔺 */
               leaveDueToPrivateCall()
-              /* also leave all chat channels */
               const socketRooms =
                 JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-              const roomsToLeave = []
-              socketRooms.forEach((room) => {
-                if (room.endsWith("-public")) {
-                  roomsToLeave.push(room)
-                }
-              })
-              socket.emit(
-                "take-me-out-of-these-rooms",
-                [...roomsToLeave],
-                (response) => {
-                  if (response.status === "ok") {
-                    updateCtx.updateViewer({ streamRoom: null })
+              if (socketRooms.find((room) => room.endsWith("-public"))) {
+                socket.emit(
+                  "take-me-out-of-these-rooms",
+                  [socketRooms.find((room) => room.endsWith("-public"))],
+                  (response) => {
+                    if (response.status === "ok") {
+                      console.log("removed from public room")
+                    }
                   }
-                }
-              )
+                )
+              }
             }
           } else {
             /* clear call type and pending call */
-            setPendingCallRequest(false)
-            // setCallOnGoing(false)
+            if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
+              alert(
+                "Model rejected your call request, better luck next time 😢🤗🤗"
+              )
+              setPendingCallRequest(false)
+            }
           }
         })
       }
@@ -745,7 +801,7 @@ function ViewerScreen(props) {
   return (
     <div
       className={
-        isModelOffline || (callOnGoing && callType === "audioCall")
+        isModelOffline || (callOnGoing === true && callType === "audioCall")
           ? "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10 tw-flex tw-items-center tw-justify-center"
           : "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10"
       }
@@ -785,7 +841,7 @@ function ViewerScreen(props) {
       {callOnGoing &&
       callType === "audioCall" &&
       !isModelOffline &&
-      remoteUsers?.length > 0 ? (
+      remoteUsers[0] ? (
         <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-24px]">
           <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
@@ -807,7 +863,8 @@ function ViewerScreen(props) {
       {isModelOffline &&
       modelProfileData &&
       !callOnGoing &&
-      remoteUsers?.length === 0 ? (
+      remoteUsers?.length === 0 &&
+      !othersCall.acceptedOthersCall ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-6  sm:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
           <p className="tw-text-white-color tw-font-medium tw-text-center">
             The model is currently offline 😞😞
@@ -815,7 +872,18 @@ function ViewerScreen(props) {
         </div>
       ) : null}
 
-      {callOnGoing && callType === "audioCall" ? (
+      {othersCall.acceptedOthersCall && (
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-6  sm:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
+          <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
+            the model has accepted the {othersCall.otherUserData.callType} of{" "}
+            {othersCall.otherUserData.username}
+          </p>
+        </div>
+      )}
+
+      {callOnGoing &&
+      callType === "audioCall" &&
+      !othersCall.acceptedOthersCall ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-4  sm:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
           <p className="tw-text-white-color tw-font-medium tw-text-center">
             AudioCall With Model
@@ -845,18 +913,49 @@ function ViewerScreen(props) {
           </div>
         )}
 
+      {/* when the model has accepted other viewers call */}
+      {othersCall.acceptedOthersCall && (
+        <div className="tw-flex-shrink tw-flex-grow-0 tw-flex tw-justify-around tw-items-center">
+          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px] tw-ml-2">
+            <img
+              src={modelProfileData.profileImage}
+              alt=""
+              className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
+            />
+          </div>
+          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px] tw-mr-2">
+            <img
+              src={othersCall.otherUserData.profileImage}
+              alt=""
+              className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
+            />
+          </div>
+        </div>
+      )}
+
       {/* not streaming && not on call | model circles | offline mode*/}
       {/* model offline status */}
       {isModelOffline &&
       modelProfileData &&
       !callOnGoing &&
-      remoteUsers?.length === 0 ? (
+      remoteUsers?.length === 0 &&
+      !othersCall.acceptedOthersCall ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-32 sm:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
           <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
             {modelProfileData.offlineStatus}
           </p>
         </div>
       ) : null}
+
+      {/* model has accepted someones call */}
+      {othersCall.acceptedOthersCall && (
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-32 sm:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
+          <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
+            the model and {othersCall.otherUserData.username} are busy on call
+            💘💘😍
+          </p>
+        </div>
+      )}
 
       {/* on call local preview */}
       {callOnGoing && callType === "videoCall" ? (

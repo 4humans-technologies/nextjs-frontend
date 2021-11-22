@@ -62,7 +62,7 @@ function useAgora(client, role, callType) {
       return await createLocalTracks(null, {
         optimizationMode: "detail",
         facingMode: "user",
-        encoderConfig: { height: 400, width: 400, frameRate: 23 },
+        encoderConfig: { height: 400, width: 400, frameRate: 20 },
       })
     }
     if (role === "host") {
@@ -74,6 +74,7 @@ function useAgora(client, role, callType) {
         spinnerCtx.setShowSpinner(false, "Please wait...")
         return setJoinState(true)
       } else {
+        /* if no track */
         const newTrack = await createMyTrack()
         if (
           client.connectionState !== "CONNECTED" ||
@@ -121,13 +122,13 @@ function useAgora(client, role, callType) {
       await client?.leave()
     }
     if (localAudioTrack) {
-      localAudioTrack.stop()
-      localAudioTrack.close()
+      await localAudioTrack.stop()
+      await localAudioTrack.close()
     }
 
     if (localVideoTrack) {
-      localVideoTrack.stop()
-      localVideoTrack.close()
+      await localVideoTrack.stop()
+      await localVideoTrack.close()
     }
 
     setRemoteUsers([])
@@ -151,6 +152,13 @@ function useAgora(client, role, callType) {
   }
 
   useEffect(() => {
+    startLocalCameraPreview()
+    return () => {
+      leaveAndCloseTracks()
+    }
+  }, [])
+
+  useEffect(() => {
     if (!client) {
       return
     }
@@ -172,15 +180,31 @@ function useAgora(client, role, callType) {
 
       statsRef.current = setInterval(async () => {
         const theStats = await client.getRemoteVideoStats()
-        console.log("Remote bitrate", theStats.receiveBitrate)
-        console.log("Remote transport-delay", theStats.transportDelay)
-        console.log("Remote receive-delay", theStats.receiveDelay)
-        console.log("Remote receive-framerate", theStats.receiveFrameRate)
-      }, [2500])
+        console.log(
+          "Remote bitrate",
+          `${theStats[client?.channelName]?.receiveBitrate / 8000000} MBps`
+        )
+        console.log(
+          "Remote transport-delay",
+          `${theStats[client?.channelName]?.transportDelay} ms`
+        )
+        console.log(
+          "Remote receive-delay",
+          `${theStats[client?.channelName]?.receiveDelay} ms`
+        )
+        console.log(
+          "Remote receive-framerate",
+          `${theStats[client?.channelName]?.receiveFrameRate} Fps`
+        )
+      }, [5000])
     }
 
     const handleUserUnpublished = async function (user) {
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
+      if (statsRef.current) {
+        clearInterval(statsRef.current)
+      }
+      /* check is any remote users if not then leave the channel */
     }
 
     const handleUsrJoined = async function (user) {
@@ -189,6 +213,9 @@ function useAgora(client, role, callType) {
 
     const handleUserLeft = async function (user) {
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
+      if (statsRef.current) {
+        clearInterval(statsRef.current)
+      }
     }
 
     const agoraExceptionHandler = (e) => {
