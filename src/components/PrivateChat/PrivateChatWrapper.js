@@ -213,7 +213,7 @@ function PrivateChatWrapper(props) {
               return [...prevChats]
             })
             /* request to fetch private chat from database */
-            fetch("/api/website/private-chat/get-my-private-cht-by-id", {
+            fetch("/api/website/stream/private-chat/get-my-private-cht-by-id", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

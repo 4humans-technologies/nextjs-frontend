@@ -115,7 +115,7 @@ function PrivateChat(props) {
   /* fetch chats from the db */
   useEffect(() => {
     if (authCtx.isLoggedIn && hasActivePlan) {
-      fetch("/api/website/private-chat/find-or-create-private-chat", {
+      fetch("/api/website/stream/private-chat/find-or-create-private-chat", {
         // fetch("/api/website/private-chat/check-if-private-chat-exists", {
         method: "POST",
         headers: {
