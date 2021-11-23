@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
 import Header from "../Mainpage/Header"
 import Link from "next/link"
-import DocumentUplode from "../UI/Profile/documentUplode"
+import DocumentUplode from "../UI/Profile/DocumentUplode"
 
 function Documents() {
   const idRef = useRef("/pp.jpg")
