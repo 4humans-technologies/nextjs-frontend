@@ -130,8 +130,10 @@ export const AuthContextProvider = ({ children }) => {
     )
   }, [router])
 
-  const readFromLocalStorage = () => {
-    localStorage.removeItem("socketId")
+  const readFromLocalStorage = (clearSocket = true) => {
+    if (clearSocket) {
+      localStorage.removeItem("socketId")
+    }
     const jwtToken = localStorage.getItem("jwtToken")
     if (jwtToken) {
       if (parseInt(localStorage.getItem("jwtExpiresIn")) > Date.now()) {

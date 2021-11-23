@@ -2,6 +2,7 @@ import next from "next"
 import router from "next/router"
 import React, { useEffect, useState } from "react"
 import { useAuthUpdateContext } from "../../app/AuthContext"
+import useModalContext from "../../app/ModalContext"
 import ThePlanCard from "./ThePlanCard"
 
 const initialData = [
@@ -29,6 +30,7 @@ function ChooseChatPlan(props) {
   const [chatPlans, setChatPlans] = useState([])
   const { setIsChatPlanActive } = props
   const authUpdateCtx = useAuthUpdateContext()
+  const modalCtx = useModalContext()
 
   useEffect(() => {
     fetch("/api/website/stream/get-active-chat-plans")
@@ -51,30 +53,35 @@ function ChooseChatPlan(props) {
     })
       .then((res) => res.json())
       .then((data) => {
+        modalCtx.hideModal()
         if (data.actionStatus === "success") {
-          setIsChatPlanActive(true)
           const lcUser = JSON.parse(localStorage.getItem("user"))
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...lcUser,
-              relatedUser: {
-                ...data.updatedUser,
-                wallet: lcUser.relatedUser.wallet,
+          const newLcUser = {
+            ...lcUser,
+            relatedUser: {
+              ...data.updatedViewer,
+              wallet: {
+                ...lcUser.relatedUser.wallet,
+                currentAmount:
+                  lcUser.relatedUser.wallet.currentAmount -
+                  parseInt(data.planPrice),
               },
-            })
-          )
-          authUpdateCtx.readFromLocalStorage()
-          authUpdateCtx.updateWallet(
-            chatPlans.find((plan) => plan._id === planId),
-            "dec"
-          )
+            },
+          }
+          localStorage.setItem("user", JSON.stringify(newLcUser))
+          // authUpdateCtx.readFromLocalStorage()
+          // authUpdateCtx.updateWallet(parseInt(data.planPrice), "dec")
+          /**
+           * currently i will reload the site but later i will do the proper smooth transition
+           */
+          window.location.reload()
         } else {
-          alert("Chat plan not brought!")
+          alert("Chat plan not brought! Server error")
         }
       })
       .catch((err) => {
         if (err.reasonCode === "low-balance") {
+          modalCtx.hideModal()
           const res = window.confirm(
             err.message + " Do you want to buy new coins ?"
           )
@@ -82,7 +89,7 @@ function ChooseChatPlan(props) {
             return router.push("/user/payment")
           }
         }
-        return
+        return modalCtx.hideModal()
       })
   }
 
