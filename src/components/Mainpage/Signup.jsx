@@ -47,6 +47,15 @@ function SignUp() {
     })
       .then((resp) => resp.json())
       .then((data) => {
+        localStorage.setItem("jwtToken", data.token)
+        localStorage.setItem(
+          "jwtExpiresIn",
+          Date.now() + data.expiresIn * 60 * 60 * 1000
+        )
+        localStorage.setItem("rootUserId", data.user._id)
+        localStorage.setItem("relatedUserId", data.user.relatedUser._id)
+        localStorage.setItem("userType", data.user.userType)
+        localStorage.setItem("user", JSON.stringify(data.user))
         /* update client info */
         updateCtx.updateViewer({
           rootUserId: data.user._id,

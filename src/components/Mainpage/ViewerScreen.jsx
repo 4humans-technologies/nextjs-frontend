@@ -89,6 +89,8 @@ function ViewerScreen(props) {
     },
   })
 
+  const [isMuted, setIsMuted] = useState(false)
+
   const {
     modelProfileData,
     isModelOffline,
@@ -224,9 +226,11 @@ function ViewerScreen(props) {
     if (localAudioTrack.muted) {
       /* un mute audio */
       localAudioTrack.setMuted(false)
+      setIsMuted(false)
     } else {
       /* mute the audio */
       localAudioTrack.setMuted(true)
+      setIsMuted(true)
     }
   }
 
@@ -625,7 +629,9 @@ function ViewerScreen(props) {
                     setCallOnGoing(true)
                     setIsModelOffline(false)
                     setUpCallListeners()
-                    await switchViewerToHost() /* actually switch viewer to host and create tracks */
+                    await switchViewerToHost(
+                      data.callType
+                    ) /* actually switch viewer to host and create tracks */
                   }
                 })
                 .catch((err) => {
@@ -979,7 +985,7 @@ function ViewerScreen(props) {
           </button>
           {localAudioTrack && (
             <button className="tw-inline-block tw-z-[390] tw-px-2">
-              {localAudioTrack.muted ? (
+              {!isMuted ? (
                 <MicIcon
                   fontSize="medium"
                   style={{ color: "white" }}
@@ -988,7 +994,7 @@ function ViewerScreen(props) {
               ) : (
                 <MicOffIcon
                   fontSize="medium"
-                  style={{ color: "white" }}
+                  style={{ color: "red" }}
                   onClick={toggleMuteMic}
                 />
               )}

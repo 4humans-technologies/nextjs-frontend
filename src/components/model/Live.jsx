@@ -83,7 +83,13 @@ function Live() {
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
 
   useEffect(() => {
-    chatWindowRef.current = chatWindow
+    let mounted = true
+    if (mounted) {
+      chatWindowRef.current = chatWindow
+    }
+    return () => {
+      mounted = false
+    }
   }, [chatWindow])
 
   const [pendingCallRequest, setPendingCallRequest] = useState({
@@ -510,7 +516,7 @@ function Live() {
     }
   }
 
-  const handleModelResponse = (response, relatedUserId, callType) => {
+  const handleModelResponse = (response, relatedUserId, myCallType) => {
     /* can set encryption config */
     if (response === "rejected") {
       /* 
@@ -520,7 +526,7 @@ function Live() {
       io.getSocket().emit("model-call-request-response-emitted", {
         response: response,
         relatedUserId: relatedUserId,
-        callType: callType,
+        callType: myCallType,
         room: `${sessionStorage.getItem("streamId")}-public`,
       })
       setPendingCallRequest((prev) => {
@@ -541,15 +547,18 @@ function Live() {
         body: JSON.stringify({
           socketData: {
             response: response /* RESPONSE will be accepted is reach here */,
-            callType: callType,
+            callType: myCallType,
             relatedUserId: relatedUserId /* viewer */,
           },
           streamId: sessionStorage.getItem("streamId"),
         }),
       })
         .then((res) => res.json())
-        .then((data) => {
+        .then(async (data) => {
           // data.callStartTs
+          if (myCallType === "audioCall") {
+            await localVideoTrack.setEnabled(false)
+          }
           setPendingCallRequest((prev) => {
             prev.pending = false
             prev.callRequests.filter(
@@ -558,7 +567,7 @@ function Live() {
 
             return { ...prev }
           })
-          setCallType(callType)
+          setCallType(myCallType)
           setCallOnGoing(true)
           setUpCallListeners()
           sessionStorage.setItem("callId", data.callDoc._id)
@@ -659,6 +668,7 @@ function Live() {
           offCallListeners()
           setPendingCallEndRequest(false)
           offCallListeners()
+          localVideoTrack.setEnabled(false)
         } else if (
           !data?.callWasNotSetupProperly &&
           data.wasFirst === "yes" &&
@@ -671,6 +681,7 @@ function Live() {
           offCallListeners()
           setPendingCallEndRequest(false)
           offCallListeners()
+          localVideoTrack.setEnabled(false)
         } else if (!data?.callWasNotSetupProperly && data.wasFirst === "no") {
           /* if was not first wait for the socket end call response for 10 seconds or error out if not received */
           setTimeout(() => {
@@ -698,6 +709,7 @@ function Live() {
         offCallListeners()
         setPendingCallEndRequest(false)
         offCallListeners()
+        localVideoTrack.setEnabled(false)
         // setCallEndDetails(data.callEndDetails)
       })
   }
@@ -807,7 +819,7 @@ function Live() {
                 }
                 audioTrack={remoteUsers[0].audioTrack}
                 playAudio={true}
-                config={"videoCall"}
+                config={callType}
               />
             ) : null}
 
@@ -822,6 +834,7 @@ function Live() {
                     videoTrack={localVideoTrack}
                     audioTrack={localAudioTrack}
                     playAudio={false}
+                    config={callType}
                   />
                 </div>
               </div>

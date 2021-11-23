@@ -14,6 +14,9 @@ function VideoPlayer({
   */
 
   const ensureVideoPlaying = () => {
+    /**
+     * if on call mode and viewer not receiving video on a video call end the call after some time
+     */
     let playRequestPending = false
     ensureVideoPlayingLoopRef.current = setInterval(() => {
       console.debug("Checking if video is playing...")

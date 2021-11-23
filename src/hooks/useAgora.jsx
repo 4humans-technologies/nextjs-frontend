@@ -23,16 +23,15 @@ function useAgora(client, role, callType) {
   const spinnerCtx = useSpinnerContext()
   const statsRef = useRef()
 
-  async function createLocalTracks() {
+  async function createLocalTracks(callType = "videoCall") {
     const tracks = []
     if (role === "host") {
-      if (callType === "audioCall") {
-        if (localAudioTrack) {
-          return
+      if (callType === "audioCall" || callType === "videoCall") {
+        if (!localAudioTrack) {
+          const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+          tracks.push(microphoneTrack)
+          setLocalAudioTrack(microphoneTrack)
         }
-        const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
-        tracks.push(microphoneTrack)
-        setLocalAudioTrack(microphoneTrack)
       }
       if (callType === "videoCall") {
         if (!localAudioTrack) {
@@ -68,13 +67,14 @@ function useAgora(client, role, callType) {
       return
     }
     const createMyTrack = async () => {
-      if (!localAudioTrack && !localVideoTrack) {
-        return await createLocalTracks(null, {
+      if (!localAudioTrack || !localVideoTrack) {
+        return await createLocalTracks("videoCall", {
           optimizationMode: "detail",
           facingMode: "user",
           encoderConfig: { height: 400, width: 400, frameRate: 20 },
         })
       } else {
+        localVideoTrack.setEnabled(true)
         return [localAudioTrack, localVideoTrack]
       }
     }
@@ -113,7 +113,7 @@ function useAgora(client, role, callType) {
       return
     }
     if (role === "host") {
-      let track = await createLocalTracks()
+      let track = await createLocalTracks("videoCall")
       return track
     }
     if (localAudioTrackRef.current) {
@@ -138,23 +138,11 @@ function useAgora(client, role, callType) {
 
   const leaveAndCloseTracks = useCallback(
     async (mounted = true) => {
-      // if (
-      //   client.connectionState !== "DISCONNECTED" &&
-      //   client.connectionState !== "DISCONNECTING"
-      // ) {
+      /* client.connectionState !== "DISCONNECTED" &&
+      client.connectionState !== "DISCONNECTING" */
       await client.leave()
-      // }
 
       if (mounted) {
-        if (localAudioTrackRef.current) {
-          await localAudioTrackRef.current.stop()
-          await localAudioTrackRef.current.close()
-        }
-
-        if (localVideoTrackRef.current) {
-          await localVideoTrackRef.current.stop()
-          await localVideoTrackRef.current.close()
-        }
         setRemoteUsers([])
         setJoinState(false)
       }
@@ -167,14 +155,25 @@ function useAgora(client, role, callType) {
     // fetch("/api/website/stream/global-renew-token")
   }
 
-  async function switchViewerToHost() {
+  async function switchViewerToHost(callType) {
     /* switch viewer to host and capture tracks */
-    const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
-    const cameraTrack = await AgoraRTC.createCameraVideoTrack()
-    setLocalAudioTrack(microphoneTrack)
-    setLocalVideoTrack(cameraTrack)
-    await client.setClientRole("host")
-    await client.publish([microphoneTrack, cameraTrack])
+    let microphoneTrack
+    let cameraTrack
+
+    if (callType === "audioCall" || callType === "videoCall") {
+      microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+      setLocalAudioTrack(microphoneTrack)
+      await client.setClientRole("host")
+      if (callType === "audioCall") {
+        await client.publish(microphoneTrack)
+      }
+    }
+
+    if (callType === "videoCall") {
+      cameraTrack = await AgoraRTC.createCameraVideoTrack()
+      setLocalVideoTrack(cameraTrack)
+      await client.publish([microphoneTrack, cameraTrack])
+    }
     setJoinState(true)
   }
 
@@ -183,14 +182,6 @@ function useAgora(client, role, callType) {
       startLocalCameraPreview()
     }
   }, [startLocalCameraPreview])
-
-  // useEffect(() => {
-  //   if (localVideoTrackRef.current && localAudioTrackRef.current) {
-  //     return () => {
-  //       leaveAndCloseTracks()
-  //     }
-  //   }
-  // }, [leaveAndCloseTracks])
 
   useEffect(() => {
     return async () => {
@@ -207,6 +198,10 @@ function useAgora(client, role, callType) {
     }
   }, [client.leave, localAudioTrackRef, localVideoTrackRef])
 
+  const modelUnPublishVideoTrack = async () => {
+    await localVideoTrack.setEnabled(false)
+  }
+
   useEffect(() => {
     if (!client) {
       return
@@ -218,25 +213,25 @@ function useAgora(client, role, callType) {
       await client.subscribe(user, mediaType)
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
 
-      statsRef.current = setInterval(async () => {
-        const theStats = await client.getRemoteVideoStats()
-        console.log(
-          "Remote bitrate",
-          `${theStats[client?.channelName]?.receiveBitrate / 8000000} MBps`
-        )
-        console.log(
-          "Remote transport-delay",
-          `${theStats[client?.channelName]?.transportDelay} ms`
-        )
-        console.log(
-          "Remote receive-delay",
-          `${theStats[client?.channelName]?.receiveDelay} ms`
-        )
-        console.log(
-          "Remote receive-framerate",
-          `${theStats[client?.channelName]?.receiveFrameRate} Fps`
-        )
-      }, [5000])
+      // statsRef.current = setInterval(async () => {
+      //   const theStats = await client.getRemoteVideoStats()
+      //   console.log(
+      //     "Remote bitrate",
+      //     `${theStats[client?.channelName]?.receiveBitrate / 8000000} MBps`
+      //   )
+      //   console.log(
+      //     "Remote transport-delay",
+      //     `${theStats[client?.channelName]?.transportDelay} ms`
+      //   )
+      //   console.log(
+      //     "Remote receive-delay",
+      //     `${theStats[client?.channelName]?.receiveDelay} ms`
+      //   )
+      //   console.log(
+      //     "Remote receive-framerate",
+      //     `${theStats[client?.channelName]?.receiveFrameRate} Fps`
+      //   )
+      // }, [5000])
     }
 
     const handleUserUnpublished = async function (user) {
@@ -298,6 +293,7 @@ function useAgora(client, role, callType) {
     leaveAndCloseTracks,
     leaveDueToPrivateCall,
     switchViewerToHost,
+    modelUnPublishVideoTrack,
   }
 }
 

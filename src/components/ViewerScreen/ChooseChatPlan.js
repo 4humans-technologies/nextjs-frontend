@@ -26,12 +26,12 @@ const initialData = [
 ]
 
 function ChooseChatPlan(props) {
-  const [chatPlans, setChatPlans] = useState([...initialData])
+  const [chatPlans, setChatPlans] = useState([])
   const { setIsChatPlanActive } = props
   const authUpdateCtx = useAuthUpdateContext()
 
   useEffect(() => {
-    fetch("/api/website/privatechat/get-active-chat-plans")
+    fetch("/api/website/stream/get-active-chat-plans")
       .then((res) => res.json())
       .then((data) => {
         setChatPlans(data.plans)
@@ -40,7 +40,7 @@ function ChooseChatPlan(props) {
   }, [])
 
   const buyPlan = (planId) => {
-    fetch("/api/website/stream/buy-chat-plan", {
+    fetch("/api/website/stream/private-chat/buy-chat-plan", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,6 +65,10 @@ function ChooseChatPlan(props) {
             })
           )
           authUpdateCtx.readFromLocalStorage()
+          authUpdateCtx.updateWallet(
+            chatPlans.find((plan) => plan._id === planId),
+            "dec"
+          )
         } else {
           alert("Chat plan not brought!")
         }
@@ -97,7 +101,7 @@ function ChooseChatPlan(props) {
               name={plan.name}
               price={plan.price}
               validityDays={plan.validityDays}
-              buyThisPlan={() => buyPlan(plan.id)}
+              buyThisPlan={() => buyPlan(plan._id)}
             />
           )
         })}
