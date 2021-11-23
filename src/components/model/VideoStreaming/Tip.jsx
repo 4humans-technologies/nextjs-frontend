@@ -1,9 +1,33 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "react-bootstrap"
 import ClearIcon from "@material-ui/icons/Clear"
+import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Tip() {
   const [dynamicData, setDynamicData] = useState([2])
+  const authContext = useAuthContext()
+
+  useEffect(() => {
+    if (authContext.loadedFromLocalStorage === true) {
+      let arr = []
+      fetch("/api/website/stream/get-model-tipmenu-actions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          modelId: localStorage.getItem("relatedUserId"),
+        }),
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          data.tips.map((item) =>
+            arr.push({ action: item.action, price: item.price })
+          )
+          setDynamicData(arr)
+        })
+    }
+  }, [authContext.loadedFromLocalStorage])
 
   const saveData = () => {
     const allInputs = document.querySelectorAll("#action-form input")
@@ -47,11 +71,15 @@ function Tip() {
               >
                 <input
                   className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
-                  placeholder={index}
+                  placeholder="Actions"
+                  value={item.action}
+                  required={true}
                 />
                 <input
                   className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
-                  placeholder={dynamicData}
+                  type={Number}
+                  value={item.price}
+                  required={true}
                 />
                 {/* Amazing ninja technique for dom menupulation */}
                 <ClearIcon
@@ -66,7 +94,9 @@ function Tip() {
         </form>
         <Button
           className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
-          onClick={() => setDynamicData((prev) => [...prev, 1])}
+          onClick={() =>
+            setDynamicData((prev) => [...prev, { action: null, price: null }])
+          }
         >
           add new action
         </Button>

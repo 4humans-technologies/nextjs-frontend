@@ -1,5 +1,3 @@
-import Header from "../Mainpage/Header"
-import SecondHeader from "../Mainpage/SecondHeader"
 import Sidebar from "../Mainpage/Sidebar"
 import React, {
   useReducer,
@@ -9,27 +7,21 @@ import React, {
   useCallback,
 } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
 import { Button } from "react-bootstrap"
-import Footer from "../Mainpage/Footer"
 
 import PublicChat from "./PublicChat"
-import PrivateChat from "./PrivateChat"
-import LivePeople from "./LivePeople"
+
 import AgoraRTC from "agora-rtc-sdk-ng"
 import useAgora from "../../hooks/useAgora" //using agora from Hooks
 import VideoPlayer from "../UI/VideoPlayer"
-import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
 import { useAuthContext } from "../../app/AuthContext"
 import { useAuthUpdateContext } from "../../app/AuthContext"
-import Slider from "@material-ui/core/Slider"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { useRouter } from "next/router"
 import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
 import io from "../../socket/socket"
-import Showcontroler from "./VideoStreaming/Showcontroler"
 import Videoshowcontroller from "./VideoStreaming/Videoshowcontroller"
 import LiveTvIcon from "@material-ui/icons/LiveTv"
 import { useSocketContext } from "../../app/socket/SocketContext"
@@ -40,7 +32,6 @@ import MicIcon from "@material-ui/icons/Mic"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
-import CallEndDetails from "../Call/CallEndDetails"
 import PrivateChatWrapper from "../PrivateChat/PrivateChatWrapper"
 
 // Replace with your App ID.
@@ -160,6 +151,7 @@ function Live() {
     isLiveNowRef.current = joinState || callOnGoing
   }, [joinState, callOnGoing])
 
+  /* socket loop process */
   useEffect(() => {
     const socket = io.getSocket()
     let joinAttempts = 0
@@ -274,8 +266,8 @@ function Live() {
     }, [1000])
   }, [])
 
+  /* clear the rtcToken onetime on first mount only */
   useEffect(() => {
-    /* clear the rtcToken onetime on first mount only */
     localStorage.removeItem("rtcToken")
     localStorage.removeItem("rtcTokenExpireIn")
     return () => {
@@ -394,14 +386,14 @@ function Live() {
 
   useEffect(() => {
     requestServerEndAndStreamLeaveRef.current = requestServerEndAndStreamLeave
-    leaveAndCloseTracksRef.current = leaveAndCloseTracks
+    leaveAndCloseTracksRef.current = (mounted) => leaveAndCloseTracks(mounted)
   }, [requestServerEndAndStreamLeave, leaveAndCloseTracks])
 
   useEffect(() => {
     return () => {
       if (sessionStorage.getItem("liveNow") === "true") {
         requestServerEndAndStreamLeaveRef.current()
-        leaveAndCloseTracksRef.current()
+        leaveAndCloseTracksRef.current(false)
       }
       clearInterval(streamTimerRef.current)
       clearInterval(callTimerRef.current)
@@ -651,54 +643,67 @@ function Live() {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        if (data.wasFirst === "yes" && data.actionStatus === "success") {
-          spinnerCtx.setShowSpinner(false, "Please wait...")
+        /**
+         * three scenario's are possible
+         * call end request put first
+         * wasNot first
+         * call not setuped properly
+         */
+
+        /* CASE:1 if call was not setup properly */
+        if (data?.callWasNotSetupProperly) {
+          /* just close the whole call setup and restore back to the stream mode */
+          setCallOnGoing(false)
           spinnerCtx.setShowSpinner(false, "Please wait...")
           await leaveAndCloseTracks()
           offCallListeners()
           setPendingCallEndRequest(false)
-          // setCallEndDetails(data.callEndDetails)
           offCallListeners()
-        } else {
-          setTimeout(async () => {
-            let hasCallEnded = true
-            setCallOnGoing((prev) => {
-              if (prev !== true) {
-                hasCallEnded = false
-                return false
-              } else {
-                return prev
+        } else if (
+          !data?.callWasNotSetupProperly &&
+          data.wasFirst === "yes" &&
+          data.actionStatus === "success"
+        ) {
+          /* just close the whole call setup and restore back to the stream mode */
+          setCallOnGoing(false)
+          spinnerCtx.setShowSpinner(false, "Please wait...")
+          await leaveAndCloseTracks()
+          offCallListeners()
+          setPendingCallEndRequest(false)
+          offCallListeners()
+        } else if (!data?.callWasNotSetupProperly && data.wasFirst === "no") {
+          /* if was not first wait for the socket end call response for 10 seconds or error out if not received */
+          setTimeout(() => {
+            setCallOnGoing(async (isCallOngoing) => {
+              if (isCallOngoing) {
+                alert(
+                  "Viewer request for call end before you, call not ended successfully"
+                )
+                spinnerCtx.setShowSpinner(false, "Please wait...")
+                await leaveAndCloseTracks()
+                offCallListeners()
+                setPendingCallEndRequest(false)
+                offCallListeners()
               }
+              return false
             })
-            if (!hasCallEnded) {
-              alert(
-                "Viewer request for call end before you, call not ended successfully"
-              )
-              spinnerCtx.setShowSpinner(false, "Please wait...")
-              await leaveAndCloseTracks()
-              offCallListeners()
-              setPendingCallEndRequest(false)
-              // setCallEndDetails(data.callEndDetails)
-              offCallListeners()
-            }
           }, [10000])
         }
       })
       .catch(async (err) => {
-        spinnerCtx.setShowSpinner(false, "Please wait...")
         alert("Call was not ended successfully!")
         setCallOnGoing(false)
+        spinnerCtx.setShowSpinner(false, "Please wait...")
         await leaveAndCloseTracks()
         offCallListeners()
         setPendingCallEndRequest(false)
-        // setCallEndDetails(data.callEndDetails)
         offCallListeners()
+        // setCallEndDetails(data.callEndDetails)
       })
   }
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
-    <div>
-      <Header />
+    <div className="tw-w-full">
       <audio
         preload="true"
         src="/audio/call-request.mp3"
@@ -766,7 +771,7 @@ function Live() {
           </div>
         </div>
       )}
-      <div className="tw-flex">
+      <div className="tw-flex tw-w-full">
         <Sidebar />
         <div
           className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28 "}
@@ -1093,7 +1098,7 @@ function Live() {
         </div>
       </div>
       <Videoshowcontroller />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   ) : (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">

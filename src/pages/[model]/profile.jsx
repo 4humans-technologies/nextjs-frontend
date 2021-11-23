@@ -1,6 +1,8 @@
 import React from "react"
-import Profile from "../../components/model/Profile"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import dynamic from "next/dynamic"
+
+const Profile = dynamic(() => import("../../components/model/Profile"))
 
 function ModelProfile() {
   const user = useAuthContext()
@@ -13,7 +15,6 @@ function ModelProfile() {
   ) : (
     <div className="tw-mx-auto tw-mt-auto">
       <h1>You are not authorized to view this page</h1>
-      {/* tw-mx-auto tw-mt-auto tw-font-extrabold tw-capitalize tw-text-3xl */}
     </div>
   )
 }

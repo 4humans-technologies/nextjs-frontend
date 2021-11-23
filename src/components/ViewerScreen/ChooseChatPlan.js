@@ -1,4 +1,5 @@
 import next from "next"
+import router from "next/router"
 import React, { useEffect, useState } from "react"
 import { useAuthUpdateContext } from "../../app/AuthContext"
 import ThePlanCard from "./ThePlanCard"
@@ -68,7 +69,17 @@ function ChooseChatPlan(props) {
           alert("Chat plan not brought!")
         }
       })
-      .catch((err) => next(err))
+      .catch((err) => {
+        if (err.reasonCode === "low-balance") {
+          const res = window.confirm(
+            err.message + " Do you want to buy new coins ?"
+          )
+          if (res) {
+            return router.push("/user/payment")
+          }
+        }
+        return
+      })
   }
 
   return (

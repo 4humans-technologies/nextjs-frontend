@@ -12,6 +12,8 @@ import Link from "next/link"
 import io from "../../socket/socket"
 import ErrorIcon from "@material-ui/icons/Error"
 import Header from "./Header"
+import ArrowBackIcon from "@material-ui/icons/ArrowBack"
+import LockOpenIcon from "@material-ui/icons/LockOpen"
 
 function SignUp() {
   const modalCtx = useModalContext()
@@ -98,7 +100,7 @@ function SignUp() {
                 Registration user
               </h1>
               <form onSubmit={handleSubmit} className="tw-mb-4 viewer-form">
-                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between tw-mx-auto">
                   <input
                     type="text"
                     name="Username"
@@ -106,10 +108,10 @@ function SignUp() {
                     placeholder="UserName"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                    className="tw-w-full tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                   />
                 </div>
-                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between tw-mx-auto">
                   <input
                     type="text"
                     name="name"
@@ -117,11 +119,11 @@ function SignUp() {
                     placeholder="Your Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                    className="tw-w-full tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                   />
                 </div>
 
-                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between tw-mx-auto">
                   <input
                     type="email"
                     name="email"
@@ -129,11 +131,11 @@ function SignUp() {
                     placeholder="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                    className="tw-w-full tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
                   />
                 </div>
 
-                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between tw-mx-auto">
                   <input
                     type="Password"
                     name="Password"
@@ -141,11 +143,11 @@ function SignUp() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
+                    className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg tw-w-full"
                   />
                 </div>
 
-                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between tw-mx-auto">
                   <select
                     placeholder="Choose"
                     className="tw-rounded-full tw-flex-grow tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg"
@@ -153,7 +155,7 @@ function SignUp() {
                     value={gender}
                   >
                     <option
-                      className="tw-justify-between tw-rounded-full tw-border-none tw-py-4 "
+                      className="tw-justify-between tw-rounded-full tw-border-none tw-py-4"
                       placeholder="Choose Gender"
                     >
                       Choose Gender
@@ -179,25 +181,25 @@ function SignUp() {
                   >
                     Register
                   </Button>
-                  <div
-                    className="tw-border-t tw-border-second-color tw-my-3 tw-w-full"
-                    id="separator"
-                  ></div>
-                  <Button
-                    variant="success"
-                    className="tw-rounded-full tw-inline-block tw-w-11/12"
-                    type="submit"
-                  >
-                    Login
-                  </Button>
+                  <div className="tw-border-t tw-border-second-color tw-my-3 tw-w-full"></div>
+                  <p className="tw-text-white">Already Register ?</p>
+                  <Link href="/auth/login">
+                    <p className="tw-text-white tw-text-lg tw-font-bold tw-cursor-pointer">
+                      <span className="tw-flex tw-mt-4 ">
+                        <LockOpenIcon /> <p className="tw-ml-4">Login</p>
+                      </span>
+                    </p>
+                  </Link>
 
-                  <Button
-                    variant="danger"
-                    className="tw-rounded-full tw-inline-block tw-w-11/12 tw-mt-6"
+                  <button
                     onClick={() => router.back()}
+                    className="tw-flex tw-text-white tw-w-11/12 tw-mt-4 tw-justify-center tw-cursor-pointer tw-items-center"
                   >
-                    Go Back
-                  </Button>
+                    <ArrowBackIcon fontSize="medium" />
+                    <p className="tw-ml-4 tw-font-bold tw-text-xl">
+                      Back to Home
+                    </p>
+                  </button>
                 </div>
               </form>
             </div>

@@ -4,12 +4,21 @@ import useSpinnerContext from "../app/Loading/SpinnerContext"
 
 const appId = "ee68eb6fcb93426e81c89f5ad6b0401f"
 function useAgora(client, role, callType) {
-  // console.log("running useAgora!")
   const [localVideoTrack, setLocalVideoTrack] = useState(null)
   const [localAudioTrack, setLocalAudioTrack] = useState(null)
   const [joinState, setJoinState] = useState(false)
   const [remoteUsers, setRemoteUsers] = useState([])
   const [streamOnGoing, setStreamOnGoing] = useState(true)
+  const localAudioTrackRef = useRef()
+  const localVideoTrackRef = useRef()
+
+  useEffect(() => {
+    localAudioTrackRef.current = localAudioTrack
+  }, [localAudioTrack])
+
+  useEffect(() => {
+    localVideoTrackRef.current = localVideoTrack
+  }, [localVideoTrack])
 
   const spinnerCtx = useSpinnerContext()
   const statsRef = useRef()
@@ -59,11 +68,15 @@ function useAgora(client, role, callType) {
       return
     }
     const createMyTrack = async () => {
-      return await createLocalTracks(null, {
-        optimizationMode: "detail",
-        facingMode: "user",
-        encoderConfig: { height: 400, width: 400, frameRate: 20 },
-      })
+      if (!localAudioTrack && !localVideoTrack) {
+        return await createLocalTracks(null, {
+          optimizationMode: "detail",
+          facingMode: "user",
+          encoderConfig: { height: 400, width: 400, frameRate: 20 },
+        })
+      } else {
+        return [localAudioTrack, localVideoTrack]
+      }
     }
     if (role === "host") {
       spinnerCtx.setShowSpinner(true, "Going Live...")
@@ -103,7 +116,13 @@ function useAgora(client, role, callType) {
       let track = await createLocalTracks()
       return track
     }
-  }, [])
+    if (localAudioTrackRef.current) {
+      localAudioTrackRef.current.paly()
+    }
+    if (localVideoTrackRef.current) {
+      localVideoTrackRef.current.paly()
+    }
+  }, [client, localAudioTrackRef, localVideoTrackRef])
 
   const leave = useCallback(async () => {
     await client?.leave()
@@ -117,23 +136,31 @@ function useAgora(client, role, callType) {
     setJoinState(false)
   }
 
-  const leaveAndCloseTracks = useCallback(async () => {
-    if (client.connectionState) {
-      await client?.leave()
-    }
-    if (localAudioTrack) {
-      await localAudioTrack.stop()
-      await localAudioTrack.close()
-    }
+  const leaveAndCloseTracks = useCallback(
+    async (mounted = true) => {
+      // if (
+      //   client.connectionState !== "DISCONNECTED" &&
+      //   client.connectionState !== "DISCONNECTING"
+      // ) {
+      await client.leave()
+      // }
 
-    if (localVideoTrack) {
-      await localVideoTrack.stop()
-      await localVideoTrack.close()
-    }
+      if (mounted) {
+        if (localAudioTrackRef.current) {
+          await localAudioTrackRef.current.stop()
+          await localAudioTrackRef.current.close()
+        }
 
-    setRemoteUsers([])
-    setJoinState(false)
-  }, [localAudioTrack, localVideoTrack, client])
+        if (localVideoTrackRef.current) {
+          await localVideoTrackRef.current.stop()
+          await localVideoTrackRef.current.close()
+        }
+        setRemoteUsers([])
+        setJoinState(false)
+      }
+    },
+    [client, localVideoTrackRef, localAudioTrackRef]
+  )
 
   const renewRtcToken = async function () {
     /* do a fetch request to renew token */
@@ -152,27 +179,40 @@ function useAgora(client, role, callType) {
   }
 
   useEffect(() => {
-    startLocalCameraPreview()
-    return () => {
-      leaveAndCloseTracks()
+    if (!localVideoTrackRef.current && !localAudioTrackRef.current) {
+      startLocalCameraPreview()
     }
-  }, [])
+  }, [startLocalCameraPreview])
+
+  // useEffect(() => {
+  //   if (localVideoTrackRef.current && localAudioTrackRef.current) {
+  //     return () => {
+  //       leaveAndCloseTracks()
+  //     }
+  //   }
+  // }, [leaveAndCloseTracks])
+
+  useEffect(() => {
+    return async () => {
+      await client.leave()
+      if (localAudioTrackRef.current) {
+        await localAudioTrackRef.current.stop()
+        await localAudioTrackRef.current.close()
+      }
+
+      if (localVideoTrackRef.current) {
+        await localVideoTrackRef.current.stop()
+        await localVideoTrackRef.current.close()
+      }
+    }
+  }, [client.leave, localAudioTrackRef, localVideoTrackRef])
 
   useEffect(() => {
     if (!client) {
       return
     }
 
-    // when component will mount
     setRemoteUsers(client.remoteUsers)
-
-    // //for volume change this is by Ravi shankar still in trail stage
-    // const handleUserVolume = async function (user, mediaType) {
-    //   await client.subscribe(user, mediaType)
-    //   setRemoteUsers((_remoteUsers) =>
-    //     Array.from(client.remoteUsers.audioTrack.setVolume(vol))
-    //   )
-    // }
 
     const handleUserPublished = async function (user, mediaType) {
       await client.subscribe(user, mediaType)

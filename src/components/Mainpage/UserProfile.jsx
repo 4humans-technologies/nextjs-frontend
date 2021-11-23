@@ -64,7 +64,7 @@ function UserProfile() {
         <CreateIcon
           className="md:tw-ml-24 md:tw-mt-12 tw-mt-16 tw-ml-28 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
           fontSize="medium"
-          onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
+          onClick={() => modelCtx.showModalWithContent(<ProfileUpdate />)}
         />
 
         <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44 tw-flex  md:tw-mt-4 tw-mt-8">
@@ -100,7 +100,7 @@ function UserProfile() {
         </div>
 
         <div className="tw-grid  tw-bg-first-color md:tw-col-span-3 tw-col-span-1 md:tw-my-0 tw-my-4 ">
-          <h1 className="tw-pl-4 tw-pt-4">Freinds</h1>
+          <h1 className="tw-pl-4 tw-pt-4">Dummy Freinds</h1>
           <br />
           {/* Problem with useEffect and useState is that it is update after all data loaded that you have to remmembember */}
           {followerData?.Follower ? (

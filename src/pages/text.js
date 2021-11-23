@@ -28,7 +28,7 @@ function TestComponent() {
               }
             */
             authUpdateContext.updateWallet(data.amount, data.operation)
-            document.getElementById("superchat-audio").play()
+            document.getElementById("money-debit-audio").play()
           })
         }
 

@@ -5,17 +5,17 @@ function Boxgroup(props) {
   const [streams, setStreams] = useState([])
 
   return (
-    <div className="tw-bg-first-color tw-px-3 tw-pt-10  tw-border-b tw-border-second-color  tw-w-screen">
-      <h1 className="tw-text-lg tw-font-medium tw-text-white tw-mb-4 tw-mt-4">
+    <section className="tw-bg-first-color tw-px-3 tw-py-10  tw-border-b tw-border-second-color  tw-w-screen">
+      <h2 className="tw-text-lg tw-font-medium tw-text-white tw-mb-4 tw-mt-4">
         {props.groupTitle}
-      </h1>
+      </h2>
       <div className="tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 md:tw-grid-cols-4 lg:tw-grid-cols-5 xl:tw-grid-cols-6 2xl:tw-grid-cols-7 tw-gap-x-3  tw-justify-items-start tw-w-full ">
         {/* show more wala button,then this will */}
         {props.data.length === 0 ? (
           <div className="tw-px-4 tw-py-3 tw-rounded tw-bg-second-color">
-            <h2 className="tw-text-base tw-font-semibold tw-text-text-black tw-text-center">
+            <p className="tw-text-base tw-font-semibold tw-text-text-black tw-text-center">
               No Model is Currently Live 🥺!
-            </h2>
+            </p>
           </div>
         ) : (
           props.data.map((model, index) => {
@@ -32,7 +32,7 @@ function Boxgroup(props) {
           })
         )}
       </div>
-    </div>
+    </section>
   )
 }
 

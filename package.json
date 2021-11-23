@@ -13,6 +13,7 @@
     "babel-plugin-styled-components": "^1.13.2",
     "bootstrap": "^5.1.0",
     "fetch-intercept": "^2.4.0",
+    "fslightbox-react": "^1.6.2-2",
     "nanoid": "^3.1.25",
     "next": "^11.1.2",
     "prop-types": "^15.7.2",
@@ -22,7 +23,6 @@
     "react-draggable": "^4.4.4",
     "react-modal": "^3.14.3",
     "react-router-dom": "^5.2.1",
-    "simple-react-lightbox": "^3.6.9-0",
     "socket.io-client": "^4.2.0",
     "yup": "^0.32.9"
   },

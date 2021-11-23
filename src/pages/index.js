@@ -1,12 +1,8 @@
 import Head from "next/head"
-import Header from "../components/Mainpage/Header"
 import Sidebar from "../components/Mainpage/Sidebar"
 import Boxgroup from "../components/Mainpage/Boxgroup"
 import { useState, useEffect } from "react"
-import Footer from "../components/Mainpage/Footer"
 import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
-import socket from "../socket/socket"
-import Link from "next/link"
 import io from "../socket/socket"
 import { useSocketContext } from "../app/socket/SocketContext"
 
@@ -36,7 +32,6 @@ const Home = () => {
   console.log("rendering home")
   const ctx = useAuthContext()
   const socketContext = useSocketContext()
-  const [liveModels, setLiveModels] = useState(0)
 
   useEffect(() => {
     /* client should not be connected to any public room  while on index page */
@@ -106,7 +101,6 @@ const Home = () => {
               ]
             }
           })
-          setLiveModels(data.totalMatches)
         })
         .catch((error) => {
           console.error(error)
@@ -186,13 +180,12 @@ const Home = () => {
   }, [socketContext.setSocketSetupDone])
 
   return (
-    <div className="tw-min-h-screen tw-max-w-screen-2xl">
+    <div className="tw-min-h-screen tw-max-w-screen-2xl tw-bg-first-color">
       <Head>
         <title>DreamGirl Live Online Video Chat</title>
         <link rel="icon" href="/DG_icon.jpg" />
       </Head>
       <div className="tw-h-20"></div>
-      <Header liveModels={liveModels} />
       <div className="tw-flex  ">
         <Sidebar />
         <div className="">
@@ -208,7 +201,6 @@ const Home = () => {
           })}
         </div>
       </div>
-      <Footer />
     </div>
   )
 }

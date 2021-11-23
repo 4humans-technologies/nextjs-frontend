@@ -610,10 +610,10 @@ function ViewerScreen(props) {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: {
+                body: JSON.stringify({
                   callId: data.callId,
                   callType: data.callType,
-                },
+                }),
               })
                 .then((res) => res.json())
                 .then(async (result) => {
@@ -710,22 +710,6 @@ function ViewerScreen(props) {
     setUpCallListeners,
   ])
 
-  /**
-   * commented for client presentation only it's working
-   */
-
-  // useEffect(() => {
-  //   const socket = io.getSocket()
-  //   if (socketCtx.setSocketSetupDone) {
-  //     if (!socket.hasListeners("model-call-end-request-init-received")) {
-  //       socket.off("model-call-end-request-init-received")
-  //     }
-  //     if (!socket.hasListeners("model-call-end-request-finished")) {
-  //       socket.off("model-call-end-request-finished")
-  //     }
-  //   }
-  // }, [socketCtx.setSocketSetupDone])
-
   /* handle call end */
   const handleCallEnd = async () => {
     if (pendingCallEndRequest) {
@@ -768,19 +752,6 @@ function ViewerScreen(props) {
         if (data.wasFirst === "yes") {
           // spinnerCtx.setShowSpinner(false, "Please wait...")
           sessionStorage.setItem("callEndDetails", JSON.stringify(data))
-          // modalCtx.showModalWithContent(
-          //   <CallEndDetails
-          //     dateTime={data.dateTime}
-          //     viewerName={data.name}
-          //     totalCharges={data.totalCharges}
-          //     currentWalletAmount={data.currentAmount}
-          //     callType={data.callType}
-          //     callDuration={data.callDuration}
-          //     theCall={data.theCall}
-          //     totalCharges={data.totalCharges}
-          //     userType="Viewer"
-          //   />
-          // )
         }
         setPendingCallEndRequest(false)
         setCallOnGoing(false)
@@ -801,7 +772,9 @@ function ViewerScreen(props) {
   return (
     <div
       className={
-        isModelOffline || (callOnGoing === true && callType === "audioCall")
+        isModelOffline ||
+        (callOnGoing === true && callType === "audioCall") ||
+        othersCall.acceptedOthersCall
           ? "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10 tw-flex tw-items-center tw-justify-center"
           : "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10"
       }
@@ -872,12 +845,20 @@ function ViewerScreen(props) {
         </div>
       ) : null}
 
-      {othersCall.acceptedOthersCall && (
+      {othersCall.acceptedOthersCall && !isModelOffline && (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-6  sm:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
-          <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
-            the model has accepted the {othersCall.otherUserData.callType} of{" "}
-            {othersCall.otherUserData.username}
-          </p>
+          {othersCall.rejectedMyCall ? (
+            <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
+              the model has accepted the {othersCall.otherUserData.callType} of{" "}
+              {othersCall.otherUserData.username}, Sorry, better luck next time
+              ,dont' be sad 🤗🤗
+            </p>
+          ) : (
+            <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
+              the model has accepted the {othersCall.otherUserData.callType} of{" "}
+              {othersCall.otherUserData.username}
+            </p>
+          )}
         </div>
       )}
 
@@ -897,7 +878,8 @@ function ViewerScreen(props) {
       {isModelOffline &&
         modelProfileData &&
         !callOnGoing &&
-        remoteUsers?.length === 0 && (
+        remoteUsers?.length === 0 &&
+        !othersCall.acceptedOthersCall && (
           <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px]">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
               <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
@@ -914,16 +896,26 @@ function ViewerScreen(props) {
         )}
 
       {/* when the model has accepted other viewers call */}
-      {othersCall.acceptedOthersCall && (
-        <div className="tw-flex-shrink tw-flex-grow-0 tw-flex tw-justify-around tw-items-center">
-          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px] tw-ml-2">
+      {/* {othersCall.acceptedOthersCall && ( */}
+      {othersCall.acceptedOthersCall && !isModelOffline && (
+        <div className="tw-flex-shrink tw-flex-grow-0 tw-flex tw-justify-center tw-items-center tw-my-auto tw-relative">
+          <div
+            className="tw-absolute tw-translate-x-[-50%] tw-translate-y-[-50%] tw-left-[50%] tw-w-28 tw-h-28 sm:tw-w-32 sm:tw-h-32 lg:tw-w-36 lg:tw-h-36 tw-z-[391]"
+            style={{
+              backgroundImage: "url(/kiss-2.gif)",
+              backgroundSize: "contain",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
+          ></div>
+          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px] tw-mr--2">
             <img
               src={modelProfileData.profileImage}
               alt=""
               className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
             />
           </div>
-          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px] tw-mr-2">
+          <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px] tw-ml--2">
             <img
               src={othersCall.otherUserData.profileImage}
               alt=""
@@ -948,7 +940,7 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* model has accepted someones call */}
-      {othersCall.acceptedOthersCall && (
+      {othersCall.acceptedOthersCall && !isModelOffline && (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-32 sm:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
           <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
             the model and {othersCall.otherUserData.username} are busy on call

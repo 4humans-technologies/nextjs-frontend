@@ -1,15 +1,7 @@
 import React from "react"
-import Header from "../../components/Mainpage/Header"
-import Footer from "../../components/Mainpage/Footer"
 
 function Cookies() {
-  return (
-    <div>
-      <Header />
-      This is the cookies page
-      <Footer />
-    </div>
-  )
+  return <div>This is the cookies page</div>
 }
 
 export default Cookies

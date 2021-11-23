@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import CreateIcon from "@material-ui/icons/Create"
 import { Button } from "react-bootstrap"
 import Card from "../UI/Card"
@@ -11,40 +11,58 @@ import {
   CoverUpdate,
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
-import Header from "../Mainpage/Header"
 
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import FsLightbox from "fslightbox-react"
+// import { SRLWrapper } from "simple-react-lightbox"
+// import Image from "next/image"
 // ========================================================
 function Profile() {
-  const [checked, setChecked] = useState(false)
   const [infoedited, setInfoedited] = useState(false)
   const [priceEdit, setPriceEdited] = useState(false)
   const [dynamicData, setDynamicData] = useState([2])
-  const [imageVideo, setImageVideo] = useState({
-    images: [],
-    videos: [],
-  })
 
-  const [modelData, setModelData] = useState()
-  const [modelDetails, setModelDetails] = useState(null)
-  const [callData, setCallData] = useState()
+  const [profileEdit, setProfileEdit] = useState({
+    country: authContext?.user.user.relatedUser.country,
+    languages: authContext?.user.user.languages.map((item) => item),
+    bodyType: authContext?.user.user.bodyType,
+    skinColor: authContext?.user.user.skinColor,
+    hairColor: authContext?.user.user.hairColor,
+    eyeColor: authContext?.user.user.eyeColor,
+  })
   const modalCtx = modalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
-
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
   })
 
-  useEffect(() => {
-    fetch("/model.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setModelData(data.Personal), setCallData(data.Charges)
-      })
-    return {}
-  }, [])
+  // this is for image uplode
+  const [lightboxController, setLightboxController] = useState({
+    toggler: false,
+    slide: 1,
+  })
+
+  function openLightboxOnSlide(number) {
+    setLightboxController({
+      toggler: !lightboxController.toggler,
+      slide: number,
+    })
+  }
+
+  // This is for videos uplode
+  const [videoboxController, setVideoboxController] = useState({
+    toggler: false,
+    slide: 1,
+  })
+
+  function openVideoboxOnSlide(number) {
+    setVideoboxController({
+      toggler: !videoboxController.toggler,
+      slide: number,
+    })
+  }
 
   const callChangeHandler = (e) => {
     const { name, value } = e.target
@@ -55,19 +73,61 @@ function Profile() {
   //  ============================================================================================
 
   const priceSetting = async () => {
-    const res = await fetch("/model.json", {
-      method: "PUT",
-      body: JSON.stringify({
-        audio: audioVideoPrice.audio,
-        video: audioVideoPrice.video,
-      }),
+    const res = await fetch("/api/website/profile/update-info-fields", {
+      method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-type": "application/json",
       },
+      body: JSON.stringify([
+        {
+          field: "charges.audioCall",
+          value: audioVideoPrice.audio,
+        },
+        {
+          field: "charges.videoCall",
+          value: audioVideoPrice.video,
+        },
+      ]),
     })
     const data = await res.json()
-    console.log(data)
+    authUpdateContext.updateNestedPaths((prev) => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        user: {
+          ...prev.user.user,
+          relatedUser: {
+            ...prev.user.user.relatedUser,
+            charges: {
+              audioCall: audioVideoPrice.audio,
+              videoCall: audioVideoPrice.video,
+            },
+          },
+        },
+      },
+    }))
+
+    let store = JSON.parse(localStorage.getItem("user"))
+    console.log(
+      (store["relatedUser"]["charges"] =
+        authContext.user.user.relatedUser.charges)
+    )
+    localStorage.setItem("user", JSON.stringify(store))
   }
+
+  // Profile editor
+  const profilEdit = async () => {
+    // fetch("/api/website/profile/update-info-fields", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-type": "application/json",
+    //   },
+    //   body: JSON.stringify(),
+    // })
+    console.log(profileref)
+  }
+
+  // Profile editor
   //  ============================================================================================
 
   // s3 bucket image upload
@@ -93,7 +153,7 @@ function Profile() {
       return alert("OK BRO")
     }
     // send data back to node serve as success report with user id and url for the data
-
+    console.log("Photo Update handler ")
     let serverReq = await fetch(
       "/api/website/profile/handle-public-image-upload",
       {
@@ -115,8 +175,8 @@ function Profile() {
           ...prev.user.user,
           relatedUser: {
             ...prev.user.user.relatedUser,
-            publicImages: [
-              ...prev.user.user.relatedUser.publicImages,
+            privateVideos: [
+              ...prev.user.user.relatedUser.privateVideos,
               profileUrl,
             ],
           },
@@ -125,10 +185,10 @@ function Profile() {
     }))
 
     let store = JSON.parse(localStorage.getItem("user"))
-    store["relatedUser"]["publicImages"] = profileUrl
+    store["relatedUser"]["privateVideos"] = profileUrl
     localStorage.setItem("user", JSON.stringify(store))
 
-    console.log(serverResp)
+    console.log("Photo handler")
   }
 
   // VideoUplodeHandler videoUpdateHandler
@@ -144,7 +204,7 @@ function Profile() {
     const profileUrl = imageUrl.split("?")[0]
 
     let req = await fetch(imageUrl, {
-      method: "POST",
+      method: "PUT",
       body: image,
     })
     if (!req.ok) {
@@ -185,44 +245,46 @@ function Profile() {
     store["relatedUser"]["publicVideos"] = profileUrl
     // store.user.user.relatedUser.publicVideos.push(profileUrl)
     localStorage.setItem("user", JSON.stringify(store))
-
-    console.log(`Image uplode ${serverResp}`)
   }
-  // This can be use for the fetching model details
-  useEffect(() => {
-    fetch("/api/website/profile/get-model-profile-data")
-      .then((resp) => resp.json())
-      .then((data) => setModelDetails(data))
-  }, [])
 
-  // console.log(modelDetails.model)
-  // useEffect to make  button appear when change in information takes place
-  let audio = []
-  let video = []
-
+  // This is to get the value of the of tip
   useEffect(() => {
-    if (callData) {
-      for (let index = 1; index < 5; index++) {
-        audio.push(callData.Audio * index)
-        video.push(callData.Video * index)
-      }
+    if (authContext.loadedFromLocalStorage === true) {
+      let arr = []
+      fetch("/api/website/stream/get-model-tipmenu-actions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          modelId: localStorage.getItem("relatedUserId"),
+        }),
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          data.tips.map((item) =>
+            arr.push({ action: item.action, price: item.price })
+          )
+          setDynamicData(arr)
+        })
     }
-  }, [callData])
+  }, [authContext.loadedFromLocalStorage])
 
-  const toggleChecked = () => {
-    setChecked((prev) => !prev)
+  // for the starting the
+
+  {
+    dynamicData.map((item) => console.log(item))
   }
 
-  // This will change data and fecth data and send to uper
+  // This is for save the data for the tip menu
   const saveData = () => {
-    const allInputs = document.querySelectorAll("#action-form input")
     const actionArray = []
+    const allInputs = document.querySelectorAll("#action-form input")
     for (let index = 0; index < allInputs.length; index += 2) {
       const action = allInputs[index].value
       const actionValue = allInputs[index + 1].value
       actionArray.push({ action: action, price: actionValue })
     }
-
     fetch("/api/website/profile/update-model-tipmenu-actions", {
       method: "POST",
       headers: {
@@ -246,12 +308,8 @@ function Profile() {
     profileImage = authContext.user.user.relatedUser.profileImage
     coverImage = authContext.user.user.relatedUser.coverImage
   }
-
   return (
     <div>
-      {/* Cover page */}
-      <Header />
-
       <div
         className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
         style={{
@@ -287,7 +345,9 @@ function Profile() {
           onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
         />
         <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44 tw-flex  md:tw-mt-4 tw-mt-8">
-          {modelDetails ? modelDetails.model.name : null}
+          {authContext.user.user.relatedUser
+            ? authContext.user.user.relatedUser.name
+            : null}
           {authContext.user.user.relatedUser.gender == "Female" ? (
             <img src="/femaleIcon.png" className="tw-w-8 tw-h-8 tw-ml-4" />
           ) : (
@@ -314,107 +374,110 @@ function Profile() {
                 <p>SubCulture</p>
               </div>
 
-              {modelData
-                ? modelData.map((item) => (
-                    <div
-                      className="md:tw-col-span-5 tw-col-span-4 "
-                      onChange={() => setInfoedited(true)}
-                    >
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        EveryOne
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {authContext.user.user.relatedUser.ethnicity}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {/* {item.Language} */}
-                        {authContext.user.user.relatedUser.languages.map(
-                          (item) => item
-                        )}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                      >
-                        {/* {item.Age} */}
-                        {modelDetails
-                          ? thisYear - modelDetails.model.dob
-                          : null}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Body}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Hair}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Eye}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Call}
-                      </p>
-                      <p
-                        onInput={
-                          ((e) => e.currentTarget.textContent,
-                          () => setInfoedited(true))
-                        }
-                        contentEditable="true"
-                      >
-                        {item.Call}
-                      </p>
-                    </div>
-                  ))
-                : null}
+              {
+                <div
+                  className="md:tw-col-span-5 tw-col-span-4 "
+                  onChange={() => setInfoedited(true)}
+                >
+                  <p>EveryOne</p>
+                  <p
+                    onChange={
+                      ((e) => setProfileEdit.country(e.target.textContent),
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                    value={profileEdit.country}
+                  >
+                    {/* {authContext.user.user.relatedUser.ethnicity} */}
+                  </p>
+                  <p
+                    onChange={
+                      ((e) =>
+                        setProfileEdit.languages((prev) => [
+                          ...prev,
+                          e.target.textContent,
+                        ]),
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                    value={profileEdit.languages}
+                  >
+                    {/* {item.Language} */}
+                    {authContext.user.user.relatedUser.languages.map(
+                      (item) => item
+                    )}
+                  </p>
+                  <p>
+                    {/* {item.Age} */}
+                    {authContext.user.user
+                      ? thisYear - authContext.user.user.relatedUser.dob
+                      : null}
+                  </p>
+                  <p
+                    onChange={
+                      ((e) => setProfileEdit.skinColor(e.target.textContent),
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                    value={profileEdit.skinColor}
+                  >
+                    Skin
+                    {/* {item.Body} */}
+                  </p>
+                  <p
+                    onChange={
+                      ((e) => setProfileEdit(e.currentTarget.textContent),
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                    value={profileEdit.hairColor}
+                  >
+                    Black
+                    {/* {item.Hair} */}
+                  </p>
+                  <p
+                    onChange={
+                      ((e) =>
+                        setProfileEdit.eyeColor(e.currentTarget.textContent),
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                    value={profileEdit.eyeColor}
+                  >
+                    {/* {item.Eye} */}
+                    Black
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    German
+                    {/* {item.Call} */}
+                  </p>
+                  <p
+                    onInput={
+                      ((e) => e.currentTarget.textContent,
+                      () => setInfoedited(true))
+                    }
+                    contentEditable="true"
+                  >
+                    German
+                    {/* {item.Call} */}
+                  </p>
+                </div>
+              }
 
               <br />
               {infoedited && (
                 <button
                   type="submit"
-                  onClick={() => setInfoedited(false)}
+                  onClick={() => {
+                    setInfoedited(false)
+                    profilEdit()
+                  }}
                   className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color"
                 >
                   Save
@@ -429,7 +492,7 @@ function Profile() {
                 <p className="tw-px-4">
                   My Email{" "}
                   <span className="tw-ml-4 tw-font-bold tw-text-xl">
-                    {modelDetails
+                    {authContext.user.user
                       ? authContext.user.user.relatedUser.email
                       : null}
                   </span>
@@ -500,7 +563,9 @@ function Profile() {
                 {priceEdit && (
                   <button
                     className="tw-bg-green-color tw-text-white tw-px-4  tw-my-2 tw-rounded-full"
-                    onClick={priceSetting}
+                    onClick={() => {
+                      priceSetting(), setPriceEdited(false)
+                    }}
                   >
                     Save
                   </button>
@@ -555,19 +620,6 @@ function Profile() {
                   <span className="tw-self-center">Stars</span>
                 </div>
               </Card>
-              <Card>
-                <div className="tw-flex tw-justify-between">
-                  <h2>Earning</h2>
-                  <div className="help_1">
-                    <HelpOutlineIcon />
-                    <p className="help_text_1 tw-hidden">Hello bro</p>
-                  </div>
-                </div>
-                <div className="tw-flex tw-mt-4 tw-text-center">
-                  <h1 className="tw-font-extrabold tw-text-4xl">123</h1>
-                  <span className="tw-self-center">Token</span>
-                </div>
-              </Card>
             </div>
             {/* Call History */}
             {/* give width and apply scroll-y this is still not implimented */}
@@ -577,10 +629,10 @@ function Profile() {
           {/* Scroll */}
         </div>
         <div className="md:tw-col-span-3 tw-col-span-1 tw-bg-dark-background  tw-text-white tw-py-8">
+          <div className="tw-flex tw-justify-between tw-ml-4 ">
+            <h1>My Photos</h1>
+          </div>
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
-            <div className="tw-flex tw-justify-between">
-              <h1>My Photos</h1>
-            </div>
             {/* Make Model Clickeble in model */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
@@ -614,39 +666,55 @@ function Profile() {
                 </div>
 
                 {/* file */}
+                <FsLightbox
+                  toggler={lightboxController.toggler}
+                  sources={authContext.user.user.relatedUser.publicImages.map(
+                    (url) => {
+                      return <img src={url} />
+                    }
+                  )}
+                  slide={lightboxController.slide}
+                />
               </div>
-              {authContext.user.user.relatedUser &&
-                authContext.user.user.relatedUser.publicImages.map((image) => (
-                  <div className=" tw-mb-4">
-                    <img
-                      src={image}
-                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                    />
-                  </div>
-                ))}
+              {authContext.user.user.relatedUser
+                ? authContext.user.user.relatedUser.publicImages.map(
+                    (image, index) => (
+                      <div
+                        className=" tw-mb-4 tw-cursor-pointer"
+                        key={index}
+                        onClick={() => openLightboxOnSlide(index + 1)}
+                      >
+                        <img
+                          src={image}
+                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                        />
+                      </div>
+                    )
+                  )
+                : null}
             </div>
           </div>
+          <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
+            <h1>My videos</h1>
+          </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <div className="tw-flex tw-justify-between">
-              <h1>My videos</h1>
-            </div>
             {/* Make Model Clickeble in model */}
             {/* md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
-              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4">
-                {/* input */}
-                <div className="file-input tw-mt-10 tw-ml-2 tw-grid">
+              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+                {/* file */}
+                <div className="file-input tw-mt-10 tw-ml-2">
+                  <input
+                    type="file"
+                    name="file-input_video"
+                    id="file-input_video"
+                    className="file-input__input"
+                    onChange={(e) => videoUpdateHandler(e)}
+                  />
                   <label
-                    className="file-input__label tw-place-items-center"
-                    htmlFor="file-input"
+                    className="file-input__label"
+                    htmlFor="file-input_video"
                   >
-                    <input
-                      type="file"
-                      name="file-input"
-                      id="file-input"
-                      className="file-input__input"
-                      onChange={(e) => videoUpdateHandler(e)}
-                    />
                     <svg
                       aria-hidden="true"
                       focusable="false"
@@ -666,20 +734,37 @@ function Profile() {
                   </label>
                 </div>
 
-                {/* input */}
+                {/* file */}
               </div>
-              {authContext.user.user.relatedUser &&
-                authContext.user.user.relatedUser.publicVideos.map((image) => (
-                  <div className=" tw-mb-4">
-                    <img
-                      src={image}
-                      className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                    />
-                  </div>
-                ))}
+              <FsLightbox
+                toggler={videoboxController.toggler}
+                sources={authContext.user.user.relatedUser.publicVideos.map(
+                  (url) => {
+                    return <img src={url} />
+                  }
+                )}
+                slide={videoboxController.slide}
+              />
+              {authContext.user.user.relatedUser
+                ? authContext.user.user.relatedUser.publicVideos.map(
+                    (image, index) => (
+                      <div
+                        className=" tw-mb-4 tw-cursor-pointer"
+                        key={index}
+                        onClick={() => openVideoboxOnSlide(index + 1)}
+                      >
+                        <img
+                          src={image}
+                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                        />
+                      </div>
+                    )
+                  )
+                : null}
             </div>
           </div>
           {/* ---------------------------------------------------- */}
+
           <div>
             <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
               <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
@@ -687,7 +772,7 @@ function Profile() {
               </h1>
               <form
                 id="action-form"
-                className="tw-max-h-64  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
+                className="tw-max-h-64 tw-min-h-[8rem]  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
               >
                 {dynamicData.map((item, index) => {
                   return (
@@ -698,11 +783,16 @@ function Profile() {
                     >
                       <input
                         className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
-                        placeholder={index}
+                        placeholder="Actions"
+                        value={item.action}
+                        required={true}
                       />
                       <input
                         className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
-                        placeholder={dynamicData}
+                        placeholder="Price"
+                        type={Number}
+                        value={item.price}
+                        required={true}
                       />
                       {/* Amazing ninja technique for dom menupulation */}
                       <ClearIcon
@@ -717,7 +807,12 @@ function Profile() {
               </form>
               <Button
                 className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
-                onClick={() => setDynamicData((prev) => [...prev, 1])}
+                onClick={() =>
+                  setDynamicData((prev) => [
+                    ...prev,
+                    { action: null, price: null },
+                  ])
+                }
               >
                 add new action
               </Button>

@@ -3,74 +3,69 @@ import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
 import Header from "../Mainpage/Header"
 import Link from "next/link"
-// import Headermodel from "./Headermodel"
+import DocumentUplode from "../UI/Profile/documentUplode"
 
 function Documents() {
-  const imageRef = useRef("")
-  const videoRef = useRef("")
+  const idRef = useRef("/pp.jpg")
+  const documentRef = useRef("/pp.jpg")
   const modalCtx = useModalContext()
-  const [source, setSource] = useState("/pp.jpg")
-  const [documents_2, setDocuments_2] = useState()
-  const [documents_1, setDocuments_1] = useState()
-  const [videoSource, setVideoSource] = useState("/pp.jpg")
+  const [id, setId] = useState("/pp.jpg")
+  const [doc, setDoc] = useState("/pp.jpg")
 
   //submit handler to send data
   const submitHandler = async (e) => {
-    // s3 bucket image upload
-    console.log(documents_2.type)
     const resp = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + documents_2.type
+      "/api/website/aws/get-s3-upload-url?type=" + idRef.current.files[0].type
     )
-    const raw_url = await resp.json()
-    const url = await raw_url.uploadUrl
+    const data = await resp.json()
+    const uploadUrl = data.uploadUrl
+    console.log(uploadUrl)
 
-    console.log(`Log aws url -------- ${url}`)
-    // is it possible to uplode the two images together in s3 bucket. Thats what I want to get that url
-
-    const imageUrl_1 = url.split("?")[0]
-    console.log(`Image Id that uploded ----------${imageUrl_1}`)
-    let respose = await fetch(url, {
+    let respose = await fetch(uploadUrl, {
       method: "PUT",
-      body: documents_2,
+      body: idRef.current.files[0],
     })
-    let result = await respose
-    console.log(`uplode on aws -------${result}`)
+    console.log(respose.ok)
+    if (!respose.ok) {
+      return alert("Error uploading file")
+    }
 
-    const resp_2 = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + documents_1.type
+    let url1 = uploadUrl.split("?")[0]
+
+    // Next Image Image document----------------------------
+    const resp1 = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" +
+        documentRef.current.files[0].type
     )
-    const raw_url_2 = await resp_2.json()
-    const url_2 = await raw_url_2.uploadUrl
+    const data1 = await resp1.json()
+    const uploadUrl1 = data1.uploadUrl
 
-    // is it possible to uplode the two images together in s3 bucket. Thats what I want to get that
+    let respose1 = await fetch(uploadUrl1, {
+      method: "PUT",
+      body: documentRef.current.files[0],
+    })
+    if (!respose1.ok) {
+      alert("Error in uploading ID")
+    }
 
-    const imageUrl_2 = url_2.split("?")[0]
-    // console.log(imageUrl_2)
+    let url2 = uploadUrl1.split("?")[0]
 
-    let respose_2 = await fetch(url_2, {
+    const urlData = [url1, url2]
+    // Send the data to the server
+    fetch("/api/website/register/model/handle-documents-upload", {
       method: "POST",
-      body: documents_1,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ documentImages: urlData }),
     })
-    let result_2 = await respose_2.json()
-    // console.log(result_2)
-
-    // send data to server
-    const data = [imageUrl_1, imageUrl_2]
-    const resp_3 = await fetch(
-      "/api/website/register/model/handle-documents-upload",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ documentImages: data }),
-      }
-    )
-    const result_3 = await resp_3.json()
-    console.log(result_3)
+      .then((res) => res.json())
+      .then(
+        (data) => console.log(data),
+        modalCtx.showModalWithContent(<DocumentUplode />)
+      )
   }
   // this data need to be send to server for to store at the server
-  // console.log(imageRef.current.files[0].type)
   return (
     <div className="tw-bg-second-color  tw-min-h-screen  tw-text-white tw-text-center  tw-relative">
       <Header />
@@ -86,10 +81,10 @@ function Documents() {
                 id="file-input"
                 className="file-input__input"
                 onChange={(e) => {
-                  setVideoSource(URL.createObjectURL(e.target.files[0]))
-                  setDocuments(e.target.files[0])
+                  setId(e.target.files[0])
                 }}
-                ref={videoRef}
+                ref={idRef}
+                required={true}
               />
               <label
                 className="file-input__label md:tw-absolute md:tw-top-1/3 md:tw-left-1/3 "
@@ -120,7 +115,7 @@ function Documents() {
           <div className=" ">
             <img
               id="output"
-              src={videoSource}
+              src={typeof id === "string" ? id : URL.createObjectURL(id)}
               className=" tw-w-full tw-h-full  md:tw-py-4"
             />
           </div>
@@ -136,10 +131,10 @@ function Documents() {
                 id="file-input_1"
                 className="file-input__input"
                 onChange={(e) => {
-                  setSource(URL.createObjectURL(e.target.files[0]))
-                  setDocuments_1(e.target.files[0])
+                  setDoc(e.target.files[0])
                 }}
-                ref={imageRef}
+                ref={documentRef}
+                required={true}
               />
               <label
                 className="file-input__label md:tw-absolute md:tw-top-1/3 md:tw-left-1/3"
@@ -170,7 +165,7 @@ function Documents() {
           <div className="">
             <img
               id="output"
-              src={source}
+              src={typeof doc === "string" ? doc : URL.createObjectURL(doc)}
               className=" tw-w-full tw-h-full  tw-py-4"
             />
           </div>
