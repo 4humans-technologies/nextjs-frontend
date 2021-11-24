@@ -529,13 +529,13 @@ function Live() {
         callType: myCallType,
         room: `${sessionStorage.getItem("streamId")}-public`,
       })
+
+      /* clear pending call request */
       setPendingCallRequest((prev) => {
         prev.pending = false
-
-        prev.callRequests.filter(
+        prev.callRequests = prev.callRequests.filter(
           (request) => request.viewer._id !== relatedUserId
         )
-
         return { ...prev }
       })
     } else {
@@ -561,10 +561,9 @@ function Live() {
           }
           setPendingCallRequest((prev) => {
             prev.pending = false
-            prev.callRequests.filter(
+            prev.callRequests = prev.callRequests.filter(
               (request) => request.viewer._id !== relatedUserId
             )
-
             return { ...prev }
           })
           setCallType(myCallType)

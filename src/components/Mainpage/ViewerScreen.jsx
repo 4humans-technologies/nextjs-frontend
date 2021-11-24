@@ -699,6 +699,7 @@ function ViewerScreen(props) {
             }
           } else {
             /* clear call type and pending call */
+            document.getElementById("call-end-audio").play()
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               alert(
                 "Model rejected your call request, better luck next time 😢🤗🤗"

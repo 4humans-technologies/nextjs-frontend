@@ -28,24 +28,13 @@ function CallDetailsPopUp(props) {
 
   const { model } = props
 
-  const handleCallRequest = (callType) => {
+  const handleCallRequest = (myCallType) => {
     if (props.pendingCallRequest) {
       alert("Your call request is pending! please for model's response 👑👑")
       return
     }
     debugger
     if (socketCtx.setSocketSetupDone) {
-      /* can either emit or do http request */
-      /* const socket = io.getSocket()
-      socket.emit("viewer-requested-for-call-emitted",
-        {
-          callType: callType,
-          relatedUserId: authCtx.relatedUserId,
-          modelId: window.location.pathname.split("/").reverse()[0],
-          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
-          username: authCtx.user.user.username
-        }) */
-
       /* do http request */
       fetch("/api/website/stream/handle-viewer-call-request", {
         method: "POST",
@@ -53,18 +42,15 @@ function CallDetailsPopUp(props) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          callType: callType,
-          relatedUserId: authCtx.relatedUserId,
+          callType: myCallType,
           modelId: window.location.pathname.split("/").reverse()[0],
-          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
-          username: authCtx.user.user.username,
           streamId: sessionStorage.getItem("streamId"),
         }),
       })
         .then((res) => res.json())
         .then((data) => {
           props.setPendingCallRequest(true)
-          props.setCallType(callType)
+          props.setCallType(myCallType)
           props.closeModal()
         })
         .catch((err) => alert(err.message))

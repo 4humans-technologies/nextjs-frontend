@@ -298,6 +298,11 @@ function LiveScreen(props) {
         src="/audio/superchat.mp3"
         id="superchat-audio"
       ></audio>
+      <audio
+        preload="true"
+        src="/audio/call-end.mp3"
+        id="call-end-audio"
+      ></audio>
       <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans tw-mt-28">
         <div className="tw-relative tw-bg-dark-black tw-mt-4 md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
