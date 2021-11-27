@@ -37,6 +37,7 @@ const AuthUpdateContext = createContext({
   readFromLocalStorage: () => {},
   updateNestedPaths: () => {},
   updateWallet: (amount, operation = "add", updateFor = "both") => {},
+  setAuthState: () => {},
 })
 
 let numberOfInits = 0
@@ -63,8 +64,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const updateNestedPaths = (nestedHandlingFunc) => {
     setAuthState((prev) => {
-      const newAuthState = nestedHandlingFunc(prev)
-      return newAuthState
+      return nestedHandlingFunc(prev)
     })
   }
 
@@ -226,6 +226,7 @@ export const AuthContextProvider = ({ children }) => {
           logout,
           updateNestedPaths,
           updateWallet,
+          setAuthState,
         }}
       >
         {children}

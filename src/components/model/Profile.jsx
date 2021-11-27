@@ -15,26 +15,27 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import FsLightbox from "fslightbox-react"
 // ========================================================
 function Profile() {
-  const [infoedited, setInfoedited] = useState(false)
-  const [priceEdit, setPriceEdited] = useState(false)
-  const [dynamicData, setDynamicData] = useState([2])
-  const authContext = useAuthContext()
-
-  const [profileEdit, setProfileEdit] = useState({
-    country: authContext?.user.user.relatedUser.country,
-    languages: authContext?.user.user.relatedUser.languages?.map(
-      (item) => item
-    ),
-    bodyType: authContext?.user.user.relatedUser.bodyType,
-    skinColor: authContext?.user.user.relatedUser.skinColor,
-    hairColor: authContext?.user.user.relatedUser.hairColor,
-    eyeColor: authContext?.user.user.relatedUser.eyeColor,
-  })
   const modalCtx = modalContext()
+  const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
+  })
+
+  const [infoedited, setInfoedited] = useState(false)
+  const [priceEdit, setPriceEdited] = useState(false)
+  const [dynamicData, setDynamicData] = useState(
+    authContext.user.user.relatedUser.tipMenuActions.actions
+  )
+
+  const [profileEdit, setProfileEdit] = useState({
+    country: authContext?.user.user.relatedUser.country,
+    languages: authContext?.user.user.relatedUser.languages,
+    bodyType: authContext?.user.user.relatedUser.bodyType,
+    skinColor: authContext?.user.user.relatedUser.skinColor,
+    hairColor: authContext?.user.user.relatedUser.hairColor,
+    eyeColor: authContext?.user.user.relatedUser.eyeColor,
   })
 
   // this is for image uplode
@@ -116,7 +117,7 @@ function Profile() {
 
   // Profile editor
   const profileFunction = async () => {
-   const fet= await fetch("/api/website/profile/update-info-fields", {
+    const fet = await fetch("/api/website/profile/update-info-fields", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -145,7 +146,7 @@ function Profile() {
       ]),
     })
 
-    const resp=await fet.json()
+    const resp = await fet.json()
 
     authUpdateContext.updateNestedPaths((prev) => ({
       ...prev,
@@ -156,11 +157,11 @@ function Profile() {
           relatedUser: {
             ...prev.user.user.relatedUser,
             country: profileEdit.country,
-            languages:profileEdit.languages,
-            skinColor:profileEdit.skinColor,
-            bodyType:profileEdit.bodyType,
-            eyeColor:profileEdit.eyeColor,
-            hairColor:profileEdit.hairColor
+            languages: profileEdit.languages,
+            skinColor: profileEdit.skinColor,
+            bodyType: profileEdit.bodyType,
+            eyeColor: profileEdit.eyeColor,
+            hairColor: profileEdit.hairColor,
           },
         },
       },
@@ -173,12 +174,6 @@ function Profile() {
     store["bodyType"] = profileEdit.bodyType
     store["hairColor"] = profileEdit.hairColor
     store["eyeColor"] = profileEdit.eyeColor
-
-  
-
-
-   
-    
   }
 
   // Profile editor
@@ -189,6 +184,7 @@ function Profile() {
   // PhotoUplode Handler
   const photoUpdateHandler = async (e) => {
     const image = e.target.files[0]
+
     // to get url from domain and then uplode to aws
     const url = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + image.type
@@ -204,10 +200,10 @@ function Profile() {
       body: image,
     })
     if (!req.ok) {
-      return alert("OK BRO")
+      return alert("Image was not uploaded!")
     }
+
     // send data back to node serve as success report with user id and url for the data
-    console.log("Photo Update handler ")
     let serverReq = await fetch(
       "/api/website/profile/handle-public-image-upload",
       {
@@ -220,29 +216,27 @@ function Profile() {
         }),
       }
     )
+
     let serverResp = await serverReq.json()
-    authUpdateContext.updateNestedPaths((prev) => ({
-      ...prev,
-      user: {
-        ...prev.user,
+    if (serverResp.actionStatus === "success") {
+      let lcUser = JSON.parse(localStorage.getItem("user"))
+      lcUser.relatedUser.publicImages = [
+        ...lcUser.relatedUser.publicImages,
+        profileUrl,
+      ]
+      authUpdateContext.updateNestedPaths((prev) => ({
+        ...prev,
         user: {
-          ...prev.user.user,
-          relatedUser: {
-            ...prev.user.user.relatedUser,
-            privateVideos: [
-              ...prev.user.user.relatedUser.privateVideos,
-              profileUrl,
-            ],
+          ...prev.user,
+          user: {
+            ...lcUser,
           },
         },
-      },
-    }))
-
-    let store = JSON.parse(localStorage.getItem("user"))
-    store["relatedUser"]["privateVideos"] = profileUrl
-    localStorage.setItem("user", JSON.stringify(store))
-
-    console.log("Photo handler")
+      }))
+      localStorage.setItem("user", JSON.stringify(lcUser))
+    } else {
+      alert("Image was not uploaded to the server successfully!")
+    }
   }
 
   // VideoUplodeHandler videoUpdateHandler
@@ -278,57 +272,32 @@ function Profile() {
       }
     )
     const serverResp = await serverReq.json()
-    authUpdateContext.updateNestedPaths((prev) => ({
-      ...prev,
-      user: {
-        ...prev.user,
-        user: {
-          ...prev.user.user,
-          relatedUser: {
-            ...prev.user.user.relatedUser,
-            publicVideos: [
-              ...prev.user.user.relatedUser.publicVideos,
-              profileUrl,
-            ],
-          },
-        },
-      },
-    }))
-
     let store = JSON.parse(localStorage.getItem("user"))
-    store["relatedUser"]["publicVideos"] = profileUrl
-    // store.user.user.relatedUser.publicVideos.push(profileUrl)
-    localStorage.setItem("user", JSON.stringify(store))
-  }
-
-  // This is to get the value of the of tip     ------Can we use getStaticProps
-  useEffect(() => {
-    if (authContext.loadedFromLocalStorage === true) {
-      let arr = []
-      fetch("/api/website/stream/get-model-tipmenu-actions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          modelId: localStorage.getItem("relatedUserId"),
-        }),
+    store.relatedUser.publicVideos.push(profileUrl)
+    if (serverResp.actionStatus === "success") {
+      authUpdateContext.setAuthState((prev) => {
+        return {
+          ...prev,
+          user: {
+            ...prev.user,
+            user: {
+              ...prev.user.user,
+              relatedUser: {
+                ...prev.user.user.relatedUser,
+                publicVideos: [
+                  ...prev.user.user.relatedUser.publicVideos,
+                  profileUrl,
+                ],
+              },
+            },
+          },
+        }
       })
-        .then((resp) => resp.json())
-        .then((data) => {
-          data.tips.map((item) =>
-            arr.push({ action: item.action, price: item.price })
-          )
-          setDynamicData(arr)
-        })
+      localStorage.setItem("user", JSON.stringify(store))
+    } else {
+      alert("Video was not uploaded!")
     }
-  }, [authContext.loadedFromLocalStorage])
-
-  // for the starting the
-
-  // {
-  //   dynamicData.map((item) => console.log(item))
-  // }
+  }
 
   // This is for save the data for the tip menu
   const saveData = () => {
@@ -339,6 +308,8 @@ function Profile() {
       const actionValue = allInputs[index + 1].value
       actionArray.push({ action: action, price: actionValue })
     }
+
+    /*  */
     fetch("/api/website/profile/update-model-tipmenu-actions", {
       method: "POST",
       headers: {
@@ -347,24 +318,13 @@ function Profile() {
       body: JSON.stringify({
         newActions: actionArray,
       }),
-    })
-      .then((resp) => resp.json())
-      .then((data) => console.log(data))
+    }).catch((err) => alert(err.message))
   }
 
   let today = new Date()
   let thisYear = today.getFullYear()
 
-  // Data fetching which make things possible
-  let profileImage = ""
-  let coverImage = { cover } //public/cover_photo.png
-
-  // console.log(`image url ---------${coverImage}`);
-  if (authContext.user.user) {
-    profileImage = authContext.user.user.relatedUser.profileImage
-    coverImage = authContext.user.user.relatedUser.coverImage
-  }
-  return (
+  return authContext.user.user ? (
     <div>
       <div
         className="tw-w-full tw-relative tw-h-96 "
@@ -382,13 +342,14 @@ function Profile() {
           Edit Background
         </p>
       </div>
-      {/* corcle for profile picture */}
-      <div className="tw-w-full tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative tw-text-white-color">
-        {profileImage ? (
+
+      {/* circle for profile picture */}
+      <div className="tw-w-full tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative tw-text-white-color tw-mb-8">
+        {authContext.user.user.relatedUser.profileImage ? (
           <span className="tw-relative tw-w-32 tw-h-32 tw-inline-block">
             <img
               className="tw-rounded-full tw-w-full tw-h-full  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg tw-object-cover tw-ring-white tw-ring-2"
-              src={profileImage}
+              src={authContext.user.user.relatedUser.profileImage}
             ></img>
             <CreateIcon
               className="tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer tw-top-[78%] tw-left-[78%] tw-translate-x-[-50%] tw-p-1 tw-ring-white tw-ring-1"
@@ -414,15 +375,15 @@ function Profile() {
           />
         </div>
       </div>
-      {/* horizontal bar */}
+
       {/* Profile compy from grid */}
-      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background tw-w-full">
-        <div className="md:tw-col-span-4 tw-col-span-1">
+      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background tw-w-full tw-mt-16">
+        <div className="md:tw-col-span-4 tw-col-span-1 tw-px-4">
           <div className="  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
             <h1 className="tw-ml-4 tw-mb-4 tw-text-xl tw-font-semibold">
               My Information
             </h1>
-            <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
+            <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md">
               <div className=" md:tw-col-span-1 tw-col-span-2 ">
                 <p>Intrested in</p>
                 <p>From</p>
@@ -434,118 +395,112 @@ function Profile() {
                 <p>Eye color</p>
               </div>
 
-              {
-                <div
-                  className="md:tw-col-span-5 tw-col-span-4 "
-                 
+              <div className="md:tw-col-span-5 tw-col-span-4 ">
+                <p>EveryOne</p>
+                <p
+                  onInput={(e) => {
+                    setProfileEdit((prev) => ({
+                      ...prev,
+                      country: e.target.textContent,
+                    })),
+                      setInfoedited(true)
+                    // console.log(e.target.textContent)
+                  }}
+                  contentEditable="true"
+                  suppressContentEditableWarning={true}
+                  // value={profileEdit.country}
                 >
-                  <p>EveryOne</p>
-                  <p
-                    onInput={(e) => {
-                      setProfileEdit((prev) => ({
+                  {/* {profileEdit.country ? profileEdit.country : "Kerla"} */}
+                  {authContext.user.user.relatedUser.country}
+                  {/* Kerla */}
+                </p>
+                <p
+                  onInput={(e) => {
+                    setProfileEdit((prev) => ({
+                      ...prev,
+                      languages: e.target.textContent.split(","),
+                    })),
+                      setInfoedited(true)
+                  }}
+                  suppressContentEditableWarning={true}
+                  contentEditable="true"
+                >
+                  {/* {item.Language} */}
+                  {authContext.user.user.relatedUser.languages}
+                </p>
+                <p>
+                  {/* {item.Age} */}
+                  {authContext.user.user
+                    ? thisYear - authContext.user.user.relatedUser.dob
+                    : null}
+                </p>
+                <p
+                  onInput={(e) => {
+                    setProfileEdit(
+                      (prev) => ({
                         ...prev,
-                        country: e.target.textContent,
-                      })),
-                        setInfoedited(true)
-                      // console.log(e.target.textContent)
-                    }}
-                    contentEditable="true"
-                    suppressContentEditableWarning={true}
-                    // value={profileEdit.country}
-                  >
-                    {/* {profileEdit.country ? profileEdit.country : "Kerla"} */}
-                    {authContext.user.user.relatedUser.country}
-                    {/* Kerla */}
-                  </p>
-                  <p
-                    onInput={(e) => {
-                      setProfileEdit((prev) => ({
+                        skinColor: e.target.textContent,
+                      }),
+                      setInfoedited(true)
+                    )
+                  }}
+                  suppressContentEditableWarning={true}
+                  contentEditable="true"
+                  // value={profileEdit.skinColor}
+                >
+                  Fair
+                  {/* {item.Body} */}
+                </p>
+                {/* Body type */}
+                <p
+                  onInput={(e) => {
+                    setProfileEdit(
+                      (prev) => ({
                         ...prev,
-                        languages: e.target.textContent.split(","),
-                      })),
-                        setInfoedited(true)
-                    }}
-                    suppressContentEditableWarning={true}
-                    contentEditable="true"
-                  >
-                    {/* {item.Language} */}
-                    {authContext.user.user.relatedUser.languages}
-                  </p>
-                  <p>
-                    {/* {item.Age} */}
-                    {authContext.user.user
-                      ? thisYear - authContext.user.user.relatedUser.dob
-                      : null}
-                  </p>
-                  <p
-                    onInput={(e) => {
-                      setProfileEdit(
-                        (prev) => ({
-                          ...prev,
-                          skinColor: e.target.textContent,
-                        }),
-                        setInfoedited(true)
-                      )
-                    }}
-                    suppressContentEditableWarning={true}
-                    contentEditable="true"
-                    // value={profileEdit.skinColor}
-                  >
-                    Fair
-                    {/* {item.Body} */}
-                  </p>
-                  {/* Body type */}
-                  <p
-                    onInput={(e) => {
-                      setProfileEdit(
-                        (prev) => ({
-                          ...prev,
-                          bodyType: e.target.textContent,
-                        }),
-                        setInfoedited(true)
-                      )
-                    }}
-                    suppressContentEditableWarning={true}
-                    contentEditable="true"
-                    // value={profileEdit.skinColor}
-                  >
-                    slim
-                    {/* {item.Body} */}
-                  </p>
-                  {/* Body type */}
-                  <p
-                    onInput={(ev) => {
-                      setProfileEdit((prev) => ({
-                        ...prev,
-                        hairColor: ev.target.textContent,
-                      })),
-                        setInfoedited(true)
-                    }}
-                    suppressContentEditableWarning={true}
-                    contentEditable="true"
-                    // value={profileEdit.hairColor}
-                  >
-                    Black
-                    {/* {item.Hair} */}
-                  </p>
-                  <p
-                    onInput={(e) => {
-                      setProfileEdit((prev) => ({
-                        ...prev,
-                        eyeColor: e.target.textContent,
-                      })),
-                        setInfoedited(true)
-                    }}
-                    suppressContentEditableWarning={true}
-                    contentEditable="true"
-                    // value={profileEdit.eyeColor}
-                  >
-                    Black
-                  </p>
-                </div>
-              }
+                        bodyType: e.target.textContent,
+                      }),
+                      setInfoedited(true)
+                    )
+                  }}
+                  suppressContentEditableWarning={true}
+                  contentEditable="true"
+                  // value={profileEdit.skinColor}
+                >
+                  slim
+                  {/* {item.Body} */}
+                </p>
+                {/* Body type */}
+                <p
+                  onInput={(ev) => {
+                    setProfileEdit((prev) => ({
+                      ...prev,
+                      hairColor: ev.target.textContent,
+                    })),
+                      setInfoedited(true)
+                  }}
+                  suppressContentEditableWarning={true}
+                  contentEditable="true"
+                  // value={profileEdit.hairColor}
+                >
+                  Black
+                  {/* {item.Hair} */}
+                </p>
+                <p
+                  onInput={(e) => {
+                    setProfileEdit((prev) => ({
+                      ...prev,
+                      eyeColor: e.target.textContent,
+                    })),
+                      setInfoedited(true)
+                  }}
+                  suppressContentEditableWarning={true}
+                  contentEditable="true"
+                  // value={profileEdit.eyeColor}
+                >
+                  Black
+                </p>
+              </div>
 
-              <br />
               {infoedited && (
                 <button
                   type="submit"
@@ -559,51 +514,41 @@ function Profile() {
                 </button>
               )}
             </div>
-            {/* removed epic goal and Broadcast shedule */}
 
-            {/* setting */}
-            <div className="  tw-rounded-t-2xl tw-rounded-b-lg tw-mt-4">
-              <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4">
-                <p className="tw-px-4">
-                  My Email{" "}
-                  <span className="tw-ml-4 tw-font-bold tw-text-xl">
-                    {authContext.user.user
-                      ? authContext.user.user.relatedUser.email
-                      : null}
-                  </span>
-                </p>
-                <div className="tw-mx-auto tw-px-4 tw-pt-2 ">
-                  <button
-                    className="tw-rounded-full tw-bg-second-color tw-px-2"
-                    onClick={() =>
-                      modalCtx.showModalWithContent(<EmailChange />)
-                    }
-                  >
-                    Change Email
-                  </button>
-                </div>
-              </div>
+            {/* change email */}
+            <div className="tw-bg-first-color tw-flex tw-items-center tw-justify-between tw-py-4 tw-rounded-md tw-mt-4 tw-px-4">
+              <p className="">
+                My Email{" "}
+                <span className="tw-ml-4 tw-text-lg tw-font-semibold">
+                  {authContext.user.user.relatedUser.email}
+                </span>
+              </p>
+              <button
+                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium"
+                onClick={() => modalCtx.showModalWithContent(<EmailChange />)}
+              >
+                Change Email
+              </button>
             </div>
 
-            <div className="tw-my-4  hover:tw-shadow-lg tw-rounded-t-2xl tw-rounded-b-2xl ">
-              <div className="tw-bg-first-color tw-flex tw-flex-col tw-py-4 ">
-                <p className="tw-mx-4">My Password</p>
-                <div className=" tw-mx-auto tw-pt-2">
-                  <button
-                    className="tw-rounded-full tw-bg-second-color  tw-px-2 "
-                    onClick={() =>
-                      modalCtx.showModalWithContent(<PasswordChange />)
-                    }
-                  >
-                    Change Password
-                  </button>
-                </div>
-              </div>
+            {/* change password */}
+            <div className="tw-bg-first-color tw-flex tw-items-center tw-justify-between tw-py-4 tw-rounded-md tw-mt-4 tw-px-4">
+              <p className="">
+                My Password{" "}
+                <span className="tw-ml-4 tw-font-semibold">xxxxxxxx</span>
+              </p>
+              <button
+                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium"
+                onClick={() =>
+                  modalCtx.showModalWithContent(<PasswordChange />)
+                }
+              >
+                Change Password
+              </button>
             </div>
-            {/* setting */}
 
             {/* Pricing */}
-            <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
+            <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
               <div className="tw-col-span-1">
                 <p>Private Audio Call</p>
                 <p className="md:tw-my-2">Private video Call</p>
@@ -647,6 +592,7 @@ function Profile() {
                 )}
               </div>
             </div>
+
             {/* scroll*/}
             <div className=" tw-text-white tw-flex  tw-overflow-x-auto tw-mt-6 tw-bg-first-color ">
               <Card>
@@ -905,7 +851,7 @@ function Profile() {
         </div>
       </div>
     </div>
-  )
+  ) : null
 }
 
 export default Profile

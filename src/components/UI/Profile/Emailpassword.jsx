@@ -44,57 +44,56 @@ const EmailChange = () => {
     }
   }
   return (
-    <div className="tw-flex tw-flex-col">
-      <h2 className="tw-text-white-color tw-mx-auto">Email Change</h2>
-      <br />
-      <input
-        type="email"
-        name="oldEmail"
-        id=""
-        placeholder="Last Email Id"
-        onChange={(e) => setEmail({ ...email, oldEmail: e.target.value })}
-        className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
-      />
-      <input
-        type="email"
-        name="newEmail"
-        id=""
-        placeholder="New Email Id"
-        onChange={(e) => setEmail({ ...email, newEmail: e.target.value })}
-        className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
-      />
-      <br />
-      <button
-        className="tw-bg-dreamgirl-red  tw-border-none tw-rounded-full tw-mx-auto tw-px-4 tw-py-2"
-        onClick={changeHandler}
-      >
-        Change
-      </button>
+    <div className="tw-mx-auto tw-w-12 md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+      <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+        Enter New Email
+      </h2>
+      <div className="">
+        <input
+          type="email"
+          name="newEmail"
+          id=""
+          placeholder="New Email Id"
+          onChange={(e) => setEmail({ ...email, newEmail: e.target.value })}
+          className="tw-my-2 tw-mx-4 tw-px-8 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
+        />
+      </div>
+      <div className=" tw-my-6">
+        <button
+          className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium"
+          onClick={changeHandler}
+        >
+          Change
+        </button>
+      </div>
     </div>
   )
 }
 
 const PasswordChange = (props) => {
   const [password, setPassword] = useState({
-    oldPasswod: null,
-    newPasswod: null,
-    newPasswod_2: null,
+    oldPassword: null,
+    newPassword: null,
+    newPassword_2: null,
   })
   // Check type of user then change the url of fetch request
 
   // This change handler can handle change in of all type in the form this helps to make code clean and smooth
   const changeHandler = (e) => {
-    setPassword({ ...password, [e.target.name]: e.target.value })
-    if (password.newPasswod != password.newPasswod_2) {
-      return null
+    if (password.newPassword != password.newPassword_2) {
+      return alert("New Passwords Did Not Matched")
     }
+
+    setPassword({ ...password, [e.target.name]: e.target.value })
     fetch("url", {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        Password: password.newPasswod,
+        newPassword: password.newPassword,
+        newPassword2: password.newPassword_2,
+        oldPassword: password.oldPassword,
       }),
     })
       .then((resp) => resp.json())
@@ -102,44 +101,52 @@ const PasswordChange = (props) => {
   }
 
   return (
-    <div className="tw-flex tw-flex-col">
-      <h2 className="tw-text-white-color tw-mx-auto">Password Change</h2>
-      <br />
-      <input
-        type="password"
-        name="oldPasswod"
-        id=""
-        // value={oldPasswod}
-        onChange={changeHandler}
-        placeholder="Enter your old Password"
-        className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
-      />
+    <>
+      <div className="tw-mx-auto tw-w-12 md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+        <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+          Enter New Password
+        </h2>
+        <div className="">
+          <input
+            type="password"
+            name="oldPassword"
+            id=""
+            // value={oldPassword}
+            onChange={changeHandler}
+            placeholder="Enter your old Password"
+            className="tw-my-2 tw-mx-4 tw-px-8 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
+          />
 
-      <input
-        type="password"
-        name="newPasswod"
-        id=""
-        // value={newPasswod}
-        onChange={changeHandler}
-        placeholder="Eneter your new Password"
-        className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
-      />
+          <input
+            type="password"
+            name="newPassword"
+            id=""
+            // value={newPassword}
+            onChange={changeHandler}
+            placeholder="Your new Password"
+            className="tw-my-2 tw-mx-4 tw-px-8 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
+          />
 
-      <input
-        type="password"
-        name="newPasswod_2"
-        id=""
-        // value={newPasswod}
-        onChange={changeHandler}
-        placeholder="Eneter your new Password"
-        className="tw-my-2 tw-mx-4 tw-px-4 tw-h-8 tw-rounded-full tw-outline-none"
-      />
-
-      <br />
-      <button className="tw-bg-dreamgirl-red  tw-border-none tw-rounded-full tw-mx-auto tw-px-4 tw-py-2">
-        Change
-      </button>
-    </div>
+          <input
+            type="password"
+            name="newPassword_2"
+            id=""
+            // value={newPassword}
+            onChange={changeHandler}
+            placeholder="Eneter your new Password"
+            className="tw-my-2 tw-mx-4 tw-px-8 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
+          />
+        </div>
+        <div className="tw-my-6 tw-text-center">
+          <button className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block">
+            Submit
+          </button>
+          {/* <button className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block tw-ml-3">
+            Forgot Password
+          </button> */}
+        </div>
+      </div>
+    </>
   )
 }
 

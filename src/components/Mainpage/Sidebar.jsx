@@ -99,7 +99,19 @@ function Sidebar(props) {
           Model Login
         </p>
       </div>
-      {/* Modle login  */}
+      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
+        <ExitToAppIcon className="tw-mr-4" />
+        <p
+          id="sidebar_item_name"
+          onClick={() => {
+            route.push("/link-verification/password/send-link")
+            updateSidebar()
+          }}
+          className="tw-cursor-pointer"
+        >
+          Forgot Password
+        </p>
+      </div>
     </div>
   )
 }
