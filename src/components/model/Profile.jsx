@@ -18,17 +18,19 @@ function Profile() {
   const [infoedited, setInfoedited] = useState(false)
   const [priceEdit, setPriceEdited] = useState(false)
   const [dynamicData, setDynamicData] = useState([2])
+  const authContext = useAuthContext()
 
   const [profileEdit, setProfileEdit] = useState({
     country: authContext?.user.user.relatedUser.country,
-    languages: authContext?.user.user.languages.map((item) => item),
-    bodyType: authContext?.user.user.bodyType,
-    skinColor: authContext?.user.user.skinColor,
-    hairColor: authContext?.user.user.hairColor,
-    eyeColor: authContext?.user.user.eyeColor,
+    languages: authContext?.user.user.relatedUser.languages?.map(
+      (item) => item
+    ),
+    bodyType: authContext?.user.user.relatedUser.bodyType,
+    skinColor: authContext?.user.user.relatedUser.skinColor,
+    hairColor: authContext?.user.user.relatedUser.hairColor,
+    eyeColor: authContext?.user.user.relatedUser.eyeColor,
   })
   const modalCtx = modalContext()
-  const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
@@ -113,15 +115,70 @@ function Profile() {
   }
 
   // Profile editor
-  const profilEdit = async () => {
-    // fetch("/api/website/profile/update-info-fields", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-type": "application/json",
-    //   },
-    //   body: JSON.stringify(),
-    // })
-    console.log(profileref)
+  const profileFunction = async () => {
+   const fet= await fetch("/api/website/profile/update-info-fields", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify([
+        {
+          field: "country",
+          value: profileEdit.country,
+        },
+        {
+          field: "language",
+          value: profileEdit.languages,
+        },
+        {
+          field: "skinColor",
+          value: profileEdit.skinColor,
+        },
+        {
+          field: "eyeColor",
+          value: profileEdit.eyeColor,
+        },
+        {
+          field: "bodyType",
+          value: profileEdit.bodyType,
+        },
+      ]),
+    })
+
+    const resp=await fet.json()
+
+    authUpdateContext.updateNestedPaths((prev) => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        user: {
+          ...prev.user.user,
+          relatedUser: {
+            ...prev.user.user.relatedUser,
+            country: profileEdit.country,
+            languages:profileEdit.languages,
+            skinColor:profileEdit.skinColor,
+            bodyType:profileEdit.bodyType,
+            eyeColor:profileEdit.eyeColor,
+            hairColor:profileEdit.hairColor
+          },
+        },
+      },
+    }))
+
+    let store = JSON.parse(localStorage.getItem("user"))["relatedUser"]
+    store["country"] = profileEdit.country
+    store["skinColor"] = profileEdit.skinColor
+    store["languages"] = profileEdit.languages
+    store["bodyType"] = profileEdit.bodyType
+    store["hairColor"] = profileEdit.hairColor
+    store["eyeColor"] = profileEdit.eyeColor
+
+  
+
+
+   
+    
   }
 
   // Profile editor
@@ -244,7 +301,7 @@ function Profile() {
     localStorage.setItem("user", JSON.stringify(store))
   }
 
-  // This is to get the value of the of tip
+  // This is to get the value of the of tip     ------Can we use getStaticProps
   useEffect(() => {
     if (authContext.loadedFromLocalStorage === true) {
       let arr = []
@@ -269,9 +326,9 @@ function Profile() {
 
   // for the starting the
 
-  {
-    dynamicData.map((item) => console.log(item))
-  }
+  // {
+  //   dynamicData.map((item) => console.log(item))
+  // }
 
   // This is for save the data for the tip menu
   const saveData = () => {
@@ -300,7 +357,9 @@ function Profile() {
 
   // Data fetching which make things possible
   let profileImage = ""
-  let coverImage = ""
+  let coverImage = { cover } //public/cover_photo.png
+
+  // console.log(`image url ---------${coverImage}`);
   if (authContext.user.user) {
     profileImage = authContext.user.user.relatedUser.profileImage
     coverImage = authContext.user.user.relatedUser.coverImage
@@ -369,11 +428,10 @@ function Profile() {
                 <p>From</p>
                 <p>Language</p>
                 <p>Age</p>
-                <p>Body type</p>
-                <p>Specifiv</p>
+                <p>Skin Type</p>
+                <p>Body Type</p>
                 <p>Hair</p>
                 <p>Eye color</p>
-                <p>SubCulture</p>
               </div>
 
               {
@@ -383,31 +441,35 @@ function Profile() {
                 >
                   <p>EveryOne</p>
                   <p
-                    onChange={
-                      ((e) => setProfileEdit.country(e.target.textContent),
-                      () => setInfoedited(true))
-                    }
+                    onInput={(e) => {
+                      setProfileEdit((prev) => ({
+                        ...prev,
+                        country: e.target.textContent,
+                      })),
+                        setInfoedited(true)
+                      // console.log(e.target.textContent)
+                    }}
                     contentEditable="true"
-                    value={profileEdit.country}
+                    suppressContentEditableWarning={true}
+                    // value={profileEdit.country}
                   >
-                    {/* {authContext.user.user.relatedUser.ethnicity} */}
+                    {/* {profileEdit.country ? profileEdit.country : "Kerla"} */}
+                    {authContext.user.user.relatedUser.country}
+                    {/* Kerla */}
                   </p>
                   <p
-                    onChange={
-                      ((e) =>
-                        setProfileEdit.languages((prev) => [
-                          ...prev,
-                          e.target.textContent,
-                        ]),
-                      () => setInfoedited(true))
-                    }
+                    onInput={(e) => {
+                      setProfileEdit((prev) => ({
+                        ...prev,
+                        languages: e.target.textContent.split(","),
+                      })),
+                        setInfoedited(true)
+                    }}
+                    suppressContentEditableWarning={true}
                     contentEditable="true"
-                    value={profileEdit.languages}
                   >
                     {/* {item.Language} */}
-                    {authContext.user.user.relatedUser.languages.map(
-                      (item) => item
-                    )}
+                    {authContext.user.user.relatedUser.languages}
                   </p>
                   <p>
                     {/* {item.Age} */}
@@ -416,58 +478,69 @@ function Profile() {
                       : null}
                   </p>
                   <p
-                    onChange={
-                      ((e) => setProfileEdit.skinColor(e.target.textContent),
-                      () => setInfoedited(true))
-                    }
+                    onInput={(e) => {
+                      setProfileEdit(
+                        (prev) => ({
+                          ...prev,
+                          skinColor: e.target.textContent,
+                        }),
+                        setInfoedited(true)
+                      )
+                    }}
+                    suppressContentEditableWarning={true}
                     contentEditable="true"
-                    value={profileEdit.skinColor}
+                    // value={profileEdit.skinColor}
                   >
-                    Skin
+                    Fair
                     {/* {item.Body} */}
                   </p>
+                  {/* Body type */}
                   <p
-                    onChange={
-                      ((e) => setProfileEdit(e.currentTarget.textContent),
-                      () => setInfoedited(true))
-                    }
+                    onInput={(e) => {
+                      setProfileEdit(
+                        (prev) => ({
+                          ...prev,
+                          bodyType: e.target.textContent,
+                        }),
+                        setInfoedited(true)
+                      )
+                    }}
+                    suppressContentEditableWarning={true}
                     contentEditable="true"
-                    value={profileEdit.hairColor}
+                    // value={profileEdit.skinColor}
+                  >
+                    slim
+                    {/* {item.Body} */}
+                  </p>
+                  {/* Body type */}
+                  <p
+                    onInput={(ev) => {
+                      setProfileEdit((prev) => ({
+                        ...prev,
+                        hairColor: ev.target.textContent,
+                      })),
+                        setInfoedited(true)
+                    }}
+                    suppressContentEditableWarning={true}
+                    contentEditable="true"
+                    // value={profileEdit.hairColor}
                   >
                     Black
                     {/* {item.Hair} */}
                   </p>
                   <p
-                    onChange={
-                      ((e) =>
-                        setProfileEdit.eyeColor(e.currentTarget.textContent),
-                      () => setInfoedited(true))
-                    }
+                    onInput={(e) => {
+                      setProfileEdit((prev) => ({
+                        ...prev,
+                        eyeColor: e.target.textContent,
+                      })),
+                        setInfoedited(true)
+                    }}
+                    suppressContentEditableWarning={true}
                     contentEditable="true"
-                    value={profileEdit.eyeColor}
+                    // value={profileEdit.eyeColor}
                   >
-                    {/* {item.Eye} */}
                     Black
-                  </p>
-                  <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
-                      () => setInfoedited(true))
-                    }
-                    contentEditable="true"
-                  >
-                    German
-                    {/* {item.Call} */}
-                  </p>
-                  <p
-                    onInput={
-                      ((e) => e.currentTarget.textContent,
-                      () => setInfoedited(true))
-                    }
-                    contentEditable="true"
-                  >
-                    German
-                    {/* {item.Call} */}
                   </p>
                 </div>
               }
@@ -478,7 +551,7 @@ function Profile() {
                   type="submit"
                   onClick={() => {
                     setInfoedited(false)
-                    profilEdit()
+                    profileFunction()
                   }}
                   className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color"
                 >
