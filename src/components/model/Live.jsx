@@ -10,6 +10,7 @@ import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import { Button } from "react-bootstrap"
 
 import PublicChat from "./PublicChat"
+import Emoji from "../Emoji"
 
 import AgoraRTC from "agora-rtc-sdk-ng"
 import useAgora from "../../hooks/useAgora" //using agora from Hooks
@@ -33,6 +34,7 @@ import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import PrivateChatWrapper from "../PrivateChat/PrivateChatWrapper"
+import ViewersListContainer from "../../components/ViewersList/ViewersListContainer"
 
 // Replace with your App ID.
 let token
@@ -80,7 +82,7 @@ function Live() {
   const updateCtx = useAuthUpdateContext()
   const modalCtx = useModalContext()
   const [fullScreen, setFullScreen] = useState(false)
-  const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
+  const [chatWindow, setChatWindow] = useState(chatWindowOptions.USERS)
 
   useEffect(() => {
     let mounted = true
@@ -306,18 +308,36 @@ function Live() {
             return resp.json()
           })
           .then((data) => {
-            sessionStorage.setItem("liveNow", "true")
-            token = data.rtcToken
-            rtcTokenExpireIn = data.privilegeExpiredTs
-            localStorage.setItem("rtcToken", data.rtcToken)
-            localStorage.setItem(
-              "rtcTokenExpireIn",
-              +data.privilegeExpiredTs * 1000
-            )
-            sessionStorage.setItem("streamId", data.streamId)
-            return join(ctx.relatedUserId, token, ctx.relatedUserId)
+            if (data.actionStatus === "success") {
+              sessionStorage.setItem("liveNow", "true")
+              token = data.rtcToken
+              rtcTokenExpireIn = data.privilegeExpiredTs
+              localStorage.setItem("rtcToken", data.rtcToken)
+              localStorage.setItem(
+                "rtcTokenExpireIn",
+                +data.privilegeExpiredTs * 1000
+              )
+              sessionStorage.setItem("streamId", data.streamId)
+              setTimeout(() => {
+                fetch(
+                  `/api/website/stream/get-live-room-count/${data.streamId}-public`
+                )
+                  .then((res) => res.json())
+                  .then((data) => {
+                    document.getElementById(
+                      "live-viewer-count"
+                    ).innerText = `${data.roomSize} Live`
+                  })
+                  .catch((err) =>
+                    console.error("Live viewer count not fetched")
+                  )
+              }, [4000])
+              return join(ctx.relatedUserId, token, ctx.relatedUserId)
+            } else {
+              alert(data.message)
+            }
           })
-          .catch((error) => console.log(error))
+          .catch((error) => alert(error.message))
       }
     } else {
       /* have a valid token, fetch request for status update not for rtc token */
@@ -329,6 +349,18 @@ function Live() {
           //debugger
           sessionStorage.setItem("liveNow", "true")
           sessionStorage.setItem("streamId", data.streamId)
+          setTimeout(() => {
+            fetch(
+              `/api/website/stream/get-live-room-count/${data.streamId}-public`
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                document.getElementById(
+                  "live-viewer-count"
+                ).innerText = `${data.roomSize} Live`
+              })
+              .catch((err) => console.error("Live viewer count not fetched"))
+          }, [4000])
           return join(
             ctx.relatedUserId,
             localStorage.getItem("rtcToken"),
@@ -667,7 +699,7 @@ function Live() {
           offCallListeners()
           setPendingCallEndRequest(false)
           offCallListeners()
-          localVideoTrack.setEnabled(false)
+          localVideoTrack.setEnabled(true)
         } else if (
           !data?.callWasNotSetupProperly &&
           data.wasFirst === "yes" &&
@@ -680,7 +712,7 @@ function Live() {
           offCallListeners()
           setPendingCallEndRequest(false)
           offCallListeners()
-          localVideoTrack.setEnabled(false)
+          localVideoTrack.setEnabled(true)
         } else if (!data?.callWasNotSetupProperly && data.wasFirst === "no") {
           /* if was not first wait for the socket end call response for 10 seconds or error out if not received */
           setTimeout(() => {
@@ -698,6 +730,7 @@ function Live() {
               return false
             })
           }, [10000])
+          localVideoTrack.setEnabled(true)
         }
       })
       .catch(async (err) => {
@@ -708,7 +741,7 @@ function Live() {
         offCallListeners()
         setPendingCallEndRequest(false)
         offCallListeners()
-        localVideoTrack.setEnabled(false)
+        localVideoTrack.setEnabled(true)
         // setCallEndDetails(data.callEndDetails)
       })
   }
@@ -783,12 +816,9 @@ function Live() {
         </div>
       )}
       <div className="tw-flex tw-w-full">
-        <Sidebar />
-        <div
-          className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black sm:tw-mt-28 "}
-        >
+        <div className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black"}>
           <div
-            className="tw-bg-first-color tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem]  sm:tw-mt-4 tw-mt-2 tw-relative"
+            className="tw-bg-first-color tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem] tw-relative"
             ref={container}
             id="playback-area"
           >
@@ -966,7 +996,10 @@ function Live() {
                     className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110] tw-capitalize"
                     variant={joinState ? "success" : "danger"}
                   >
-                    <span className="tw-pl-1 tw-tracking-tight">{`${
+                    <span
+                      id="live-viewer-count"
+                      className="tw-pl-1 tw-tracking-tight"
+                    >{`${
                       joinState ? "you are live" : "you're not live"
                     }`}</span>
                   </Button>
@@ -977,19 +1010,27 @@ function Live() {
 
           {/* ================================================= */}
           {/* chat site | ex right side */}
-          <div className="sm:tw-mt-4 tw-mt-2 tw-bg-second-color sm:tw-w-4/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-            <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center">
+          <div className="tw-bg-second-color sm:tw-w-4/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+            <div className="tw-flex tw-justify-around sm:tw-justify-start tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
               <button
-                className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-mr-4 ${
+                  chatWindow === chatWindowOptions?.PUBLIC
+                    ? "tw-text-dreamgirl-red tw-font-semibold"
+                    : "tw-text-white-color tw-font-normal sm:-font-medium"
+                }`}
                 onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
               >
                 <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
-                <span className="tw-font-normal sm:-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+                <span className="tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
                   Live Chat
                 </span>
               </button>
               <button
-                className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-relative"
+                className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-relative tw-mr-4 ${
+                  chatWindow === chatWindowOptions?.PRIVATE
+                    ? "tw-text-dreamgirl-red tw-font-semibold"
+                    : "tw-text-white-color"
+                }`}
                 onClick={() => {
                   setChatWindow(chatWindowOptions.PRIVATE)
                   newChatNotifierDotRef.current.display = "none"
@@ -1006,7 +1047,11 @@ function Live() {
               </button>
               {ctx.user.userType !== "Model" && (
                 <button
-                  className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                  className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-mr-4 ${
+                    chatWindow === chatWindowOptions?.TIP_MENU
+                      ? "tw-text-dreamgirl-red tw-font-semibold"
+                      : "tw-text-white-color"
+                  }`}
                   onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
                 >
                   <LocalActivityIcon className="tw-mr-2 tw-my-auto" />
@@ -1017,7 +1062,11 @@ function Live() {
               )}
               {ctx.user.userType === "Model" ? (
                 <button
-                  className="tw-inline-flex tw-items-center tw-content-center tw-py-2"
+                  className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-mr-4 ${
+                    chatWindow === chatWindowOptions?.USERS
+                      ? "tw-text-dreamgirl-red tw-font-semibold"
+                      : "tw-text-white-color"
+                  }`}
                   onClick={() => setChatWindow(chatWindowOptions.USERS)}
                 >
                   <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
@@ -1081,7 +1130,7 @@ function Live() {
                       chatWindow === chatWindowOptions.USERS ? "block" : "none",
                   }}
                 >
-                  <div className="">USERS</div>
+                  <ViewersListContainer callOnGoing={callOnGoing} />
                 </div>
               </div>
               <div id="for-scroll-into-view"></div>
@@ -1098,6 +1147,7 @@ function Live() {
                   ref={chatInputRef}
                   id="chat-message-input"
                 ></input>
+                <Emoji chatInputRef={chatInputRef} />
                 <button
                   onClick={sendChatMessage}
                   className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-full"

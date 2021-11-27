@@ -11,8 +11,6 @@ function ViewModelStream() {
 
   return (
     <>
-      {/* <Header /> */}
-      <Sidebar />
       <LiveScreen
         setModelProfileData={setModelProfileData}
         modelProfileData={modelProfileData}

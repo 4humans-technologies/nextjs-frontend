@@ -35,25 +35,22 @@ const Home = () => {
 
   useEffect(() => {
     /* client should not be connected to any public room  while on index page */
-    if (JSON.parse(sessionStorage.getItem("socket-rooms"))) {
-      try {
-        const socket = io.getSocket()
-        const socketRooms = JSON.parse(sessionStorage.getItem("socket-rooms"))
-        if (socketRooms?.length > 0) {
-          socket.emit(
-            "take-me-out-of-these-rooms",
-            [...socketRooms.filter((room) => room.endsWith("-public"))],
-            (response) => {
-              if (response.status === "ok") {
-                /* no action needed room will be removed automatically */
-              }
-            }
-          )
-        }
-      } catch (error) {
-        console.log("Client not in any room!")
-      }
-    }
+    const socket = io.getSocket()
+    // setTimeout(() => {
+    //   if (JSON.parse(sessionStorage.getItem("socket-rooms"))) {
+    //     try {
+    //       const socketRooms = JSON.parse(sessionStorage.getItem("socket-rooms"))
+    //       const publicRoom = socketRooms?.filter(
+    //         (room) => room.endsWith("-public") || []
+    //       )
+    //       if (publicRoom?.length > 0 && socketRooms?.length > 0) {
+    //         socket.emit("take-me-out-of-these-rooms", [publicRoom])
+    //       }
+    //     } catch (error) {
+    //       console.log("Client not in any room!")
+    //     }
+    //   }
+    // }, [4000])
   }, [])
 
   const [boxGroupsData, setBoxGroupData] = useState([
@@ -112,82 +109,73 @@ const Home = () => {
   useEffect(() => {
     if (socketContext.setSocketSetupDone) {
       const socket = io.getSocket()
-      if (!socket.hasListeners("new-model-started-stream")) {
-        socket.on("new-model-started-stream", (socketData) => {
-          if (ctx?.relatedUserId !== socketData.modelId) {
-            setBoxGroupData((prev) => {
-              if (
-                prev[prev.length - 1].data
-                  .map((stream) => stream.relatedUserId)
-                  .includes(socketData.modelId)
-              ) {
-                return prev
-              }
-
-              const prevLastPopped = prev.pop()
-              return [
-                ...prev,
-                {
-                  ...prevLastPopped,
-                  data: [
-                    ...prevLastPopped.data,
-                    {
-                      relatedUserId: socketData.modelId,
-                      profileImage: socketData.profileImage,
-                      isStreaming: true,
-                    },
-                  ],
-                },
-              ]
-            })
-          }
-        })
-      }
-      if (!socket.hasListeners("delete-stream-room")) {
-        socket.on("delete-stream-room", (socketData) => {
-          // alert("Model Ended Streaming..." + JSON.stringify(socketData))
-          debugger
+      let newModelHandler = (socketData) => {
+        if (ctx?.relatedUserId !== socketData.modelId) {
           setBoxGroupData((prev) => {
+            if (
+              prev[prev.length - 1].data
+                .map((stream) => stream.relatedUserId)
+                .includes(socketData.modelId)
+            ) {
+              return prev
+            }
+
             const prevLastPopped = prev.pop()
-            const poppedModelDataList = prevLastPopped.data.filter(
-              (stream) => stream.relatedUserId !== socketData.modelId
-            )
             return [
               ...prev,
               {
                 ...prevLastPopped,
-                data: [...poppedModelDataList],
+                data: [
+                  ...prevLastPopped.data,
+                  {
+                    relatedUserId: socketData.modelId,
+                    profileImage: socketData.profileImage,
+                    isStreaming: true,
+                  },
+                ],
               },
             ]
           })
+        }
+      }
+      socket.on("new-model-started-stream", newModelHandler)
+      let modelDeleteHandler = (socketData) => {
+        setBoxGroupData((prev) => {
+          const prevLastPopped = prev.pop()
+          const poppedModelDataList = prevLastPopped.data.filter(
+            (stream) => stream.relatedUserId !== socketData.modelId
+          )
+          return [
+            ...prev,
+            {
+              ...prevLastPopped,
+              data: [...poppedModelDataList],
+            },
+          ]
         })
       }
-    }
-  }, [socketContext.setSocketSetupDone])
-
-  useEffect(() => {
-    return () => {
-      if (socketContext.setSocketSetupDone) {
-        const socket = io.getSocket()
-        if (socket.hasListeners("delete-stream-room")) {
-          socket.off("delete-stream-room")
+      socket.on("delete-stream-room", modelDeleteHandler)
+      return () => {
+        if (socket.hasListeners("delete-stream-room") && modelDeleteHandler) {
+          socket.off("delete-stream-room", modelDeleteHandler)
         }
-        if (socket.hasListeners("new-model-started-stream")) {
-          socket.off("new-model-started-stream")
+        if (
+          socket.hasListeners("new-model-started-stream") &&
+          newModelHandler
+        ) {
+          socket.off("new-model-started-stream", newModelHandler)
         }
       }
     }
   }, [socketContext.setSocketSetupDone])
 
   return (
-    <div className="tw-min-h-screen tw-max-w-screen-2xl tw-bg-first-color">
+    <div className="tw-min-h-screen tw-bg-first-color">
       <Head>
         <title>DreamGirl Live Online Video Chat</title>
         <link rel="icon" href="/DG_icon.jpg" />
       </Head>
-      <div className="tw-h-20"></div>
-      <div className="tw-flex  ">
-        <Sidebar />
+      <div className="tw-flex">
         <div className="">
           {boxGroupsData.map((data, index) => {
             return (

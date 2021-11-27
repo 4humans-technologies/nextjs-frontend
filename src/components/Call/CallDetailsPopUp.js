@@ -33,7 +33,6 @@ function CallDetailsPopUp(props) {
       alert("Your call request is pending! please for model's response 👑👑")
       return
     }
-    debugger
     if (socketCtx.setSocketSetupDone) {
       /* do http request */
       fetch("/api/website/stream/handle-viewer-call-request", {

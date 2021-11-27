@@ -1,12 +1,12 @@
-import React from "react";
-import TwitterIcon from "@material-ui/icons/Twitter";
-import logo from "../../../public/logo.png";
-import Image from "next/image";
-import Link from "next/link";
+import React from "react"
+import TwitterIcon from "@material-ui/icons/Twitter"
+import logo from "../../../public/logo.png"
+import Image from "next/image"
+import Link from "next/link"
 
 function Footer() {
   return (
-    <div className="tw-pt-10 tw-bg-dark-black  tw-w-screen">
+    <div className="tw-pt-10 tw-bg-dark-black tw-w-full">
       <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 lg:tw-grid-cols-6  tw-auto-rows-auto tw-px-2 tw-gap-y-4 tw-gap-x-3 md:tw-px-6 tw-py-6 sm:tw-gap-x-3 tw-tracking-wide">
         <div className="tw-col-span-1 md:tw-col-span-3 lg:tw-col-span-2 flex tw-flex-col tw-items-center tw-justify-between">
           <div className="flex tw-items-center tw-justify-start tw-mb-10">
@@ -31,10 +31,10 @@ function Footer() {
           </h2>
           <div className="mt-1">
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              <Link href="/footer/Privacypolicy">Privacy policy</Link>
+              <Link href="/privacy-policy">Privacy policy</Link>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              <Link href="/footer/Terms">Term of use</Link>
+              <Link href="/term-of-use">Term of use</Link>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
               <Link href="">DMCA policy</Link>
@@ -79,16 +79,31 @@ function Footer() {
           </h2>
           <div className="mt-1">
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              <a href="#">Twitter</a>
+              <a
+                href="https://www.facebook.com/Dream-girl-live-107066781714593"
+                target="_blank"
+                className=""
+              >
+                Facebook
+              </a>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              Instagram
+              <a
+                href="https://www.instagram.com/dreamgirl_live143/"
+                target="_blank"
+                className=""
+              >
+                Instagram
+              </a>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              Youtube
-            </p>
-            <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              Facebook
+              <a
+                href="https://t.me/joinchat/TDrvk9rT7mtkOTU5"
+                target="_blank"
+                className=""
+              >
+                Telegram
+              </a>
             </p>
           </div>
         </div>
@@ -96,14 +111,14 @@ function Footer() {
       <div className="tw-text-center tw-py-3">
         <div className="tw-border-t-[1px] tw-border-text-black tw-mx-auto tw-w-11/12"></div>
       </div>
-      <div className="tw-bg-third-color tw-flex tw-items-center tw-justify-center tw-py-2 footer-top-shadow">
+      {/* <div className="tw-bg-third-color tw-flex tw-items-center tw-justify-center tw-py-2 footer-top-shadow">
         <p className="tw-text-white-color tw-capitalize tw-text-center tw-px-3">
           By using this website, you agree to our cookie policy. we use cookies
           to deliver our services.
         </p>
-      </div>
+      </div> */}
     </div>
   )
 }
 
-export default Footer;
+export default Footer

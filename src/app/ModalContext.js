@@ -1,10 +1,6 @@
 import React, { useContext, createContext, useState, useCallback } from "react"
 import Modal from "../components/Call/Modal"
 
-import GlobalModalContent, {
-  SetGlobalModalContent,
-} from "../app/GlobalModalContent"
-
 const ModalContext = createContext({
   isOpen: false,
   modalContent: <></>,

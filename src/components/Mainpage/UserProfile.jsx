@@ -39,7 +39,6 @@ function UserProfile() {
 
   return (
     <div className="tw-bg-dark-background">
-      <Header />
       {/* Cover page */}
       <div className="tw-w-screen tw-relative  tw-bg-dark-background md:tw-mt-[8.2rem] tw-mt-28 ">
         <img

@@ -13,6 +13,7 @@ function TestComponent() {
   const authUpdateContext = useAuthUpdateContext()
   const socketCtx = useSocketContext()
 
+  /* listen for wallet update events */
   useEffect(() => {
     if (socketCtx.setSocketSetupDone && authCtx.loadedFromLocalStorage) {
       if (authCtx.user.userType === "Model") {
@@ -45,6 +46,11 @@ function TestComponent() {
     authUpdateContext.updateWallet,
     authCtx.user.userType,
   ])
+
+  /**
+   * listener for live count changes is in main layout
+   */
+  useEffect(() => {})
   return null
 }
 

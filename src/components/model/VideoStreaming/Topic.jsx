@@ -19,19 +19,7 @@ function Topic(props) {
     console.log(data)
   }
 
-  useEffect(() => {
-    fetch("url", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        perfomenceAction: childState,
-      }),
-    })
-      .then((resp) => resp.json())
-      .then((data) => console.log(data))
-  }, [])
+  useEffect(() => {}, [])
 
   return (
     <div className="tw-bg-first-color tw-text-white tw-mt-6 tw-pl-4 tw-mx-4 tw-rounded-t-xl tw-rounded-b-xl">

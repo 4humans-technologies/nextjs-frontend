@@ -13,7 +13,7 @@ function ViewerToken() {
 
   const handleRedeemRequest = () => {
     if (!authCtx.isLoggedIn || authCtx.user.userType !== "Viewer") {
-      return alert("Please login first! " + authCtx.user.userType)
+      return alert("Please login to redeem the code! 😀")
     }
     fetch("/api/website/coupon/redeem-coupon-viewer", {
       method: "POST",
@@ -48,12 +48,11 @@ function ViewerToken() {
   return (
     <div>
       <audio
-        preload = "true"
+        preload="true"
         src="/audio/money-debit.mp3"
         id="money-debit-audio"
       ></audio>
-      <div className="tw-text-white tw-bg-first-color tw-h-screen tw-pt-[10rem]">
-        <Header />
+      <div className="tw-text-white tw-bg-first-color tw-h-screen tw-pt-4">
         <div className="tw-text-center md:tw-mx-auto tw-w-full tw-mx-3 md:tw-w-6/12 tw-bg-second-color tw-rounded-md">
           <h1 className="tw-font-bold tw-text-xl tw-pt-4 tw-text-center tw-mb-4">
             Redeem Code
@@ -89,7 +88,7 @@ function ViewerToken() {
         </div>
         {/* =========================== */}
         <h1 className="tw-font-bold tw-text-xl tw-pt-4 tw-text-center tw-mb-4">
-          Buy New Coupon Code
+          Or, Buy New Coupon Code
         </h1>
         <div className="tw-text-center md:tw-mx-auto tw-w-full tw-mx-3 md:tw-w-6/12 tw-bg-second-color tw-rounded-md tw-py-4">
           <p className="tw-text-center tw-text-white tw-mb-3">

@@ -3,80 +3,80 @@ import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
 import Header from "../Mainpage/Header"
 import Link from "next/link"
-import DocumentUplode from "../UI/Profile/DocumentUplode"
+import DocumentUpload from "../UI/Profile/DocumentUplode"
 
 function Documents() {
-  const idRef = useRef("/pp.jpg")
-  const documentRef = useRef("/pp.jpg")
+  const idRef = useRef("/id-card (1).png")
+  const documentRef = useRef("/paper.png")
   const modalCtx = useModalContext()
-  const [id, setId] = useState("/pp.jpg")
-  const [doc, setDoc] = useState("/pp.jpg")
+  const [id, setId] = useState("/id-card (1).png")
+  const [doc, setDoc] = useState("/paper.png")
 
-  //submit handler to send data
   const submitHandler = async (e) => {
-    const resp = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + idRef.current.files[0].type
-    )
-    const data = await resp.json()
-    const uploadUrl = data.uploadUrl
-    console.log(uploadUrl)
-
-    let respose = await fetch(uploadUrl, {
-      method: "PUT",
-      body: idRef.current.files[0],
-    })
-    console.log(respose.ok)
-    if (!respose.ok) {
-      return alert("Error uploading file")
+    if (!idRef.current.files[0] && !documentRef.current.files[0]) {
+      modalCtx.showModalWithContent(<DocumentUpload />)
+      return alert("Both documents are Required!")
     }
+    /* get a new singed upload url */
+    const [urlOne, urlTwo] = await Promise.all([
+      fetch(
+        "/api/website/aws/get-s3-upload-url?type=" + idRef.current.files[0].type
+      ),
+      fetch(
+        "/api/website/aws/get-s3-upload-url?type=" +
+          documentRef.current.files[0].type
+      ),
+    ])
+    const urlDataOne = await urlOne.json()
+    const urlDataTwo = await urlTwo.json()
 
-    let url1 = uploadUrl.split("?")[0]
+    await Promise.all([
+      fetch(urlDataOne.uploadUrl, {
+        method: "PUT",
+        body: documentRef.current.files[0],
+      }),
+      fetch(urlDataTwo.uploadUrl, {
+        method: "PUT",
+        body: idRef.current.files[0],
+      }),
+    ])
 
-    // Next Image Image document----------------------------
-    const resp1 = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" +
-        documentRef.current.files[0].type
+    /* now update the document url on server */
+    const docUploadResponse = await fetch(
+      "/api/website/register/model/handle-documents-upload",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          documentImages: [
+            urlDataOne.uploadUrl.split("?")[0],
+            urlDataTwo.uploadUrl.split("?")[0],
+          ],
+        }),
+      }
     )
-    const data1 = await resp1.json()
-    const uploadUrl1 = data1.uploadUrl
-
-    let respose1 = await fetch(uploadUrl1, {
-      method: "PUT",
-      body: documentRef.current.files[0],
-    })
-    if (!respose1.ok) {
-      alert("Error in uploading ID")
+    if (docUploadResponse.actionStatus === "success") {
+      modalCtx.showModalWithContent(<DocumentUpload />)
+    } else {
+      alert("Document images ware not uploaded")
     }
-
-    let url2 = uploadUrl1.split("?")[0]
-
-    const urlData = [url1, url2]
-    // Send the data to the server
-    fetch("/api/website/register/model/handle-documents-upload", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ documentImages: urlData }),
-    })
-      .then((res) => res.json())
-      .then(
-        (data) => console.log(data),
-        modalCtx.showModalWithContent(<DocumentUplode />)
-      )
   }
   // this data need to be send to server for to store at the server
   return (
-    <div className="tw-bg-second-color  tw-min-h-screen  tw-text-white tw-text-center  tw-relative">
-      <Header />
-      <div className="tw-bg-third-color md:tw-w-1/2 tw-gap-2 md:tw-ml-[28%] tw-ml-0 md:tw-top-[20%] tw-mt-0 tw-absolute  document_rows_main tw-rounded-t-2xl tw-rounded-b-2xl">
-        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0 tw-m-4  ">
-          <div className=" ">
+    <div className="tw-min-h-screen tw-text-white-color tw-text-center tw-mt-6 tw-mb-8">
+      <h1 className="tw-text-center tw-text-2xl tw-font-medium tw-py-6 tw-capitalize">
+        upload your documents
+      </h1>
+      <div className="tw-bg-dark-black tw-mx-3 md:tw-w-9/12 lg:tw-w-1/2 tw-rounded md:tw-mx-auto tw-px-6 tw-pb-8">
+        {/* row one */}
+        <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-2 tw-my-6">
+          <div className="tw-order-2 md:tw-order-1">
             <div className=" tw-min-h-full tw-relative tw-pt-4">
-              {/* file input */}
               <input
                 type="file"
-                accept="image/png, image/jpeg"
+                accept="image/png,image/jpeg,image/jpg,image/webp"
                 name="document_1"
                 id="file-input"
                 className="file-input__input"
@@ -112,18 +112,18 @@ function Documents() {
               </p>
             </div>
           </div>
-          <div className=" ">
+          <div className="tw-h-36 sm:tw-h-40 md:tw-h-56 lg:tw-h-64 tw-p-3 tw-order-1 md:tw-order-2">
             <img
-              id="output"
               src={typeof id === "string" ? id : URL.createObjectURL(id)}
-              className=" tw-w-full tw-h-full  md:tw-py-4"
+              className="tw-w-full tw-h-full tw-rounded tw-object-contain"
             />
           </div>
         </div>
-        {/* change of department */}
-        <div className="tw-grid md:tw-grid-cols-2 document_rows tw-gap-2 tw-p-4 md:tw-p-0  tw-m-4 ">
-          <div className="  ">
-            <div className=" tw-min-h-full tw-relative tw-pt-4 ">
+
+        {/* row two */}
+        <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-2 tw-mb-6">
+          <div className="tw-order-2 md:tw-order-1">
+            <div className=" tw-min-h-full tw-relative tw-pt-4">
               <input
                 type="file"
                 accept="image/png, image/jpeg"
@@ -157,29 +157,37 @@ function Documents() {
                 </svg>
                 <span>Upload file</span>
               </label>
-              <p className="md:tw-absolute md:tw-top-1/2 md:tw-left-1/4 tw-mt-3">
-                Uplode self with Id card
+              <p className="md:tw-absolute md:tw-top-1/2 md:tw-left-1/3 tw-mt-3">
+                Upload A Verified Document
               </p>
             </div>
           </div>
-          <div className="">
+          <div className="tw-h-36 sm:tw-h-40 md:tw-h-56 lg:tw-h-64 tw-p-3  tw-order-1 md:tw-order-2">
             <img
-              id="output"
               src={typeof doc === "string" ? doc : URL.createObjectURL(doc)}
-              className=" tw-w-full tw-h-full  tw-py-4"
+              className="tw-w-full tw-h-full tw-rounded tw-object-contain"
             />
           </div>
         </div>
+
+        <div className="tw-border-t tw-border-text-black tw-w-10/12 tw-my-6 tw-mx-auto"></div>
         {/* Once this happens the there will be modal that will be pop out and make it to send conformation on to the client */}
-        <div className="tw-justify-center tw-outline-none">
-          <Button
-            className="tw-w-1/3 tw-justify-center tw-mt-4 tw-bg-green-color hover:tw-bg-green-color tw-rounded-full tw-outline-none"
+        <div className="tw-text-center tw-py-4 tw-mb-6 tw-flex tw-items-center tw-justify-center">
+          <button
+            className="tw-px-6 tw-py-2 tw-rounded-full tw-capitalize tw-bg-second-color tw-border-second-color tw-border tw-text-white-color tw-mr-4"
             onClick={(e) => submitHandler(e)}
           >
-            submit request
-          </Button>
+            Submit
+          </button>
+          <Link href="/">
+            <a
+              href=""
+              className="tw-border-text-black tw-text-text-black tw-border tw-py-2 tw-px-6 tw-rounded-full hover:tw-text-white-color"
+            >
+              Skip for Now
+            </a>
+          </Link>
         </div>
-        <Link href="/">Skip for Now</Link>
       </div>
     </div>
   )

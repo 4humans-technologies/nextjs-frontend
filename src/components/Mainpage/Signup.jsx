@@ -91,8 +91,8 @@ function SignUp() {
 
   return (
     <>
-      <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-min-h-screen tw-bg-third-color tw-w-full sm:tw-w-auto tw-py-16">
-        <div className="tw-my-4 tw-flex-grow-0">
+      <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-min-h-screen tw-bg-first-color tw-w-full sm:tw-w-auto tw-py-16">
+        {/* <div className="tw-my-4 tw-flex-grow-0">
           <Link href="/" className="tw-cursor-pointer">
             <Image
               src={Logo}
@@ -101,7 +101,7 @@ function SignUp() {
               className="tw-cursor-pointer"
             />
           </Link>
-        </div>
+        </div> */}
         <div className="tw-flex-shrink-0 tw-flex-grow-0  ">
           <div className="tw-grid sm:tw-grid-cols-2 tw-grid-cols-1  tw-grid-rows-1 sm:tw-w-full   tw-h-full tw-w-[100vw]  ">
             <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-10 tw-pb-10 tw-rounded-md  ">

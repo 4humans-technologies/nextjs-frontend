@@ -12,6 +12,7 @@
     "agora-rtc-sdk-ng": "^4.6.3",
     "babel-plugin-styled-components": "^1.13.2",
     "bootstrap": "^5.1.0",
+    "emoji-mart": "^3.0.1",
     "fetch-intercept": "^2.4.0",
     "fslightbox-react": "^1.6.2-2",
     "nanoid": "^3.1.25",

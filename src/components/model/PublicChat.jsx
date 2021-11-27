@@ -214,7 +214,7 @@ function PublicChatBox(props) {
   }, [ctx.socketSetupDone, io.getSocket()])
 
   useEffect(() => {
-    /* when the viwerscreen component un-mounts leave the public/private stream specific rooms */
+    /* when the viwerscreen component un-mounts leave the public stream specific rooms */
     if (ctx.socketSetupDone) {
       return () => {
         const socket = io.getSocket()
@@ -226,15 +226,7 @@ function PublicChatBox(props) {
             roomsToLeave.push(room)
           }
         })
-        socket.emit(
-          "take-me-out-of-these-rooms",
-          [...roomsToLeave],
-          (response) => {
-            if (response.status === "ok") {
-              /* nothing to be done */
-            }
-          }
-        )
+        socket.emit("take-me-out-of-these-rooms", [...roomsToLeave])
       }
     }
   }, [ctx.socketSetupDone, io.getSocket()])

@@ -25,7 +25,7 @@ function GoLive() {
     }
   }, [ctx.loadedFromLocalStorage, ctx.isLoggedIn, ctx.user.userType])
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
-    <div>
+    <div className="tw-min-h-screen tw-bg-first-color">
       <LiveComponent />
     </div>
   ) : (

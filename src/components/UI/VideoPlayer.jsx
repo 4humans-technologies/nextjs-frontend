@@ -20,14 +20,14 @@ function VideoPlayer({
     let playRequestPending = false
     ensureVideoPlayingLoopRef.current = setInterval(() => {
       console.debug("Checking if video is playing...")
-      if (!videoTrack.isPlaying && !playRequestPending) {
+      if (!videoTrack?.isPlaying && !playRequestPending) {
         /* if not playing */
         videoTrack?.play(container.current, { fit: fit })
         playRequestPending = true
         console.error("Video was found to not playing, play request pending...")
-      } else if (videoTrack.isPlaying && playRequestPending) {
+      } else if (videoTrack?.isPlaying && playRequestPending) {
         playRequestPending = false
-      } else if (!videoTrack.isPlaying && playRequestPending) {
+      } else if (!videoTrack?.isPlaying && playRequestPending) {
         console.error("Video not playing, play request pending...")
       }
     }, [2500])
@@ -43,7 +43,7 @@ function VideoPlayer({
 
     if (config === "videoCall") {
       /* then check is video is playing or else retry */
-      ensureVideoPlaying()
+      // ensureVideoPlaying()
     }
 
     return () => {

@@ -419,11 +419,9 @@ function PrivateChatWrapper(props) {
               )
             })
           ) : (
-            <div className="tw-my-2 tw-py-2 tw-px-6 tw-rounded tw-flex tw-items-center tw-cursor-pointer tw-bg-first-color tw-ml-2">
-              <p className="tw-text-white-color tw-text-center tw-capitalize tw-flex-grow">
-                No new private chat message from any viewer! 😞☹
-              </p>
-            </div>
+            <p className="tw-mt-4 tw-text-center tw-px-4 tw-bg-dark-black tw-mx-2 tw-text-white-color tw-rounded tw-p-3 tw-font-medium">
+              No new private chat message from any viewer! 😟
+            </p>
           )}
         </div>
       )}

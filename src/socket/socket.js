@@ -57,6 +57,9 @@ export default {
           console.log("added in session room >> ", room)
         }
       } else if (room.endsWith("-private")) {
+        /* remove previous private room */
+        prevRooms = prevRooms.filter((room) => !room.endsWith("-private"))
+
         /* add unique rooms only */
         if (!prevRooms.includes(room)) {
           sessionStorage.setItem(
@@ -71,10 +74,10 @@ export default {
     socket.on("you-left-a-room", (roomToLeave) => {
       const prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
       if (roomToLeave.endsWith("-public")) {
-        const newRooms = prevRooms.filter((room) => room !== roomToLeave) || []
+        const newRooms = prevRooms.filter((room) => room !== roomToLeave)
         sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
       } else if (roomToLeave.endsWith("-private")) {
-        const newRooms = prevRooms.filter((room) => room !== roomToLeave) || []
+        const newRooms = prevRooms.filter((room) => room !== roomToLeave)
         sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
       }
       console.log("left room >> ", roomToLeave)

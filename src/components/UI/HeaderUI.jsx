@@ -42,7 +42,7 @@ function Headerui(props) {
               authContext.isLoggedIn ? "tw-hidden" : "tw-block"
             }`}
             onClick={() => {
-              router.push("auth/login")
+              router.push("/auth/login")
               props.manu((prev) => !prev)
             }}
           >

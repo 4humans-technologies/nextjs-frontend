@@ -125,7 +125,7 @@ function useAgora(client, role, callType) {
   }, [client, localAudioTrackRef, localVideoTrackRef])
 
   const leave = useCallback(async () => {
-    await client?.leave()
+    await client.leave()
     setRemoteUsers([])
     setJoinState(false)
   }, [client])

@@ -11,11 +11,8 @@ import {
   CoverUpdate,
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
-
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import FsLightbox from "fslightbox-react"
-// import { SRLWrapper } from "simple-react-lightbox"
-// import Image from "next/image"
 // ========================================================
 function Profile() {
   const [infoedited, setInfoedited] = useState(false)
@@ -311,9 +308,9 @@ function Profile() {
   return (
     <div>
       <div
-        className="tw-w-screen tw-relative  md:tw-mt-[8.2rem] tw-mt-28 tw-h-96 "
+        className="tw-w-full tw-relative tw-h-96 "
         style={{
-          backgroundImage: `url(${coverImage})`,
+          backgroundImage: `url('/cover-photo.png')`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
@@ -327,40 +324,45 @@ function Profile() {
         </p>
       </div>
       {/* corcle for profile picture */}
-      <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative">
+      <div className="tw-w-full tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative tw-text-white-color">
         {profileImage ? (
-          <img
-            className="tw-rounded-full tw-w-32 tw-h-32  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg "
-            src={profileImage}
-          ></img>
+          <span className="tw-relative tw-w-32 tw-h-32 tw-inline-block">
+            <img
+              className="tw-rounded-full tw-w-full tw-h-full  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg tw-object-cover tw-ring-white tw-ring-2"
+              src={profileImage}
+            ></img>
+            <CreateIcon
+              className="tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer tw-top-[78%] tw-left-[78%] tw-translate-x-[-50%] tw-p-1 tw-ring-white tw-ring-1"
+              fontSize="medium"
+              onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
+            />
+          </span>
         ) : (
           <div className="tw-rounded-full tw-w-32 tw-h-32  tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%]  hover:tw-shadow-lg tw-bg-green-color">
             {authContext.user.user.username.charAt(0).toUpperCase()}
           </div>
         )}
 
-        <CreateIcon
-          className="md:tw-ml-24 md:tw-mt-12 tw-mt-16 tw-ml-28 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
-          fontSize="medium"
-          onClick={() => modalCtx.showModalWithContent(<ProfileUpdate />)}
-        />
-        <div className="tw-font-extrabold tw-text-2xl tw-text-white tw-ml-44 tw-flex  md:tw-mt-4 tw-mt-8">
-          {authContext.user.user.relatedUser
-            ? authContext.user.user.relatedUser.name
-            : null}
-          {authContext.user.user.relatedUser.gender == "Female" ? (
-            <img src="/femaleIcon.png" className="tw-w-8 tw-h-8 tw-ml-4" />
-          ) : (
-            <img src="/maleIcon.png" className="tw-w-8 tw-h-8 tw-ml-4" />
-          )}
+        <div className="tw-font-semibold tw-text-2xl tw-flex tw-items-center tw-justify-start tw-ml-6">
+          {authContext.user.user.relatedUser?.name}
+          <img
+            src={
+              authContext.user.user.relatedUser.gender == "Female"
+                ? "/femaleIcon.png"
+                : "/maleIcon.png"
+            }
+            className="tw-w-6 tw-h-6 tw-ml-2"
+          />
         </div>
       </div>
       {/* horizontal bar */}
       {/* Profile compy from grid */}
-      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background tw-w-screen">
+      <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background tw-w-full">
         <div className="md:tw-col-span-4 tw-col-span-1">
           <div className="  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
-            <h1 className="tw-ml-4 tw-mb-4">My Information</h1>
+            <h1 className="tw-ml-4 tw-mb-4 tw-text-xl tw-font-semibold">
+              My Information
+            </h1>
             <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
               <div className=" md:tw-col-span-1 tw-col-span-2 ">
                 <p>Intrested in</p>
@@ -377,7 +379,7 @@ function Profile() {
               {
                 <div
                   className="md:tw-col-span-5 tw-col-span-4 "
-                  onChange={() => setInfoedited(true)}
+                 
                 >
                   <p>EveryOne</p>
                   <p

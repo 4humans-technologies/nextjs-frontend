@@ -1,19 +1,13 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
-import PersonIcon from "@material-ui/icons/Person"
-import MoreVertIcon from "@material-ui/icons/MoreVert"
-import AccountCircleIcon from "@material-ui/icons/AccountCircle"
-import FlareIcon from "@material-ui/icons/Flare"
 import PublicChat from "./PublicChat"
 import PrivateChat from "./PrivateChat"
-import LivePeople from "./LivePeople"
 import dynamic from "next/dynamic"
-import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions"
 import Token from "../model/Token"
 import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
-
+import Emoji from "../Emoji"
 // for audio video call
 import PhoneInTalkIcon from "@material-ui/icons/PhoneInTalk"
 import VideocamIcon from "@material-ui/icons/Videocam"
@@ -303,10 +297,9 @@ function LiveScreen(props) {
         src="/audio/call-end.mp3"
         id="call-end-audio"
       ></audio>
-      <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans tw-mt-28">
-        <div className="tw-relative tw-bg-dark-black tw-mt-4 md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
+      <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
+        <div className="tw-relative tw-bg-dark-black md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
-
           <ViewerScreen
             setIsChatPlanActive={setIsChatPlanActive}
             setCallOnGoing={setCallOnGoing}
@@ -336,6 +329,12 @@ function LiveScreen(props) {
                       33.k
                     </span>
                   </button>
+                  <span
+                    id="live-viewer-count"
+                    className="tw-rounded-full tw-px-2.5 tw-py-0.5 tw-text-sm tw-inline-block tw-ml-3 tw-text-green-color tw-border tw-border-green-color"
+                  >
+                    0 Live
+                  </span>
                 </div>
                 <div className="tw-col-span-1 tw-row-span-1 tw-justify-self-end">
                   <Button
@@ -345,7 +344,7 @@ function LiveScreen(props) {
                       if (authCtx.isLoggedIn) {
                         modalCtx.showModalWithContent(<Token />)
                       } else {
-                        alert("Please login first")
+                        alert("Please login first, To Gift Coins")
                       }
                     }}
                   >
@@ -381,7 +380,7 @@ function LiveScreen(props) {
                 </div>
               </div>
               <div className="tw-hidden lg:tw-flex md:tw-justify-between md:tw-self-center tw-text-white">
-                <div className="tw-flex tw-self-center">
+                <div className="tw-flex tw-items-center tw-justify-start">
                   <button onClick={handleModelFollow}>
                     <span className="tw-p-1 tw-rounded-full tw-bg-white-color tw-inline-block">
                       <FavoriteIcon className="tw-text-red-600" />
@@ -390,6 +389,12 @@ function LiveScreen(props) {
                       33.k
                     </span>
                   </button>
+                  <span
+                    id="live-viewer-count"
+                    className="tw-rounded-full tw-px-2.5 tw-py-0.5 tw-text-sm tw-inline-block tw-ml-3 tw-text-green-color tw-border tw-border-green-color"
+                  >
+                    0 Live
+                  </span>
                 </div>
                 <div className="tw-flex tw-justify-between">
                   <Button
@@ -433,33 +438,45 @@ function LiveScreen(props) {
             </div>
           ) : null}
         </div>
-        <div className="md:tw-mt-4 tw-mt-2 tw-bg-second-color md:tw-w-4/12 md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-          <div className="tw-flex tw-justify-around md:tw-justify-between tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative">
+        <div className="tw-bg-second-color md:tw-w-4/12 md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+          <div className="tw-flex tw-justify-around md:tw-justify-start tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative tw-shadow-md">
             <button
-              className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
+              className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-mr-4 ${
+                chatWindow === chatWindowOptions?.PUBLIC
+                  ? "tw-text-dreamgirl-red tw-font-semibold"
+                  : "tw-text-white-color tw-font-normal sm:-font-medium"
+              }`}
               onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
             >
               <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
-              <span className="tw-font-normal sm:-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+              <span className="tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
                 Live Chat
               </span>
             </button>
             <button
-              className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
+              className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-mr-4 ${
+                chatWindow === chatWindowOptions?.PRIVATE
+                  ? "tw-text-dreamgirl-red tw-font-semibold"
+                  : "tw-text-white-color tw-font-normal sm:-font-medium"
+              }`}
               onClick={() => setChatWindow(chatWindowOptions.PRIVATE)}
             >
               <MarkChatReadIcon className="tw-mr-2 tw-my-auto" />
-              <span className="tw-font-normal sm:-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+              <span className="tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
                 Private Chat
               </span>
             </button>
             {authCtx.user.userType !== "Model" && (
               <button
-                className="tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110]"
+                className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-mr-4 ${
+                  chatWindow === chatWindowOptions?.TIP_MENU
+                    ? "tw-text-dreamgirl-red tw-font-semibold"
+                    : "tw-text-white-color tw-font-normal sm:-font-medium"
+                }`}
                 onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
               >
                 <LocalActivityIcon className="tw-mr-2 tw-my-auto" />
-                <span className="tw-font-normal sm:tw-font-medium tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+                <span className="tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
                   Tip Menu
                 </span>
               </button>
@@ -538,28 +555,31 @@ function LiveScreen(props) {
 
           <div
             id="message-input"
-            className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-z-[300]"
+            className="tw-flex tw-items-center tw-py-1.5 tw-bg-second-color tw-text-white tw-absolute tw-bottom-0 tw-w-full tw-z-[300] tw-right-0"
           >
-            <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
+            {/* <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-px-1 tw-outline-none tw-items-center tw-w-full tw-relative"> */}
+            <span className="circle-shadow tw-h-10 tw-w-10 tw-inline-grid tw-flex-shrink-0 tw-p-1 tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]">
               <img
                 src="/tips.png"
                 alt=""
-                className=" tw-h-8 tw-pl-4"
+                className="tw-w-6 tw-h-6"
                 onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
               />
-              <input
-                className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
-                placeholder="Enter your message here"
-                ref={chatInputRef}
-              ></input>
-              <button
-                onClick={sendChatMessage}
-                className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-full"
-              >
-                Send
-              </button>
-            </div>
+            </span>
+            <input
+              className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow tw-ml-2"
+              placeholder="Chat"
+              ref={chatInputRef}
+            ></input>
+            <Emoji chatInputRef={chatInputRef} />
+            <button
+              onClick={sendChatMessage}
+              className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-full"
+            >
+              Send
+            </button>
           </div>
+          {/* </div> */}
         </div>
       </div>
     </>

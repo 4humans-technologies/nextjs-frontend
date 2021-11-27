@@ -247,75 +247,87 @@ function ViewerScreen(props) {
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
-      if (!socket.hasListeners("new-model-started-stream")) {
-        socket.on("new-model-started-stream", (data) => {
-          if (
-            data.modelId !== window.location.pathname.split("/").reverse()[0]
-          ) {
-            return
-          }
-          if (!localStorage.getItem("rtcToken")) {
-            /* RELOAD */
-            return window.location.reload()
-          }
-          /*  */
-          let url
-          if (ctx.isLoggedIn) {
-            url = "/api/website/stream/re-join-models-currentstream-authed"
-          } else {
-            url = "/api/website/stream/re-join-models-currentstream-unauthed"
-          }
+      let newStreamHandler = (data) => {
+        if (data.modelId !== window.location.pathname.split("/").reverse()[0]) {
+          return
+        }
+        if (!localStorage.getItem("rtcToken")) {
+          /* RELOAD */
+          return window.location.reload()
+        }
+        /*  */
+        let url
+        if (ctx.isLoggedIn) {
+          url = "/api/website/stream/re-join-models-currentstream-authed"
+        } else {
+          url = "/api/website/stream/re-join-models-currentstream-unauthed"
+        }
 
-          fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              modelId: window.location.pathname.split("/").reverse()[0],
-            }),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (data.actionStatus === "success") {
-                sessionStorage.setItem("streamId", data.streamId)
-                setPendingCallRequest(false)
-                setOthersCall({
-                  acceptedOthersCall: false,
-                  rejectedMyCall: false,
-                  otherUserData: {
-                    username: "",
-                    profileImage: "",
-                    callType: "",
-                  },
-                })
-                join(
-                  window.location.pathname.split("/").reverse()[0],
-                  localStorage.getItem("rtcToken"),
-                  ctx.relatedUserId
-                ).catch((err) => {
-                  console.error(
-                    "Error joining the stream, something is not right..!"
-                  )
-                })
-                props.setIsChatPlanActive(data.isChatPlanActive)
-                setIsModelOffline(false)
-              } else {
-                props.setIsChatPlanActive(data.isChatPlanActive)
-                setPendingCallRequest(false)
-                setIsModelOffline(true)
-              }
-            })
-            .catch((err) => {
-              alert(err.message)
-            })
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            modelId: window.location.pathname.split("/").reverse()[0],
+          }),
         })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.actionStatus === "success") {
+              sessionStorage.setItem("streamId", data.streamId)
+              setPendingCallRequest(false)
+              setOthersCall({
+                acceptedOthersCall: false,
+                rejectedMyCall: false,
+                otherUserData: {
+                  username: "",
+                  profileImage: "",
+                  callType: "",
+                },
+              })
+              join(
+                window.location.pathname.split("/").reverse()[0],
+                localStorage.getItem("rtcToken"),
+                ctx.relatedUserId
+              ).catch((err) => {
+                console.error(
+                  "Error joining the stream, something is not right..!"
+                )
+              })
+              props.setIsChatPlanActive(data.isChatPlanActive)
+              setIsModelOffline(false)
+              setTimeout(() => {
+                fetch(
+                  `/api/website/stream/get-live-room-count/${data.streamId}-public`
+                )
+                  .then((res) => res.json())
+                  .then((data) => {
+                    document.getElementById(
+                      "live-viewer-count"
+                    ).innerText = `${data.roomSize} Live`
+                  })
+              }, [4000])
+              document.getElementById("live-viewer-count").innerText = `0 Live`
+            } else {
+              props.setIsChatPlanActive(data.isChatPlanActive)
+              setPendingCallRequest(false)
+              setIsModelOffline(true)
+            }
+          })
+          .catch((err) => {
+            alert(err.message)
+          })
       }
+      socket.on("new-model-started-stream", newStreamHandler)
 
-      /* __  __ */
-      if (socket.hasListeners("new-model-started-stream")) {
-        return () => {
-          socket.off("new-model-started-stream")
+      /* remove listener */
+      return () => {
+        if (
+          socket.hasListeners("new-model-started-stream") &&
+          newStreamHandler
+        ) {
+          socket.off("new-model-started-stream", newStreamHandler)
         }
       }
     }
@@ -325,19 +337,21 @@ function ViewerScreen(props) {
     /* listen for stream end events */
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
-      if (!socket.hasListeners("delete-stream-room")) {
-        socket.on("delete-stream-room", (data) => {
-          if (
-            data.modelId !== window.location.pathname.split("/").reverse()[0]
-          ) {
-            return
-          }
-          setCallOnGoing(false)
-          setPendingCallRequest(false)
-          setIsModelOffline(true)
-          sessionStorage.setItem("streamId", "")
-          /* why need this any way will send room-left event */
-          /* const socketRooms =
+      let streamDeleteHandler
+      streamDeleteHandler = (data) => {
+        if (data.modelId !== window.location.pathname.split("/").reverse()[0]) {
+          return
+        }
+        setCallOnGoing(false)
+        setPendingCallRequest(false)
+        setIsModelOffline(true)
+        sessionStorage.setItem("streamId", "")
+
+        /* set live viewer count as Zero */
+        document.getElementById("live-viewer-count").innerText = "0 Live"
+
+        /* why need this, any way server will send room-left event */
+        /* const socketRooms =
             JSON.parse(sessionStorage.getItem("socket-rooms")) || []
           sessionStorage.setItem(
             "socket-rooms",
@@ -345,15 +359,15 @@ function ViewerScreen(props) {
               socketRooms.filter((room) => !room.endsWith("-public"))
             )
           ) */
-        })
       }
+      socket.on("delete-stream-room", streamDeleteHandler)
       return () => {
-        if (socket.hasListeners("delete-stream-room")) {
-          socket.off("delete-stream-room")
+        if (socket.hasListeners("delete-stream-room") && streamDeleteHandler) {
+          socket.off("delete-stream-room", streamDeleteHandler)
         }
       }
     }
-  }, [setCallOnGoing, socketCtx.socketSetupDone])
+  }, [socketCtx.socketSetupDone])
 
   useEffect(() => {
     //debugger
@@ -596,6 +610,23 @@ function ViewerScreen(props) {
     }
   }, [socketCtx.socketSetupDone, offCallListeners])
 
+  /* live viewer count listeners */
+  useEffect(() => {
+    if (socketCtx.socketSetupDone) {
+      const socket = io.getSocket()
+      let joinHandler
+      let leftHandler
+      if (!socket.hasListeners("viewer-joined")) {
+        joinHandler = (data) => {
+          document.getElementById(
+            "live-viewer-count"
+          ).innerText = `${data.roomSize} Live`
+        }
+        socket.on("viewer-joined", joinHandler)
+      }
+    }
+  }, [socketCtx.socketSetupDone])
+
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
@@ -681,9 +712,15 @@ function ViewerScreen(props) {
                   },
                 })
               }
-              /* 🔻🔻leave al socket rooms also 🔺🔺 */
+
               leaveDueToPrivateCall()
-              const socketRooms =
+              /**
+               *
+               * have kick out all sockets on the server itself as below alogo will
+               * flood the client with "viewer left event"
+               */
+              document.getElementById("live-viewer-count").innerText = "0 Live"
+              /* const socketRooms =
                 JSON.parse(sessionStorage.getItem("socket-rooms")) || []
               if (socketRooms.find((room) => room.endsWith("-public"))) {
                 socket.emit(
@@ -695,7 +732,7 @@ function ViewerScreen(props) {
                     }
                   }
                 )
-              }
+              } */
             }
           } else {
             /* clear call type and pending call */

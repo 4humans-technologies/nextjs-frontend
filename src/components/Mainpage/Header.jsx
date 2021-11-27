@@ -18,25 +18,29 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
 import SecondHeader from "./SecondHeader"
 import Headerui from "../UI/HeaderUI"
+import io from "../../socket/socket"
+import { useSocketContext } from "../../app/socket/SocketContext"
 
+let fetchedLiveModelCount = false
 function Header(props) {
   const [menu, setMenu] = useState(false)
   const [searchShow, setSearchShow] = useState(false)
   const [headerProfileShow, setHeaderProfileShow] = useState(false)
   const [query, setQuery] = useState("")
   const [searchData, setSearchData] = useState([])
-  // need to add search parmeters
+  const [liveModels, setLiveModels] = useState(0)
+
+  /* need to add search parmeters */
   const screenWidth = useWidth()
-  const modalCtx = useModalContext()
   const router = useRouter()
   const sidebarStatus = useSidebarStatus()
   const sidebarUpdate = useSidebarUpdate()
   const authContext = useAuthContext()
   const updateAuthContext = useAuthUpdateContext()
+  const socketCtx = useSocketContext()
   const [hide, setHide] = useState()
 
-  // Checking login and logout -----------------
-
+  /* this is not reactive it's one time setter */
   useEffect(() => {
     if (window.location.pathname.includes("goLive") == true) {
       setHide(true)
@@ -49,8 +53,63 @@ function Header(props) {
     profileImage = authContext.user.user.relatedUser.profileImage
   }
 
-  // When ever the Heder reloada sidebarshow is false
-  // console.log(`Model in header ${props.liveModels}`)
+  /* fetch live model count and set state  */
+  useEffect(() => {
+    if (!fetchedLiveModelCount) {
+      fetchedLiveModelCount = true
+      /* fetch live models */
+      fetch("/api/website/compose-ui/get-live-models-count")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.actionStatus === "success") {
+            setLiveModels(data.liveNow)
+          }
+        })
+        .catch((err) => console.log("Live models count not fetched"))
+    }
+  }, [fetchedLiveModelCount])
+
+  /* setup live count listeners */
+  useEffect(() => {
+    if (socketCtx.socketSetupDone) {
+      const socket = io.getSocket()
+      let streamCreateHandler
+      let streamDeleteHandler
+      let callEndHandler
+      if (!socket.hasListeners("new-model-started-stream")) {
+        streamCreateHandler = (data) => {
+          setLiveModels(data.liveNow)
+        }
+        socket.on("new-model-started-stream", streamCreateHandler)
+      }
+      if (!socket.hasListeners("delete-stream-room")) {
+        streamDeleteHandler = (data) => {
+          setLiveModels(data.liveNow)
+        }
+        socket.on("delete-stream-room", streamDeleteHandler)
+      }
+      if (!socket.hasListeners("a-call-ended")) {
+        callEndHandler = (liveNow) => {
+          setLiveModels(liveNow)
+        }
+        socket.on("a-call-ended", callEndHandler)
+      }
+      return () => {
+        if (
+          socket.hasListeners("new-model-started-stream") &&
+          streamCreateHandler
+        ) {
+          socket.off("new-model-started-stream", streamCreateHandler)
+        }
+        if (socket.hasListeners("delete-stream-room") && streamDeleteHandler) {
+          socket.off("delete-stream-room", streamDeleteHandler)
+        }
+        if (socket.hasListeners("a-call-ended") && callEndHandler) {
+          socket.off("a-call-ended", callEndHandler)
+        }
+      }
+    }
+  }, [socketCtx.socketSetupDone])
 
   return (
     <div>
@@ -67,15 +126,18 @@ function Header(props) {
           </Link>
         </div>
         {/* ------------------------ */}
-        <div className="md:tw-flex md:tw-items-center tw-hidden ">
-          {/* circle tailwind css */}
-          <div className="tw-flex tw-items-center">
-            <div className="tw-rounded-full tw-bg-green-400 tw-h-2 tw-w-2 tw-flex tw-items-center tw-justify-center"></div>
-            <p className="tw-pl-1 tw-pr-2">
-              {props.liveModels ? props.liveModels : 0}
-            </p>
-            <p>Live </p>
-          </div>
+        <div className="md:tw-flex md:tw-items-center tw-hidden">
+          {liveModels > 0 ? (
+            <div className="tw-flex tw-items-center tw-text-green-color tw-font-semibold">
+              <span className="tw-pr-2">{liveModels}</span>
+              {/* <span className="tw-rounded-full tw-bg-green-color tw-h-2 tw-w-2 tw-mr-1"></span> */}
+              <span className="">Live</span>
+            </div>
+          ) : (
+            <span className="tw-capitalize tw-text-sm tw-font-medium">
+              No model live
+            </span>
+          )}
 
           <div className="lg:tw-flex tw-items-center tw-pl-4 tw-hidden">
             <BarChartIcon />
@@ -190,12 +252,12 @@ function Header(props) {
                     // login at large screen viwer
                     authContext.user.userType == "Viewer" ? (
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                        <button
+                        {/* <button
                           className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                           onClick={updateAuthContext.logout}
                         >
                           logout
-                        </button>
+                        </button> */}
                         <div className="tw-mx-8 tw-flex">
                           <img
                             src="/coins.png"
@@ -215,7 +277,7 @@ function Header(props) {
                         >
                           {profileImage ? (
                             <img
-                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-text-4xl  "
+                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-bg-green-400 tw-text-4xl tw-object-cover tw-border-white-color tw-border-2"
                               src={profileImage}
                             />
                           ) : (
@@ -239,12 +301,12 @@ function Header(props) {
                     ) : (
                       // login at large screen model
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                        <button
+                        {/* <button
                           className="tw-mx-4 tw-px-4 tw-py-2 tw-rounded-full hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
                           onClick={updateAuthContext.logout}
                         >
                           Logout
-                        </button>
+                        </button> */}
                         <div className="tw-mx-4 tw-flex ">
                           <img
                             src="/coins.png"
@@ -274,7 +336,7 @@ function Header(props) {
                           {/* if image is not available then show the Name else show the image */}
                           {profileImage ? (
                             <img
-                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-text-4xl  "
+                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-text-4xl  tw-object-cover tw-border-white-color tw-border-2"
                               src={profileImage}
                             />
                           ) : (

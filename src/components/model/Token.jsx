@@ -70,16 +70,16 @@ function Token() {
           className="tw-cursor-pointer"
         />
       </div>
-      <form className="tw-bg-second-color tw-justify-items-center tw-self-center tw-px-4 tw-leading-10 tw-py-4 ">
-        <div className="tw-font-extrabold tw-text-xl tw-mb-">
-          How many token would you like to tip
+      <form className="tw-bg-first-color tw-justify-items-center tw-self-center tw-px-8 tw-leading-10 tw-py-4 tw-rounded">
+        <div className="tw-font-medium tw-text-xl tw-mb-4">
+          Enter the amount you want to tip
         </div>
         <div
-          className={`tw-flex tw-justify-between tw-my-2 ${
+          className={`tw-flex tw-justify-between tw-my-2 tw-flex-1 ${
             token == "20" ? "tw-text-green-400" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-items-center tw-flex-grow">
             <input
               type="radio"
               name="selected_token"
@@ -92,7 +92,7 @@ function Token() {
             </label>
           </div>
           <div
-            className={`tw-px-2 tw-border-2 ${
+            className={`tw-px-2 tw-border-2 tw-flex-grow ${
               token == "20" ? "tw-border-green-400" : null
             }`}
           >
@@ -105,7 +105,7 @@ function Token() {
             token == 50 ? "tw-text-green-400" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-place-items-center tw-flex-grow">
             <input
               type="radio"
               name="selected_token"
@@ -118,7 +118,7 @@ function Token() {
             </label>
           </div>
           <div
-            className={`tw-px-2 tw-border-2 ${
+            className={`tw-px-2 tw-border-2 tw-flex-grow ${
               token == "50" ? "tw-border-green-400" : null
             }`}
           >
@@ -131,7 +131,7 @@ function Token() {
             token == 100 ? "tw-text-green-400" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-place-items-center tw-flex-grow">
             <input
               type="radio"
               name="selected_token"
@@ -144,7 +144,7 @@ function Token() {
             </label>
           </div>
           <div
-            className={`tw-px-2 tw-border-2 ${
+            className={`tw-px-2 tw-border-2 tw-flex-grow ${
               token == "100" ? "tw-border-green-400" : null
             }`}
           >
@@ -153,11 +153,11 @@ function Token() {
         </div>
         {/*  */}
         <div
-          className={`tw-flex tw-justify-between tw-my-2 ${
+          className={`tw-flex tw-justify-between tw-my-2  ${
             token == 200 ? "tw-text-green-400" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-place-items-center tw-flex-grow">
             <input
               type="radio"
               name="selected_token"
@@ -170,7 +170,7 @@ function Token() {
             </label>
           </div>
           <div
-            className={`tw-px-2 tw-border-2 ${
+            className={`tw-px-2 tw-border-2 tw-flex-grow ${
               token == "200" ? "tw-border-green-400" : null
             }`}
           >
@@ -178,11 +178,11 @@ function Token() {
           </div>
         </div>
         <div
-          className={`tw-flex tw-justify-between tw-my-2 ${
-            token > 200 ? "tw-text-green-400" : null
+          className={`tw-flex tw-justify-between tw-mt-4 tw-mb-2 ${
+            token > 200 ? "tw-text-green-500" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-place-items-center tw-flex-grow tw-items-center">
             <input
               type="radio"
               name="selected_token"
@@ -195,7 +195,7 @@ function Token() {
           </div>
           <input
             type="text"
-            className="tw-rounded-full tw-w-48 tw-h-8 tw-bg-black tw-outline-none tw-px-2"
+            className="tw-rounded tw-h-8 tw-outline-none tw-px-2 tw-flex-grow tw-bg-second-color"
             onChange={(e) => handleAmountInput(e.target.value)}
           />
         </div>
@@ -206,22 +206,18 @@ function Token() {
             </p>
           </div>
         )}
+        <div className="tw-mx-auto tw-mt-4">
+          <button
+            className="tw-rounded-full tw-bg-green-color tw-px-4 tw-inline-block tw-mr-3"
+            onClick={() => handleBuyToken()}
+          >
+            Send Coins
+          </button>
+          <button className="tw-rounded-full tw-bg-dreamgirl-red tw-px-4 tw-inline-block tw-ml-3">
+            Buy Coins
+          </button>
+        </div>
       </form>
-      <div className="tw-mx-auto tw-mt-4">
-        <button
-          type="submit"
-          className="tw-rounded-full tw-bg-green-color tw-px-4 tw-py-2 tw-inline-block tw-mr-3"
-          onClick={() => handleBuyToken()}
-        >
-          Send Coins
-        </button>
-        <button
-          type="submit"
-          className="tw-rounded-full tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-inline-block tw-ml-3"
-        >
-          Buy Coins
-        </button>
-      </div>
     </div>
   )
 }
