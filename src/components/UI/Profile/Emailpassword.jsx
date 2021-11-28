@@ -2,8 +2,12 @@ import React, { useState } from "react"
 import useModalContext from "../../../app/ModalContext"
 import CancelIcon from "@material-ui/icons/Cancel"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
+import { useRouter } from "next/router"
 
 const EmailChange = () => {
+  const authUpdateContext = useAuthUpdateContext()
+  const modalCtx = useModalContext()
+
   const [email, setEmail] = useState({
     oldEmail: "",
     newEmail: "",
@@ -12,7 +16,7 @@ const EmailChange = () => {
   const changeHandler = (e) => {
     if (email.oldEmail != email.newEmail) {
       fetch("/api/website/profile/update-model-basic-details", {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-type": "application/json",
         },
@@ -32,7 +36,7 @@ const EmailChange = () => {
                 ...prevState.user.user,
                 relatedUser: {
                   ...prevState.user.user.relatedUser,
-                  email: newEmail,
+                  email: email.newEmail,
                 },
               },
             },
@@ -41,6 +45,7 @@ const EmailChange = () => {
       let store = JSON.parse(localStorage.getItem("user"))
       store["relatedUser"]["email"] = email.newEmail
       localStorage.setItem("user", JSON.stringify(store))
+      setTimeout(modalCtx.hideModal(), 100)
     }
   }
   return (
@@ -71,6 +76,7 @@ const EmailChange = () => {
 }
 
 const PasswordChange = (props) => {
+  const modalCtx = useModalContext()
   const [password, setPassword] = useState({
     oldPassword: null,
     newPassword: null,
@@ -80,24 +86,31 @@ const PasswordChange = (props) => {
 
   // This change handler can handle change in of all type in the form this helps to make code clean and smooth
   const changeHandler = (e) => {
-    if (password.newPassword != password.newPassword_2) {
-      return alert("New Passwords Did Not Matched")
-    }
+    // if (password.newPassword != password.newPassword_2) {
+    //   return alert("New Passwords Did Not Matched")
+    // }
 
     setPassword({ ...password, [e.target.name]: e.target.value })
-    fetch("url", {
+  }
+
+  const submitHandler = () => {
+    fetch("/api/website/profile/update-password", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        newPassword: password.newPassword,
-        newPassword2: password.newPassword_2,
         oldPassword: password.oldPassword,
+        newPassword: password.newPassword,
+        newPasswordConformation: password.newPassword_2,
       }),
     })
       .then((resp) => resp.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log(data)
+        setTimeout(modalCtx.hideModal(), 100)
+      })
+      .catch((err) => alert(err))
   }
 
   return (
@@ -138,12 +151,12 @@ const PasswordChange = (props) => {
           />
         </div>
         <div className="tw-my-6 tw-text-center">
-          <button className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block">
+          <button
+            className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block"
+            onClick={submitHandler}
+          >
             Submit
           </button>
-          {/* <button className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block tw-ml-3">
-            Forgot Password
-          </button> */}
         </div>
       </div>
     </>

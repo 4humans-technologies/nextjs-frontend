@@ -95,7 +95,7 @@ function ViewerToken() {
             You can Buy Coins Via Google Pay, Phone Pay, PayTM, UPI
           </p>
           <a
-            href="http://coinsanytime.in"
+            href="https://couponwa.com"
             target="_blank"
             className="tw-bg-green-color tw-rounded-full tw-px-4 tw-py-2 tw-my-2 tw-text-white"
           >

@@ -239,6 +239,64 @@ function Profile() {
     }
   }
 
+  // private photo handler
+  const privatePhotoUpdateHandler = async (e) => {
+    const image = e.target.files[0]
+
+    // to get url from domain and then uplode to aws
+    const url = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + image.type
+    )
+    const urlJson = await url.json()
+    const imageUrl = await urlJson.uploadUrl
+
+    const profileUrl = imageUrl.split("?")[0]
+
+    // below is the data uplode to aws
+    let req = await fetch(imageUrl, {
+      method: "PUT",
+      body: image,
+    })
+    if (!req.ok) {
+      return alert("Image was not uploaded!")
+    }
+
+    // send data back to node serve as success report with user id and url for the data
+    let serverReq = await fetch(
+      "/api/website/profile/handle-public-image-upload",
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          newImageUrl: profileUrl,
+        }),
+      }
+    )
+
+    let serverResp = await serverReq.json()
+    if (serverResp.actionStatus === "success") {
+      let lcUser = JSON.parse(localStorage.getItem("user"))
+      lcUser.relatedUser.privateImages = [
+        ...lcUser.relatedUser.privateImages,
+        profileUrl,
+      ]
+      authUpdateContext.updateNestedPaths((prev) => ({
+        ...prev,
+        user: {
+          ...prev.user,
+          user: {
+            ...lcUser,
+          },
+        },
+      }))
+      localStorage.setItem("user", JSON.stringify(lcUser))
+    } else {
+      alert("Image was not uploaded to the server successfully!")
+    }
+  }
+
   // VideoUplodeHandler videoUpdateHandler
   const videoUpdateHandler = async (e) => {
     const image = e.target.files[0]
@@ -298,6 +356,67 @@ function Profile() {
       alert("Video was not uploaded!")
     }
   }
+
+  // privatevideoHandle
+  const privatevideoUpdateHandler = async (e) => {
+    const image = e.target.files[0]
+    // to get url from domain and then uplode to aws
+    const url = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + image.type
+    )
+    const urlJson = await url.json()
+    const imageUrl = await urlJson.uploadUrl
+
+    const profileUrl = imageUrl.split("?")[0]
+
+    let req = await fetch(imageUrl, {
+      method: "PUT",
+      body: image,
+    })
+    if (!req.ok) {
+      return alert("OK BRO")
+    }
+    // send data back to node serve as success report with user id and url for the data
+    const serverReq = await fetch(
+      "/api/website/profile/handle-public-video-upload",
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          newVideoUrl: profileUrl,
+        }),
+      }
+    )
+    const serverResp = await serverReq.json()
+    let store = JSON.parse(localStorage.getItem("user"))
+    store.relatedUser.privateVideos.push(profileUrl)
+    if (serverResp.actionStatus === "success") {
+      authUpdateContext.setAuthState((prev) => {
+        return {
+          ...prev,
+          user: {
+            ...prev.user,
+            user: {
+              ...prev.user.user,
+              relatedUser: {
+                ...prev.user.user.relatedUser,
+                privateVideos: [
+                  ...prev.user.user.relatedUser.privateVideos,
+                  profileUrl,
+                ],
+              },
+            },
+          },
+        }
+      })
+      localStorage.setItem("user", JSON.stringify(store))
+    } else {
+      alert("Video was not uploaded!")
+    }
+  }
+  // privatevideohandler
 
   // This is for save the data for the tip menu
   const saveData = () => {
@@ -644,7 +763,65 @@ function Profile() {
             </div>
             {/* Call History */}
             {/* give width and apply scroll-y this is still not implimented */}
-
+            <div>
+              <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+                <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
+                  Set Actions
+                </h1>
+                <form
+                  id="action-form"
+                  className="tw-max-h-64 tw-min-h-[8rem]  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
+                >
+                  {dynamicData.map((item, index) => {
+                    return (
+                      <div
+                        className="tw-grid tw-my-4 tw-text-white-color action_grid "
+                        id={index}
+                        key={index}
+                      >
+                        <input
+                          className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
+                          placeholder="Actions"
+                          value={item.action}
+                          required={true}
+                        />
+                        <input
+                          className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
+                          placeholder="Price"
+                          type={Number}
+                          value={item.price}
+                          required={true}
+                        />
+                        {/* Amazing ninja technique for dom menupulation */}
+                        <ClearIcon
+                          className="tw-text-white tw-my-auto"
+                          onClick={() => {
+                            document.getElementById(index).remove()
+                          }}
+                        />
+                      </div>
+                    )
+                  })}
+                </form>
+                <Button
+                  className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
+                  onClick={() =>
+                    setDynamicData((prev) => [
+                      ...prev,
+                      { action: null, price: null },
+                    ])
+                  }
+                >
+                  add new action
+                </Button>
+                <Button
+                  onClick={() => saveData()}
+                  className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
             {/* Call History */}
           </div>
           {/* Scroll */}
@@ -705,22 +882,83 @@ function Profile() {
                         key={index}
                         onClick={() => openLightboxOnSlide(index + 1)}
                       >
-                        <img
-                          src={image}
-                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                        />
+                        <img src={image} className="tw-w-32 tw-h-32" />
                       </div>
                     )
                   )
                 : null}
             </div>
           </div>
+
+          {/*Private Image  */}
+          <div className="tw-flex tw-justify-between tw-ml-4  tw-mt-4">
+            <h1>Private Photos</h1>
+          </div>
+          <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
+            {/* Make Model Clickeble in model */}
+            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
+              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+                {/* file */}
+                <div className="file-input tw-mt-10 tw-ml-2">
+                  <input
+                    type="file"
+                    name="file-input"
+                    id="file-input"
+                    className="file-input__input"
+                    onChange={(e) => privatePhotoUpdateHandler(e)}
+                  />
+                  <label className="file-input__label" htmlFor="file-input">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="upload"
+                      className="svg-inline--fa fa-upload fa-w-16"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+                      ></path>
+                    </svg>
+                    <span>Upload file</span>
+                  </label>
+                </div>
+
+                {/* file */}
+                <FsLightbox
+                  toggler={lightboxController.toggler}
+                  sources={authContext.user.user.relatedUser.privateImages.map(
+                    (url) => {
+                      return <img src={url} />
+                    }
+                  )}
+                  slide={lightboxController.slide}
+                />
+              </div>
+              {authContext.user.user.relatedUser
+                ? authContext.user.user.relatedUser.privateImages.map(
+                    (image, index) => (
+                      <div
+                        className=" tw-mb-4 tw-cursor-pointer"
+                        key={index}
+                        onClick={() => openLightboxOnSlide(index + 1)}
+                      >
+                        <img src={image} className="tw-w-32 tw-h-32" />
+                      </div>
+                    )
+                  )
+                : null}
+            </div>
+          </div>
+          {/*Private Image  */}
+
           <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
             <h1>My videos</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            {/* Make Model Clickeble in model */}
-            {/* md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 */}
             <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
@@ -774,77 +1012,86 @@ function Profile() {
                         key={index}
                         onClick={() => openVideoboxOnSlide(index + 1)}
                       >
-                        <img
-                          src={image}
-                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                        />
+                        <img src={image} className="tw-w-32 tw-h-32 " />
                       </div>
                     )
                   )
                 : null}
             </div>
           </div>
-          {/* ---------------------------------------------------- */}
 
-          <div>
-            <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-              <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
-                Set Actions
-              </h1>
-              <form
-                id="action-form"
-                className="tw-max-h-64 tw-min-h-[8rem]  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
-              >
-                {dynamicData.map((item, index) => {
-                  return (
-                    <div
-                      className="tw-grid tw-my-4 tw-text-white-color action_grid "
-                      id={index}
-                      key={index}
+          {/* private videos */}
+          <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
+            <h1>Private videos</h1>
+          </div>
+          <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
+              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+                {/* file */}
+                <div className="file-input tw-mt-10 tw-ml-2">
+                  <input
+                    type="file"
+                    name="file-input_video"
+                    id="file-input_video"
+                    className="file-input__input"
+                    onChange={(e) => privatevideoUpdateHandler(e)}
+                  />
+                  <label
+                    className="file-input__label"
+                    htmlFor="file-input_video"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="upload"
+                      className="svg-inline--fa fa-upload fa-w-16"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
                     >
-                      <input
-                        className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
-                        placeholder="Actions"
-                        value={item.action}
-                        required={true}
-                      />
-                      <input
-                        className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
-                        placeholder="Price"
-                        type={Number}
-                        value={item.price}
-                        required={true}
-                      />
-                      {/* Amazing ninja technique for dom menupulation */}
-                      <ClearIcon
-                        className="tw-text-white tw-my-auto"
-                        onClick={() => {
-                          document.getElementById(index).remove()
-                        }}
-                      />
-                    </div>
+                      <path
+                        fill="currentColor"
+                        d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+                      ></path>
+                    </svg>
+                    <span>Upload file</span>
+                  </label>
+                </div>
+
+                {/* file */}
+              </div>
+              <FsLightbox
+                toggler={videoboxController.toggler}
+                sources={authContext.user.user.relatedUser.privateVideos.map(
+                  (url) => {
+                    return <img src={url} />
+                  }
+                )}
+                slide={videoboxController.slide}
+              />
+              {authContext.user.user.relatedUser
+                ? authContext.user.user.relatedUser.privateVideos.map(
+                    (image, index) => (
+                      <div
+                        className=" tw-mb-4 tw-cursor-pointer"
+                        key={index}
+                        onClick={() => openVideoboxOnSlide(index + 1)}
+                      >
+                        <video>
+                          <source
+                            src={image}
+                            className="tw-w-32 tw-h-32 "
+                            type="video"
+                          />
+                        </video>
+                      </div>
+                    )
                   )
-                })}
-              </form>
-              <Button
-                className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
-                onClick={() =>
-                  setDynamicData((prev) => [
-                    ...prev,
-                    { action: null, price: null },
-                  ])
-                }
-              >
-                add new action
-              </Button>
-              <Button
-                onClick={() => saveData()}
-                className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
-              >
-                Save
-              </Button>
+                : null}
             </div>
           </div>
+          {/* private videos */}
           {/* ---------------------------------------------------- */}
           <div>{/* <Callhistory /> */}</div>
           {/* Bro in this call table and history has been removed,so you have to check all the thing carefully before procedure */}

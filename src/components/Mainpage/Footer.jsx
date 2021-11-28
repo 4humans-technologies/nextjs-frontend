@@ -46,7 +46,7 @@ function Footer() {
         </div>
         <div className="tw-col-span-1 md:tw-col-span-2 lg:tw-col-span-1 flex tw-flex-col tw-content-start tw-justify-start tw-items-center">
           <h2 className="tw-font-bold tw-py-2 tw-pl-0.5 tw-text-white-color tw-uppercase">
-            work with us
+            <Link href="/auth/modelRegisteration">work with us</Link>
           </h2>
           <div className="mt-1">
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">

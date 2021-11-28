@@ -110,7 +110,6 @@ function ModelProfile(props) {
   }
 
   const Images = () => {
-    const authContext = useAuthContext()
     const [lightboxController, setLightboxController] = useState({
       toggler: false,
       slide: 1,
@@ -124,76 +123,23 @@ function ModelProfile(props) {
     }
     return (
       <>
+        {/* public Images on live stream */}
         <FsLightbox
           toggler={lightboxController.toggler}
-          sources={[Neeraj, Neeraj]}
-          // sources={authContext.user.user.relatedUser.publicImages.map((url) => {
-          //   return <img src={url} />
-          // })}
+          sources={props.profileData.publicImages.map((url) => {
+            return <img src={url} />
+          })}
           slide={lightboxController.slide}
         />
         <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3">
-          {/* {authContext.user.user.relatedUser?.publicImages.map(ima, (index) => (
+          {props.profileData.publicImages.map((ima, index) => (
             <div
               className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer"
               onClick={() => openLightboxOnSlide(index + 1)}
             >
-              <Image
-                src={ima}
-                height={280}
-                width={280}
-                className="tw-rounded"
-              />
+              <img src={ima} height={280} width={280} className="tw-rounded" />
             </div>
-          ))} */}
-
-          <div
-            className="tw-col-span-1 tw-row-span-1"
-            onClick={() => openLightboxOnSlide(2)}
-          >
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
+          ))}
 
           <div className="tw-mt-4 tw-col-span-2 md:tw-col-span-3 lg:tw-col-span-5 xl:tw-col-span-6 tw-flex tw-justify-center tw-items-center">
             <div className="tw-h-1 tw-bg-second-color tw-mr-2 tw-flex-grow tw-rounded-sm"></div>
@@ -208,6 +154,18 @@ function ModelProfile(props) {
   }
 
   const Videos = () => {
+    // public videos
+    const [lightboxController, setLightboxController] = useState({
+      toggler: false,
+      slide: 1,
+    })
+
+    function openLightboxOnSlide(number) {
+      setLightboxController({
+        toggler: !lightboxController.toggler,
+        slide: number,
+      })
+    }
     return (
       <div>
         {/* <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6"></h2> */}
