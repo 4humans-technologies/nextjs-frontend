@@ -240,19 +240,25 @@ const CoverUpdate = () => {
   // Now use this url to uploade to serve using url
 
   return (
-    <div className="tw-bg-first-color ">
+    <div className="tw-mx-auto tw-w-12 md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
       <CancelIcon
         className="tw-text-white-color tw-ml-[90%]"
         fontSize="medium"
         onClick={modelCtx.hideModal}
       />
-      <div className="tw-mx-auto">
-        <img src={coverImage} className="tw-w-96 tw-h-48 tw-my-4" />
-        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
+      <div className="">
+        <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+          Update cover Image
+        </h2>
+        <img
+          src={authContext.user.user.relatedUser.backgroundImage}
+          className="tw-w-96 tw-h-48 tw-my-4"
+        />
+        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2">
           <input
             type="file"
             onChange={(e) => changeCover(e)}
-            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10]"
+            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color"
           />
           Update Cover Page
         </label>
@@ -274,7 +280,6 @@ const ProfileUpdate = () => {
     setshowImage(image_2)
     // this is ton get the url for the aws server to image uplode
 
-    console.log(image_1.type)
     const res = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + image_1.type
     )
@@ -332,20 +337,26 @@ const ProfileUpdate = () => {
   // Profile pic to aws
 
   return (
-    <div className="tw-bg-first-color ">
+    <div className="tw-mx-auto tw-w-12 md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
       <CancelIcon
         className="tw-text-white-color tw-ml-[90%]"
         fontSize="medium"
         onClick={modelCtx.hideModal}
       />
 
-      <div className="tw-mx-auto">
-        <img src={showImage} className="tw-w-96 tw-h-48 tw-my-4" />
-        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
+      <div className="">
+        <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+          Update profile Image
+        </h2>
+        <img
+          src={authContext.user.user.relatedUser.profileImage}
+          className="tw-w-96 tw-h-48 tw-my-4"
+        />
+        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 ">
           <input
             type="file"
             onChange={(e) => changeCover(e)}
-            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10]"
+            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color "
           />
           Update Profile Image
         </label>

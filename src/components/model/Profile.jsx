@@ -44,9 +44,23 @@ function Profile() {
     slide: 1,
   })
 
+  // private Image
+  const [lightboxControllerPrivate, setLightboxControllerPrivate] = useState({
+    toggler: false,
+    slide: 1,
+  })
+
   function openLightboxOnSlide(number) {
     setLightboxController({
       toggler: !lightboxController.toggler,
+      slide: number,
+    })
+  }
+
+  // Private image
+  function openLightboxOnSlidePrivate(number) {
+    setLightboxControllerPrivate({
+      toggler: !lightboxControllerPrivate.toggler,
       slide: number,
     })
   }
@@ -56,10 +70,23 @@ function Profile() {
     toggler: false,
     slide: 1,
   })
+  // private video uplode
+  const [videoboxControllerPrivate, setVideoboxControllerPrivate] = useState({
+    toggler: false,
+    slide: 1,
+  })
 
   function openVideoboxOnSlide(number) {
     setVideoboxController({
       toggler: !videoboxController.toggler,
+      slide: number,
+    })
+  }
+
+  // private video
+  function openVideoboxOnSlidePrivate(number) {
+    setVideoboxControllerPrivate({
+      toggler: !videoboxControllerPrivate.toggler,
       slide: number,
     })
   }
@@ -263,7 +290,7 @@ function Profile() {
 
     // send data back to node serve as success report with user id and url for the data
     let serverReq = await fetch(
-      "/api/website/profile/handle-public-image-upload",
+      "/api/website/profile/handle-private-image-upload",
       {
         method: "POST",
         headers: {
@@ -378,7 +405,7 @@ function Profile() {
     }
     // send data back to node serve as success report with user id and url for the data
     const serverReq = await fetch(
-      "/api/website/profile/handle-public-video-upload",
+      "/api/website/profile/handle-private-video-upload",
       {
         method: "POST",
         headers: {
@@ -832,7 +859,7 @@ function Profile() {
           </div>
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
-            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
+            <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
@@ -896,18 +923,21 @@ function Profile() {
           </div>
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
-            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
+            <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
                     type="file"
-                    name="file-input"
-                    id="file-input"
+                    name="file-input_private"
+                    id="file-input_private"
                     className="file-input__input"
                     onChange={(e) => privatePhotoUpdateHandler(e)}
                   />
-                  <label className="file-input__label" htmlFor="file-input">
+                  <label
+                    className="file-input__label"
+                    htmlFor="file-input_private"
+                  >
                     <svg
                       aria-hidden="true"
                       focusable="false"
@@ -929,13 +959,13 @@ function Profile() {
 
                 {/* file */}
                 <FsLightbox
-                  toggler={lightboxController.toggler}
+                  toggler={lightboxControllerPrivate.toggler}
                   sources={authContext.user.user.relatedUser.privateImages.map(
                     (url) => {
                       return <img src={url} />
                     }
                   )}
-                  slide={lightboxController.slide}
+                  slide={lightboxControllerPrivate.slide}
                 />
               </div>
               {authContext.user.user.relatedUser
@@ -944,7 +974,7 @@ function Profile() {
                       <div
                         className=" tw-mb-4 tw-cursor-pointer"
                         key={index}
-                        onClick={() => openLightboxOnSlide(index + 1)}
+                        onClick={() => openLightboxOnSlidePrivate(index + 1)}
                       >
                         <img src={image} className="tw-w-32 tw-h-32" />
                       </div>
@@ -959,7 +989,7 @@ function Profile() {
             <h1>My videos</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
+            <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
@@ -1025,20 +1055,20 @@ function Profile() {
             <h1>Private videos</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <div className="md:tw-grid md:tw-grid-cols-3 md:tw-col-span-1 tw-justify-start tw-py-4">
+            <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
                     type="file"
-                    name="file-input_video"
-                    id="file-input_video"
+                    name="file-input_video_private"
+                    id="file-input_video_private"
                     className="file-input__input"
                     onChange={(e) => privatevideoUpdateHandler(e)}
                   />
                   <label
                     className="file-input__label"
-                    htmlFor="file-input_video"
+                    htmlFor="file-input_video_private"
                   >
                     <svg
                       aria-hidden="true"
@@ -1062,13 +1092,17 @@ function Profile() {
                 {/* file */}
               </div>
               <FsLightbox
-                toggler={videoboxController.toggler}
+                toggler={videoboxControllerPrivate.toggler}
                 sources={authContext.user.user.relatedUser.privateVideos.map(
                   (url) => {
-                    return <img src={url} />
+                    return (
+                      <div>
+                        <video src={url} autoPlay controls></video>
+                      </div>
+                    )
                   }
                 )}
-                slide={videoboxController.slide}
+                slide={videoboxControllerPrivate.slide}
               />
               {authContext.user.user.relatedUser
                 ? authContext.user.user.relatedUser.privateVideos.map(
@@ -1076,15 +1110,12 @@ function Profile() {
                       <div
                         className=" tw-mb-4 tw-cursor-pointer"
                         key={index}
-                        onClick={() => openVideoboxOnSlide(index + 1)}
+                        onClick={() => openVideoboxOnSlidePrivate(index + 1)}
                       >
-                        <video>
-                          <source
-                            src={image}
-                            className="tw-w-32 tw-h-32 "
-                            type="video"
-                          />
-                        </video>
+                        <video
+                          src={image}
+                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                        ></video>
                       </div>
                     )
                   )

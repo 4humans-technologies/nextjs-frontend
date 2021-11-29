@@ -252,12 +252,6 @@ function Header(props) {
                     // login at large screen viwer
                     authContext.user.userType == "Viewer" ? (
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                        {/* <button
-                          className="tw-mx-4  tw-px-4 tw-py-2 tw-rounded-full tw-bg-none hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
-                          onClick={updateAuthContext.logout}
-                        >
-                          logout
-                        </button> */}
                         <div className="tw-mx-8 tw-flex">
                           <img
                             src="/coins.png"

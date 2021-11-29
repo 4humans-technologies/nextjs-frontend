@@ -1,6 +1,5 @@
 import React from "react"
 import PersonIcon from "@material-ui/icons/Person"
-import PeopleIcon from "@material-ui/icons/People"
 import SettingsIcon from "@material-ui/icons/Settings"
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew"
 import { useRouter } from "next/router"
@@ -14,8 +13,9 @@ function Headerprofile(props) {
   const profileRouter = () => {
     if (authContext.user.userType == "Model") {
       router.push(`/${authContext.user.user.username}/profile`)
+    } else {
+      router.push(`/user/${authContext.user.user.username}`)
     }
-    router.push(`/user/${authContext.user.user.username}`)
   }
 
   // first data will be get by the context
@@ -27,10 +27,18 @@ function Headerprofile(props) {
           <PersonIcon />
           <p className="tw-ml-4">My Profile</p>
         </div>
-        <div className="tw-flex tw-my-2 tw-px-2 tw-border-t-[1px] tw-border-gray-600">
-          <SettingsIcon />
-          <p className="tw-ml-4">Setting and Privacy</p>
-        </div>
+        {authContext.user.userType == "Model" && (
+          <div
+            className="tw-flex tw-my-2 tw-px-2 tw-border-t-[1px] tw-border-gray-600"
+            onClick={() =>
+              router.push(`/${authContext.user.user.username}/settingToken`)
+            }
+          >
+            <SettingsIcon />
+            <p className="tw-ml-4">Setting and Earning</p>
+          </div>
+        )}
+
         <div
           className="tw-flex tw-my-4 tw-px-2 tw-border-t-[1px] tw-border-gray-600"
           onClick={updateAuthContext.logout}
