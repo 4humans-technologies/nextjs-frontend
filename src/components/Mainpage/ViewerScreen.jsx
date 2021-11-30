@@ -630,6 +630,7 @@ function ViewerScreen(props) {
           }
 
           /* ========================== */
+          spinnerCtx.setShowSpinner(false, "Please wait")
           setPendingCallEndRequest(false)
           setCallOnGoing(false)
           await leaveAndCloseTracks()

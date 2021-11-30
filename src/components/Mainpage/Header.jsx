@@ -98,6 +98,15 @@ function Header(props) {
     }
   }, [socketCtx.socketSetupDone])
 
+  useEffect(() => {
+    fetch("/api/website/compose-ui/get-live-models-count")
+      .then((res) => res.json())
+      .then((data) => {
+        setLiveModels(+data.liveNow)
+      })
+      .catch((err) => alert(err.message))
+  }, [])
+
   return (
     <div>
       <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 tw-py-4 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[410]">
