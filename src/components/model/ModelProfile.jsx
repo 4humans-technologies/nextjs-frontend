@@ -1,6 +1,4 @@
 import React, { useReducer, useState } from "react"
-import Neeraj from "../../../public/brandikaran.jpg"
-import Image from "next/image"
 import { PlayCircleFilled } from "@material-ui/icons"
 import useModalContext from "../../app/ModalContext"
 // import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"

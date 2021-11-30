@@ -533,7 +533,7 @@ function Profile() {
             <h1 className="tw-ml-4 tw-mb-4 tw-text-xl tw-font-semibold">
               My Information
             </h1>
-            <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md">
+            <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md tw-pb-6">
               <div className=" md:tw-col-span-1 tw-col-span-2 ">
                 <p>Intrested in</p>
                 <p>From</p>
@@ -652,7 +652,7 @@ function Profile() {
                     setInfoedited(false)
                     profileFunction()
                   }}
-                  className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color"
+                  className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium"
                 >
                   Save
                 </button>
@@ -726,7 +726,7 @@ function Profile() {
                 </div>
                 {priceEdit && (
                   <button
-                    className="tw-bg-green-color tw-text-white tw-px-4  tw-my-2 tw-rounded-full"
+                    className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block tw-my-4"
                     onClick={() => {
                       priceSetting(), setPriceEdited(false)
                     }}
@@ -829,7 +829,7 @@ function Profile() {
                   })}
                 </form>
                 <Button
-                  className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
+                  className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full tw-capitalize"
                   onClick={() =>
                     setDynamicData((prev) => [
                       ...prev,
@@ -839,12 +839,12 @@ function Profile() {
                 >
                   add new action
                 </Button>
-                <Button
+                <button
                   onClick={() => saveData()}
-                  className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
+                  className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-4"
                 >
                   Save
-                </Button>
+                </button>
               </div>
             </div>
             {/* Call History */}
