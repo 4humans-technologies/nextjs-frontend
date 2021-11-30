@@ -1,6 +1,4 @@
 import React, { useReducer, useState } from "react"
-import Neeraj from "../../../public/brandikaran.jpg"
-import Image from "next/image"
 import { PlayCircleFilled } from "@material-ui/icons"
 import useModalContext from "../../app/ModalContext"
 // import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
@@ -59,7 +57,6 @@ function ModelProfile(props) {
     const authContext = useAuthContext()
     return (
       <>
-        {/* <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6"></h2> */}
         <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-text-text-black tw-pl-0 md:tw-pl-1 tw-gap-x-4 tw-gap-y-4">
           <div className="tw-col-span-1">
             <div
@@ -110,7 +107,6 @@ function ModelProfile(props) {
   }
 
   const Images = () => {
-    const authContext = useAuthContext()
     const [lightboxController, setLightboxController] = useState({
       toggler: false,
       slide: 1,
@@ -124,233 +120,66 @@ function ModelProfile(props) {
     }
     return (
       <>
+        {/* public Images on live stream */}
         <FsLightbox
           toggler={lightboxController.toggler}
-          sources={[Neeraj, Neeraj]}
-          // sources={authContext.user.user.relatedUser.publicImages.map((url) => {
-          //   return <img src={url} />
-          // })}
+          sources={props.profileData.publicImages.map((url) => {
+            return <img src={url} />
+          })}
           slide={lightboxController.slide}
         />
-        <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3">
-          {/* {authContext.user.user.relatedUser?.publicImages.map(ima, (index) => (
+        <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 md:tw-gap-4 tw-py-3 tw-justify-start tw-max-h-[48rem] tw-overflow-y-auto">
+          {props.profileData.publicImages.map((ima, index) => (
             <div
-              className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer"
+              className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer tw-w-48 tw-h-48 "
               onClick={() => openLightboxOnSlide(index + 1)}
             >
-              <Image
-                src={ima}
-                height={280}
-                width={280}
-                className="tw-rounded"
-              />
+              <img src={ima} className="tw-w-full tw-h-full" />
             </div>
-          ))} */}
-
-          <div
-            className="tw-col-span-1 tw-row-span-1"
-            onClick={() => openLightboxOnSlide(2)}
-          >
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-col-span-1 tw-row-span-1">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-          </div>
-
-          <div className="tw-mt-4 tw-col-span-2 md:tw-col-span-3 lg:tw-col-span-5 xl:tw-col-span-6 tw-flex tw-justify-center tw-items-center">
-            <div className="tw-h-1 tw-bg-second-color tw-mr-2 tw-flex-grow tw-rounded-sm"></div>
-            <button className="tw-uppercase tw-px-3 tw-py-2 tw-rounded tw-bg-second-color tw-text-white-color tw-font-semibold hover:tw-bg-dark-black">
-              explore more photos
-            </button>
-            <div className="tw-h-1 tw-bg-second-color tw-ml-2 tw-flex-grow tw-rounded-sm"></div>
-          </div>
+          ))}
         </div>
       </>
     )
   }
 
   const Videos = () => {
+    // public videos
+    const [lightboxController, setLightboxController] = useState({
+      toggler: false,
+      slide: 1,
+    })
+
+    function openLightboxOnSlide(number) {
+      setLightboxController({
+        toggler: !lightboxController.toggler,
+        slide: number,
+      })
+    }
     return (
       <div>
-        {/* <h2 className="tw-font-semibold tw-text-2xl tw-text-text-black tw-border-second-color tw-border-b-[1px] tw-pb-3 tw-pl-0 md:tw-pl-1 tw-mb-6"></h2> */}
-        <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3">
-          <div className="tw-col-span-1 tw-row-span-1 tw-relative">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-bg-black tw-opacity-50 hover:tw-opacity-0">
-              <PlayCircleFilled
-                className="tw-text-white-color"
-                fontSize="medium"
-              />
-            </div>
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-opacity-0 hover:tw-opacity-100">
-              <a href="#" className="">
+        <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 tw-py-3 tw-max-h-[48rem] tw-overflow-y-auto">
+          {props.profileData.publicVideos.map((ima, index) => (
+            <div
+              className="tw-col-span-1 tw-row-span-1 tw-relative tw-w-48 tw-h-48"
+              onClick={() => openLightboxOnSlide(index + 1)}
+            >
+              <img src={ima} className="tw-w-full tw-h-full" />
+              <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-bg-black tw-opacity-50 hover:tw-opacity-0">
                 <PlayCircleFilled
                   className="tw-text-white-color"
-                  fontSize="large"
+                  fontSize="medium"
                 />
-              </a>
+              </div>
+              <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-opacity-0 hover:tw-opacity-100">
+                <a href="#" className="">
+                  <PlayCircleFilled
+                    className="tw-text-white-color"
+                    fontSize="large"
+                  />
+                </a>
+              </div>
             </div>
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1 tw-relative">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-bg-black tw-opacity-50 hover:tw-opacity-0">
-              <PlayCircleFilled
-                className="tw-text-white-color"
-                fontSize="medium"
-              />
-            </div>
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-opacity-0 hover:tw-opacity-100">
-              <a href="#" className="">
-                <PlayCircleFilled
-                  className="tw-text-white-color"
-                  fontSize="large"
-                />
-              </a>
-            </div>
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1 tw-relative">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-bg-black tw-opacity-50 hover:tw-opacity-0">
-              <PlayCircleFilled
-                className="tw-text-white-color"
-                fontSize="medium"
-              />
-            </div>
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-opacity-0 hover:tw-opacity-100">
-              <a href="#" className="">
-                <PlayCircleFilled
-                  className="tw-text-white-color"
-                  fontSize="large"
-                />
-              </a>
-            </div>
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1 tw-relative">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-bg-black tw-opacity-50 hover:tw-opacity-0">
-              <PlayCircleFilled
-                className="tw-text-white-color"
-                fontSize="medium"
-              />
-            </div>
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-opacity-0 hover:tw-opacity-100">
-              <a href="#" className="">
-                <PlayCircleFilled
-                  className="tw-text-white-color"
-                  fontSize="large"
-                />
-              </a>
-            </div>
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1 tw-relative">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-bg-black tw-opacity-50 hover:tw-opacity-0">
-              <PlayCircleFilled
-                className="tw-text-white-color"
-                fontSize="medium"
-              />
-            </div>
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-opacity-0 hover:tw-opacity-100">
-              <a href="#" className="">
-                <PlayCircleFilled
-                  className="tw-text-white-color"
-                  fontSize="large"
-                />
-              </a>
-            </div>
-          </div>
-          <div className="tw-col-span-1 tw-row-span-1 tw-relative">
-            <Image
-              src={Neeraj}
-              height={280}
-              width={280}
-              className="tw-rounded"
-            />
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-bg-black tw-opacity-50 hover:tw-opacity-0">
-              <PlayCircleFilled
-                className="tw-text-white-color"
-                fontSize="medium"
-              />
-            </div>
-            <div className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-opacity-0 hover:tw-opacity-100">
-              <a href="#" className="">
-                <PlayCircleFilled
-                  className="tw-text-white-color"
-                  fontSize="large"
-                />
-              </a>
-            </div>
-          </div>
-          <div className="tw-mt-4 tw-col-span-2 md:tw-col-span-3 lg:tw-col-span-5 xl:tw-col-span-6 tw-flex tw-justify-center tw-items-center">
-            <div className="tw-h-1 tw-bg-second-color tw-mr-2 tw-flex-grow tw-rounded-sm"></div>
-            <button className="tw-uppercase tw-px-3 tw-py-2 tw-rounded tw-bg-second-color tw-text-white-color tw-font-semibold hover:tw-bg-dark-black">
-              explore more videos
-            </button>
-            <div className="tw-h-1 tw-bg-second-color tw-ml-2 tw-flex-grow tw-rounded-sm"></div>
-          </div>
+          ))}
         </div>
       </div>
     )

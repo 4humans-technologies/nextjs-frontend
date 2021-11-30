@@ -22,14 +22,28 @@ function SignUp() {
   const [username, setUsername] = useState()
   const [gender, setGender] = useState("Female")
   const [name, setName] = useState("")
+  const [profile, setProfile] = useState("")
 
   const [formError, setFormError] = useState(null)
 
   const updateCtx = useAuthUpdateContext()
   const router = useRouter()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    // DATA uplode to aws
+    const res = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + profile.type
+    )
+    const data_2 = await res.json()
+    const profile_url = await data_2.uploadUrl
+
+    const resp = await fetch(profile_url, {
+      method: "PUT",
+      body: profile,
+    })
+    const imageUrl = profile_url.split("?")[0]
+
     console.log(email, password, username)
     fetch("/api/website/register/viewer", {
       method: "POST",
@@ -43,6 +57,7 @@ function SignUp() {
         username,
         gender,
         name,
+        profileImage: imageUrl,
       }),
     })
       .then((resp) => resp.json())
@@ -69,12 +84,6 @@ function SignUp() {
           jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
         })
 
-        // sessionStorage.clear()
-
-        /* obselete now will update client info on the server itself */
-        // io.getSocket().close()
-        // io.getSocket().open()
-
         router.replace("/")
       })
       .catch((err) => {
@@ -92,16 +101,6 @@ function SignUp() {
   return (
     <>
       <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-min-h-screen tw-bg-first-color tw-w-full sm:tw-w-auto tw-py-16">
-        {/* <div className="tw-my-4 tw-flex-grow-0">
-          <Link href="/" className="tw-cursor-pointer">
-            <Image
-              src={Logo}
-              width={150}
-              height={79}
-              className="tw-cursor-pointer"
-            />
-          </Link>
-        </div> */}
         <div className="tw-flex-shrink-0 tw-flex-grow-0  ">
           <div className="tw-grid sm:tw-grid-cols-2 tw-grid-cols-1  tw-grid-rows-1 sm:tw-w-full   tw-h-full tw-w-[100vw]  ">
             <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-10 tw-pb-10 tw-rounded-md  ">
@@ -155,6 +154,28 @@ function SignUp() {
                     className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-text-first-color tw-font-light tw-py-2 tw-px-6 tw-text-lg tw-w-full"
                   />
                 </div>
+
+                {/* Profile image */}
+                <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between">
+                  <input
+                    type="file"
+                    required
+                    name="profileImage"
+                    id="image"
+                    accept="image/*"
+                    placeholder="Profile"
+                    // value={profile}
+                    onChange={(e) => setProfile(e.target.files[0])}
+                    className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-py-2 tw-px-2 tw-flex-grow file-input__input tw-text-white-color tw-backdrop-blur tw-bg-[rgba(201,79,79,0.53)]"
+                  />
+                  <label
+                    className="tw-rounded-full tw-border-none tw-outline-none tw-bg-white-color tw-py-2 tw-px-2 tw-flex-grow tw-text-white-color tw-backdrop-blur tw-bg-[rgba(201,79,79,0.53)]"
+                    htmlFor="image"
+                  >
+                    Uplode Profile Image
+                  </label>
+                </div>
+                {/* Profile image */}
 
                 <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between tw-mx-auto">
                   <select

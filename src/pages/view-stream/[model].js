@@ -1,6 +1,5 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 
-import Sidebar from "../../components/Mainpage/Sidebar"
 import ModelProfile from "../../components/model/ModelProfile"
 import Recommendation from "../../components/ViewerScreen/Recommendation"
 import LiveScreen from "../../components/model/Livescreen"
@@ -21,6 +20,8 @@ function ViewModelStream() {
             name: modelProfileData.name,
             age: new Date().getFullYear() - modelProfileData.dob,
             profileImage: modelProfileData.profileImage,
+            publicImages: modelProfileData.publicImages,
+            publicVideos: modelProfileData.publicVideos,
             tags: [
               "Black",
               "White",

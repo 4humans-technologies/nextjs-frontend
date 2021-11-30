@@ -57,11 +57,12 @@ function Documents() {
         }),
       }
     )
-    if (docUploadResponse.actionStatus === "success") {
-      modalCtx.showModalWithContent(<DocumentUpload />)
-    } else {
-      alert("Document images ware not uploaded")
-    }
+     const resp = await docUploadResponse.json()
+     if (resp.actionStatus === "success") {
+       modalCtx.showModalWithContent(<DocumentUpload />)
+     } else {
+       alert("Document images ware not uploaded")
+     }
   }
   // this data need to be send to server for to store at the server
   return (

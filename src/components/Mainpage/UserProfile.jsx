@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import CreateIcon from "@material-ui/icons/Create"
 import useModalContext from "../../app/ModalContext"
-import Header from "./Header"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext" // <-- AuthContext
 
 import {
@@ -40,12 +39,15 @@ function UserProfile() {
   return (
     <div className="tw-bg-dark-background">
       {/* Cover page */}
-      <div className="tw-w-screen tw-relative  tw-bg-dark-background md:tw-mt-[8.2rem] tw-mt-28 ">
+      <div className="tw-w-screen tw-relative  tw-bg-dark-background ">
         <img
-          src={coverImage}
+          src={
+            authContext.user.user.relatedUser.coverImage
+              ? `${authContext.user.user.relatedUser.coverImage}`
+              : "/cover-photo.png"
+          }
           className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
         />
-
         <p
           className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full tw-cursor-pointer"
           onClick={() => modelCtx.showModalWithContent(<CoverUpdate />)}
@@ -58,7 +60,7 @@ function UserProfile() {
       <div className="tw-w-screen tw-bg-first-color tw-h-28 tw-flex tw-pl-8 tw-relative">
         <img
           className="tw-rounded-full tw-w-32 tw-h-32 flex tw-items-center tw-justify-center tw-absolute tw-z-10 tw-mt-[-3%] tw-bg-green-400 tw-shadow-lg"
-          src={profileImage}
+          src={authContext.user.user.relatedUser.profileImage}
         ></img>
         <CreateIcon
           className="md:tw-ml-24 md:tw-mt-12 tw-mt-16 tw-ml-28 tw-text-white-color tw-z-10 tw-absolute tw-bg-dark-background tw-rounded-full tw-cursor-pointer"
@@ -167,8 +169,6 @@ function UserProfile() {
             </div>
           </div>
         </div>
-        {/* password change happen here */}
-        {/* this is for email and password change  */}
       </div>
     </div>
   )

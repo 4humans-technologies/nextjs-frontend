@@ -2,8 +2,12 @@ import React, { useState } from "react"
 import useModalContext from "../../../app/ModalContext"
 import CancelIcon from "@material-ui/icons/Cancel"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
+import { useRouter } from "next/router"
 
 const EmailChange = () => {
+  const authUpdateContext = useAuthUpdateContext()
+  const modalCtx = useModalContext()
+
   const [email, setEmail] = useState({
     oldEmail: "",
     newEmail: "",
@@ -12,7 +16,7 @@ const EmailChange = () => {
   const changeHandler = (e) => {
     if (email.oldEmail != email.newEmail) {
       fetch("/api/website/profile/update-model-basic-details", {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-type": "application/json",
         },
@@ -32,7 +36,7 @@ const EmailChange = () => {
                 ...prevState.user.user,
                 relatedUser: {
                   ...prevState.user.user.relatedUser,
-                  email: newEmail,
+                  email: email.newEmail,
                 },
               },
             },
@@ -41,6 +45,7 @@ const EmailChange = () => {
       let store = JSON.parse(localStorage.getItem("user"))
       store["relatedUser"]["email"] = email.newEmail
       localStorage.setItem("user", JSON.stringify(store))
+      setTimeout(modalCtx.hideModal(), 100)
     }
   }
   return (
@@ -71,6 +76,7 @@ const EmailChange = () => {
 }
 
 const PasswordChange = (props) => {
+  const modalCtx = useModalContext()
   const [password, setPassword] = useState({
     oldPassword: null,
     newPassword: null,
@@ -80,24 +86,31 @@ const PasswordChange = (props) => {
 
   // This change handler can handle change in of all type in the form this helps to make code clean and smooth
   const changeHandler = (e) => {
-    if (password.newPassword != password.newPassword_2) {
-      return alert("New Passwords Did Not Matched")
-    }
+    // if (password.newPassword != password.newPassword_2) {
+    //   return alert("New Passwords Did Not Matched")
+    // }
 
     setPassword({ ...password, [e.target.name]: e.target.value })
-    fetch("url", {
+  }
+
+  const submitHandler = () => {
+    fetch("/api/website/profile/update-password", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        newPassword: password.newPassword,
-        newPassword2: password.newPassword_2,
         oldPassword: password.oldPassword,
+        newPassword: password.newPassword,
+        newPasswordConformation: password.newPassword_2,
       }),
     })
       .then((resp) => resp.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log(data)
+        setTimeout(modalCtx.hideModal(), 100)
+      })
+      .catch((err) => alert(err))
   }
 
   return (
@@ -138,12 +151,12 @@ const PasswordChange = (props) => {
           />
         </div>
         <div className="tw-my-6 tw-text-center">
-          <button className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block">
+          <button
+            className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block"
+            onClick={submitHandler}
+          >
             Submit
           </button>
-          {/* <button className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block tw-ml-3">
-            Forgot Password
-          </button> */}
         </div>
       </div>
     </>
@@ -158,7 +171,6 @@ const CoverUpdate = () => {
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
   const modelCtx = useModalContext()
-  // setCoverImage(authContext.user.user.relatedUser.coverImage)
 
   const changeCover = async (e) => {
     const image_1 = await e.target.files[0]
@@ -190,7 +202,7 @@ const CoverUpdate = () => {
     // console.log(coverUrl)
 
     const re = await fetch("/api/website/profile/update-model-basic-details", {
-      method: "Post",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -201,6 +213,7 @@ const CoverUpdate = () => {
       }),
     })
 
+    console.log(`Response -------${re.json()}`)
     // below is context update for coverImage
     authUpdateContext.updateNestedPaths((prevState) => ({
       ...prevState,
@@ -221,25 +234,31 @@ const CoverUpdate = () => {
     store["relatedUser"]["coverImage"] = coverUrl
     localStorage.setItem("user", JSON.stringify(store))
 
-    const jsonResp = await re.json()
+    // const jsonResp = await re.json()
   }
 
   // Now use this url to uploade to serve using url
 
   return (
-    <div className="tw-bg-first-color ">
+    <div className="tw-mx-auto tw-w-12 md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
       <CancelIcon
         className="tw-text-white-color tw-ml-[90%]"
         fontSize="medium"
         onClick={modelCtx.hideModal}
       />
-      <div className="tw-mx-auto">
-        <img src={coverImage} className="tw-w-96 tw-h-48 tw-my-4" />
-        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
+      <div className="">
+        <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+          Update cover Image
+        </h2>
+        <img
+          src={authContext.user.user.relatedUser.coverImage}
+          className="tw-w-96 tw-h-48 tw-my-4"
+        />
+        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2">
           <input
             type="file"
             onChange={(e) => changeCover(e)}
-            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10]"
+            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color"
           />
           Update Cover Page
         </label>
@@ -253,7 +272,6 @@ const ProfileUpdate = () => {
   const modelCtx = useModalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
-  const oldCover = authContext.user.user.relatedUser.profileImage
 
   const changeCover = async (e) => {
     const image_1 = await e.target.files[0]
@@ -261,7 +279,6 @@ const ProfileUpdate = () => {
     setshowImage(image_2)
     // this is ton get the url for the aws server to image uplode
 
-    console.log(image_1.type)
     const res = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + image_1.type
     )
@@ -319,20 +336,26 @@ const ProfileUpdate = () => {
   // Profile pic to aws
 
   return (
-    <div className="tw-bg-first-color ">
+    <div className="tw-mx-auto tw-w-12 md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
       <CancelIcon
         className="tw-text-white-color tw-ml-[90%]"
         fontSize="medium"
         onClick={modelCtx.hideModal}
       />
 
-      <div className="tw-mx-auto">
-        <img src={showImage} className="tw-w-96 tw-h-48 tw-my-4" />
-        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 tw-ml-24">
+      <div className="">
+        <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+          Update profile Image
+        </h2>
+        <img
+          src={authContext.user.user.relatedUser.profileImage}
+          className="tw-w-96 tw-h-48 tw-my-4"
+        />
+        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 ">
           <input
             type="file"
             onChange={(e) => changeCover(e)}
-            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10]"
+            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color "
           />
           Update Profile Image
         </label>
