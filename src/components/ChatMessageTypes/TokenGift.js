@@ -1,18 +1,13 @@
 import React, { memo } from "react"
-import Image from "next/image"
-import coinsImage from "../../../public/coins.png"
 
 function CoinSuperChat(props) {
   return (
     <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 coin-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
       <div className="tw-flex-grow-0 tw-flex-shrink tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-mr-auto tw-flex tw-items-center tw-justify-start">
-        <Image
-          src={coinsImage}
-          width={25}
-          height={25}
-          objectFit="contain"
-          objectPosition="center"
-          className="tw-rounded tw-mr-auto"
+        <img
+          src="/coins.png"
+          className="tw-w-7 tw-h-7 tw-object-contain tw-object-center tw-mr-auto"
+          alt="coins-image"
         />
         <span className="tw-pl-3 tw-text-lg tw-font-semibold tw-text-yellow-500">
           {props.amountGiven} coins

@@ -8,14 +8,14 @@ function ModelChatMessage(props) {
           className="hover:tw-underline tw-font-semibold tw-cursor-pointer"
           onClick={props.addAtTheRate}
         >
-          Message By @Model
+          message by @{props.modelUsername}
         </button>
       </h2>
       <span className={"tw-mt-1 tw-ml-3"}>{props.message}</span>
     </div>
   )
-  return props.highLight ? (
-    <div className="tw-flex tw-w-full tw-bg-first-color tw-text-white-color tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tw-justify-between tw-border-dreamgirl-red tw-border">
+  return props.highlight ? (
+    <div className="tw-flex tw-w-full tw-bg-first-color tw-text-white-color tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 tw-justify-between tw-border-dreamgirl-darkred tw-border">
       {content}
     </div>
   ) : (

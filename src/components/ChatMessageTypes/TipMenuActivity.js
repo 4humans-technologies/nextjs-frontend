@@ -6,7 +6,7 @@ function TipMenuActivityRequest(props) {
       <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
         <div className="tw-flex-grow tw-pr-2">
           <span
-            className="user-message tw-text-sm tw-capitalize tw-font-semibold tw-cursor-pointer"
+            className="user-message tw-text-sm tw-capitalize tw-cursor-pointer"
             onClick={props.addAtTheRate}
           >
             {props.message}

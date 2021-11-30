@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { useAuthContext } from "../../../app/AuthContext"
+import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 import { useRouter } from "next/router"
 
 function PasswordVerification() {
   //   const [linkWasValid, setLinkWasValid] = useState("loading")
-  const [linkWasValid, setLinkWasValid] = useState(true)
+  const [linkWasValid, setLinkWasValid] = useState("loading")
   const [didReset, setDidReset] = useState(false)
   const [newPassword, setNewPassword] = useState("")
   const [newPasswordConformation, setNewPasswordConformation] = useState("")
@@ -14,38 +14,40 @@ function PasswordVerification() {
   const [errorMsg, setErrorMessage] = useState("")
 
   const authCtx = useAuthContext()
+  const updateCtx = useAuthUpdateContext()
   const router = useRouter()
 
   useEffect(() => {
-    if (!authCtx.isLoggedIn) {
-      const searchParams = new URLSearchParams(window.location.search)
-      if (searchParams.has("token")) {
-        fetch("/api/website/verification/initial-link-verify", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            token: searchParams.get("token"),
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.actionStatus === "success") {
-              setLinkWasValid(true)
-            } else {
-              setLinkWasValid(false)
-            }
-          })
-          .catch((err) => {
+    const searchParams = new URLSearchParams(window.location.search)
+    if (searchParams.has("token")) {
+      /* verifiy the link */
+      fetch("/api/website/verification/initial-link-verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: searchParams.get("token"),
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.actionStatus === "success") {
+            setLinkWasValid(true)
+          } else {
             setLinkWasValid(false)
-            alert(err.message)
-          })
-      } else {
-        setLinkWasValid(false)
-      }
+            setErrorMessage("The Link Was Invalid")
+          }
+        })
+        .catch((err) => {
+          setLinkWasValid(false)
+          alert(err.message)
+        })
+    } else {
+      setLinkWasValid(false)
+      setErrorMessage("Invalid Link!")
     }
-  }, [authCtx.isLoggedIn])
+  }, [])
 
   const resetPassword = () => {
     if (newPassword !== newPasswordConformation) {
@@ -67,10 +69,9 @@ function PasswordVerification() {
         .then((res) => res.json())
         .then((data) => {
           if (data.actionStatus === "success") {
-            /*  */
             setDidReset(true)
+            updateCtx.logout()
           } else {
-            /*  */
             setDidReset(false)
           }
         })
@@ -82,12 +83,12 @@ function PasswordVerification() {
   }
 
   const loading = (
-    <p className="tw-capitalize text-semibold tw-text-2xl">
+    <p className="tw-capitalize text-semibold tw-text-2xl tw-py-12">
       Verifying your link....
     </p>
   )
 
-  return !authCtx.isLoggedIn ? (
+  return (
     <div className="tw-min-h-screen tw-bg-first-color  tw-text-white-color tw-text-center">
       {linkWasValid === "loading" && loading}
       {linkWasValid === true && !didReset && (
@@ -170,17 +171,15 @@ function PasswordVerification() {
           {/* some text */}
           <p className="tw-my-8 tw-text-center lg:tw-w-6/12 tw-mx-auto">
             oops! your link was not invalid, maybe you are clicking on the link
-            after its was expired.
+            after its was expired or has ben already used to rest a password
+            REMEMBER: all the password reset links are meant for one-time use
+            only.
             <br />
             <br />
           </p>
         </>
       )}
     </div>
-  ) : (
-    <p className="tw-font-semibold tw-text-center tw-py-10 tw-text-2xl tw-mt-10 tw-text-white-color">
-      Please logout first
-    </p>
   )
 }
 

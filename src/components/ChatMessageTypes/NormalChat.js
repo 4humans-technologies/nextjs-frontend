@@ -17,7 +17,7 @@ function NormalChat(props) {
   return props.highlight ? (
     <div
       className={
-        "tw-flex tw-items-center tw-justify-between tw-px-3 tw-py-1.5 tw-ml-2 tw-bg-first-color tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full tw-border-dreamgirl-red tw-border tw-my-1"
+        "tw-flex tw-items-center tw-justify-between tw-px-3 tw-py-1.5 tw-ml-2 tw-bg-first-color tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full tw-border-dreamgirl-darkred tw-border tw-my-1"
       }
     >
       {content}

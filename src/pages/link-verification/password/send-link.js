@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useAuthContext } from "../../../app/AuthContext"
+import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function SendPasswordResetLink() {
   const [username, setUsername] = useState("")
@@ -7,6 +7,11 @@ function SendPasswordResetLink() {
   const [error, setError] = useState(null)
 
   const authContext = useAuthContext()
+  const updateCtx = useAuthUpdateContext()
+
+  if (typeof window !== "undefined" && authContext.isLoggedIn) {
+    updateCtx.logout()
+  }
 
   const sendResetLink = () => {
     fetch("/api/website/verification/send-password-reset-link", {

@@ -170,24 +170,29 @@ function Login() {
                   Login
                 </Button>
                 <div className="tw-border-t tw-border-second-color tw-my-3 tw-w-full"></div>
-                <p className="tw-text-white">Are you Register ?</p>
-                <Link href="/auth/viewerRegistration">
-                  <p className="tw-text-white tw-text-lg tw-font-bold tw-cursor-pointer">
+                <Link href="/link-verification/password/send-link">
+                  <button className="tw-text-white tw-text-sm tw-cursor-pointer">
                     <span className="tw-flex tw-mt-2 ">
-                      <LockOpenIcon /> <p className="tw-ml-4"> Sign Up</p>
+                      <p className="tw-ml-2">Forgot Your Password ?</p>
                     </span>
-                  </p>
+                  </button>
+                </Link>
+                <br />
+                <Link href="/auth/viewerRegistration">
+                  <button className="tw-text-white tw-text-lg tw-cursor-pointer">
+                    <span className="tw-flex tw-mt-2 ">
+                      <LockOpenIcon /> <p className="tw-ml-2">Sign Up</p>
+                    </span>
+                  </button>
                 </Link>
 
-                <div
-                  className="tw-flex tw-text-white  tw-w-11/12 tw-mt-4  tw-justify-center tw-cursor-pointer"
+                <button
+                  className="tw-flex tw-text-white  tw-w-11/12 tw-mt-4 tw-items-center  tw-justify-center tw-cursor-pointer"
                   onClick={() => router.push("/")}
                 >
-                  <ArrowBackIcon fontSize="medium" />
-                  <p className="tw-ml-4 tw-font-bold tw-text-xl">
-                    Back to Home
-                  </p>
-                </div>
+                  <ArrowBackIcon fontSize="small" />
+                  <p className="tw-ml-2 tw-font-medium">Back to Home</p>
+                </button>
               </div>
             </form>
           </div>

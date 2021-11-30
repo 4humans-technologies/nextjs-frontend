@@ -15,7 +15,7 @@ function TestComponent() {
 
   /* listen for wallet update events */
   useEffect(() => {
-    if (socketCtx.setSocketSetupDone && authCtx.loadedFromLocalStorage) {
+    if (socketCtx.socketSetupDone && authCtx.loadedFromLocalStorage) {
       if (authCtx.user.userType === "Model") {
         /* listen for wallet money add or remove events */
         const socket = io.getSocket()
@@ -41,7 +41,7 @@ function TestComponent() {
       }
     }
   }, [
-    socketCtx.setSocketSetupDone,
+    socketCtx.socketSetupDone,
     authCtx.loadedFromLocalStorage,
     authUpdateContext.updateWallet,
     authCtx.user.userType,

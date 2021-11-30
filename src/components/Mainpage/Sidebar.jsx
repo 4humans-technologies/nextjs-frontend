@@ -7,29 +7,13 @@ import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
 import { Button } from "react-bootstrap"
 import { useRouter } from "next/router"
 import ExitToAppIcon from "@material-ui/icons/ExitToApp"
-
-const data = [
-  /* {
-    name: "Home",
-    icon: <FavoriteIcon className="tw-mr-2" />,
-    number: 56,
-  },
-  {
-    name: "Neeraj Rai",
-    icon: <FavoriteIcon className="tw-mr-2" />,
-    number: "05",
-  },
-  {
-    name: "Motu bhai",
-    icon: <FavoriteIcon className="tw-mr-2" />,
-    number: 153,
-  }, */
-]
+import { useAuthContext } from "../../app/AuthContext"
 
 function Sidebar(props) {
   const sidebarStatus = useSidebarStatus()
   const updateSidebar = useSidebarUpdate()
   const route = useRouter()
+  const authContext = useAuthContext()
 
   const top = `${props.top}rem` || "32rem"
   const showStyle = {
@@ -56,20 +40,6 @@ function Sidebar(props) {
         </Button>
       </div>
 
-      {data.map((item, index) => {
-        return (
-          <div
-            key={index}
-            className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  "
-          >
-            {item.icon}
-            <p id="sidebar_item_name">{item.name}</p>
-            <p className="tw-font-normal tw-text-sm tw-self-center sidebar_item_number tw-text-left">
-              {item.number}
-            </p>
-          </div>
-        )
-      })}
       {/* register as model */}
       <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
         <ExitToAppIcon className="tw-mr-4" />
@@ -99,19 +69,21 @@ function Sidebar(props) {
           Model Login
         </p>
       </div>
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
-        <ExitToAppIcon className="tw-mr-4" />
-        <p
-          id="sidebar_item_name"
-          onClick={() => {
-            route.push("/link-verification/password/send-link")
-            updateSidebar()
-          }}
-          className="tw-cursor-pointer"
-        >
-          Forgot Password
-        </p>
-      </div>
+      {!authContext.isLoggedIn && (
+        <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
+          <ExitToAppIcon className="tw-mr-4" />
+          <p
+            id="sidebar_item_name"
+            onClick={() => {
+              route.push("/link-verification/password/send-link")
+              updateSidebar()
+            }}
+            className="tw-cursor-pointer"
+          >
+            Forgot Password
+          </p>
+        </div>
+      )}
     </div>
   )
 }

@@ -33,26 +33,6 @@ const Home = () => {
   const ctx = useAuthContext()
   const socketContext = useSocketContext()
 
-  useEffect(() => {
-    /* client should not be connected to any public room  while on index page */
-    const socket = io.getSocket()
-    // setTimeout(() => {
-    //   if (JSON.parse(sessionStorage.getItem("socket-rooms"))) {
-    //     try {
-    //       const socketRooms = JSON.parse(sessionStorage.getItem("socket-rooms"))
-    //       const publicRoom = socketRooms?.filter(
-    //         (room) => room.endsWith("-public") || []
-    //       )
-    //       if (publicRoom?.length > 0 && socketRooms?.length > 0) {
-    //         socket.emit("take-me-out-of-these-rooms", [publicRoom])
-    //       }
-    //     } catch (error) {
-    //       console.log("Client not in any room!")
-    //     }
-    //   }
-    // }, [4000])
-  }, [])
-
   const [boxGroupsData, setBoxGroupData] = useState([
     // {
     //   title: "This just show the layout",
@@ -107,7 +87,7 @@ const Home = () => {
   }, [ctx.loadedFromLocalStorage])
 
   useEffect(() => {
-    if (socketContext.setSocketSetupDone) {
+    if (socketContext.socketSetupDone) {
       const socket = io.getSocket()
       let newModelHandler = (socketData) => {
         if (ctx?.relatedUserId !== socketData.modelId) {
@@ -167,7 +147,7 @@ const Home = () => {
         }
       }
     }
-  }, [socketContext.setSocketSetupDone])
+  }, [socketContext.socketSetupDone])
 
   return (
     <div className="tw-min-h-screen tw-bg-first-color">

@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react"
 import SingleViewerBlock from "./SingleViewerBlock"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
+import { useAuthContext } from "../../app/AuthContext"
 
-const prevStreamViewers = []
-function ViewersListContainer() {
+let prevStreamViewers = []
+function ViewersListContainer(props) {
   const [viewers, setViewers] = useState([])
-
+  const authCtx = useAuthContext()
   const socketCtx = useSocketContext()
 
   useEffect(() => {
@@ -21,7 +22,7 @@ function ViewersListContainer() {
           ).innerText = `${data.roomSize} Live`
           if (data?.reJoin) {
             /* you have access to relatedUserId, do what you want */
-            const prevViewer = viewers.find(
+            const prevViewer = prevStreamViewers.find(
               (viewer) => viewer._id === data.relatedUserId
             )
             if (prevViewer) {
@@ -31,6 +32,16 @@ function ViewersListContainer() {
               })
             } else {
               /* fetch the viewer details */
+              fetch(
+                `/api/website/stream/get-a-viewers-details/${data.relatedUserId}`
+              )
+                .then((res) => res.json())
+                .then((data) => {
+                  setViewers((prev) => {
+                    prev.push(data.viewer)
+                    return [...prev]
+                  })
+                })
             }
           } else {
             /* new viewer joined */
@@ -57,6 +68,15 @@ function ViewersListContainer() {
         }
         socket.on("viewer-left-stream-received", userLeftHandler)
       }
+      let streamDeleteHandler = (data) => {
+        if (data.modelId !== authCtx.relatedUserId) {
+          return
+        }
+        /* move the current live user in prev streamViewers */
+        prevStreamViewers = [...viewers]
+        setViewers([])
+      }
+      socket.on("delete-stream-room", streamDeleteHandler)
 
       return () => {
         if (
@@ -68,6 +88,9 @@ function ViewersListContainer() {
         if (socket.hasListeners("viewer-joined-private") && userJoinedHandler) {
           socket.off("viewer-joined-private", userJoinedHandler)
         }
+        if (socket.hasListeners("delete-stream-room") && streamDeleteHandler) {
+          socket.off("delete-stream-room", streamDeleteHandler)
+        }
       }
     }
   }, [socketCtx.socketSetupDone])
@@ -78,7 +101,11 @@ function ViewersListContainer() {
         <div className="tw-bg-third-color tw-py-1 tw-pb-16">
           {viewers.map((viewerData, index) => {
             return (
-              <SingleViewerBlock key={`viewer_block${index}`} viewer={viewerData} />
+              <SingleViewerBlock
+                key={`viewer_block${index}`}
+                viewer={viewerData}
+                addAtTheRate={props.addAtTheRate}
+              />
             )
           })}
         </div>

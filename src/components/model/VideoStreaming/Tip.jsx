@@ -77,7 +77,7 @@ function Tip() {
                 />
                 <input
                   className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
-                  type={Number}
+                  type="number"
                   value={item.price}
                   required={true}
                 />

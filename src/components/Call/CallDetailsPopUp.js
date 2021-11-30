@@ -33,27 +33,25 @@ function CallDetailsPopUp(props) {
       alert("Your call request is pending! please for model's response 👑👑")
       return
     }
-    if (socketCtx.setSocketSetupDone) {
-      /* do http request */
-      fetch("/api/website/stream/handle-viewer-call-request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          callType: myCallType,
-          modelId: window.location.pathname.split("/").reverse()[0],
-          streamId: sessionStorage.getItem("streamId"),
-        }),
+    /* do http request */
+    fetch("/api/website/stream/handle-viewer-call-request", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        callType: myCallType,
+        modelId: window.location.pathname.split("/").reverse()[0],
+        streamId: sessionStorage.getItem("streamId"),
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        props.setPendingCallRequest(true)
+        props.setCallType(myCallType)
+        props.closeModal()
       })
-        .then((res) => res.json())
-        .then((data) => {
-          props.setPendingCallRequest(true)
-          props.setCallType(myCallType)
-          props.closeModal()
-        })
-        .catch((err) => alert(err.message))
-    }
+      .catch((err) => alert(err.message))
   }
 
   return (

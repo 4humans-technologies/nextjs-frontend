@@ -141,86 +141,88 @@ function ViewerScreen(props) {
 
   /* keep checking the rooms */
   useEffect(() => {
-    const socket = io.getSocket()
-    let joinAttempts = 0
-    let joinRooms = []
-    const myKeepInRoomLoop = setInterval(() => {
-      /* can use this in here 😁😁😁 */
-      /* socket.connected */
-      if (joinAttempts > 5) {
-        return console.log("more than five attempts")
-      }
+    if (socketCtx.socketSetupDone) {
+      const socket = io.getSocket()
+      let joinAttempts = 0
+      let joinRooms = []
+      const myKeepInRoomLoop = setInterval(() => {
+        /* can use this in here 😁😁😁 */
+        /* socket.connected */
+        if (joinAttempts > 5) {
+          return console.log("more than five attempts")
+        }
 
-      /* if live then only check for rooms bro */
-      if (isLiveNowRef.current) {
-        console.log("Live and checking")
-        const socketRooms =
-          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-        const myStreamId = sessionStorage.getItem("streamId")
-        const myRelatedUserId = localStorage.getItem("relatedUserId")
-        if (myRelatedUserId) {
-          /* if logged in, check for both is private and public room */
-          if (
-            !socketRooms.includes(`${myStreamId}-public`) &&
-            !socketRooms.includes(`${myRelatedUserId}-private`)
-          ) {
-            /* noy in public and private room */
-            if (myStreamId) {
-              if (!joinRooms.includes(`${myStreamId}-public`)) {
-                joinRooms.push(`${myStreamId}-public`)
+        /* if live then only check for rooms bro */
+        if (isLiveNowRef.current) {
+          console.log("Live and checking")
+          const socketRooms =
+            JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+          const myStreamId = sessionStorage.getItem("streamId")
+          const myRelatedUserId = localStorage.getItem("relatedUserId")
+          if (myRelatedUserId) {
+            /* if logged in, check for both is private and public room */
+            if (
+              !socketRooms.includes(`${myStreamId}-public`) &&
+              !socketRooms.includes(`${myRelatedUserId}-private`)
+            ) {
+              /* noy in public and private room */
+              if (myStreamId) {
+                if (!joinRooms.includes(`${myStreamId}-public`)) {
+                  joinRooms.push(`${myStreamId}-public`)
+                }
+              }
+              if (!joinRooms.includes(`${myRelatedUserId}-private`)) {
+                joinRooms.push(`${myRelatedUserId}-private`)
+              }
+            } else if (!socketRooms.includes(`${myRelatedUserId}-private`)) {
+              /* only not in private */
+              if (!joinRooms.includes(`${myRelatedUserId}-private`)) {
+                joinRooms.push(`${myRelatedUserId}-private`)
+              }
+            } else if (!socketRooms.includes(`${myStreamId}-public`)) {
+              /* only not in public */
+              if (myStreamId) {
+                if (!joinRooms.includes(`${myStreamId}-public`)) {
+                  joinRooms.push(`${myStreamId}-public`)
+                }
               }
             }
-            if (!joinRooms.includes(`${myRelatedUserId}-private`)) {
-              joinRooms.push(`${myRelatedUserId}-private`)
+          } else {
+            /* if un authed */
+            if (!socketRooms.includes(`${myStreamId}-public`)) {
+              /* only not in public */
+              joinRooms.push(`${myStreamId}-public`)
             }
-          } else if (!socketRooms.includes(`${myRelatedUserId}-private`)) {
-            /* only not in private */
-            if (!joinRooms.includes(`${myRelatedUserId}-private`)) {
-              joinRooms.push(`${myRelatedUserId}-private`)
-            }
-          } else if (!socketRooms.includes(`${myStreamId}-public`)) {
-            /* only not in public */
-            if (myStreamId) {
-              if (!joinRooms.includes(`${myStreamId}-public`)) {
-                joinRooms.push(`${myStreamId}-public`)
+          }
+          if (joinRooms.length > 0) {
+            joinAttempts++
+            console.log(
+              "Have to join rooms >> ",
+              joinRooms,
+              ` attempt: ${joinAttempts}`
+            )
+            /* join rooms is any room to join */
+            socket.emit("putting-me-in-these-rooms", joinRooms, (response) => {
+              // sessionStorage.setItem(
+              //   "socket-rooms",
+              //   joinRooms,
+              //   JSON.stringify([...socketRooms, ...joinRooms])
+              // )
+              if (response.status === "ok") {
+                joinAttempts = 0
+                joinRooms = []
               }
-            }
+            })
           }
         } else {
-          /* if un authed */
-          if (!socketRooms.includes(`${myStreamId}-public`)) {
-            /* only not in public */
-            joinRooms.push(`${myStreamId}-public`)
-          }
+          console.log("Not live but listening")
         }
-        if (joinRooms.length > 0) {
-          joinAttempts++
-          console.log(
-            "Have to join rooms >> ",
-            joinRooms,
-            ` attempt: ${joinAttempts}`
-          )
-          /* join rooms is any room to join */
-          socket.emit("putting-me-in-these-rooms", joinRooms, (response) => {
-            // sessionStorage.setItem(
-            //   "socket-rooms",
-            //   joinRooms,
-            //   JSON.stringify([...socketRooms, ...joinRooms])
-            // )
-            if (response.status === "ok") {
-              joinAttempts = 0
-              joinRooms = []
-            }
-          })
-        }
-      } else {
-        console.log("Not live but listening")
+      }, 3000)
+      return () => {
+        clearInterval(myKeepInRoomLoop)
       }
-    }, 3000)
-    return () => {
-      clearInterval(myKeepInRoomLoop)
     }
-  }, [isLiveNowRef])
+  }, [isLiveNowRef, socketCtx.socketSetupDone])
 
   const toggleMuteMic = () => {
     if (localAudioTrack.muted) {
@@ -244,8 +246,9 @@ function ViewerScreen(props) {
     }
   }, [])
 
+  /* re-join model stream */
   useEffect(() => {
-    if (socketCtx.socketSetupDone) {
+    if (socketCtx.socketSetupDone && ctx.loadedFromLocalStorage) {
       const socket = io.getSocket()
       let newStreamHandler = (data) => {
         if (data.modelId !== window.location.pathname.split("/").reverse()[0]) {
@@ -297,18 +300,41 @@ function ViewerScreen(props) {
               })
               props.setIsChatPlanActive(data.isChatPlanActive)
               setIsModelOffline(false)
+              if (!data.socketUpdated) {
+                if (ctx.isLoggedIn) {
+                  socket.on("rejoin-the-stream-authed-viewer", {
+                    streamId: data.streamId,
+                    modelRoom: `${
+                      window.location.pathname.split("/").reverse()[0]
+                    }-private`,
+                  })
+                } else {
+                  socket.on("join-the-stream-unauthed-viewer", {
+                    streamId: data.streamId,
+                  })
+                }
+              }
               setTimeout(() => {
+                /* get the number of users in the stream after x seconds, MANNUALLY */
                 fetch(
                   `/api/website/stream/get-live-room-count/${data.streamId}-public`
                 )
                   .then((res) => res.json())
                   .then((data) => {
                     document.getElementById(
-                      "live-viewer-count"
+                      "live-viewer-count-lg"
+                    ).innerText = `${data.roomSize} Live`
+                    document.getElementById(
+                      "live-viewer-count-md"
                     ).innerText = `${data.roomSize} Live`
                   })
               }, [4000])
-              document.getElementById("live-viewer-count").innerText = `0 Live`
+              document.getElementById(
+                "live-viewer-count-lg"
+              ).innerText = `0 Live`
+              document.getElementById(
+                "live-viewer-count-md"
+              ).innerText = `0 Live`
             } else {
               props.setIsChatPlanActive(data.isChatPlanActive)
               setPendingCallRequest(false)
@@ -331,7 +357,7 @@ function ViewerScreen(props) {
         }
       }
     }
-  }, [ctx.isLoggedIn, socketCtx.socketSetupDone])
+  }, [ctx.isLoggedIn, socketCtx.socketSetupDone, ctx.loadedFromLocalStorage])
 
   useEffect(() => {
     /* listen for stream end events */
@@ -348,7 +374,8 @@ function ViewerScreen(props) {
         sessionStorage.setItem("streamId", "")
 
         /* set live viewer count as Zero */
-        document.getElementById("live-viewer-count").innerText = "0 Live"
+        document.getElementById("live-viewer-count-lg").innerText = "0 Live"
+        document.getElementById("live-viewer-count-md").innerText = "0 Live"
 
         /* why need this, any way server will send room-left event */
         /* const socketRooms =
@@ -384,13 +411,14 @@ function ViewerScreen(props) {
   /* http fetch request for rtc token */
   useEffect(() => {
     if (
-      socketCtx.setSocketSetupDone &&
+      socketCtx.socketSetupDone &&
       !tokenRequestDoneOnce &&
       ctx.loadedFromLocalStorage
     ) {
       /* on first load fetch rtcToken and join */
+      const socket = io.getSocket()
       tokenRequestDoneOnce = true
-      if (ctx.isLoggedIn === true) {
+      if (ctx.isLoggedIn) {
         /**
          * if logged in then fetch RTC token as loggedIn user
          */
@@ -419,7 +447,18 @@ function ViewerScreen(props) {
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
               } else {
+                /* if model is streaming */
                 setIsModelOffline(false)
+                if (!data.socketUpdated) {
+                  socket.emit("update-client-info", {
+                    action: "join-the-stream-authed-viewer",
+                    streamId: data.streamId,
+                    viewerDetails: data.viewerDetails,
+                    modelRoom: `${
+                      window.location.pathname.split("/").reverse()[0]
+                    }-public`,
+                  })
+                }
               }
 
               localStorage.setItem("rtcToken", data.rtcToken)
@@ -437,10 +476,6 @@ function ViewerScreen(props) {
                   "Error joining the stream, something is not right..!"
                 )
               })
-              // updateCtx.updateViewer({
-              //   rtcToken: data.rtcToken,
-              //   streamRoom: `${data.streamId}-public`,
-              // })
             })
         } else {
           /* get token  from local storage */
@@ -491,39 +526,46 @@ function ViewerScreen(props) {
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
               } else {
+                /* if model is streaming */
                 setIsModelOffline(false)
+                if (!data.socketUpdated) {
+                  socket.emit("update-client-info", {
+                    action: "join-the-stream-unauthed-viewer",
+                    streamId: data.streamId,
+                  })
+                }
               }
+
               localStorage.setItem("rtcToken", data.rtcToken)
               localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
 
               sessionStorage.setItem("streamId", data.streamId)
-
-              /* as 👇 this is async */
-              join(
-                window.location.pathname.split("/").reverse()[0],
-                data.rtcToken,
-                data.unAuthedUserId
-              ).catch((err) => {
-                console.error(
-                  "Error joining the stream, something is not right..!"
-                )
-              })
               setTipMenuActions(data.theModel.tipMenuActions.actions)
 
-              /* if new Un-Authed user was registered */
-              if (data.newUnAuthedUserCreated) {
-                /* if new viewer was created save the _id in localstorage */
-                localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
-                // updateCtx.updateViewer({
-                //   unAuthedUserId: data.unAuthedUserId,
-                //   rtcToken: data.rtcToken,
-                //   // streamRoom: `${data.streamId}-public`,
-                // })
+              if (!data.newUnAuthedUserCreated) {
+                /* if new viewer was created save the _id in localStorage */
+                /* as 👇 this is async */
+                join(
+                  window.location.pathname.split("/").reverse()[0],
+                  data.rtcToken,
+                  localStorage.getItem("unAuthedUserId")
+                ).catch((err) => {
+                  console.error(
+                    "Error joining the stream, something is not right..!"
+                  )
+                })
               } else {
-                // updateCtx.updateViewer({
-                //   rtcToken: data.rtcToken,
-                //   // streamRoom: `${data.streamId}-public`,
-                // })
+                /* if new Un-Authed user was registered */
+                localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
+                join(
+                  window.location.pathname.split("/").reverse()[0],
+                  data.rtcToken,
+                  data.unAuthedUserId
+                ).catch((err) => {
+                  console.error(
+                    "Error joining the stream, something is not right..!"
+                  )
+                })
               }
             })
             .catch((err) => alert(err.message))
@@ -544,7 +586,7 @@ function ViewerScreen(props) {
     ctx.isLoggedIn,
     ctx.relatedUserId,
     window.location.pathname,
-    socketCtx.setSocketSetupDone,
+    socketCtx.socketSetupDone,
     tokenRequestDoneOnce,
     ctx.loadedFromLocalStorage,
   ])
@@ -581,30 +623,31 @@ function ViewerScreen(props) {
       /* the, after call transaction is now complete, fetch the details of it now */
       if (!socket.hasListeners("model-call-end-request-finished")) {
         socket.on("model-call-end-request-finished", async (data) => {
-          if (data.ended === "ok") {
-            sessionStorage.setItem("callEndDetails", JSON.stringify(data))
-            spinnerCtx.setShowSpinner(false, "Please wait...")
-            // modalCtx.showModalWithContent(
-            //   <CallEndDetails
-            //     dateTime={data.dateTime}
-            //     viewerName={data.name}
-            //     totalCharges={data.totalCharges}
-            //     currentWalletAmount={data.currentAmount}
-            //     callType={data.callType}
-            //     callDuration={data.callDuration}
-            //     theCall={data.theCall}
-            //     totalCharges={data.totalCharges}
-            //     userType="Viewer"
-            //   />
-            // )
+          if (data?.ended === "not-setuped-properly") {
+            updateCtx.updateWallet(data.amountToRefund, "add")
+          } else if (data?.totalCharges) {
+            updateCtx.updateWallet(data.totalCharges, "dec")
           }
-          // setCallEndDetails(data.callEndDetails)
+
+          /* ========================== */
           setPendingCallEndRequest(false)
           setCallOnGoing(false)
           await leaveAndCloseTracks()
           await client.setClientRole("audience")
           setIsModelOffline(true)
           offCallListeners()
+          socket.emit(
+            "update-client-info",
+            {
+              action: "clear-call-details",
+            },
+            (status) => {
+              if (!status.ok) {
+                socket.close()
+                socket.open()
+              }
+            }
+          )
         })
       }
     }
@@ -616,13 +659,36 @@ function ViewerScreen(props) {
       const socket = io.getSocket()
       let joinHandler
       let leftHandler
-      if (!socket.hasListeners("viewer-joined")) {
-        joinHandler = (data) => {
-          document.getElementById(
-            "live-viewer-count"
-          ).innerText = `${data.roomSize} Live`
+
+      joinHandler = (data) => {
+        document.getElementById(
+          "live-viewer-count-lg"
+        ).innerText = `${data.roomSize} Live`
+        document.getElementById(
+          "live-viewer-count-md"
+        ).innerText = `${data.roomSize} Live`
+      }
+
+      socket.on("viewer-joined", joinHandler)
+
+      leftHandler = (data) => {
+        document.getElementById(
+          "live-viewer-count-lg"
+        ).innerText = `${data.roomSize} Live`
+        document.getElementById(
+          "live-viewer-count-md"
+        ).innerText = `${data.roomSize} Live`
+      }
+
+      socket.on("viewer-left-stream-received", leftHandler)
+
+      return () => {
+        if (socket.hasListeners("viewer-left-stream-received") && leftHandler) {
+          socket.off("viewer-left-stream-received", leftHandler)
         }
-        socket.on("viewer-joined", joinHandler)
+        if (socket.hasListeners("viewer-joined") && joinHandler) {
+          socket.off("viewer-joined", joinHandler)
+        }
       }
     }
   }, [socketCtx.socketSetupDone])
@@ -633,9 +699,6 @@ function ViewerScreen(props) {
       if (!socket.hasListeners("model-call-request-response-received")) {
         socket.on("model-call-request-response-received", (data) => {
           // alert("model response received")
-          socket.emit("add-oncall-status-on-viewer-socket-client", {
-            callId: data.callId,
-          })
           if (data.response !== "rejected") {
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               /* dont kick of, switch role to host start the call 📞📞 */
@@ -653,16 +716,41 @@ function ViewerScreen(props) {
                 .then((res) => res.json())
                 .then(async (result) => {
                   if (result.actionStatus === "success") {
-                    sessionStorage.removeItem("callId")
-                    sessionStorage.setItem("callId", data.callId)
-                    setPendingCallRequest(false)
-                    setCallType(data.callType)
-                    setCallOnGoing(true)
-                    setIsModelOffline(false)
-                    setUpCallListeners()
-                    await switchViewerToHost(
-                      data.callType
-                    ) /* actually switch viewer to host and create tracks */
+                    if (!result.socketUpdated) {
+                      /* socket was not updated server side update it by socket request */
+                      socket.emit(
+                        "update-client-info",
+                        {
+                          action: "set-call-data-viewer",
+                          sharePercent: result.sharePercent,
+                          callId: data.callId,
+                          callType: data.callType,
+                        },
+                        async (status) => {
+                          if (status.ok) {
+                            /* should show spinner also */
+                            sessionStorage.removeItem("callId")
+                            sessionStorage.setItem("callId", data.callId)
+                            setPendingCallRequest(false)
+                            setCallType(data.callType)
+                            setCallOnGoing(true)
+                            setIsModelOffline(false)
+                            setUpCallListeners()
+                            await switchViewerToHost(data.callType)
+                          }
+                        }
+                      )
+                    } else {
+                      sessionStorage.removeItem("callId")
+                      sessionStorage.setItem("callId", data.callId)
+                      setPendingCallRequest(false)
+                      setCallType(data.callType)
+                      setCallOnGoing(true)
+                      setIsModelOffline(false)
+                      setUpCallListeners()
+                      await switchViewerToHost(data.callType)
+                      /* actually switch viewer to host and create tracks */
+                    }
                   }
                 })
                 .catch((err) => {
@@ -719,7 +807,10 @@ function ViewerScreen(props) {
                * have kick out all sockets on the server itself as below alogo will
                * flood the client with "viewer left event"
                */
-              document.getElementById("live-viewer-count").innerText = "0 Live"
+              document.getElementById("live-viewer-count-lg").innerText =
+                "0 Live"
+              document.getElementById("live-viewer-count-md").innerText =
+                "0 Live"
               /* const socketRooms =
                 JSON.parse(sessionStorage.getItem("socket-rooms")) || []
               if (socketRooms.find((room) => room.endsWith("-public"))) {
@@ -749,7 +840,7 @@ function ViewerScreen(props) {
     }
   }, [
     ctx.relatedUserId,
-    socketCtx.setSocketSetupDone,
+    socketCtx.socketSetupDone,
     switchViewerToHost,
     setUpCallListeners,
   ])
@@ -793,9 +884,21 @@ function ViewerScreen(props) {
     })
       .then((res) => res.json())
       .then(async (data) => {
+        socket.emit(
+          "update-client-info",
+          {
+            action: "clear-call-details",
+          },
+          (status) => {
+            if (!status.ok) {
+              socket.close()
+              socket.open()
+            }
+          }
+        )
         if (data.wasFirst === "yes") {
           // spinnerCtx.setShowSpinner(false, "Please wait...")
-          sessionStorage.setItem("callEndDetails", JSON.stringify(data))
+          // sessionStorage.setItem("callEndDetails", JSON.stringify(data))
         }
         setPendingCallEndRequest(false)
         setCallOnGoing(false)

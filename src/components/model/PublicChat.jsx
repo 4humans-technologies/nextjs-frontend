@@ -14,6 +14,10 @@ let messageShowed = false
 const chatWindowOptions = {
   PUBLIC: "public",
 }
+let UnAuthedViewerChatName
+if (typeof window !== "undefined") {
+  UnAuthedViewerChatName = localStorage.getItem("unAuthed-user-chat-name")
+}
 function PublicChatBox(props) {
   let pageUrl
   if (typeof window !== "undefined") {
@@ -233,13 +237,16 @@ function PublicChatBox(props) {
 
   const shouldHighLight = useCallback(
     (message) => {
-      if (authCtx.user.userType === "Model") {
-        if (message.includes("@Model")) {
+      if (
+        authCtx.user.userType === "Viewer" ||
+        authCtx.user.userType === "Model"
+      ) {
+        if (message.includes(`@${authCtx.user.user.username}`)) {
           return true
         }
         return false
-      } else if (authCtx.user.userType === "Viewer") {
-        if (message.includes(`@${authCtx.user.user.username}`)) {
+      } else if (authCtx.user.userType === "UnAuthedViewer") {
+        if (message.includes(`@${UnAuthedViewerChatName}`)) {
           return true
         }
         return false
@@ -273,7 +280,18 @@ function PublicChatBox(props) {
                 index={chat.index}
                 message={chat.message}
                 highlight={shouldHighLight(chat.message)}
-                addAtTheRate={() => props.addAtTheRate("Model")}
+                addAtTheRate={() =>
+                  props.addAtTheRate(
+                    authCtx.user.userType === "Model"
+                      ? authCtx.user.user.username
+                      : props.modelUsername
+                  )
+                }
+                modelUsername={
+                  authCtx.user.userType === "Model"
+                    ? " you"
+                    : props.modelUsername
+                }
               />
             )
           case "gift-superchat-public":

@@ -54,7 +54,13 @@ function MessageContainer(props) {
             case "self":
               return <SelfChatMessage key={chat.ts} msg={chat.msg} />
             case "other":
-              return <OtherSideChatMessage key={chat.ts} msg={chat.msg} />
+              return (
+                <OtherSideChatMessage
+                  key={chat.ts}
+                  msg={chat.msg}
+                  username={currentViewer.username}
+                />
+              )
             case "system":
               return (
                 <div className="tw-flex tw-flex-grow tw-w-full tw-items-center tw-justify-center tw-my-6">

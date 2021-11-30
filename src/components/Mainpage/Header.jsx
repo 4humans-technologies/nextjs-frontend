@@ -40,34 +40,24 @@ function Header(props) {
   const socketCtx = useSocketContext()
   const [hide, setHide] = useState()
 
-  /* this is not reactive it's one time setter */
+  /* conditionally show go live button based on the page */
   useEffect(() => {
-    if (window.location.pathname.includes("goLive") == true) {
+    if (window.location.pathname.includes("/goLive")) {
       setHide(true)
     }
-  }, [])
-
-  // search result
-  let profileImage
-  if (authContext.user.user) {
-    profileImage = authContext.user.user.relatedUser.profileImage
-  }
-
-  /* fetch live model count and set state  */
-  useEffect(() => {
-    if (!fetchedLiveModelCount) {
-      fetchedLiveModelCount = true
-      /* fetch live models */
-      fetch("/api/website/compose-ui/get-live-models-count")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data?.actionStatus === "success") {
-            setLiveModels(data.liveNow)
-          }
-        })
-        .catch((err) => console.log("Live models count not fetched"))
+    const handleRouteChange = (url) => {
+      console.log(`App is got to user: ${url}`)
+      if (url.includes("/goLive")) {
+        setHide(true)
+      } else {
+        setHide(false)
+      }
     }
-  }, [fetchedLiveModelCount])
+    router.events.on("routeChangeComplete", handleRouteChange)
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange)
+    }
+  }, [])
 
   /* setup live count listeners */
   useEffect(() => {
@@ -76,24 +66,21 @@ function Header(props) {
       let streamCreateHandler
       let streamDeleteHandler
       let callEndHandler
-      if (!socket.hasListeners("new-model-started-stream")) {
-        streamCreateHandler = (data) => {
-          setLiveModels(data.liveNow)
-        }
-        socket.on("new-model-started-stream", streamCreateHandler)
+      streamCreateHandler = (data) => {
+        setLiveModels(data.liveNow)
       }
-      if (!socket.hasListeners("delete-stream-room")) {
-        streamDeleteHandler = (data) => {
-          setLiveModels(data.liveNow)
-        }
-        socket.on("delete-stream-room", streamDeleteHandler)
+      socket.on("new-model-started-stream", streamCreateHandler)
+
+      streamDeleteHandler = (data) => {
+        setLiveModels(data.liveNow)
       }
-      if (!socket.hasListeners("a-call-ended")) {
-        callEndHandler = (liveNow) => {
-          setLiveModels(liveNow)
-        }
-        socket.on("a-call-ended", callEndHandler)
+      socket.on("delete-stream-room", streamDeleteHandler)
+
+      callEndHandler = (liveNow) => {
+        setLiveModels(liveNow)
       }
+      socket.on("a-call-ended", callEndHandler)
+
       return () => {
         if (
           socket.hasListeners("new-model-started-stream") &&
@@ -275,16 +262,20 @@ function Header(props) {
                           className="tw-mr-4  tw-cursor-pointer"
                           onClick={() => setHeaderProfileShow((prev) => !prev)}
                         >
-                          {profileImage ? (
+                          {authContext.user.user.relatedUser?.profileImage ? (
                             <img
                               className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-bg-green-400 tw-text-4xl tw-object-cover tw-border-white-color tw-border-2"
-                              src={profileImage}
+                              src={
+                                authContext.user.user.relatedUser.profileImage
+                              }
                             />
                           ) : (
-                            <div className="tw-text-4xl tw-text-black tw-font-bold tw-bg-green-400 tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-pl-3">
-                              {authContext.user.user.username
-                                .charAt(0)
-                                .toUpperCase()}
+                            <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
+                              <span className="tw-text-4xl tw-text-white-color tw-font-light">
+                                {authContext.user.user.username
+                                  .charAt(0)
+                                  .toUpperCase()}
+                              </span>
                             </div>
                           )}
                           {/* profile */}
@@ -334,16 +325,20 @@ function Header(props) {
                           onClick={() => setHeaderProfileShow((prev) => !prev)}
                         >
                           {/* if image is not available then show the Name else show the image */}
-                          {profileImage ? (
+                          {authContext.user.user.relatedUser?.profileImage ? (
                             <img
                               className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-text-4xl  tw-object-cover tw-border-white-color tw-border-2"
-                              src={profileImage}
+                              src={
+                                authContext.user.user.relatedUser.profileImage
+                              }
                             />
                           ) : (
-                            <div className="tw-text-4xl tw-text-black tw-font-bold tw-bg-green-400 tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-pl-3">
-                              {authContext.user.user.username
-                                .charAt(0)
-                                .toUpperCase()}
+                            <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
+                              <span className="tw-text-4xl tw-text-white-color tw-font-light">
+                                {authContext.user.user.username
+                                  .charAt(0)
+                                  .toUpperCase()}
+                              </span>
                             </div>
                           )}
 

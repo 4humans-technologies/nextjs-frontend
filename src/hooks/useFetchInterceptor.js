@@ -56,10 +56,10 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
               )
             }
 
-            if (latestCtx.unAuthedUserId) {
+            if (localStorage.getItem("unAuthedUserId")) {
               urlObj.searchParams.set(
                 "unAuthedUserId",
-                latestCtx.unAuthedUserId
+                localStorage.getItem("unAuthedUserId")
               )
             }
 

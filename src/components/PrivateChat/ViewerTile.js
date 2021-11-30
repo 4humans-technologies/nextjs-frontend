@@ -8,11 +8,19 @@ function ViewerTile(props) {
       onClick={props.onClickHandler}
     >
       <div className="tw-flex-shrink tw-flex-grow-0 tw-pr-2">
-        <img
-          src="/original.jpg"
-          alt=""
-          className="tw-w-12 tw-h-12 tw-rounded-full tw-border-2 tw-border-dreamgirl-red tw-object-cover"
-        />
+        {props.profileImage ? (
+          <img
+            src="/original.jpg"
+            alt=""
+            className="tw-w-12 tw-h-12 tw-rounded-full tw-border-2 tw-border-dreamgirl-red tw-object-cover"
+          />
+        ) : (
+          <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
+            <span className="tw-text-4xl tw-text-white-color tw-font-light">
+              {username.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
       </div>
       <div className="tw-flex tw-flex-col tw-text-white-color tw-flex-grow tw-ml-2">
         <p className="tw-font-semibold">{name}</p>

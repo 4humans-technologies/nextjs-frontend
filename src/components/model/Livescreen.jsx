@@ -330,7 +330,7 @@ function LiveScreen(props) {
                     </span>
                   </button>
                   <span
-                    id="live-viewer-count"
+                    id="live-viewer-count-md"
                     className="tw-rounded-full tw-px-2.5 tw-py-0.5 tw-text-sm tw-inline-block tw-ml-3 tw-text-green-color tw-border tw-border-green-color"
                   >
                     0 Live
@@ -390,7 +390,7 @@ function LiveScreen(props) {
                     </span>
                   </button>
                   <span
-                    id="live-viewer-count"
+                    id="live-viewer-count-lg"
                     className="tw-rounded-full tw-px-2.5 tw-py-0.5 tw-text-sm tw-inline-block tw-ml-3 tw-text-green-color tw-border tw-border-green-color"
                   >
                     0 Live
@@ -448,8 +448,8 @@ function LiveScreen(props) {
               }`}
               onClick={() => setChatWindow(chatWindowOptions.PUBLIC)}
             >
-              <ChatBubbleIcon className="tw-mr-2 tw-my-auto" />
-              <span className="tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+              <ChatBubbleIcon className="tw-mr-1 tw-my-auto" fontSize="small" />
+              <span className="tw-my-auto tw-text-xs md:tw-text-sm">
                 Live Chat
               </span>
             </button>
@@ -461,8 +461,8 @@ function LiveScreen(props) {
               }`}
               onClick={() => setChatWindow(chatWindowOptions.PRIVATE)}
             >
-              <MarkChatReadIcon className="tw-mr-2 tw-my-auto" />
-              <span className="tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+              <MarkChatReadIcon className="tw-mr-1 tw-my-auto"  fontSize="small" />
+              <span className="tw-my-auto tw-text-xs md:tw-text-sm">
                 Private Chat
               </span>
             </button>
@@ -475,8 +475,8 @@ function LiveScreen(props) {
                 }`}
                 onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
               >
-                <LocalActivityIcon className="tw-mr-2 tw-my-auto" />
-                <span className="tw-pl-2 tw-my-auto tw-text-xs md:tw-text-sm">
+                <LocalActivityIcon className="tw-mr-1 tw-my-auto"  fontSize="small" />
+                <span className="tw-my-auto tw-text-xs md:tw-text-sm">
                   Tip Menu
                 </span>
               </button>
@@ -509,6 +509,7 @@ function LiveScreen(props) {
                   isModelOffline={isModelOffline}
                   addAtTheRate={addAtTheRate}
                   chatWindowRef={chatWindowRef}
+                  modelUsername={props.modelProfileData?.rootUser.username}
                 />
               </div>
               <div
@@ -524,6 +525,7 @@ function LiveScreen(props) {
                   setIsChatPlanActive={setIsChatPlanActive}
                   modalCtx={modalCtx}
                   chatWindowRef={chatWindowRef}
+                  modelUsername={props.modelProfileData?.rootUser.username}
                 />
               </div>
               <div

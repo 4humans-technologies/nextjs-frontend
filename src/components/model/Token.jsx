@@ -70,7 +70,7 @@ function Token() {
           className="tw-cursor-pointer"
         />
       </div>
-      <form className="tw-bg-first-color tw-justify-items-center tw-self-center tw-px-8 tw-leading-10 tw-py-4 tw-rounded">
+      <section className="tw-bg-first-color tw-justify-items-center tw-self-center tw-px-8 tw-leading-10 tw-py-4 tw-rounded">
         <div className="tw-font-medium tw-text-xl tw-mb-4">
           Enter the amount you want to tip
         </div>
@@ -217,7 +217,7 @@ function Token() {
             Buy Coins
           </button>
         </div>
-      </form>
+      </section>
     </div>
   )
 }

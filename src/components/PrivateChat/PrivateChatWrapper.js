@@ -327,7 +327,7 @@ function PrivateChatWrapper(props) {
         })
       }
     }
-  }, [])
+  }, [socketCtx.socketSetupDone])
 
   /* remove chat event listeners */
   useEffect(() => {

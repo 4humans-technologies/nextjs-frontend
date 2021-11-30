@@ -22,11 +22,11 @@ export const SocketContextProvider = ({ children }) => {
 
   const initSocket = () => {
     const socket = io.connect(process.env.NEXT_PUBLIC_BACKEND_URL)
-    if (!socketSetupDone) {
-      setSocketSetupDone(true)
-    }
 
     socket.on("connect", () => {
+      if (!socketSetupDone) {
+        setSocketSetupDone(true)
+      }
       localStorage.setItem("socketId", socket.id)
       const socketRooms =
         JSON.parse(sessionStorage.getItem("socket-rooms")) || []

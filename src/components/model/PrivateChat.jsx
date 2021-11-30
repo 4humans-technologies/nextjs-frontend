@@ -65,9 +65,9 @@ function PrivateChat(props) {
   useEffect(() => {
     inFocusRef.current =
       props.chatWindowRef.current === chatWindowOptions.PRIVATE
-      if(inFocusRef.current){
-        console.debug("Private chat in focus")
-      }
+    if (inFocusRef.current) {
+      console.debug("Private chat in focus")
+    }
   }, [props.chatWindowRef.current])
 
   const [chatsData, setChatsData] = useState({
@@ -294,7 +294,12 @@ function PrivateChat(props) {
     if (authCtx.isLoggedIn) {
       if (authCtx.user.userType === "Viewer") {
         if (hasActivePlan) {
-          chatContent = <ViewerMessageContainer chatsData={chatsData} />
+          chatContent = (
+            <ViewerMessageContainer
+              chatsData={chatsData}
+              modelUsername={props.modelUsername}
+            />
+          )
         } else {
           chatContent = noPlanBanner
         }
