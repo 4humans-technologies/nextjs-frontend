@@ -41,7 +41,11 @@ function UserProfile() {
       {/* Cover page */}
       <div className="tw-w-screen tw-relative  tw-bg-dark-background ">
         <img
-          src="/cover-photo.png"
+          src={
+            authContext.user.user.relatedUser.coverImage
+              ? `${authContext.user.user.relatedUser.coverImage}`
+              : "/cover-photo.png"
+          }
           className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
         />
         <p

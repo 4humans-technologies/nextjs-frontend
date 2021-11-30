@@ -171,7 +171,6 @@ const CoverUpdate = () => {
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
   const modelCtx = useModalContext()
-  // setCoverImage(authContext.user.user.relatedUser.coverImage)
 
   const changeCover = async (e) => {
     const image_1 = await e.target.files[0]
@@ -203,7 +202,7 @@ const CoverUpdate = () => {
     // console.log(coverUrl)
 
     const re = await fetch("/api/website/profile/update-model-basic-details", {
-      method: "Post",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -214,6 +213,7 @@ const CoverUpdate = () => {
       }),
     })
 
+    console.log(`Response -------${re.json()}`)
     // below is context update for coverImage
     authUpdateContext.updateNestedPaths((prevState) => ({
       ...prevState,
@@ -234,7 +234,7 @@ const CoverUpdate = () => {
     store["relatedUser"]["coverImage"] = coverUrl
     localStorage.setItem("user", JSON.stringify(store))
 
-    const jsonResp = await re.json()
+    // const jsonResp = await re.json()
   }
 
   // Now use this url to uploade to serve using url
@@ -251,7 +251,7 @@ const CoverUpdate = () => {
           Update cover Image
         </h2>
         <img
-          src={authContext.user.user.relatedUser.backgroundImage}
+          src={authContext.user.user.relatedUser.coverImage}
           className="tw-w-96 tw-h-48 tw-my-4"
         />
         <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2">
@@ -272,7 +272,6 @@ const ProfileUpdate = () => {
   const modelCtx = useModalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
-  const oldCover = authContext.user.user.relatedUser.profileImage
 
   const changeCover = async (e) => {
     const image_1 = await e.target.files[0]

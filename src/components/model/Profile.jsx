@@ -475,7 +475,11 @@ function Profile() {
       <div
         className="tw-w-full tw-relative tw-h-96 "
         style={{
-          backgroundImage: `url('/cover-photo.png')`,
+          backgroundImage: `url(${
+            authContext.user.user.relatedUser.coverImage
+              ? [`${authContext.user.user.relatedUser.coverImage}`]
+              : "/cover-photo.png"
+          })`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
@@ -550,15 +554,11 @@ function Profile() {
                       country: e.target.textContent,
                     })),
                       setInfoedited(true)
-                    // console.log(e.target.textContent)
                   }}
                   contentEditable="true"
                   suppressContentEditableWarning={true}
-                  // value={profileEdit.country}
                 >
-                  {/* {profileEdit.country ? profileEdit.country : "Kerla"} */}
                   {authContext.user.user.relatedUser.country}
-                  {/* Kerla */}
                 </p>
                 <p
                   onInput={(e) => {
@@ -571,11 +571,9 @@ function Profile() {
                   suppressContentEditableWarning={true}
                   contentEditable="true"
                 >
-                  {/* {item.Language} */}
                   {authContext.user.user.relatedUser.languages}
                 </p>
                 <p>
-                  {/* {item.Age} */}
                   {authContext.user.user
                     ? thisYear - authContext.user.user.relatedUser.dob
                     : null}
