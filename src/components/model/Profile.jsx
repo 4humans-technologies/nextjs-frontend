@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState } from "react"
 import CreateIcon from "@material-ui/icons/Create"
-import { Button } from "react-bootstrap"
 import Card from "../UI/Card"
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
 import modalContext from "../../app/ModalContext"
@@ -13,6 +12,7 @@ import {
 } from "../UI/Profile/Emailpassword"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import FsLightbox from "fslightbox-react"
+import { DropdownButton, Dropdown, Button } from "react-bootstrap"
 // ========================================================
 function Profile() {
   const modalCtx = modalContext()
@@ -37,6 +37,21 @@ function Profile() {
     hairColor: authContext?.user.user.relatedUser.hairColor,
     eyeColor: authContext?.user.user.relatedUser.eyeColor,
   })
+
+  // Testing item
+  const [itemstate, setItemState] = useState([
+    {
+      id: 0,
+      fileName: "",
+      price: 0,
+    },
+  ])
+  const [showInput, setShowInput] = useState(false)
+  const [input, setInput] = useState({
+    name: "",
+    price: 0,
+  })
+  const [albumNuber, setAlbumNumber] = useState(0)
 
   // this is for image uplode
   const [lightboxController, setLightboxController] = useState({
@@ -1121,8 +1136,129 @@ function Profile() {
             </div>
           </div>
           {/* private videos */}
+
+          {/* testing dummy videos */}
+          <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
+            <h1>Private videos test</h1>
+          </div>
+          <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+            <div className="">
+              {showInput && (
+                <div>
+                  <input
+                    type="text"
+                    name="fileName"
+                    onInput={(e) =>
+                      setInput((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                  />
+                  <input
+                    type="number"
+                    name="price"
+                    className="tw-mx-8"
+                    onInput={(e) =>
+                      setInput((prev) => ({
+                        ...prev,
+                        price: e.target.value,
+                      }))
+                    }
+                  />
+                  <Button
+                    onClick={() => {
+                      setItemState((prev) => [
+                        ...prev,
+                        {
+                          id: itemstate.id + 1,
+                          fileName: input.name,
+                          price: input.price,
+                        },
+                      ]),
+                        setShowInput(false)
+                    }}
+                  >
+                    Done
+                  </Button>
+                </div>
+              )}
+            </div>
+            <DropdownButton id="dropdown-basic-button " title="Dropdown button">
+              {itemstate.map((item, index) => (
+                <Dropdown.Item onClick={() => setAlbumNumber(index)}>
+                  {item.fileName}
+                </Dropdown.Item>
+              ))}
+              <Dropdown.Item onClick={() => setShowInput((prev) => !prev)}>
+                create new
+              </Dropdown.Item>
+            </DropdownButton>
+
+            <div className=" tw-mt-4">
+              {itemstate[albumNuber].fileName}
+              {/* This for File uplode  */}
+              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+                {/* file */}
+                <div className="file-input tw-mt-10 tw-ml-2">
+                  <input
+                    type="file"
+                    name="file-input"
+                    id="file-input"
+                    className="file-input__input"
+                    onChange={(e) => photoUpdateHandler(e)}
+                  />
+                  <label className="file-input__label" htmlFor="file-input">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="upload"
+                      className="svg-inline--fa fa-upload fa-w-16"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+                      ></path>
+                    </svg>
+                    <span>Upload file</span>
+                  </label>
+                </div>
+
+                {/* file */}
+                <FsLightbox
+                  toggler={lightboxController.toggler}
+                  sources={authContext.user.user.relatedUser.publicImages.map(
+                    (url) => {
+                      return <img src={url} />
+                    }
+                  )}
+                  slide={lightboxController.slide}
+                />
+              </div>
+              {/* That item show */}
+              {authContext.user.user.relatedUser
+                ? authContext.user.user.relatedUser.publicImages.map(
+                    (image, index) => (
+                      <div
+                        className=" tw-mb-4 tw-cursor-pointer"
+                        key={index}
+                        onClick={() => openLightboxOnSlide(index + 1)}
+                      >
+                        <img src={image} className="tw-w-32 tw-h-32" />
+                      </div>
+                    )
+                  )
+                : null}
+              {/* That item show */}
+            </div>
+          </div>
+          {/* Testing dummy videos */}
+
           {/* ---------------------------------------------------- */}
-          <div>{/* <Callhistory /> */}</div>
           {/* Bro in this call table and history has been removed,so you have to check all the thing carefully before procedure */}
         </div>
       </div>
