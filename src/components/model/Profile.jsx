@@ -3,6 +3,7 @@ import CreateIcon from "@material-ui/icons/Create"
 import Card from "../UI/Card"
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
 import modalContext from "../../app/ModalContext"
+import NextImage from "next/image"
 import ClearIcon from "@material-ui/icons/Clear"
 import {
   EmailChange,
@@ -38,20 +39,21 @@ function Profile() {
     eyeColor: authContext?.user.user.relatedUser.eyeColor,
   })
 
-  // Testing item
-  const [itemstate, setItemState] = useState([
-    {
-      id: 0,
-      fileName: "",
-      price: 0,
-    },
-  ])
+  // This is for the Image uplode
   const [showInput, setShowInput] = useState(false)
   const [input, setInput] = useState({
     name: "",
     price: 0,
   })
-  const [albumNuber, setAlbumNumber] = useState(0)
+  const [albumNow, setAlbumNow] = useState()
+
+  // This is for the video uplode
+  const [showVideoInput, setShowvideoInput] = useState(false)
+  const [videoInput, setVideoInput] = useState({
+    price: 0,
+    name: "",
+  })
+  const [videoAlbumNow, setVideoAlbumNow] = useState()
 
   // this is for image uplode
   const [lightboxController, setLightboxController] = useState({
@@ -281,61 +283,153 @@ function Profile() {
     }
   }
 
-  // private photo handler
-  const privatePhotoUpdateHandler = async (e) => {
-    const image = e.target.files[0]
+  // Create folder for private photo handle
+  const createFolderHandler = async () => {
+    // creating folder
 
-    // to get url from domain and then uplode to aws
-    const url = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + image.type
-    )
-    const urlJson = await url.json()
-    const imageUrl = await urlJson.uploadUrl
-
-    const profileUrl = imageUrl.split("?")[0]
-
-    // below is the data uplode to aws
-    let req = await fetch(imageUrl, {
-      method: "PUT",
-      body: image,
+    const album = await fetch("/api/website/profile/create-album", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        name: input.name,
+        price: input.price,
+        type: "imageAlbum",
+      }),
     })
-    if (!req.ok) {
-      return alert("Image was not uploaded!")
-    }
+    const resp = await album.json()
 
-    // send data back to node serve as success report with user id and url for the data
-    let serverReq = await fetch(
-      "/api/website/profile/handle-private-image-upload",
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          newImageUrl: profileUrl,
-        }),
-      }
-    )
-
-    let serverResp = await serverReq.json()
-    if (serverResp.actionStatus === "success") {
-      let lcUser = JSON.parse(localStorage.getItem("user"))
-      lcUser.relatedUser.privateImages = [
-        ...lcUser.relatedUser.privateImages,
-        profileUrl,
-      ]
-      authUpdateContext.updateNestedPaths((prev) => ({
+    authUpdateContext.updateNestedPaths((prev) => {
+      return {
         ...prev,
         user: {
           ...prev.user,
           user: {
-            ...lcUser,
+            ...prev.user.user,
+            relatedUser: {
+              ...prev.user.user.relatedUser,
+              privateImages: [
+                ...prev.user.user.relatedUser.privateImages,
+                resp.album,
+              ],
+            },
           },
         },
-      }))
-      localStorage.setItem("user", JSON.stringify(lcUser))
-    } else {
-      alert("Image was not uploaded to the server successfully!")
+      }
+    })
+
+    const store = JSON.parse(localStorage.getItem("user"))
+    store.relatedUser.privateImages.push(resp.album)
+    localStorage.setItem("user", JSON.stringify(store))
+    setShowInput(false)
+    setAlbumNow(resp.album)
+  }
+
+  // private photo handler
+
+  const privatePhotoUpdateHandler = async (e) => {
+    let thumbnailfile
+    const image = e.target.files[0]
+    if (!image) {
+      return alert("No Image selected")
+    }
+    // Create thumbnail
+    const reader = await new FileReader()
+    reader.readAsDataURL(image)
+    debugger
+    reader.onload = (event) => {
+      const img = new Image()
+      img.src = event.target.result
+      img.onload = () => {
+        const elem = document.createElement("canvas")
+        elem.width = 256
+        elem.height = 256
+        const ctx = elem.getContext("2d")
+        // img.width and img.height will contain the original dimensions
+        ctx.drawImage(img, 0, 0, 256, 256)
+        ctx.canvas.toBlob(
+          async (blob) => {
+            thumbnailfile = new File([blob], image.name, {
+              type: image.type,
+              lastModified: Date.now(),
+            })
+
+            // to get url from domain and then uplode to aws
+            const url = await fetch(
+              "/api/website/aws/get-s3-model-private-content-upload-url?type=" +
+                image.type +
+                "&albumId=" +
+                albumNow._id +
+                "&albumType=imageAlbum"
+            )
+            const urlJson = await url.json()
+            const imageUrl = await urlJson.uploadUrl
+
+            const awsMainImage = imageUrl[0]
+            const awsThumbNail = imageUrl[1]
+
+            // below is the data uplode to aws
+
+            let [mainImageResp, thumbNailResp] = await Promise.all([
+              fetch(awsMainImage, {
+                method: "PUT",
+                body: image,
+              }),
+              fetch(awsThumbNail, {
+                method: "PUT",
+                body: thumbnailfile,
+              }),
+            ])
+            if (!mainImageResp.ok || !thumbNailResp.ok) {
+              return alert("Image Is not successfully uploaded")
+            }
+            // send data back to node serve as success report with user id and url for the data
+            let serverReq = await fetch(
+              "/api/website/profile/handle-private-image-upload",
+              {
+                method: "POST",
+                headers: {
+                  "Content-type": "application/json",
+                },
+                body: JSON.stringify({
+                  originalImageURL: awsMainImage.split("?")[0],
+                  thumbUrl: awsThumbNail.split("?")[0],
+                  albumId: albumNow._id,
+                }),
+              }
+            )
+            let serverResp = await serverReq.json()
+            if (serverResp.actionStatus === "success") {
+              let lcUser = JSON.parse(localStorage.getItem("user"))
+              lcUser.relatedUser.privateImages = [
+                ...lcUser.relatedUser.privateImages,
+                lcUser.relatedUser.privateImages
+                  .find((e) => e._id == albumNow._id)
+                  .originalImages.push(awsMainImage.split("?")[0]),
+                lcUser.relatedUser.privateImages
+                  .find((e) => e._id == albumNow._id)
+                  .thumbnails.push(awsMainImage.split("?")[0]),
+              ]
+              authUpdateContext.updateNestedPaths((prev) => ({
+                ...prev,
+                user: {
+                  ...prev.user,
+                  user: {
+                    ...lcUser,
+                  },
+                },
+              }))
+              localStorage.setItem("user", JSON.stringify(lcUser))
+            } else {
+              alert("Image was not uploaded to the server successfully!")
+            }
+          },
+          image.type,
+          1
+        )
+      }
+      reader.onerror = (error) => console.log(error)
     }
   }
 
@@ -399,10 +493,56 @@ function Profile() {
     }
   }
 
+  // create video folder
+  const createVideoFolderHandler = async () => {
+    // creating folder
+    debugger
+    const album = await fetch("/api/website/profile/create-album", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        name: videoInput.name,
+        price: videoInput.price,
+        type: "videoAlbum",
+      }),
+    })
+    const resp = await album.json()
+    debugger
+    authUpdateContext.updateNestedPaths((prev) => {
+      return {
+        ...prev,
+        user: {
+          ...prev.user,
+          user: {
+            ...prev.user.user,
+            relatedUser: {
+              ...prev.user.user.relatedUser,
+              privateVideos: [
+                ...prev.user.user.relatedUser.privateVideos,
+                resp.album,
+              ],
+            },
+          },
+        },
+      }
+    })
+    debugger
+    const store = JSON.parse(localStorage.getItem("user"))
+    store.relatedUser.privateVideos.push(resp.album)
+    localStorage.setItem("user", JSON.stringify(store))
+    setShowvideoInput(false)
+    setVideoAlbumNow(resp.album)
+  }
+
   // privatevideoHandle
   const privatevideoUpdateHandler = async (e) => {
     const image = e.target.files[0]
     // to get url from domain and then uplode to aws
+    if (!image) {
+      return alert("no Image Selected")
+    }
     const url = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + image.type
     )
@@ -427,38 +567,37 @@ function Profile() {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          newVideoUrl: profileUrl,
+          originalVideoURL: profileUrl,
+          thumbUrl: profileUrl,
+          albumId: videoAlbumNow._id,
         }),
       }
     )
     const serverResp = await serverReq.json()
-    let store = JSON.parse(localStorage.getItem("user"))
-    store.relatedUser.privateVideos.push(profileUrl)
     if (serverResp.actionStatus === "success") {
-      authUpdateContext.setAuthState((prev) => {
-        return {
-          ...prev,
+      let lcUser = JSON.parse(localStorage.getItem("user"))
+      const currentAlbum = lcUser.relatedUser.privateVideos.find(
+        (e) => e._id == videoAlbumNow._id
+      )
+
+      // ===
+      currentAlbum.originalVideos.push(profileUrl)
+      currentAlbum.thumbnails.push(profileUrl)
+
+      authUpdateContext.updateNestedPaths((prev) => ({
+        ...prev,
+        user: {
+          ...prev.user,
           user: {
-            ...prev.user,
-            user: {
-              ...prev.user.user,
-              relatedUser: {
-                ...prev.user.user.relatedUser,
-                privateVideos: [
-                  ...prev.user.user.relatedUser.privateVideos,
-                  profileUrl,
-                ],
-              },
-            },
+            ...lcUser,
           },
-        }
-      })
-      localStorage.setItem("user", JSON.stringify(store))
+        },
+      }))
+      localStorage.setItem("user", JSON.stringify(lcUser))
     } else {
-      alert("Video was not uploaded!")
+      alert("Video was not uploaded to the server successfully!")
     }
   }
-  // privatevideohandler
 
   // This is for save the data for the tip menu
   const saveData = () => {
@@ -931,71 +1070,7 @@ function Profile() {
           </div>
 
           {/*Private Image  */}
-          <div className="tw-flex tw-justify-between tw-ml-4  tw-mt-4">
-            <h1>Private Photos</h1>
-          </div>
-          <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
-            {/* Make Model Clickeble in model */}
-            <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
-              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
-                {/* file */}
-                <div className="file-input tw-mt-10 tw-ml-2">
-                  <input
-                    type="file"
-                    name="file-input_private"
-                    id="file-input_private"
-                    className="file-input__input"
-                    onChange={(e) => privatePhotoUpdateHandler(e)}
-                  />
-                  <label
-                    className="file-input__label"
-                    htmlFor="file-input_private"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      focusable="false"
-                      data-prefix="fas"
-                      data-icon="upload"
-                      className="svg-inline--fa fa-upload fa-w-16"
-                      role="img"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 512 512"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
-                      ></path>
-                    </svg>
-                    <span>Upload file</span>
-                  </label>
-                </div>
 
-                {/* file */}
-                <FsLightbox
-                  toggler={lightboxControllerPrivate.toggler}
-                  sources={authContext.user.user.relatedUser.privateImages.map(
-                    (url) => {
-                      return <img src={url} />
-                    }
-                  )}
-                  slide={lightboxControllerPrivate.slide}
-                />
-              </div>
-              {authContext.user.user.relatedUser
-                ? authContext.user.user.relatedUser.privateImages.map(
-                    (image, index) => (
-                      <div
-                        className=" tw-mb-4 tw-cursor-pointer"
-                        key={index}
-                        onClick={() => openLightboxOnSlidePrivate(index + 1)}
-                      >
-                        <img src={image} className="tw-w-32 tw-h-32" />
-                      </div>
-                    )
-                  )
-                : null}
-            </div>
-          </div>
           {/*Private Image  */}
 
           <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
@@ -1055,7 +1130,12 @@ function Profile() {
                         key={index}
                         onClick={() => openVideoboxOnSlide(index + 1)}
                       >
-                        <img src={image} className="tw-w-32 tw-h-32 " />
+                        <NextImage
+                          src={image}
+                          width={128}
+                          height={128}
+                          quality="100"
+                        />
                       </div>
                     )
                   )
@@ -1068,6 +1148,98 @@ function Profile() {
             <h1>Private videos</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+            {/* Private video Input field */}
+            <div className="tw-my-4">
+              {showVideoInput && (
+                <div className="tw-flex tw-justify-between">
+                  <div>
+                    <input
+                      type="text"
+                      name="fileName"
+                      // value={input.name}
+                      required={true}
+                      className="tw-outline-none tw-text-black tw-rounded-full tw-px-2 tw-py-1"
+                      placeholder="Name of folder"
+                      onChange={(e) =>
+                        setVideoInput((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                    />
+                    <input
+                      type="number"
+                      name="price"
+                      required={true}
+                      // value={input.price}
+                      placeholder="Coins for folder "
+                      className="tw-outline-none tw-text-black tw-rounded-full tw-px-2 tw-py-1 tw-ml-2"
+                      onInput={(e) =>
+                        setVideoInput((prev) => ({
+                          ...prev,
+                          price: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div>
+                    <button
+                      className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium"
+                      onClick={() => createVideoFolderHandler()}
+                    >
+                      Done
+                    </button>
+                    <button
+                      className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  tw-mx-4"
+                      onClick={() => setShowvideoInput(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="tw-flex tw-justify-between">
+              <DropdownButton
+                id="dropdown-basic-button "
+                title="Choose folder"
+                variant="danger"
+                className="tw-rounded-full"
+              >
+                {authContext.user.user.relatedUser.privateVideos.map(
+                  (item, index) => (
+                    <Dropdown.Item
+                      key={index}
+                      id={index}
+                      onClick={() => setVideoAlbumNow(item)}
+                      className="tw-flex tw-justify-between"
+                    >
+                      <div>{item.name}</div>
+                      <div>
+                        {item.price}
+                        {/* <ClearIcon
+                      className="tw-text-black tw-my-auto"
+                      onClick={() => {
+                        document.getElementById(index).remove()
+                      }}
+                    /> */}
+                      </div>
+                    </Dropdown.Item>
+                  )
+                )}
+                <Dropdown.Item
+                  onClick={() => setShowvideoInput((prev) => !prev)}
+                >
+                  create new
+                </Dropdown.Item>
+              </DropdownButton>
+
+              <p className="tw-font-bold tw-text-lg md:tw-mr-8 tw-mr-4 tw-capitalize tw-align-middle tw-px-2 tw-my-auto">
+                Folder Name: {videoAlbumNow?.name}
+              </p>
+            </div>
+            {/* Privete video Input field */}
+
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
@@ -1077,7 +1249,7 @@ function Profile() {
                     name="file-input_video_private"
                     id="file-input_video_private"
                     className="file-input__input"
-                    onChange={(e) => privatevideoUpdateHandler(e)}
+                    onInput={privatevideoUpdateHandler}
                   />
                   <label
                     className="file-input__label"
@@ -1104,111 +1276,148 @@ function Profile() {
 
                 {/* file */}
               </div>
-              <FsLightbox
-                toggler={videoboxControllerPrivate.toggler}
-                sources={authContext.user.user.relatedUser.privateVideos.map(
-                  (url) => {
-                    return (
-                      <div>
-                        <video src={url} autoPlay controls></video>
-                      </div>
-                    )
-                  }
-                )}
-                slide={videoboxControllerPrivate.slide}
-              />
-              {authContext.user.user.relatedUser
-                ? authContext.user.user.relatedUser.privateVideos.map(
-                    (image, index) => (
-                      <div
-                        className=" tw-mb-4 tw-cursor-pointer"
-                        key={index}
-                        onClick={() => openVideoboxOnSlidePrivate(index + 1)}
-                      >
-                        <video
-                          src={image}
-                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
-                        ></video>
-                      </div>
-                    )
-                  )
-                : null}
+              {videoAlbumNow && (
+                <FsLightbox
+                  toggler={videoboxControllerPrivate.toggler}
+                  sources={authContext.user.user.relatedUser.privateVideos.map(
+                    (url) => {
+                      return (
+                        <div>
+                          <video src={url} autoPlay controls></video>
+                        </div>
+                      )
+                    }
+                  )}
+                  slide={videoboxControllerPrivate.slide}
+                />
+              )}
+              {videoAlbumNow &&
+                authContext.user.user.relatedUser.privateVideos
+                  .find((e) => e._id == videoAlbumNow._id)
+                  .originalVideos.map((image, index) => (
+                    <div
+                      className=" tw-mb-4 tw-cursor-pointer"
+                      key={index}
+                      onClick={() => openVideoboxOnSlidePrivate(index + 1)}
+                    >
+                      <video
+                        src={image}
+                        className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                      ></video>
+                    </div>
+                  ))}
             </div>
           </div>
           {/* private videos */}
 
           {/* testing dummy videos */}
           <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
-            <h1>Private videos test</h1>
+            <h1>Private photo test</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <div className="">
+            <div className="tw-my-4">
               {showInput && (
-                <div>
-                  <input
-                    type="text"
-                    name="fileName"
-                    onInput={(e) =>
-                      setInput((prev) => ({
-                        ...prev,
-                        name: e.target.value,
-                      }))
-                    }
-                  />
-                  <input
-                    type="number"
-                    name="price"
-                    className="tw-mx-8"
-                    onInput={(e) =>
-                      setInput((prev) => ({
-                        ...prev,
-                        price: e.target.value,
-                      }))
-                    }
-                  />
-                  <Button
-                    onClick={() => {
-                      setItemState((prev) => [
-                        ...prev,
-                        {
-                          id: itemstate.id + 1,
-                          fileName: input.name,
-                          price: input.price,
-                        },
-                      ]),
-                        setShowInput(false)
-                    }}
-                  >
-                    Done
-                  </Button>
+                <div className="tw-flex tw-justify-between">
+                  <div>
+                    <input
+                      type="text"
+                      name="fileName"
+                      // value={input.name}
+                      required={true}
+                      className="tw-outline-none tw-text-black tw-rounded-full tw-px-2 tw-py-1"
+                      placeholder="Name of folder"
+                      onChange={(e) =>
+                        setInput((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                    />
+                    <input
+                      type="number"
+                      name="price"
+                      required={true}
+                      // value={input.price}
+                      placeholder="Coins for folder "
+                      className="tw-outline-none tw-text-black tw-rounded-full tw-px-2 tw-py-1 tw-ml-2"
+                      onInput={(e) =>
+                        setInput((prev) => ({
+                          ...prev,
+                          price: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div>
+                    <button
+                      className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium"
+                      onClick={() => createFolderHandler()}
+                    >
+                      Done
+                    </button>
+                    <button
+                      className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  tw-mx-4"
+                      onClick={() => setShowInput(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
-            <DropdownButton id="dropdown-basic-button " title="Dropdown button">
-              {itemstate.map((item, index) => (
-                <Dropdown.Item onClick={() => setAlbumNumber(index)}>
-                  {item.fileName}
+            <div className="tw-flex tw-justify-between">
+              <DropdownButton
+                id="dropdown-basic-button "
+                title="Choose folder"
+                variant="danger"
+                className="tw-rounded-full"
+              >
+                {authContext.user.user.relatedUser.privateImages.map(
+                  (item, index) => (
+                    <Dropdown.Item
+                      key={index}
+                      id={index}
+                      onClick={() => setAlbumNow(item)}
+                      className="tw-flex tw-justify-between"
+                    >
+                      <div>{item.name}</div>
+                      <div>
+                        {item.price}
+                        {/* <ClearIcon
+                      className="tw-text-black tw-my-auto"
+                      onClick={() => {
+                        document.getElementById(index).remove()
+                      }}
+                    /> */}
+                      </div>
+                    </Dropdown.Item>
+                  )
+                )}
+                <Dropdown.Item onClick={() => setShowInput((prev) => !prev)}>
+                  create new
                 </Dropdown.Item>
-              ))}
-              <Dropdown.Item onClick={() => setShowInput((prev) => !prev)}>
-                create new
-              </Dropdown.Item>
-            </DropdownButton>
+              </DropdownButton>
 
-            <div className=" tw-mt-4">
-              {itemstate[albumNuber].fileName}
+              <p className="tw-font-bold tw-text-lg md:tw-mr-8 tw-mr-4 tw-capitalize tw-align-middle tw-px-2 tw-my-auto">
+                Folder Name: {albumNow?.name}
+              </p>
+            </div>
+            <div className=" tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2">
               {/* This for File uplode  */}
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
                     type="file"
-                    name="file-input"
-                    id="file-input"
+                    name="file-input_private"
+                    id="file-input_private"
                     className="file-input__input"
-                    onChange={(e) => photoUpdateHandler(e)}
+                    onChange={(e) => privatePhotoUpdateHandler(e)}
                   />
-                  <label className="file-input__label" htmlFor="file-input">
+                  <label
+                    className="file-input__label"
+                    htmlFor="file-input_private"
+                  >
                     <svg
                       aria-hidden="true"
                       focusable="false"
@@ -1229,30 +1438,39 @@ function Profile() {
                 </div>
 
                 {/* file */}
-                <FsLightbox
-                  toggler={lightboxController.toggler}
-                  sources={authContext.user.user.relatedUser.publicImages.map(
-                    (url) => {
-                      return <img src={url} />
-                    }
-                  )}
-                  slide={lightboxController.slide}
-                />
+                {albumNow && (
+                  <FsLightbox
+                    toggler={lightboxControllerPrivate.toggler}
+                    sources={authContext.user.user.relatedUser.privateImages
+                      .find((e) => e._id == albumNow._id)
+                      .originalImages.map((url, index) => {
+                        return <img src={url} />
+                      })}
+                    slide={lightboxControllerPrivate.slide}
+                  />
+                )}
               </div>
               {/* That item show */}
-              {authContext.user.user.relatedUser
-                ? authContext.user.user.relatedUser.publicImages.map(
-                    (image, index) => (
-                      <div
-                        className=" tw-mb-4 tw-cursor-pointer"
-                        key={index}
-                        onClick={() => openLightboxOnSlide(index + 1)}
-                      >
-                        <img src={image} className="tw-w-32 tw-h-32" />
-                      </div>
-                    )
-                  )
-                : null}
+              {/* You don't have to put the code question marks in this becacuse when you apply && this automatically cheack the conditinal rendering that you don't have to worry about  */}
+
+              {albumNow &&
+                authContext.user.user.relatedUser.privateImages
+                  .find((e) => e._id == albumNow._id)
+                  .originalImages?.map((image, index) => (
+                    <div
+                      className=" tw-mb-4 tw-cursor-pointer  "
+                      key={index}
+                      onClick={() => openLightboxOnSlidePrivate(index + 1)}
+                    >
+                      {/* <img src={image} className="tw-w-32 tw-h-32" /> */}
+                      <NextImage
+                        src={image}
+                        width={128}
+                        height={128}
+                        quality="100"
+                      />
+                    </div>
+                  ))}
               {/* That item show */}
             </div>
           </div>
