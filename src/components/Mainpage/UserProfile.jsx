@@ -79,7 +79,7 @@ function UserProfile() {
       </div>
       {/* name and profile */}
       <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4   md:tw-py-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-w-screen tw-bg-dark-background">
-        <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 tw-bg-first-color tw-pl-4 tw-py-4 md:tw-my-0 tw-mt-4">
+        <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 tw-bg-first-color tw-pl-4 tw-py-4 md:tw-my-0 tw-mt-4 ">
           <div className="md:tw-col-span-1 tw-col-span-2   ">
             <p>Intrested in</p>
             <p>UserName</p>
@@ -100,25 +100,27 @@ function UserProfile() {
           </div>
         </div>
 
-        <div className="tw-grid  tw-bg-first-color md:tw-col-span-3 tw-col-span-1 md:tw-my-0 tw-my-4 ">
+        <div className="tw-grid  tw-bg-first-color md:tw-col-span-3 tw-col-span-1 md:tw-my-0 tw-my-4  ">
           <h1 className="tw-pl-4 tw-pt-4">Dummy Freinds</h1>
           <br />
           {/* Problem with useEffect and useState is that it is update after all data loaded that you have to remmembember */}
-          {followerData?.Follower ? (
-            <div className="tw-flex tw-flex-wrap tw-justify-between">
-              {followerData.Follower.map((item) => (
-                <div className="tw-text-center tw-my-4">
-                  <img
-                    className="tw-rounded-full tw-w-32 tw-h-32 tw-mx-2"
-                    src={item.profileImage}
-                  />
-                  <h2 className="tw-my-2">{item.userName}</h2>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <h1>No Friends</h1>
-          )}
+          <div className="tw-max-h-96  tw-overflow-y-scroll">
+            {followerData?.Follower ? (
+              <div className="tw-flex tw-flex-wrap tw-justify-between">
+                {followerData.Follower.map((item) => (
+                  <div className="tw-text-center tw-my-4">
+                    <img
+                      className="tw-rounded-full tw-w-32 tw-h-32 tw-mx-2"
+                      src={item.profileImage}
+                    />
+                    <h2 className="tw-my-2">{item.userName}</h2>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <h1>No Friends</h1>
+            )}
+          </div>
         </div>
 
         {/* this is for email and password change  */}

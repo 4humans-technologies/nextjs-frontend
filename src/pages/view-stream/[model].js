@@ -22,6 +22,8 @@ function ViewModelStream() {
             profileImage: modelProfileData.profileImage,
             publicImages: modelProfileData.publicImages,
             publicVideos: modelProfileData.publicVideos,
+            privateImages: modelProfileData.privateImages,
+            privateVideos: modelProfileData.privateVideos,
             tags: [
               "Black",
               "White",

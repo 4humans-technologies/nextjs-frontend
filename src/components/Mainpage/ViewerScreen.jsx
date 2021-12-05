@@ -1,26 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import AgoraRTC from "agora-rtc-sdk-ng"
-import { Button } from "react-bootstrap"
-import MediaPlayer from "../UI/MediaPlayer"
 import VideoPlayer from "../UI/VideoPlayer"
-import FavoriteIcon from "@material-ui/icons/Favorite"
 import useAgora from "../../hooks/useAgora"
-import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import Slider from "@material-ui/core/Slider"
 import { nanoid } from "nanoid"
-import { Speaker, Cancel, VolumeMute } from "@material-ui/icons"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
-import Draggable from "react-draggable"
 import io from "../../socket/socket"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import useModalContext from "../../app/ModalContext"
-import CallEndDetails from "../Call/CallEndDetails"
 import MicIcon from "@material-ui/icons/Mic"
 
 /**
@@ -399,6 +391,7 @@ function ViewerScreen(props) {
           +localStorage.getItem("rtcTokenExpireIn") < Date.now()
         ) {
           /* make new request as their is no token or expired token */
+          const myModelId = window.location.pathname.split("/").reverse()[0]
           fetch("/api/website/token-builder/authed-viewer-join-stream", {
             method: "POST",
             cors: "include",
@@ -406,7 +399,15 @@ function ViewerScreen(props) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              modelId: window.location.pathname.split("/").reverse()[0],
+              modelId: myModelId,
+              purchasedVideoAlbums:
+                ctx.user.user.relatedUser.privateVideosPlans.find(
+                  (collection) => (collection.model = myModelId)
+                )?.albums || [],
+              purchasedImageAlbums:
+                ctx.user.user.relatedUser.privateImagesPlans.find(
+                  (collection) => (collection.model = myModelId)
+                )?.albums || [],
             }),
           })
             .then((resp) => resp.json())
@@ -437,10 +438,6 @@ function ViewerScreen(props) {
                   "Error joining the stream, something is not right..!"
                 )
               })
-              // updateCtx.updateViewer({
-              //   rtcToken: data.rtcToken,
-              //   streamRoom: `${data.streamId}-public`,
-              // })
             })
         } else {
           /* get token  from local storage */
@@ -514,16 +511,7 @@ function ViewerScreen(props) {
               if (data.newUnAuthedUserCreated) {
                 /* if new viewer was created save the _id in localstorage */
                 localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
-                // updateCtx.updateViewer({
-                //   unAuthedUserId: data.unAuthedUserId,
-                //   rtcToken: data.rtcToken,
-                //   // streamRoom: `${data.streamId}-public`,
-                // })
               } else {
-                // updateCtx.updateViewer({
-                //   rtcToken: data.rtcToken,
-                //   // streamRoom: `${data.streamId}-public`,
-                // })
               }
             })
             .catch((err) => alert(err.message))
@@ -584,19 +572,6 @@ function ViewerScreen(props) {
           if (data.ended === "ok") {
             sessionStorage.setItem("callEndDetails", JSON.stringify(data))
             spinnerCtx.setShowSpinner(false, "Please wait...")
-            // modalCtx.showModalWithContent(
-            //   <CallEndDetails
-            //     dateTime={data.dateTime}
-            //     viewerName={data.name}
-            //     totalCharges={data.totalCharges}
-            //     currentWalletAmount={data.currentAmount}
-            //     callType={data.callType}
-            //     callDuration={data.callDuration}
-            //     theCall={data.theCall}
-            //     totalCharges={data.totalCharges}
-            //     userType="Viewer"
-            //   />
-            // )
           }
           // setCallEndDetails(data.callEndDetails)
           setPendingCallEndRequest(false)

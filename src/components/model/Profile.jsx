@@ -402,24 +402,20 @@ function Profile() {
             let serverResp = await serverReq.json()
             if (serverResp.actionStatus === "success") {
               let lcUser = JSON.parse(localStorage.getItem("user"))
-              lcUser.relatedUser.privateImages = [
-                ...lcUser.relatedUser.privateImages,
-                lcUser.relatedUser.privateImages
-                  .find((e) => e._id == albumNow._id)
-                  .originalImages.push(awsMainImage.split("?")[0]),
-                lcUser.relatedUser.privateImages
-                  .find((e) => e._id == albumNow._id)
-                  .thumbnails.push(awsMainImage.split("?")[0]),
-              ]
-              authUpdateContext.updateNestedPaths((prev) => ({
-                ...prev,
-                user: {
-                  ...prev.user,
+              const currentAlbum = lcUser.relatedUser.privateImages.find(
+                (e) => e._id == albumNow._id
+              )
+              currentAlbum.originalImages.push(awsMainImage.split("?")[0]),
+                currentAlbum.thumbnails.push(awsMainImage.split("?")[0]),
+                authUpdateContext.updateNestedPaths((prev) => ({
+                  ...prev,
                   user: {
-                    ...lcUser,
+                    ...prev.user,
+                    user: {
+                      ...lcUser,
+                    },
                   },
-                },
-              }))
+                }))
               localStorage.setItem("user", JSON.stringify(lcUser))
             } else {
               alert("Image was not uploaded to the server successfully!")
@@ -452,6 +448,7 @@ function Profile() {
     if (!req.ok) {
       return alert("OK BRO")
     }
+    debugger
     // send data back to node serve as success report with user id and url for the data
     const serverReq = await fetch(
       "/api/website/profile/handle-public-video-upload",
@@ -466,6 +463,7 @@ function Profile() {
       }
     )
     const serverResp = await serverReq.json()
+    debugger
     let store = JSON.parse(localStorage.getItem("user"))
     store.relatedUser.publicVideos.push(profileUrl)
     if (serverResp.actionStatus === "success") {
@@ -488,6 +486,7 @@ function Profile() {
         }
       })
       localStorage.setItem("user", JSON.stringify(store))
+      debugger
     } else {
       alert("Video was not uploaded!")
     }
@@ -1117,7 +1116,11 @@ function Profile() {
                 toggler={videoboxController.toggler}
                 sources={authContext.user.user.relatedUser.publicVideos.map(
                   (url) => {
-                    return <img src={url} />
+                    return (
+                      <div>
+                        <video src={url} autoPlay controls></video>
+                      </div>
+                    )
                   }
                 )}
                 slide={videoboxController.slide}
@@ -1130,12 +1133,10 @@ function Profile() {
                         key={index}
                         onClick={() => openVideoboxOnSlide(index + 1)}
                       >
-                        <NextImage
+                        <video
                           src={image}
-                          width={128}
-                          height={128}
-                          quality="100"
-                        />
+                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                        ></video>
                       </div>
                     )
                   )
