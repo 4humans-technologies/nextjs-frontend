@@ -1,26 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import AgoraRTC from "agora-rtc-sdk-ng"
-import { Button } from "react-bootstrap"
-import MediaPlayer from "../UI/MediaPlayer"
 import VideoPlayer from "../UI/VideoPlayer"
-import FavoriteIcon from "@material-ui/icons/Favorite"
 import useAgora from "../../hooks/useAgora"
-import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import Slider from "@material-ui/core/Slider"
 import { nanoid } from "nanoid"
-import { Speaker, Cancel, VolumeMute } from "@material-ui/icons"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
-import Draggable from "react-draggable"
 import io from "../../socket/socket"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import useModalContext from "../../app/ModalContext"
-import CallEndDetails from "../Call/CallEndDetails"
 import MicIcon from "@material-ui/icons/Mic"
 import { toast } from "react-toastify"
 
@@ -428,6 +420,7 @@ function ViewerScreen(props) {
           +localStorage.getItem("rtcTokenExpireIn") < Date.now()
         ) {
           /* make new request as their is no token or expired token */
+          const myModelId = window.location.pathname.split("/").reverse()[0]
           fetch("/api/website/token-builder/authed-viewer-join-stream", {
             method: "POST",
             cors: "include",
@@ -435,7 +428,15 @@ function ViewerScreen(props) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              modelId: window.location.pathname.split("/").reverse()[0],
+              modelId: myModelId,
+              purchasedVideoAlbums:
+                ctx.user.user.relatedUser.privateVideosPlans.find(
+                  (collection) => (collection.model = myModelId)
+                )?.albums || [],
+              purchasedImageAlbums:
+                ctx.user.user.relatedUser.privateImagesPlans.find(
+                  (collection) => (collection.model = myModelId)
+                )?.albums || [],
             }),
           })
             .then((resp) => resp.json())

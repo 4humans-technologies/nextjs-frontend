@@ -78,6 +78,7 @@ function LiveScreen(props) {
     if (!authCtx.isLoggedIn) {
       return alert("Please login to follow the model!")
     }
+    debugger
     fetch("/api/website/stream/follow-model", {
       method: "POST",
       cors: "include",
@@ -91,8 +92,10 @@ function LiveScreen(props) {
       .then((res) => res.json())
       .then((data) => {
         /*  */
+        console.log(data)
       })
       .catch((err) => err.message)
+    debugger
   }, [authCtx.isLoggedIn])
 
   const sendChatMessage = () => {
