@@ -2,6 +2,7 @@ import { useRouter } from "next/router"
 import React, { useCallback } from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 import io from "../socket/socket"
+import { toast } from "react-toastify"
 
 const initialState = {
   rootUserId: null,
@@ -123,8 +124,12 @@ export const AuthContextProvider = ({ children }) => {
           localStorage.removeItem("relatedUserId")
           localStorage.setItem("userType", "UnAuthedViewer")
           localStorage.removeItem("authContext")
-          localStorage.removeItem("unAuthedUserId")
           localStorage.removeItem("user")
+          toast.success(`Logged Out successfully!`, {
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+          })
         }
       }
     )
@@ -177,7 +182,6 @@ export const AuthContextProvider = ({ children }) => {
         localStorage.removeItem("relatedUserId")
         localStorage.removeItem("userType")
         localStorage.removeItem("authContext")
-        localStorage.removeItem("unAuthedUserId")
         localStorage.removeItem("user")
         updateViewer({ loadedFromLocalStorage: true })
       }

@@ -119,13 +119,27 @@ function Registration() {
             },
             jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
           })
-
+          toast.success(`Sign up successful, as ${username}`, {
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+          })
+          toast.info(`Please Upload Documents For Verification.`, {
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+          })
           router.push("/document")
         } else {
-          alert("code not redeemed! ☹☹")
+          toast.error("An Error Has Occurred, Please Correct And Try Again!", {
+            position: "bottom-right",
+          })
         }
       })
       .catch((err) => {
+        toast.error("An Error Has Occurred, Please Correct And Try Again!", {
+          position: "bottom-right",
+        })
         if (err.message && err?.data[0]) {
           /* validator.js error */
           const value = err.data[0].value

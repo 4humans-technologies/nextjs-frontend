@@ -14,6 +14,7 @@ import ErrorIcon from "@material-ui/icons/Error"
 import Header from "./Header"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import LockOpenIcon from "@material-ui/icons/LockOpen"
+import { toast } from "react-toastify"
 
 function SignUp() {
   const modalCtx = useModalContext()
@@ -83,10 +84,17 @@ function SignUp() {
           },
           jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
         })
-
+        toast.success(`Sign up successful, as ${username}`, {
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        })
         router.replace("/")
       })
       .catch((err) => {
+        toast.error("An Error Has Occurred, Please Correct And Try Again!", {
+          position: "bottom-right",
+        })
         if (err.message && err?.data[0]) {
           /* validator.js error */
           const value = err.data[0].value

@@ -3,6 +3,7 @@ import SingleViewerBlock from "./SingleViewerBlock"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import { useAuthContext } from "../../app/AuthContext"
+import { toast } from "react-toastify"
 
 let prevStreamViewers = []
 function ViewersListContainer(props) {
@@ -45,6 +46,13 @@ function ViewersListContainer(props) {
             }
           } else {
             /* new viewer joined */
+            toast.success(`${data.viewer.username} Has Joined The Stream`, {
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              autoClose: 3000,
+              theme: "colored",
+            })
             setViewers((prev) => {
               prev.push(data.viewer)
               return [...prev]
@@ -59,7 +67,19 @@ function ViewersListContainer(props) {
           /* update roomSize, and remove viewer */
           if (data?.relatedUserId) {
             setViewers((prev) => {
-              return prev.filter((viewer) => viewer._id !== data.relatedUserId)
+              return prev.filter((viewer) => {
+                if (viewer._id !== data.relatedUserId) {
+                  toast.info(`${viewer.username} Has Joined The Stream`, {
+                    position: "bottom-right",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    autoClose: 2000,
+                    theme: "colored",
+                  })
+                }
+                return viewer._id !== data.relatedUserId
+              })
             })
           }
           document.getElementById(

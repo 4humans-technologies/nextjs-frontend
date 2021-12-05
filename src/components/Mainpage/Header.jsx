@@ -130,9 +130,8 @@ function Header(props) {
         {/* ------------------------ */}
         <div className="md:tw-flex md:tw-items-center tw-hidden">
           {liveModels > 0 ? (
-            <div className="tw-flex tw-items-center tw-bg-dreamgirl-red tw-font-semibold">
+            <div className="tw-flex tw-items-center tw-font-medium tw-text-green-color">
               <span className="tw-pr-2">{liveModels}</span>
-              {/* <span className="tw-rounded-full tw-bg-green-color tw-h-2 tw-w-2 tw-mr-1"></span> */}
               <span className="">Live</span>
             </div>
           ) : (
@@ -405,7 +404,7 @@ function Header(props) {
                 <span className="tw-font-mono tw-font-semibold tw-mx-1 tw-text-base">
                   9999
                 </span>
-                free coins and prevent your account from suspension.
+                FREE COINS and prevent your account from suspension.
               </span>
               <button
                 onClick={() => setEmailConfirmPrompt(false)}
@@ -422,8 +421,8 @@ function Header(props) {
           authContext.user.userType === "Model" && (
             <div className="tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-text-white-color tw-font-medium tw-text-sm tw-bg-dreamgirl-red">
               Please check your email inbox & confirm your email, else you will
-              be verified and will not be able to go live & your account will be
-              closed after 2 days.
+              NOT be verified and will NOT be able to go live & your account
+              will be CLOSED after 2 days.
               <button
                 onClick={() => setEmailConfirmPrompt(false)}
                 className="tw-text-white-color tw-text-lg tw-ml-3 tw-font-mono"

@@ -22,6 +22,7 @@ import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import useModalContext from "../../app/ModalContext"
 import CallEndDetails from "../Call/CallEndDetails"
 import MicIcon from "@material-ui/icons/Mic"
+import { toast } from "react-toastify"
 
 /**
  * If this screen is being mounted then it is understood by default that,
@@ -800,6 +801,13 @@ function ViewerScreen(props) {
                     callType: data.callType,
                   },
                 })
+                toast.info("Model Is Now OnCall With " + data.username, {
+                  position: "bottom-right",
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  pauseOnHover: false,
+                  theme: "colored",
+                })
               }
 
               leaveDueToPrivateCall()
@@ -830,9 +838,11 @@ function ViewerScreen(props) {
             /* clear call type and pending call */
             document.getElementById("call-end-audio").play()
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
-              alert(
-                "Model rejected your call request, better luck next time 😢🤗🤗"
-              )
+              toast("Your Call Request Was Rejected!", {
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+              })
               setPendingCallRequest(false)
             }
           }

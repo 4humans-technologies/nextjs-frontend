@@ -10,6 +10,7 @@ import ViewerTile from "./ViewerTile"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import { useAuthContext } from "../../app/AuthContext"
+import { toast } from "react-toastify"
 
 const chatScreens = {
   VIEWERS_LIST: "viewers-list",
@@ -217,6 +218,15 @@ function PrivateChatWrapper(props) {
               .then((res) => res.json())
               .then((result) => {
                 if (result.actionStatus === "success") {
+                  toast.info(
+                    `New Private From @${result.privateChat.viewer.rootUser.username} 🎉🎉`,
+                    {
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      autoClose: 3000,
+                    }
+                  )
                   document.getElementById("private-message-audio").play()
                   setChatState((prev) => {
                     return prev.map((chatMsg) => {

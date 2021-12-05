@@ -13,6 +13,7 @@ import Link from "next/link"
 import ErrorIcon from "@material-ui/icons/Error"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import LockOpenIcon from "@material-ui/icons/LockOpen"
+import { toast } from "react-toastify"
 
 //Validation is still left in this
 function Login() {
@@ -47,6 +48,11 @@ function Login() {
       .then((data) => {
         if (data.actionStatus === "success") {
           const localLoginWork = () => {
+            toast.success(`Login successful, as ${data.user.username}`, {
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+            })
             /* login work : update the localStorage and the auth context for the new user */
             localStorage.setItem("jwtToken", data.token)
             localStorage.setItem(
@@ -104,7 +110,9 @@ function Login() {
         }
       })
       .catch((err) => {
-        //debugger
+        toast.error("An Error Has Occurred, Please Correct And Try Again!", {
+          position: "bottom-right",
+        })
         setLoginError(err.message)
       })
   }
