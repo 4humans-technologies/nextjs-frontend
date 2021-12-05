@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { useAuthContext } from "../../app/AuthContext"
+import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 
 function EmailVerification() {
@@ -12,6 +12,7 @@ function EmailVerification() {
   const [alreadyVerified, setAlreadyVerified] = useState(false)
 
   const authCtx = useAuthContext()
+  const updateCtx = useAuthUpdateContext()
   const router = useRouter()
 
   useEffect(() => {
@@ -33,6 +34,9 @@ function EmailVerification() {
             if (data.actionStatus === "success") {
               if (data.userType === "viewer") {
                 setCoinsAdded(data.coinsAdded)
+                /* also update the wallet locally */
+                document.getElementById("money-debit-audio").play()
+                updateCtx.updateWallet(+data.coinsAdded, "add")
               }
               setIsVerified(true)
             } else {

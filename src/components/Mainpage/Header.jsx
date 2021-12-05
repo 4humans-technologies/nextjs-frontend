@@ -40,6 +40,11 @@ function Header(props) {
   const socketCtx = useSocketContext()
   const [hide, setHide] = useState()
 
+  /* show banner for email conformation */
+  const [emailPrompt, setEmailConfirmPrompt] = useState(
+    !authContext.user.user?.inProcessDetails?.emailVerified
+  )
+
   /* conditionally show go live button based on the page */
   useEffect(() => {
     if (window.location.pathname.includes("/goLive")) {
@@ -108,8 +113,9 @@ function Header(props) {
   }, [])
 
   return (
-    <div>
-      <div className="tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 tw-py-4 sm:tw-pr-4 tw-pl-4 tw-min-w-full tw-font-sans tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[410]">
+    <div className="tw-min-w-full tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[400]">
+      {/* HEADER */}
+      <div className="tw-relative tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 tw-py-4 sm:tw-pr-4 tw-pl-4 tw-z-[410]">
         {/* ------------------------ */}
         <div className="tw-flex tw-text-center">
           <div onClick={sidebarUpdate} className="tw-self-center tw-mr-4">
@@ -124,7 +130,7 @@ function Header(props) {
         {/* ------------------------ */}
         <div className="md:tw-flex md:tw-items-center tw-hidden">
           {liveModels > 0 ? (
-            <div className="tw-flex tw-items-center tw-text-green-color tw-font-semibold">
+            <div className="tw-flex tw-items-center tw-bg-dreamgirl-red tw-font-semibold">
               <span className="tw-pr-2">{liveModels}</span>
               {/* <span className="tw-rounded-full tw-bg-green-color tw-h-2 tw-w-2 tw-mr-1"></span> */}
               <span className="">Live</span>
@@ -267,7 +273,7 @@ function Header(props) {
                         >
                           {authContext.user.user.relatedUser?.profileImage ? (
                             <img
-                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-bg-green-400 tw-text-4xl tw-object-cover tw-border-white-color tw-border-2"
+                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-bg-dreamgirl-red tw-text-4xl tw-object-cover tw-border-white-color tw-border-2"
                               src={
                                 authContext.user.user.relatedUser.profileImage
                               }
@@ -330,7 +336,7 @@ function Header(props) {
                           {/* if image is not available then show the Name else show the image */}
                           {authContext.user.user.relatedUser?.profileImage ? (
                             <img
-                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-green-400 tw-text-4xl  tw-object-cover tw-border-white-color tw-border-2"
+                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-dreamgirl-red tw-text-4xl  tw-object-cover tw-border-white-color tw-border-2"
                               src={
                                 authContext.user.user.relatedUser.profileImage
                               }
@@ -386,12 +392,47 @@ function Header(props) {
           <MoreVertIcon />
         </div>
       </div>
-      {/* --------------------------------------------------------------*/}
-      {/* {router.pathname.includes("/profile") ? (
-        <ProfileHeader />
-      ) : (
-        <SecondHeader />
-      )} */}
+      {/* VIEWER EMAIL PROMPT */}
+      <div className="">
+        {authContext.isLoggedIn &&
+          !authContext.user.user?.inProcessDetails?.emailVerified &&
+          emailPrompt &&
+          authContext.user.userType === "Viewer" && (
+            <div className="tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-text-white-color tw-font-medium tw-text-sm tw-bg-dreamgirl-red">
+              <span>
+                Please check your email inbox & confirm your email, to claim
+                your
+                <span className="tw-font-mono tw-font-semibold tw-mx-1 tw-text-base">
+                  9999
+                </span>
+                free coins and prevent your account from suspension.
+              </span>
+              <button
+                onClick={() => setEmailConfirmPrompt(false)}
+                className="tw-text-white-color tw-text-lg tw-ml-3 tw-font-mono"
+              >
+                x
+              </button>
+            </div>
+          )}
+        {/* MODEL EMAIL PROMPT */}
+        {authContext.isLoggedIn &&
+          !authContext.user.user?.inProcessDetails?.emailVerified &&
+          emailPrompt &&
+          authContext.user.userType === "Model" && (
+            <div className="tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-text-white-color tw-font-medium tw-text-sm tw-bg-dreamgirl-red">
+              Please check your email inbox & confirm your email, else you will
+              be verified and will not be able to go live & your account will be
+              closed after 2 days.
+              <button
+                onClick={() => setEmailConfirmPrompt(false)}
+                className="tw-text-white-color tw-text-lg tw-ml-3 tw-font-mono"
+              >
+                x
+              </button>
+            </div>
+          )}
+      </div>
       <SecondHeader />
     </div>
   )

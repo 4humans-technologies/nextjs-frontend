@@ -24,24 +24,14 @@ function PublicChatBox(props) {
     pageUrl = window.location.pathname
   }
 
-  const inFocusRef = useRef()
-
   const [chatMessages, setChatMessages] = useState([])
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
   const { isModelOffline } = props
 
-  useEffect(() => {
-    inFocusRef.current =
-      props.chatWindowRef.current === chatWindowOptions.PUBLIC
-    if (inFocusRef.current) {
-      console.debug("Public chat in focus")
-    }
-  }, [props.chatWindowRef.current])
-
   const scrollOnChat = (option) => {
-    if (inFocusRef.current) {
+    if (props.chatWindowRef.current) {
       props.scrollOnChat(option)
     }
   }

@@ -47,22 +47,15 @@ function PrivateChatWrapper(props) {
   const currentViewerRef = useRef()
   const dbChatIdsRef = useRef()
 
-  const inFocusRef = useRef()
-
-  useEffect(() => {
-    inFocusRef.current =
-      props.chatWindowRef.current === chatWindowOptions.PRIVATE
-    if (inFocusRef.current) {
-      console.debug("Private chat in focus")
-    }
-  }, [props.chatWindowRef.current])
-
   const scrollOnChat = () => {
-    if (inFocusRef.current) {
+    if (props.chatWindowRef.current) {
       props.scrollOnChat()
     }
   }
 
+  /**
+   * handling viewer tile or on chat screen with viewer
+   */
   const [currentChatScreen, setCurrentChatScreen] = useState(
     chatScreens.VIEWERS_LIST
   )
@@ -180,7 +173,6 @@ function PrivateChatWrapper(props) {
 
   /* listen for new chat messages */
   useEffect(() => {
-    /*  */
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
       if (!socket.hasListeners("viewer-private-message-received")) {
@@ -259,7 +251,7 @@ function PrivateChatWrapper(props) {
             if (
               currentChatScreenStateRef.current === chatScreens.VIEWERS_LIST &&
               currentViewerRef.current !== data.viewerId &&
-              !inFocusRef.current
+              !props.chatWindowRef.current
             ) {
               /* in background add new chat message to new chats */
               newChatNotifierDotRef.current.display = "inline"

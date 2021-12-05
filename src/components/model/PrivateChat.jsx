@@ -60,15 +60,6 @@ function PrivateChat(props) {
   const ctx = useSocketContext()
 
   const chatDataRef = useRef()
-  const inFocusRef = useRef()
-
-  useEffect(() => {
-    inFocusRef.current =
-      props.chatWindowRef.current === chatWindowOptions.PRIVATE
-    if (inFocusRef.current) {
-      console.debug("Private chat in focus")
-    }
-  }, [props.chatWindowRef.current])
 
   const [chatsData, setChatsData] = useState({
     chats: [],
@@ -81,7 +72,7 @@ function PrivateChat(props) {
   const { hasActivePlan } = props
 
   const scrollOnChat = (option) => {
-    if (inFocusRef.current) {
+    if (props.chatWindowRef.current) {
       props.scrollOnChat(option)
     }
   }
@@ -167,7 +158,7 @@ function PrivateChat(props) {
       if (!socket.hasListeners("model-private-message-received")) {
         socket.on("model-private-message-received", (data) => {
           document.getElementById("private-message-audio").play()
-          if (inFocusRef.current) {
+          if (props.chatWindowRef.current) {
             /* if in focus  */
             setChatsData((prevChatData) => {
               const prev = { ...prevChatData }
@@ -230,7 +221,7 @@ function PrivateChat(props) {
   }, [ctx.socketSetupDone, hasActivePlan, chatDataRef])
 
   useEffect(() => {
-    if (inFocusRef.current) {
+    if (props.chatWindowRef.current) {
       scrollOnChat("auto")
     }
   }, [])

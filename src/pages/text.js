@@ -51,7 +51,35 @@ function TestComponent() {
    * listener for live count changes is in main layout
    */
   useEffect(() => {})
-  return null
+  return (
+    <>
+      <audio
+        preload="true"
+        src="/audio/call-request.mp3"
+        id="call-request-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/private-message.mp3"
+        id="private-message-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/superchat-2.mp3"
+        id="superchat-2-audio"
+      ></audio>
+      <audio
+        preload="true"
+        src="/audio/superchat.mp3"
+        id="superchat-audio"
+      ></audio>
+      <audio
+        preload
+        src="/audio/money-debit.mp3"
+        id="money-debit-audio"
+      ></audio>
+    </>
+  )
 }
 
 export default TestComponent

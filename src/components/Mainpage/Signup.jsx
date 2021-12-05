@@ -89,10 +89,17 @@ function SignUp() {
       .catch((err) => {
         if (err.message && err?.data[0]) {
           /* validator.js error */
-          setFormError(`${err.data[0].msg} of field ${param} : ${value}`)
+          const value = err.data[0].value
+          const param = err.data[0].param
+          if (value.trim() !== "") {
+            setFormError(`${err.data[0].msg} in field "${param}" : ${value}`)
+          } else {
+            setFormError(
+              `${param} "CANNOT BE EMPTY", please enter a valid value`
+            )
+          }
           document.getElementById("action-btn").scrollIntoView()
-        }
-        if (err.message && !err?.data[0]) {
+        } else if (err.message && !err?.data[0]) {
           setFormError(err.message)
         }
       })

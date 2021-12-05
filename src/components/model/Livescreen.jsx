@@ -272,31 +272,6 @@ function LiveScreen(props) {
 
   return (
     <>
-      <audio
-        preload="true"
-        src="/audio/call-request.mp3"
-        id="call-request-audio"
-      ></audio>
-      <audio
-        preload="true"
-        src="/audio/private-message.mp3"
-        id="private-message-audio"
-      ></audio>
-      <audio
-        preload="true"
-        src="/audio/superchat-2.mp3"
-        id="superchat-2-audio"
-      ></audio>
-      <audio
-        preload="true"
-        src="/audio/superchat.mp3"
-        id="superchat-audio"
-      ></audio>
-      <audio
-        preload="true"
-        src="/audio/call-end.mp3"
-        id="call-end-audio"
-      ></audio>
       <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
         <div className="tw-relative tw-bg-dark-black md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
@@ -461,7 +436,10 @@ function LiveScreen(props) {
               }`}
               onClick={() => setChatWindow(chatWindowOptions.PRIVATE)}
             >
-              <MarkChatReadIcon className="tw-mr-1 tw-my-auto"  fontSize="small" />
+              <MarkChatReadIcon
+                className="tw-mr-1 tw-my-auto"
+                fontSize="small"
+              />
               <span className="tw-my-auto tw-text-xs md:tw-text-sm">
                 Private Chat
               </span>
@@ -475,7 +453,10 @@ function LiveScreen(props) {
                 }`}
                 onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
               >
-                <LocalActivityIcon className="tw-mr-1 tw-my-auto"  fontSize="small" />
+                <LocalActivityIcon
+                  className="tw-mr-1 tw-my-auto"
+                  fontSize="small"
+                />
                 <span className="tw-my-auto tw-text-xs md:tw-text-sm">
                   Tip Menu
                 </span>

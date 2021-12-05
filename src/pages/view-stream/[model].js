@@ -42,7 +42,6 @@ function ViewModelStream() {
             { title: "ethnicity", value: "American" },
             { title: "hair", value: "black" },
             { title: "eye color", value: "black" },
-            { title: "social links", value: "What to do ?" },
             { title: "features", value: ["nice", "artist", "fast"] },
           ]}
         />

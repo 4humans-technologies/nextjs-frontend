@@ -847,31 +847,6 @@ function Live() {
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div className="tw-w-full">
-      <audio
-        preload="true"
-        src="/audio/call-request.mp3"
-        id="call-request-audio"
-      ></audio>
-      <audio
-        preload="true"
-        src="/audio/private-message.mp3"
-        id="private-message-audio"
-      ></audio>
-      <audio
-        preload="true"
-        src="/audio/superchat-2.mp3"
-        id="superchat-2-audio"
-      ></audio>
-      <audio
-        preload="true"
-        src="/audio/superchat.mp3"
-        id="superchat-audio"
-      ></audio>
-      <audio
-        preload
-        src="/audio/money-debit.mp3"
-        id="money-debit-audio"
-      ></audio>
       {pendingCallRequest.pending && (
         <div className="tw-px-6 tw-py-4 tw-text-white-color tw-font-semibold tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
           <div className="tw-flex tw-justify-center tw-items-center">
