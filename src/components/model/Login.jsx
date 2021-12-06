@@ -113,6 +113,9 @@ function Login() {
         toast.error("An Error Has Occurred, Please Correct And Try Again!", {
           position: "bottom-right",
         })
+        document.getElementById("action-btn").scrollIntoView({
+          block: "end",
+        })
         setLoginError(err.message)
       })
   }
@@ -174,6 +177,7 @@ function Login() {
                   variant="danger"
                   className="tw-rounded-full tw-inline-block tw-w-11/12"
                   type="submit"
+                  id="action-btn"
                 >
                   Login
                 </Button>

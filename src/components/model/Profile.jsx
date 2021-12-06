@@ -334,20 +334,45 @@ function Profile() {
     if (!image) {
       return alert("No Image selected")
     }
-    // Create thumbnail
+
+    /* Create thumbnail */
     const reader = await new FileReader()
     reader.readAsDataURL(image)
-    debugger
     reader.onload = (event) => {
       const img = new Image()
       img.src = event.target.result
       img.onload = () => {
+        const MAX_WIDTH = 500
+        const MAX_HEIGHT = 500
+        let width = img.width
+        let height = img.height
+
         const elem = document.createElement("canvas")
-        elem.width = 256
-        elem.height = 256
         const ctx = elem.getContext("2d")
-        // img.width and img.height will contain the original dimensions
-        ctx.drawImage(img, 0, 0, 256, 256)
+        // ctx.fillStyle = "white"
+
+        /* resize while containing the image */
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = height * (MAX_WIDTH / width)
+            width = MAX_WIDTH
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = width * (MAX_HEIGHT / height)
+            height = MAX_HEIGHT
+          }
+        }
+        /* adjust image size */
+        img.width = width
+        img.height = height
+        img.style.objectFit = "contain"
+
+        /* adjust canvas size */
+        elem.width = width
+        elem.height = height
+
+        ctx.drawImage(img, 0, 0, width, height)
         ctx.canvas.toBlob(
           async (blob) => {
             thumbnailfile = new File([blob], image.name, {

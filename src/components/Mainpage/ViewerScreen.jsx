@@ -807,7 +807,6 @@ function ViewerScreen(props) {
                   hideProgressBar: true,
                   closeOnClick: true,
                   pauseOnHover: false,
-                  theme: "colored",
                 })
               }
 
@@ -839,7 +838,8 @@ function ViewerScreen(props) {
             /* clear call type and pending call */
             document.getElementById("call-end-audio").play()
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
-              toast("Your Call Request Was Rejected!", {
+              toast.error("Your Call Request Was Rejected!", {
+                position: "bottom-right",
                 hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: false,

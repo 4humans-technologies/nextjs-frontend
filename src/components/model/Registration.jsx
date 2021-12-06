@@ -12,6 +12,7 @@ import io from "../../socket/socket"
 import ErrorIcon from "@material-ui/icons/Error"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import LockOpenIcon from "@material-ui/icons/LockOpen"
+import { toast } from "react-toastify"
 
 //Validation is still left in this
 // I did blunder using multiple state ,rather than using single to create it
@@ -151,7 +152,9 @@ function Registration() {
               `${param} "CANNOT BE EMPTY", please enter a valid value`
             )
           }
-          document.getElementById("action-btn").scrollIntoView()
+          document.getElementById("action-btn").scrollIntoView({
+            block: "end",
+          })
         } else if (err.message && !err?.data[0]) {
           setFormError(err.message)
         }

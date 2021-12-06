@@ -106,7 +106,9 @@ function SignUp() {
               `${param} "CANNOT BE EMPTY", please enter a valid value`
             )
           }
-          document.getElementById("action-btn").scrollIntoView()
+          document.getElementById("action-btn").scrollIntoView({
+            block: "end",
+          })
         } else if (err.message && !err?.data[0]) {
           setFormError(err.message)
         }
