@@ -1,6 +1,7 @@
 import React, { useReducer, useState } from "react"
 import { PlayCircleFilled } from "@material-ui/icons"
 import useModalContext from "../../app/ModalContext"
+import { toast } from "react-toastify"
 // import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import FsLightbox from "fslightbox-react"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
@@ -36,7 +37,7 @@ function ModelProfile(props) {
    */
   const { name, age, profileImage } = props.profileData
   const modalContext = useModalContext()
-
+  const updateCtx = useAuthUpdateContext()
   const tags = props.profileData.tags.map((tag, index) => (
     <ChipArea key={`tag-chip${index}`}>
       <a href="#" className="hover:tw-text-white-color tw-px-2">
@@ -203,7 +204,7 @@ function ModelProfile(props) {
   /* PRIVATE IMAGE COMPONENT */
   const PrivateImages = () => {
     const [currAlbum, setCurrAlbum] = useState(
-      props.profileData.privateImages?.[0]._id
+      props.profileData.privateImages?.[0]?._id
     )
     const [lightboxController, setLightboxController] = useState({
       toggler: false,
@@ -220,25 +221,70 @@ function ModelProfile(props) {
 
     /* buy private images */
     const imageBuyHandler = async (albumId) => {
-      const imageBuyRequest = await fetch(
-        "/api/website/stream/private-content/buy-private-image-album",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            modelId: modelId,
-            albumId: albumId,
-          }),
+      try {
+        const imageBuyRequest = await fetch(
+          "/api/website/stream/private-content/buy-private-image-album",
+          {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              modelId: modelId,
+              albumId: albumId,
+            }),
+          }
+        )
+        const imageBuyResult = await imageBuyRequest.json()
+        if (imageBuyResult.actionStatus === "success") {
+          /* ALBUM was brought successfully */
+          const lcUser = JSON.parse(localStorage.getItem("user"))
+          const modelAlbums = lcUser.relatedUser.privateImagesPlans.find(
+            (entry) => entry.model === modelId
+          )
+
+          lcUser.relatedUser.wallet.currentAmount -
+            parseInt(imageBuyResult.albumCost)
+
+          if (modelAlbums) {
+            modelAlbums.albums.push(albumId)
+          } else {
+            lcUser.relatedUser.privateImagesPlans.push({
+              model: modelId,
+              albums: [albumId],
+            })
+          }
+
+          updateCtx.setAuthState((prev) => {
+            return {
+              ...prev,
+              user: {
+                ...prev.user,
+                user: { ...lcUser },
+              },
+            }
+          })
+          localStorage.setItem("user", JSON.stringify(lcUser))
+          toast.success("Album Bought Successfully", {
+            position: "bottom-right",
+            closeOnClick: true,
+            pauseOnHover: false,
+            autoClose: 3000,
+            theme: "colored",
+          })
+          setTimeout(() => {
+            window.location.reload()
+          }, [3000])
+        } else {
+          /* ALBUM was not brought successfully */
+          toast.error(imageBuyResult.message, {
+            position: "bottom-right",
+          })
         }
-      )
-      const imageBuyResult = await imageBuyRequest.json()
-      if (imageBuyResult.actionStatus === "success") {
-        /* ALBUM was brought successfully */
-      } else {
-        /* ALBUM was not brought successfully */
-        let store = JSON.parse(localStorage.getItem("user"))
+      } catch (err) {
+        toast.error(err.message, {
+          position: "bottom-right",
+        })
       }
     }
 
@@ -246,83 +292,106 @@ function ModelProfile(props) {
       <>
         <FsLightbox
           toggler={lightboxController.toggler}
-          sources={props.profileData.privateImages?.find(
-            (album) => album._id === currAlbum
-          )}
+          sources={props.profileData.privateImages
+            ?.find((album) => album._id === currAlbum)
+            ?.originalImages?.map((url) => (
+              <img src={url} />
+            ))}
           slide={lightboxController.slide}
         />
         {/* RENDER MODELS PRIVATE ALBUMS */}
-        {props.profileData.privateImages.map((album, index) => (
-          <>
-            <div className="tw-text-white tw-pt-2" key={index}>
-              <div className="tw-flex tw-justify-start tw-items-center">
-                <h3 className="tw-capitalize tw-text-lg tw-ml-4">
-                  Album: {album.name}
-                </h3>
-                <h3 className="tw-capitalize tw-text-xl tw-my-auto tw-ml-2">
-                  Coins: {album.price}
-                </h3>
-                {album.thumbnails && (
-                  <button
-                    className="tw-rounded-full tw-px-8 tw-border-2 tw-border-white-color tw-font-medium"
-                    onClick={() => imageBuyHandler(album._id)}
-                  >
-                    Buy Now
-                  </button>
-                )}
-              </div>
+        {props.profileData.privateImages.map((album, index) => {
+          if (!album.originalImages && !album.thumbnails) {
+            return
+          }
+          return (
+            <>
+              <div className="tw-text-white tw-pt-2" key={index}>
+                <div className="tw-flex tw-justify-start tw-items-center">
+                  <h3 className="tw-capitalize tw-text-lg tw-ml-6">
+                    Album: {album.name}
+                  </h3>
+                  <h3 className="tw-capitalize tw-text-sm tw-ml-2">
+                    Coins: {album.price}
+                  </h3>
+                  <div className=" tw-ml-auto">
+                    {album.thumbnails && (
+                      <button
+                        className="tw-rounded-full tw-px-8 tw-border-2 tw-border-white-color tw-font-medium"
+                        onClick={() => imageBuyHandler(album._id)}
+                      >
+                        Buy Now
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-              {/* RENDER ALL IMAGES OF AN ALBUM */}
-              {album?.originalImages ? (
-                <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 2xl:tw-grid-cols-7 tw-gap-3 tw-py-3 tw-justify-start tw-max-h-[14rem] tw-overflow-y-auto">
-                  {album.originalImages.map((image, index) => {
-                    return (
-                      <div
-                        className="tw-col-span-1 tw-row-span-1 tw-h-full tw-cursor-pointer"
-                        onClick={() =>
-                          openLightboxOnSlide(index + 1, album._id)
-                        }
-                      >
-                        <img
-                          src={image}
-                          className="tw-w-full tw-h-full tw-object-cover"
-                        />
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 md:tw-gap-4 tw-py-3 tw-justify-start tw-max-h-[48rem] tw-overflow-y-auto">
-                  {album.thumbnails.map((el) => {
-                    return (
-                      <div
-                        className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer"
-                        onClick={() =>
-                          alert("I am not Kejriwal,so click on buy now")
-                        }
-                      >
-                        <img src={el} className="tw-w-full tw-h-full" />
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          </>
-        ))}
+                {/* RENDER ALL IMAGES OF AN ALBUM */}
+
+                <>
+                  <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 2xl:tw-grid-cols-7 tw-gap-4 tw-py-3 tw-justify-start tw-max-h-52 tw-overflow-y-auto">
+                    {album.originalImages?.map((image, index) => {
+                      return (
+                        <div
+                          className="tw-col-span-1 tw-h-full tw-cursor-pointer tw-max-h-40  hover:tw-scale-[1.1] tw-transition-transform"
+                          onClick={() =>
+                            openLightboxOnSlide(index + 1, album._id)
+                          }
+                        >
+                          <img
+                            src={image}
+                            className="tw-w-full tw-h-full tw-object-cover tw-rounded"
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 md:tw-gap-4 tw-py-3 tw-justify-start tw-max-h-52 tw-overflow-y-auto">
+                    {album.thumbnails?.map((el) => {
+                      return (
+                        <div
+                          className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer tw-max-h-40  hover:tw-scale-[1.1] tw-transition-transform"
+                          onClick={() => {
+                            toast.error(
+                              "You have to buy this image to view it in original quality!",
+                              {
+                                position: "bottom-right",
+                                hideProgressBar: true,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                              }
+                            )
+                          }}
+                        >
+                          <img
+                            src={el}
+                            className="tw-w-full tw-h-full tw-rounded tw-object-cover"
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              </div>
+            </>
+          )
+        })}
       </>
     )
   }
 
   // private Videos
   const PrivateVideos = () => {
-    const authContext = useAuthContext()
+    const [currAlbum, setCurrAlbum] = useState(
+      props.profileData.privateImages?.[0]._id
+    )
     const [lightboxController, setLightboxController] = useState({
       toggler: false,
       slide: 1,
     })
 
-    function openLightboxOnSlide(number) {
+    function openLightboxOnSlide(number, albumId) {
+      setCurrAlbum(albumId)
       setLightboxController({
         toggler: !lightboxController.toggler,
         slide: number,
@@ -330,93 +399,138 @@ function ModelProfile(props) {
     }
     // videoBuyer at the thing
     const videoBuyHandler = async (albumId) => {
-      const re = await fetch(
-        "/api/website/stream/private-content/buy-private-image-album",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            modelId: window.location.pathname.split("/").reverse()[0],
-            albumId: albumId,
-          }),
-        }
-      )
-      const res = await re.json()
-    }
+      try {
+        const imageBuyRequest = await fetch(
+          "/api/website/stream/private-content/buy-private-video-album",
+          {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              modelId: modelId,
+              albumId: albumId,
+            }),
+          }
+        )
+        const imageBuyResult = await imageBuyRequest.json()
+        if (imageBuyResult.actionStatus === "success") {
+          /* ALBUM was brought successfully */
+          const lcUser = JSON.parse(localStorage.getItem("user"))
+          const modelAlbums = lcUser.relatedUser.privateVideosPlans.find(
+            (entry) => entry.model === modelId
+          )
+          lcUser.relatedUser.wallet.currentAmount -
+            parseInt(imageBuyResult.albumCost)
 
-    let videoIndex = 1
-    const Counter = () => (videoIndex = +1)
+          if (modelAlbums) {
+            modelAlbums.albums.push(albumId)
+          } else {
+            lcUser.relatedUser.privateVideosPlans.push({
+              model: modelId,
+              albums: [albumId],
+            })
+          }
+          updateCtx.setAuthState((prev) => {
+            return {
+              ...prev,
+              user: {
+                ...prev.user,
+                user: { ...lcUser },
+              },
+            }
+          })
+          localStorage.setItem("user", JSON.stringify(lcUser))
+          toast.success("Album Bought Successfully", {
+            position: "bottom-right",
+            closeOnClick: true,
+            pauseOnHover: false,
+            autoClose: 3000,
+            theme: "colored",
+          })
+          setTimeout(() => {
+            window.location.reload()
+          }, [3000])
+        } else {
+          /* ALBUM was not brought successfully */
+          toast.error(imageBuyResult.message, {
+            position: "bottom-right",
+          })
+        }
+      } catch (err) {
+        toast.error(err.message, {
+          position: "bottom-right",
+        })
+      }
+    }
 
     return (
       <>
         {/* public Images on live stream */}
         <FsLightbox
           toggler={lightboxController.toggler}
-          sources={props.profileData.privateVideos.map((item) => {
-            {
-              item.thumbnails.map((el) => (
-                <div>
-                  <video src={el} autoPlay controls></video>
-                </div>
-              ))
-            }
-          })}
+          sources={props.profileData.privateVideos
+            ?.find((album) => album._id === currAlbum)
+            ?.originalVideos?.map((url) => (
+              <video src={url} controls autoPlay={true}></video>
+            ))}
           slide={lightboxController.slide}
         />
 
         {props.profileData.privateVideos.map((album, index) => (
-          <div className="tw-text-white " key={index}>
-            <div className="tw-flex tw-justify-between">
-              <div className="tw-flex">
-                <span className="tw-text-xl">Album:</span>
-                <h1 className="tw-capitalize tw-text-xl tw-my-auto tw-ml-2">
-                  {album.name}
-                </h1>
+          <div className="tw-text-white tw-pt-2 " key={index}>
+            <div className="tw-flex tw-justify-start tw-items-center">
+              <h3 className="tw-capitalize tw-text-lg tw-ml-6">
+                Album: {album.name}
+              </h3>
+              <h3 className="tw-capitalize tw-text-sm tw-ml-2">
+                Coins: {album.price}
+              </h3>
+              <div className=" tw-ml-auto">
+                {album.thumbnails && (
+                  <button
+                    className="tw-rounded-full tw-px-8 tw-border-2 tw-border-white-color tw-font-medium"
+                    onClick={() => videoBuyHandler(album._id)}
+                  >
+                    Buy Now
+                  </button>
+                )}
               </div>
-              <div className="tw-flex">
-                <span className="tw-text-xl">Coins:</span>
-                <h1 className="tw-capitalize tw-text-xl tw-my-auto tw-ml-2">
-                  {album.price}
-                </h1>
-              </div>
-              {!album.originalImages && (
-                <button
-                  className="tw-rounded-full tw-px-8 tw-border-2 tw-border-white-color tw-font-medium"
-                  onClick={() => videoBuyHandler(album._id)}
-                >
-                  Buy Now
-                </button>
-              )}
             </div>
-            {album.originavideos ? (
-              <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 md:tw-gap-4 tw-py-3 tw-justify-start tw-max-h-[48rem] tw-overflow-y-auto">
-                {album.originavideos.map((el) => {
-                  return (
-                    <div
-                      className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer tw-w-48 tw-h-48 "
-                      onClick={() => openLightboxOnSlide(imageIndex)}
-                    >
-                      <video src={el} className="tw-w-full tw-h-full"></video>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 md:tw-gap-4 tw-py-3 tw-justify-start tw-max-h-[48rem] tw-overflow-y-auto">
-                {album.thumbnails.map((el) => {
-                  return (
-                    <div
-                      className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer tw-w-48 tw-h-48 "
-                      // onClick={() => openLightboxOnSlide(imageIndex)}
-                    >
-                      <video src={el} className="tw-w-full tw-h-full"></video>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+            <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 md:tw-gap-4 tw-py-3 tw-justify-start tw-max-h-52 tw-overflow-y-auto">
+              {album.originalVideos?.map((el) => {
+                return (
+                  <div
+                    className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer tw-w-48 tw-h-48 "
+                    onClick={() => openLightboxOnSlide(index + 1, album._id)}
+                  >
+                    <video src={el} className="tw-w-full tw-h-full"></video>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 md:tw-gap-4 tw-py-3 tw-justify-start tw-max-h-[48rem] tw-overflow-y-auto">
+              {album.thumbnails?.map((el) => {
+                return (
+                  <div
+                    className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer  tw-max-h-40  hover:tw-scale-[1.1] tw-transition-transform "
+                    onClick={() => {
+                      toast.error(
+                        "Sona babu !! You have to buy this video to see it!",
+                        {
+                          position: "bottom-right",
+                          hideProgressBar: true,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        }
+                      )
+                    }}
+                  >
+                    <video src={el} className="tw-w-full tw-h-full"></video>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         ))}
       </>

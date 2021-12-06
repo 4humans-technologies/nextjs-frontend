@@ -14,7 +14,9 @@ import {
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import FsLightbox from "fslightbox-react"
 import { DropdownButton, Dropdown, Button } from "react-bootstrap"
+import { toast } from "react-toastify"
 // ========================================================
+
 function Profile() {
   const modalCtx = modalContext()
   const authContext = useAuthContext()
@@ -278,6 +280,11 @@ function Profile() {
         },
       }))
       localStorage.setItem("user", JSON.stringify(lcUser))
+      toast.success("Photo uploded Successfully", {
+        position: "bottom-right",
+        closeOnClick: true,
+        autoClose: 3000,
+      })
     } else {
       alert("Image was not uploaded to the server successfully!")
     }
@@ -322,6 +329,11 @@ function Profile() {
     const store = JSON.parse(localStorage.getItem("user"))
     store.relatedUser.privateImages.push(resp.album)
     localStorage.setItem("user", JSON.stringify(store))
+    toast.success("Album create Successfully", {
+      position: "bottom-right",
+      closeOnClick: true,
+      autoClose: 3000,
+    })
     setShowInput(false)
     setAlbumNow(resp.album)
   }
@@ -333,6 +345,9 @@ function Profile() {
     const image = e.target.files[0]
     if (!image) {
       return alert("No Image selected")
+    }
+    if (!albumNow._id) {
+      return toast.error("Please select album first")
     }
 
     /* Create thumbnail */
@@ -442,6 +457,11 @@ function Profile() {
                   },
                 }))
               localStorage.setItem("user", JSON.stringify(lcUser))
+              toast.success("Image uploded  Successfully", {
+                position: "bottom-right",
+                closeOnClick: true,
+                autoClose: 3000,
+              })
             } else {
               alert("Image was not uploaded to the server successfully!")
             }
@@ -473,7 +493,6 @@ function Profile() {
     if (!req.ok) {
       return alert("OK BRO")
     }
-    debugger
     // send data back to node serve as success report with user id and url for the data
     const serverReq = await fetch(
       "/api/website/profile/handle-public-video-upload",
@@ -488,7 +507,6 @@ function Profile() {
       }
     )
     const serverResp = await serverReq.json()
-    debugger
     let store = JSON.parse(localStorage.getItem("user"))
     store.relatedUser.publicVideos.push(profileUrl)
     if (serverResp.actionStatus === "success") {
@@ -511,7 +529,11 @@ function Profile() {
         }
       })
       localStorage.setItem("user", JSON.stringify(store))
-      debugger
+      toast.success("Video uploded  Successfully", {
+        position: "bottom-right",
+        closeOnClick: true,
+        autoClose: 3000,
+      })
     } else {
       alert("Video was not uploaded!")
     }
@@ -520,7 +542,7 @@ function Profile() {
   // create video folder
   const createVideoFolderHandler = async () => {
     // creating folder
-    debugger
+
     const album = await fetch("/api/website/profile/create-album", {
       method: "POST",
       headers: {
@@ -533,7 +555,7 @@ function Profile() {
       }),
     })
     const resp = await album.json()
-    debugger
+
     authUpdateContext.updateNestedPaths((prev) => {
       return {
         ...prev,
@@ -552,10 +574,15 @@ function Profile() {
         },
       }
     })
-    debugger
+
     const store = JSON.parse(localStorage.getItem("user"))
     store.relatedUser.privateVideos.push(resp.album)
     localStorage.setItem("user", JSON.stringify(store))
+    toast.success("Album create Successfully", {
+      position: "bottom-right",
+      closeOnClick: true,
+      autoClose: 3000,
+    })
     setShowvideoInput(false)
     setVideoAlbumNow(resp.album)
   }
@@ -566,6 +593,9 @@ function Profile() {
     // to get url from domain and then uplode to aws
     if (!image) {
       return alert("no Image Selected")
+    }
+    if (!albumNow._id) {
+      return toast.error("Please select album first")
     }
     const url = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + image.type
@@ -618,6 +648,11 @@ function Profile() {
         },
       }))
       localStorage.setItem("user", JSON.stringify(lcUser))
+      toast.success("Video Uploded  Successfully", {
+        position: "bottom-right",
+        closeOnClick: true,
+        autoClose: 3000,
+      })
     } else {
       alert("Video was not uploaded to the server successfully!")
     }
