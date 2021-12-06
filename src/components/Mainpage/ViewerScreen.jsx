@@ -781,7 +781,8 @@ function ViewerScreen(props) {
                     username: data.username,
                     /* as current viewers don't have a profileimg, using placeholder */
                     // profileImage: data.profileImage,
-                    profileImage: "/male-model.jpeg",
+                    // profileImage: "/male-model.jpeg",
+                    profileImage: data.username,
                     callType: data.callType,
                   },
                 })
@@ -798,7 +799,8 @@ function ViewerScreen(props) {
                     username: data.username,
                     /* as current viewers don't have a profileimg, using placeholder */
                     // profileImage: data.profileImage,
-                    profileImage: "/male-model.jpeg",
+                    // profileImage: "/male-model.jpeg",
+                    profileImage: data.username,
                     callType: data.callType,
                   },
                 })
@@ -836,8 +838,8 @@ function ViewerScreen(props) {
             }
           } else {
             /* clear call type and pending call */
-            document.getElementById("call-end-audio").play()
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
+              document.getElementById("call-end-audio").play()
               toast.error("Your Call Request Was Rejected!", {
                 position: "bottom-right",
                 hideProgressBar: true,
@@ -1075,11 +1077,19 @@ function ViewerScreen(props) {
             />
           </div>
           <div className="tw-border-8 tw-border-red-200 tw-rounded-full tw-translate-y-[-64px] md:tw-translate-y-[-24px] tw-ml--2">
-            <img
-              src={othersCall.otherUserData.profileImage}
-              alt=""
-              className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
-            />
+            {othersCall.otherUserData?.profileImage ? (
+              <img
+                src={othersCall.otherUserData.profileImage}
+                alt=""
+                className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
+              />
+            ) : (
+              <div className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-bg-dreamgirl-red tw-grid tw-place-items-start tw-text-white-color tw-font-semibold tw-ring-2 tw-ring-white-color">
+                <span className="tw-text-3xl tw-uppercase">
+                  {othersCall.otherUserData.username.charAt(0)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}

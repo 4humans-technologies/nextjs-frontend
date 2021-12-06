@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import MenuIcon from "@material-ui/icons/Menu"
 import SearchIcon from "@material-ui/icons/Search"
 import BarChartIcon from "@material-ui/icons/BarChart"
@@ -41,10 +41,18 @@ function Header(props) {
   const [hide, setHide] = useState()
 
   /* show banner for email conformation */
+  const sessionVal =
+    typeof window !== "undefined"
+      ? sessionStorage.getItem("emailPromptShown") !== "true"
+      : true
   const [emailPrompt, setEmailConfirmPrompt] = useState(
-    !authContext.user.user?.inProcessDetails?.emailVerified
+    !authContext.user.user?.inProcessDetails?.emailVerified && sessionVal
   )
 
+  const hideEmailPrompt = useCallback(() => {
+    setEmailConfirmPrompt(false)
+    sessionStorage.setItem("emailPromptShown", "true")
+  }, [])
   /* conditionally show go live button based on the page */
   useEffect(() => {
     if (window.location.pathname.includes("/goLive")) {
@@ -407,7 +415,7 @@ function Header(props) {
                 FREE COINS and prevent your account from suspension.
               </span>
               <button
-                onClick={() => setEmailConfirmPrompt(false)}
+                onClick={hideEmailPrompt}
                 className="tw-text-white-color tw-text-lg tw-ml-3 tw-font-mono"
               >
                 x
@@ -424,7 +432,7 @@ function Header(props) {
               NOT be verified and will NOT be able to go live & your account
               will be CLOSED after 2 days.
               <button
-                onClick={() => setEmailConfirmPrompt(false)}
+                onClick={hideEmailPrompt}
                 className="tw-text-white-color tw-text-lg tw-ml-3 tw-font-mono"
               >
                 x

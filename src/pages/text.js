@@ -78,6 +78,11 @@ function TestComponent() {
         src="/audio/money-debit.mp3"
         id="money-debit-audio"
       ></audio>
+      <audio
+        preload
+        src="/audio/call-end.mp3"
+        id="call-end-audio"
+      ></audio>
     </>
   )
 }
