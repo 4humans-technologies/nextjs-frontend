@@ -78,7 +78,6 @@ function LiveScreen(props) {
     if (!authCtx.isLoggedIn) {
       return alert("Please login to follow the model!")
     }
-    debugger
     fetch("/api/website/stream/follow-model", {
       method: "POST",
       cors: "include",
@@ -91,11 +90,58 @@ function LiveScreen(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        /*  */
-        console.log(data)
+        if (data.actionStatus == "success") {
+          document.getElementById(
+            "model-follower-count-lg"
+          ).innerText = `${data.newCount}`
+          document.getElementById(
+            "model-follower-count-sm"
+          ).innerText = `${data.newCount}`
+
+          if (data.action == "follow") {
+            updateCtx.setAuthState((prev) => {
+              return {
+                ...prev,
+                user: {
+                  ...prev.user,
+                  user: {
+                    ...prev.user.user,
+                    relatedUser: {
+                      ...prev.user.user.relatedUser,
+                      following: [
+                        ...prev.user.user.relatedUser.following,
+                        window.location.pathname.split("/").reverse()[0],
+                      ],
+                    },
+                  },
+                },
+              }
+            })
+          } else {
+            updateCtx.setAuthState((prev) => {
+              return {
+                ...prev,
+                user: {
+                  ...prev.user,
+                  user: {
+                    ...prev.user.user,
+                    relatedUser: {
+                      ...prev.user.user.relatedUser,
+                      following: [
+                        ...prev.user.user.relatedUser.following,
+                      ].filter(
+                        (el) =>
+                          el != window.location.pathname.split("/").reverse()[0]
+                      ),
+                    },
+                  },
+                },
+              }
+            })
+          }
+        }
       })
       .catch((err) => err.message)
-    debugger
   }, [authCtx.isLoggedIn])
 
   const sendChatMessage = () => {
@@ -300,11 +346,17 @@ function LiveScreen(props) {
               <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">
                 <div className="tw-col-span-1 tw-row-span-1 tw-flex tw-items-center tw-justify-start">
                   <button onClick={handleModelFollow}>
-                    <span className="tw-p-1 tw-rounded-full tw-bg-white-color tw-inline-block">
-                      <FavoriteIcon className="tw-text-red-600" />
+                    <span
+                      className={`tw-p-1 tw-rounded-full tw-bg-black tw-inline-block`}
+                    >
+                      <FavoriteIcon className="tw-bg-black" />
                     </span>
-                    <span className="tw-pl-2 tw-text-white-color tw-font-semibold">
-                      33.k
+                    <span
+                      id="model-follower-count-lg"
+                      className="tw-pl-2 tw-text-white-color tw-font-semibold"
+                    >
+                      {props?.modelProfileData?.numberOfFollowers &&
+                        props.modelProfileData.numberOfFollowers}
                     </span>
                   </button>
                   <span
@@ -363,8 +415,12 @@ function LiveScreen(props) {
                     <span className="tw-p-1 tw-rounded-full tw-bg-white-color tw-inline-block">
                       <FavoriteIcon className="tw-text-red-600" />
                     </span>
-                    <span className="tw-pl-2 tw-text-white-color tw-font-semibold">
-                      33.k
+                    <span
+                      id="model-follower-count-sm"
+                      className="tw-pl-2 tw-text-white-color tw-font-semibold"
+                    >
+                      {props?.modelProfileData?.numberOfFollowers &&
+                        props.modelProfileData.numberOfFollowers}
                     </span>
                   </button>
                   <span

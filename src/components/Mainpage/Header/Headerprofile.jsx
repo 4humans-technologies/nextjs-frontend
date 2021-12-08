@@ -27,17 +27,15 @@ function Headerprofile(props) {
           <PersonIcon />
           <p className="tw-ml-4">My Profile</p>
         </div>
-        {authContext.user.userType == "Model" && (
-          <div
-            className="tw-flex tw-my-2 tw-px-2 tw-border-t-[1px] tw-border-gray-600"
-            onClick={() =>
-              router.push(`/${authContext.user.user.username}/settingToken`)
-            }
-          >
-            <SettingsIcon />
-            <p className="tw-ml-4">Setting and Earning</p>
-          </div>
-        )}
+        <div
+          className="tw-flex tw-my-2 tw-px-2 tw-border-t-[1px] tw-border-gray-600"
+          onClick={() =>
+            router.push(`/${authContext.user.user.username}/settingToken`)
+          }
+        >
+          <SettingsIcon />
+          <p className="tw-ml-4">Setting and Earning</p>
+        </div>
 
         <div
           className="tw-flex tw-my-4 tw-px-2 tw-border-t-[1px] tw-border-gray-600"

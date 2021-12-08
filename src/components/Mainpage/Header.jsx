@@ -261,7 +261,7 @@ function Header(props) {
                           />
                           <div className="tw-my-auto tw-ml-2 tw-font-bold">
                             {
-                              authContext.user.user.relatedUser.wallet
+                              authContext.user.user?.relatedUser?.wallet
                                 .currentAmount
                             }
                           </div>
@@ -280,8 +280,8 @@ function Header(props) {
                           ) : (
                             <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
                               <span className="tw-text-4xl tw-text-white-color tw-font-light">
-                                {authContext.user.user.username
-                                  .charAt(0)
+                                {authContext.user.user?.username
+                                  ?.charAt(0)
                                   .toUpperCase()}
                               </span>
                             </div>
@@ -300,12 +300,6 @@ function Header(props) {
                     ) : (
                       // login at large screen model
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                        {/* <button
-                          className="tw-mx-4 tw-px-4 tw-py-2 tw-rounded-full hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
-                          onClick={updateAuthContext.logout}
-                        >
-                          Logout
-                        </button> */}
                         <div className="tw-mx-4 tw-flex ">
                           <img
                             src="/coins.png"

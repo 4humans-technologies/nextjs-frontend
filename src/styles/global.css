@@ -617,3 +617,20 @@ select {
   -ms-grid-column: 28% 1fr 1fr 15%;
 }
 /* Token Grid */
+
+
+/* user profile */
+.userProfileIntro{
+  display: flex;
+
+}
+
+.userProfil_1{
+  display: flex;
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+
+.userProfile-2{
+  display: flex;
+}

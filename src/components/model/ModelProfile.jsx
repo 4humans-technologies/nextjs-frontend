@@ -383,7 +383,7 @@ function ModelProfile(props) {
   // private Videos
   const PrivateVideos = () => {
     const [currAlbum, setCurrAlbum] = useState(
-      props.profileData.privateImages?.[0]._id
+      props.profileData.privateVideos?.[0]?._id
     )
     const [lightboxController, setLightboxController] = useState({
       toggler: false,
@@ -472,7 +472,7 @@ function ModelProfile(props) {
           sources={props.profileData.privateVideos
             ?.find((album) => album._id === currAlbum)
             ?.originalVideos?.map((url) => (
-              <video src={url} controls autoPlay={true}></video>
+              <video src={url} controls></video>
             ))}
           slide={lightboxController.slide}
         />
@@ -498,7 +498,7 @@ function ModelProfile(props) {
               </div>
             </div>
             <div className="tw-grid tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-5 xl:tw-grid-cols-6 tw-gap-3 md:tw-gap-4 tw-py-3 tw-justify-start tw-max-h-52 tw-overflow-y-auto">
-              {album.originalVideos?.map((el) => {
+              {album.originalVideos?.map((el, index) => {
                 return (
                   <div
                     className="tw-col-span-1 tw-row-span-1 tw-cursor-pointer tw-w-48 tw-h-48 "

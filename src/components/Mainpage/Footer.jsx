@@ -50,7 +50,7 @@ function Footer() {
           </h2>
           <div className="mt-1">
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
-              <Link href="/footer/Careers"> become a model</Link>
+              <Link href="/auth/modelRegisteration"> become a model</Link>
             </p>
             <p className="tw-text-text-black tw-text-sm tw-py-2 tw-font-light tw-pl-0.5 tw-border-t-[1px] tw-border-text-black tw-capitalize">
               affiliate program
