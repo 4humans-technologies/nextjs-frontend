@@ -202,7 +202,7 @@ function Token() {
         {isExcess && (
           <div className="">
             <p className="tw-text-left tw-text-red-400 tw-text-sm">
-              {`Oh Bhai !!!!! Tere Wallet Me Sirf ${authContext.user.user.relatedUser.wallet.currentAmount} coins in your wallet!`}
+              {`You have only ${authContext.user.user.relatedUser.wallet.currentAmount} coins in your wallet, Please enter an amount which is less than it 😀`}
             </p>
           </div>
         )}

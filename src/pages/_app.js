@@ -40,12 +40,12 @@ const MyApp = ({ Component, pageProps }) => {
                 <SocketContextProvider>
                   <TestComponent />
                   <ToastContainer
-                    position="top-right"
+                    position="bottom-right"
                     autoClose={5000}
                     hideProgressBar={false}
                     newestOnTop={false}
-                    closeOnClick
                     rtl={false}
+                    closeOnClick
                     draggable
                     pauseOnHover
                     theme="dark"

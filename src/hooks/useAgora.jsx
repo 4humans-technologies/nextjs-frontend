@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import AgoraRTC from "agora-rtc-sdk-ng"
 import useSpinnerContext from "../app/Loading/SpinnerContext"
+import { toast } from "react-toastify"
 
 const appId = "ee68eb6fcb93426e81c89f5ad6b0401f"
 function useAgora(client, role, callType) {
@@ -8,9 +9,19 @@ function useAgora(client, role, callType) {
   const [localAudioTrack, setLocalAudioTrack] = useState(null)
   const [joinState, setJoinState] = useState(false)
   const [remoteUsers, setRemoteUsers] = useState([])
-  const [streamOnGoing, setStreamOnGoing] = useState(true)
   const localAudioTrackRef = useRef()
   const localVideoTrackRef = useRef()
+
+  /**
+   * for saving some meta data about the current state
+   * ex: is is call on-going
+   */
+  const customDataRef = useRef({
+    callOngoing: false,
+    canRenewToken: true,
+    wasOnCall: false,
+    streamEndFunction: null,
+  })
 
   useEffect(() => {
     localAudioTrackRef.current = localAudioTrack
@@ -130,12 +141,6 @@ function useAgora(client, role, callType) {
     setJoinState(false)
   }, [client])
 
-  async function leaveDueToPrivateCall() {
-    await client?.leave()
-    setRemoteUsers([])
-    setJoinState(false)
-  }
-
   const leaveAndCloseTracks = useCallback(
     async (mounted = true) => {
       /* client.connectionState !== "DISCONNECTED" &&
@@ -149,11 +154,6 @@ function useAgora(client, role, callType) {
     },
     [client, localVideoTrackRef, localAudioTrackRef]
   )
-
-  const renewRtcToken = async function () {
-    /* do a fetch request to renew token */
-    // fetch("/api/website/stream/global-renew-token")
-  }
 
   async function switchViewerToHost(callType) {
     /* switch viewer to host and capture tracks */
@@ -209,36 +209,55 @@ function useAgora(client, role, callType) {
 
     setRemoteUsers(client.remoteUsers)
 
+    const renewRtcToken = async function () {
+      /* do a fetch request to renew token */
+      if (customDataRef.current.callOngoing) {
+        toast.info("RTC token expired fetching new token!")
+        try {
+          const { rtcToken, privilegeExpiredTs, ...rest } = await (
+            await fetch(
+              `/api/website/token-builder/global-renew-token?channel=${client.channelName}&onCall=${customDataRef.current.callOngoing}`
+            )
+          ).json()
+
+          if (rest?.canRenew) {
+            customDataRef.current.canRenewToken = rest.canRenew
+          }
+
+          if (rtcToken) {
+            localStorage.setItem("rtcToken", rtcToken)
+            localStorage.setItem("privilegeExpiredTs", privilegeExpiredTs)
+            await client.renewToken(rtcToken)
+            toast.info("fetched-rtc token, renewed!")
+          } else {
+            toast.warn("No token is response")
+          }
+        } catch (err) {
+          toast.warn(err.message)
+        }
+      }
+    }
+
+    const handleTokenExpire = async function () {
+      if (customDataRef.current.callOngoing) {
+        toast.error("RTC token has EXPIRED, call will ended now!")
+      } else {
+        toast.error("RTC token has EXPIRED, stream will ended now!")
+      }
+      // also have to do a fetch request to end the stream
+      if (localStorage.getItem("userType") === "Model") {
+        await customDataRef.current.streamEndFunction()
+      }
+      await leave()
+    }
+
     const handleUserPublished = async function (user, mediaType) {
       await client.subscribe(user, mediaType)
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
-
-      // statsRef.current = setInterval(async () => {
-      //   const theStats = await client.getRemoteVideoStats()
-      //   console.log(
-      //     "Remote bitrate",
-      //     `${theStats[client?.channelName]?.receiveBitrate / 8000000} MBps`
-      //   )
-      //   console.log(
-      //     "Remote transport-delay",
-      //     `${theStats[client?.channelName]?.transportDelay} ms`
-      //   )
-      //   console.log(
-      //     "Remote receive-delay",
-      //     `${theStats[client?.channelName]?.receiveDelay} ms`
-      //   )
-      //   console.log(
-      //     "Remote receive-framerate",
-      //     `${theStats[client?.channelName]?.receiveFrameRate} Fps`
-      //   )
-      // }, [5000])
     }
 
     const handleUserUnpublished = async function (user) {
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
-      if (statsRef.current) {
-        clearInterval(statsRef.current)
-      }
       /* check is any remote users if not then leave the channel */
     }
 
@@ -248,9 +267,6 @@ function useAgora(client, role, callType) {
 
     const handleUserLeft = async function (user) {
       setRemoteUsers((_remoteUsers) => Array.from(client.remoteUsers))
-      if (statsRef.current) {
-        clearInterval(statsRef.current)
-      }
     }
 
     const agoraExceptionHandler = (e) => {
@@ -268,7 +284,8 @@ function useAgora(client, role, callType) {
     client.on("user-joined", handleUsrJoined)
     client.on("user-left", handleUserLeft)
     client.on("token-privilege-will-expire", renewRtcToken)
-    client.on("exception", agoraExceptionHandler)
+    client.on("token-privilege-did-expire", handleTokenExpire)
+    // client.on("exception", agoraExceptionHandler)
 
     return () => {
       client.off("user-published", handleUserPublished)
@@ -276,11 +293,11 @@ function useAgora(client, role, callType) {
 
       client.off("user-joined", handleUsrJoined)
       client.off("user-left", handleUserLeft)
-      if (statsRef.current) {
-        clearInterval(statsRef.current)
-      }
+      client.off("token-privilege-will-expire", renewRtcToken)
+      client.off("token-privilege-did-expire", handleTokenExpire)
+      // client.off("exception", agoraExceptionHandler)
     }
-  }, [client])
+  }, [client, leave, customDataRef])
 
   return {
     localAudioTrack,
@@ -291,9 +308,9 @@ function useAgora(client, role, callType) {
     remoteUsers,
     startLocalCameraPreview,
     leaveAndCloseTracks,
-    leaveDueToPrivateCall,
     switchViewerToHost,
     modelUnPublishVideoTrack,
+    customDataRef,
   }
 }
 

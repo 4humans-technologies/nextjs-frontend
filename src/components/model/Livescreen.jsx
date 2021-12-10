@@ -19,6 +19,7 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 import io from "../../socket/socket"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
+import { toast } from "react-toastify"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,
@@ -280,10 +281,10 @@ function LiveScreen(props) {
           updateCtx.updateWallet(activity.price, "dec")
           setChatWindow(chatWindowOptions.PUBLIC)
         } else {
-          alert("Activity was not requested")
+          toast.error(data.message)
         }
       })
-      .catch((err) => alert(err.message))
+      .catch((err) => toast.error(err.message))
   }
 
   useEffect(() => {

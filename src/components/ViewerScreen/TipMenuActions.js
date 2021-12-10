@@ -9,7 +9,7 @@ function TipAction(props) {
       <span className="tw-flex-grow tw-flex-shrink-0 tw-mr-1 tw-text-text-black tw-text-sm sm:tw-text-base tw-font-medium">
         {props.action}
       </span>
-      <span className="tw-flex-shrink tw-flex-grow-0 tw-ml-1 tw-text-dreamgirl-red tw-text-sm">
+      <span className="tw-flex-shrink tw-flex-grow-0 tw-ml-1 tw-text-white-color tw-text-sm">
         {props.price} coins
       </span>
     </div>
@@ -20,7 +20,7 @@ function TipMenuActions(props) {
   const { tipMenuActions, setTipMenuActions, onClickSendTipMenu } = props
 
   return (
-    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-10 tw-h-full tw-ml-1 tw-pb-4">
+    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-10 tw-h-full tw-ml-1 tw-pb-4 tw-mt-4">
       {tipMenuActions?.length > 0 ? (
         tipMenuActions.map((activity, index) => {
           return (

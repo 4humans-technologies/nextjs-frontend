@@ -178,4 +178,4 @@ function SecondHeader() {
   )
 }
 
-export default SecondHeader
+export default React.memo(SecondHeader)

@@ -3,14 +3,14 @@ import { memo } from "react"
 function ModelChatMessage(props) {
   const content = (
     <div className="tw-flex-shrink tw-flex-grow-0">
-      <h2 className="tw-font-semibold tw-text-sm tw-mb-1 tw-bg-second-color tw-px-1.5 tw-rounded tw-inline-block tw-py-1 tw-tracking-wider">
+      <p className="tw-font-semibold tw-text-sm tw-mb-1 tw-px-1.5 tw-rounded tw-inline-block tw-py-1 tw-tracking-wider tw-border tw-border-dreamgirl-red">
         <button
-          className="hover:tw-underline tw-font-semibold tw-cursor-pointer"
+          className="hover:tw-underline tw-font-semibold tw-cursor-pointer tw-text-dreamgirl-red"
           onClick={props.addAtTheRate}
         >
-          message by @{props.modelUsername}
+          @{props.modelUsername}
         </button>
-      </h2>
+      </p>
       <span className={"tw-mt-1 tw-ml-3"}>{props.message}</span>
     </div>
   )

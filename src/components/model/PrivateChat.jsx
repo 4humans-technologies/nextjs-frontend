@@ -306,13 +306,13 @@ function PrivateChat(props) {
   }, [])
 
   return privateChatDbId === null && authCtx.isLoggedIn ? (
-    <div className="tw-w-full tw-px-4 tw-py-3 tw-text-center">
+    <div className="tw-w-full tw-px-4 tw-py-3 tw-text-center tw-mt-4">
       <p className="tw-text-white-color tw-font-semibold">
         Loading Your Private Chats...
       </p>
     </div>
   ) : (
-    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 tw-h-full tw-bg-dark-black tw-ml-1">
+    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 tw-h-full tw-ml-1 tw-mt-4">
       {privateChatDynamicBlock}
     </div>
   )

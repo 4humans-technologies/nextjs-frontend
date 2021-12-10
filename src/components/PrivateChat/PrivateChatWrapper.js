@@ -195,6 +195,9 @@ function PrivateChatWrapper(props) {
             setChatState((prevChats) => {
               prevChats.push({
                 viewerId: data.viewerId,
+                username: "",
+                profileImage: "",
+                name: "",
                 chats: [],
                 /* has to go as no tile exist for this chat hence has to be new chat */
                 newChats: {

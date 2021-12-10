@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react"
 import ModelProfile from "../../components/model/ModelProfile"
 import Recommendation from "../../components/ViewerScreen/Recommendation"
 import LiveScreen from "../../components/model/Livescreen"
+import ModelDetailHeader from "../../components/ViewerScreen/ModelDetailHeader"
 
 function ViewModelStream() {
   // 👇👇👇 store the models profile value in a state here

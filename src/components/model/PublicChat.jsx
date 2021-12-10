@@ -246,7 +246,7 @@ function PublicChatBox(props) {
   )
 
   return (
-    <div className="chat-box tw-max-w-full tw-mb-14 tw-pr-2">
+    <div className="chat-box tw-max-w-full tw-mb-14 tw-pr-2 tw-mt-4">
       {chatMessages.map((chat, index) => {
         switch (chat.type) {
           case "normal-public-message":

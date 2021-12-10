@@ -19,6 +19,7 @@ import { FastForward } from "@material-ui/icons"
 import io from "../../socket/socket"
 import { useAuthContext } from "../../app/AuthContext"
 import { useSocketContext } from "../../app/socket/SocketContext"
+import { toast } from "react-toastify"
 
 function CallDetailsPopUp(props) {
   const router = useRouter()
@@ -47,11 +48,27 @@ function CallDetailsPopUp(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        props.setPendingCallRequest(true)
-        props.setCallType(myCallType)
-        props.closeModal()
+        if (data.actionStatus === "success") {
+          props.setPendingCallRequest(true)
+          props.setCallType(myCallType)
+          props.closeModal()
+          toast.success(
+            "Your call request was sent to the model successfully 😎",
+            {
+              autoClose: 2000,
+            }
+          )
+        } else {
+          toast.error(data.message, {
+            theme: "colored",
+          })
+        }
       })
-      .catch((err) => alert(err.message))
+      .catch((err) =>
+        toast.error(err.message, {
+          theme: "colored",
+        })
+      )
   }
 
   return (

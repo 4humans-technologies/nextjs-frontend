@@ -32,8 +32,22 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             url.startsWith("/api/website/") ||
             url.startsWith("/api/admin/")
           ) {
+            const NO_SPINNER_URLS = [
+              "/api/website/token-builder/global-renew-token",
+              "/api/website/stream/private-chat/find-or-create-private-chat",
+              "/api/website/stream/get-live-room-count/",
+            ]
+            let canShowSpinner = true
+            NO_SPINNER_URLS.forEach((safeUrl) => {
+              if (url.startsWith(safeUrl)) {
+                canShowSpinner = false
+              }
+            })
+
             /* SHOW SPINNER */
-            spinnerCtx.setShowSpinner(true)
+            if (canShowSpinner) {
+              spinnerCtx.setShowSpinner(true)
+            }
             //debugger
             const latestCtx = JSON.parse(localStorage.getItem("authContext"))
             /* for GET requests when there is no config */
@@ -102,7 +116,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             //debugger
             return [urlObj.toString(), finalConfig]
           } else if (url.includes("amazonaws.com")) {
-            spinnerCtx.setShowSpinner(true)
+            spinnerCtx.setShowSpinner(true, "Uploading please wait")
           }
           return [url, config]
         },

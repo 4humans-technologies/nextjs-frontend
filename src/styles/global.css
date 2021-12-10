@@ -634,3 +634,23 @@ select {
 .userProfile-2{
   display: flex;
 }
+.my-custom-style {
+  border-bottom: 0px !important;
+  border-color: rgb(35, 35, 35);
+}
+
+.my-custom-style > li.active {
+  border-width: 0px;
+  background-color: rgb(35, 35, 35);
+}
+
+.my-custom-style > li > button:hover {
+  border-color: rgb(35, 35, 35) !important;
+}
+
+.my-custom-style > li > button.active {
+  border-color: rgb(35, 35, 35) !important;
+  background-color: #303133 !important;
+  font-weight: 500;
+  color: whitesmoke !important;
+}

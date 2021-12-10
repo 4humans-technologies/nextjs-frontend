@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react"
-import { Button } from "react-bootstrap"
+import LocalActivityOutlinedIcon from "@material-ui/icons/LocalActivityOutlined"
 import ClearIcon from "@material-ui/icons/Clear"
+import SaveRoundedIcon from "@material-ui/icons/SaveRounded"
+import AddOutlinedIcon from "@material-ui/icons/AddOutlined"
+import { Button } from "react-bootstrap"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Tip() {
@@ -53,59 +56,68 @@ function Tip() {
   }
 
   return (
-    <div>
-      <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-        <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
-          Set Actions
-        </h1>
-        <form
-          id="action-form"
-          className="tw-max-h-64  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
-        >
-          {dynamicData.map((item, index) => {
-            return (
-              <div
-                className="tw-grid tw-my-4 tw-text-white-color action_grid "
-                id={index}
-                key={index}
-              >
-                <input
-                  className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none "
-                  placeholder="Actions"
-                  value={item.action}
-                  required={true}
-                />
-                <input
-                  className="tw-col-span-1 tw-py-2 tw-mx-1 tw-px-2 tw-bg-dark-black tw-rounded-full tw-outline-none"
-                  type="number"
-                  value={item.price}
-                  required={true}
-                />
-                {/* Amazing ninja technique for dom menupulation */}
+    <div className=" tw-bg-second-color tw-px-4 tw-rounded tw-text-white-color">
+      <div className="tw-border-b-[1px] tw-border-white-color tw-mb-4 tw-py-4 tw-flex tw-items-center">
+        <LocalActivityOutlinedIcon />{" "}
+        <span className="tw-pl-1.5">Set Actions</span>
+      </div>
+      <form id="action-form" className="tw-max-h-64 tw-overflow-y-auto tw-py-2">
+        {dynamicData.map((item, index) => {
+          return (
+            <div
+              className="tw-flex tw-items-center tw-justify-between tw-mb-3"
+              id={index}
+              key={index}
+            >
+              <input
+                className="tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-9/12 tw-mr-2"
+                placeholder="Actions"
+                value={item.action}
+                required={true}
+              />
+              <input
+                className="tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-2 tw-py-2 tw-w-3/12"
+                type="number"
+                value={item.price}
+                required={true}
+              />
+              <span className="tw-flex-shrink tw-flex-grow-0 tw-pl-2 tw-cursor-pointer">
                 <ClearIcon
-                  className="tw-text-white tw-my-auto"
+                  className="tw-text-text-black hover:tw-text-white-color tw-transition-colors"
                   onClick={() => {
                     document.getElementById(index).remove()
                   }}
                 />
-              </div>
-            )
-          })}
-        </form>
+              </span>
+            </div>
+          )
+        })}
+      </form>
+      <div className="tw-mt-4 tw-flex tw-items-center tw-justify-start tw-border-b tw-border-white-color tw-pb-6">
         <Button
-          className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full"
+          className="tw-rounded-full tw-flex tw-text-sm tw-mr-4"
+          variant="outline-secondary"
           onClick={() =>
             setDynamicData((prev) => [...prev, { action: null, price: null }])
           }
         >
-          add new action
+          <AddOutlinedIcon fontSize="small" />
+          <span className="tw-pl-1 tw-tracking-tight">Add New Activity</span>
         </Button>
         <Button
+          className="tw-rounded-full tw-flex tw-text-sm"
+          variant="success"
           onClick={() => saveData()}
-          className="tw-ml-4 tw-bg-green-color tw-border-none hover:tw-bg-green-color tw-rounded-full"
         >
-          Save
+          <SaveRoundedIcon fontSize="small" />
+          <span className="tw-pl-1 tw-tracking-tight">Save</span>
         </Button>
+      </div>
+      <div className="tw-mb-4 tw-py-4">
+        <p className="tw-capitalize">
+          Viewers in your stream pay for activities they want to see you
+          perform.
+        </p>
       </div>
     </div>
   )

@@ -85,34 +85,6 @@ export default {
   },
   modelListners: (socket) => {},
 
-  viewerListners: (socket) => {
-    socket.on("model-audio-calling", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-
-    socket.on("model-video-calling", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-
-    socket.on("model-accepted-video-call", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-
-    socket.on("model-accepted-audio-call", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-    socket.on("model-declined-video-call", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-    socket.on("model-declined-audio-call", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-  },
+  viewerListners: (socket) => {},
   unAuthedViewerListners: (socket) => {},
 }

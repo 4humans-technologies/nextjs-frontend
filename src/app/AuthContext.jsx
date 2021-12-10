@@ -183,6 +183,7 @@ export const AuthContextProvider = ({ children }) => {
         localStorage.removeItem("userType")
         localStorage.removeItem("authContext")
         localStorage.removeItem("user")
+        toast.info("You were logged out, please login again.")
         updateViewer({ loadedFromLocalStorage: true })
       }
       localStorage.removeItem("rtcToken")
