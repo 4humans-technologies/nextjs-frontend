@@ -1,5 +1,4 @@
 import React from "react"
-import TwitterIcon from "@material-ui/icons/Twitter"
 import logo from "../../../public/logo.png"
 import Image from "next/image"
 import Link from "next/link"
@@ -121,4 +120,4 @@ function Footer() {
   )
 }
 
-export default Footer
+export default React.memo(Footer)

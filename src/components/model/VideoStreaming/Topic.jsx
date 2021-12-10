@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react"
-import VolumeMuteIcon from "@material-ui/icons/VolumeMute"
+import VolumeUpIcon from "@material-ui/icons/VolumeUp"
+import { Button } from "react-bootstrap"
+import { SaveRounded } from "@material-ui/icons"
 
 function Topic(props) {
   const [childState, setChildState] = useState([])
@@ -22,33 +24,33 @@ function Topic(props) {
   useEffect(() => {}, [])
 
   return (
-    <div className="tw-bg-first-color tw-text-white tw-mt-6 tw-pl-4 tw-mx-4 tw-rounded-t-xl tw-rounded-b-xl">
+    <div className="tw-bg-second-color tw-text-white tw-px-4 tw-rounded">
       <div>
-        <div className="tw-border-b-[1px] tw-border-text-black tw-mb-4 tw-py-2">
-          <VolumeMuteIcon /> Topic
+        <div className="tw-border-b-[1px] tw-border-white-color tw-mb-4 tw-py-4 tw-flex tw-items-center">
+          <VolumeUpIcon /> <span className="tw-pl-1">Topic</span>
         </div>
-        <div className="tw-border-b-[1px] tw-border-text-black tw-w-[90%]">
+        <div className="tw-border-b-[1px] tw-border-white-color tw-py-3">
           <input
             type="text"
             value={childState}
-            placeholder="Your perfomence in Live stream"
-            className="tw-rounded-full md:tw-w-1/2 tw-h-8 tw-pl-2 tw-bg-second-color tw-border-none tw-outline-none tw-px-4 "
+            placeholder="Topic for live streams"
+            className="tw-rounded-full tw-w-full md:tw-w-1/2 tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2"
             onChange={(e) => setChildState(e.target.value)}
           />
           <div className="tw-flex tw-my-4">
-            <button
-              className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-dreamgirl-red tw-mr-4 tw-outline-none"
+            <Button
+              className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
+              variant="success"
               onClick={topicSetter}
             >
-              Save
-            </button>
-            <button className="tw-rounded-full tw-px-4 tw-py-2 tw-bg-green-color">
-              Cancel
-            </button>
+              <SaveRounded fontSize="small" />
+              <span className="tw-pl-1 tw-tracking-tight">Save</span>
+            </Button>
           </div>
         </div>
-        <br />
-        <p>Topic for live perfomence</p>
+        <div className="tw-mb-4 tw-py-4">
+          <p className="tw-capitalize">Topic for live Stream</p>
+        </div>
       </div>
     </div>
   )

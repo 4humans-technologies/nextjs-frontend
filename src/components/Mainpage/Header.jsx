@@ -7,7 +7,6 @@ import ClearIcon from "@material-ui/icons/Clear"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import logo from "../../../public/logo.png"
-import NotificationsIcon from "@material-ui/icons/Notifications"
 
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
@@ -20,6 +19,7 @@ import SecondHeader from "./SecondHeader"
 import Headerui from "../UI/HeaderUI"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
+import ModelDetailHeader from "../ViewerScreen/ModelDetailHeader"
 
 let fetchedLiveModelCount = false
 function Header(props) {
@@ -38,7 +38,19 @@ function Header(props) {
   const authContext = useAuthContext()
   const updateAuthContext = useAuthUpdateContext()
   const socketCtx = useSocketContext()
-  const [hide, setHide] = useState()
+
+  const [hide, setHide] =
+    useState(false) /* control display of go live button */
+  const [showSecondHeader, setShowSecondHeader] =
+    useState(true) /* control display of secondHeader */
+  const [modelData, setModelData] = useState({
+    // profileImage, username, isStreaming, onCall
+    hasData: false,
+    username: "",
+    profileImage: "",
+    isStreaming: "",
+    onCall: "",
+  })
 
   /* show banner for email conformation */
   const sessionVal =
@@ -54,21 +66,46 @@ function Header(props) {
     sessionStorage.setItem("emailPromptShown", "true")
   }, [])
   /* conditionally show go live button based on the page */
+
   useEffect(() => {
     if (window.location.pathname.includes("/goLive")) {
       setHide(true)
     }
+    if (window.location.pathname.includes("/view-stream/")) {
+      setShowSecondHeader(false)
+    }
     const handleRouteChange = (url) => {
-      console.log(`App is got to user: ${url}`)
+      /* decide display of go live button */
       if (url.includes("/goLive")) {
         setHide(true)
       } else {
         setHide(false)
       }
+
+      /* decide display of second header */
+      if (url.includes("/view-stream/")) {
+        setShowSecondHeader(false)
+      } else {
+        setShowSecondHeader(true)
+      }
     }
+
+    const handleModelData = (e) => {
+      setModelData({
+        hasData: true,
+        ...e.detail,
+      })
+    }
+
+    document.addEventListener("model-profile-data-fetched", handleModelData)
     router.events.on("routeChangeComplete", handleRouteChange)
+
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange)
+      document.removeEventListener(
+        "model-profile-data-fetched",
+        handleModelData
+      )
     }
   }, [])
 
@@ -150,7 +187,7 @@ function Header(props) {
 
           <div className="lg:tw-flex tw-items-center tw-pl-4 tw-hidden">
             <BarChartIcon />
-            <p>Top Modle</p>
+            <p>Top Models</p>
           </div>
         </div>
         {/* --------------search text---------- */}
@@ -213,7 +250,7 @@ function Header(props) {
                             alt=""
                             className="tw-w-10 tw-h-10 tw-text-white"
                           />
-                          <p className="tw-self-center">
+                          <p className="tw-self-center tw-pl-2">
                             {
                               authContext.user.user.relatedUser.wallet
                                 .currentAmount
@@ -231,22 +268,22 @@ function Header(props) {
                           />
                         )}
                         <div className="tw-flex tw-self-center">
-                          <button className="tw-mx-4  tw-rounded-full tw-capitalize tw-px-4 tw-py-2 tw-bg-white-color tw-text-black">
+                          {!hide && (
                             <Link
                               href={`/${authContext.user.user.username}/goLive`}
                             >
-                              <a className="tw-capitalize tw-text-sm tw-font-semibold">
-                                go live
+                              <a className="tw-bg-white-color text-sm lg:tw-text-base tw-text-black tw-outline-none tw-capitalize tw-px-4 tw-py-2 tw-inline-block tw-mx-4 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
+                                Go Live
                               </a>
                             </Link>
-                          </button>
+                          )}
                           <div className="tw-flex">
                             <img
                               src="/coins.png"
                               alt=""
                               className="tw-w-10 tw-h-10 tw-text-white"
                             />
-                            <p className="tw-self-center">
+                            <p className="tw-self-center tw-pl-2">
                               {
                                 authContext.user.user.relatedUser.wallet
                                   .currentAmount
@@ -267,12 +304,12 @@ function Header(props) {
                             alt=""
                             className="tw-w-10 tw-h-10 tw-text-white"
                           />
-                          <div className="tw-my-auto tw-ml-2 tw-font-bold">
+                          <p className="tw-my-auto tw-ml-2 tw-font-bold">
                             {
                               authContext.user.user.relatedUser.wallet
                                 .currentAmount
                             }
-                          </div>
+                          </p>
                         </div>
                         <div
                           className="tw-mr-4  tw-cursor-pointer"
@@ -327,7 +364,7 @@ function Header(props) {
                             }
                           </p>
                         </div>
-                        {hide ? null : (
+                        {!hide && (
                           <Link
                             href={`/${authContext.user.user.username}/goLive`}
                           >
@@ -440,9 +477,13 @@ function Header(props) {
             </div>
           )}
       </div>
-      <SecondHeader />
+      {showSecondHeader ? (
+        <SecondHeader />
+      ) : (
+        <ModelDetailHeader data={modelData} />
+      )}
     </div>
   )
 }
 
-export default Header
+export default React.memo(Header)

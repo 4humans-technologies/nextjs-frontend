@@ -35,6 +35,7 @@ import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import PrivateChatWrapper from "../PrivateChat/PrivateChatWrapper"
 import ViewersListContainer from "../../components/ViewersList/ViewersListContainer"
+import { toast } from "react-toastify"
 
 // Replace with your App ID.
 let token
@@ -55,6 +56,7 @@ const chatWindowOptions = {
   USERS: "users",
   TIP_MENU: "TIP_MENU",
 }
+
 let goneLiveOnce /* only when gone live once the stream rooms will be created, before that no room exists */
 const streamTimer = {
   value: 0,
@@ -130,6 +132,7 @@ function Live() {
     remoteUsers,
     startLocalCameraPreview,
     leaveAndCloseTracks,
+    customDataRef,
   } = useAgora(client, "host", "videoCall")
 
   const toggleMuteMic = () => {
@@ -338,26 +341,45 @@ function Live() {
                 +data.privilegeExpiredTs * 1000
               )
               sessionStorage.setItem("streamId", data.streamId)
-              setTimeout(() => {
-                fetch(
-                  `/api/website/stream/get-live-room-count/${data.streamId}-public`
-                )
-                  .then((res) => res.json())
-                  .then((data) => {
-                    document.getElementById(
-                      "live-viewer-count"
-                    ).innerText = `${data.roomSize} Live`
-                  })
-                  .catch((err) =>
-                    console.error("Live viewer count not fetched")
-                  )
-              }, [4000])
-              return join(ctx.relatedUserId, token, ctx.relatedUserId)
+
+              const channelJoin = join(
+                ctx.relatedUserId,
+                token,
+                ctx.relatedUserId
+              )
+                .then(() => {
+                  setTimeout(() => {
+                    fetch(
+                      `/api/website/stream/get-live-room-count/${data.streamId}-public`
+                    )
+                      .then((res) => res.json())
+                      .then((data) => {
+                        try {
+                          document.getElementById(
+                            "live-viewer-count"
+                          ).innerText = `${data.roomSize - 1} Live`
+                        } catch (err) {
+                          /* in-case the roomSize was not a NAN */
+                        }
+                      })
+                      .catch((err) =>
+                        console.error("Live viewer count not fetched")
+                      )
+                  }, [4000])
+                })
+                .catch((err) => {
+                  /* toast is handing it's rejection */
+                })
+              return toast.promise(channelJoin, {
+                pending: "Publishing video via secure connection...",
+                success: "You are live now",
+                error: "Error joining channel",
+              })
             } else {
-              alert(data.message)
+              toast.error(data.message)
             }
           })
-          .catch((error) => alert(error.message))
+          .catch((err) => toast.error(err.message))
       }
     } else {
       /* have a valid token, fetch request for status update not for rtc token */
@@ -381,25 +403,41 @@ function Live() {
           )
           sessionStorage.setItem("liveNow", "true")
           sessionStorage.setItem("streamId", data.streamId)
-          setTimeout(() => {
-            fetch(
-              `/api/website/stream/get-live-room-count/${data.streamId}-public`
-            )
-              .then((res) => res.json())
-              .then((data) => {
-                document.getElementById(
-                  "live-viewer-count"
-                ).innerText = `${data.roomSize} Live`
-              })
-              .catch((err) => console.error("Live viewer count not fetched"))
-          }, [4000])
-          return join(
+          const joinPromise = join(
             ctx.relatedUserId,
             localStorage.getItem("rtcToken"),
             ctx.relatedUserId
           )
+            .then(() => {
+              setTimeout(() => {
+                fetch(
+                  `/api/website/stream/get-live-room-count/${data.streamId}-public`
+                )
+                  .then((res) => res.json())
+                  .then((data) => {
+                    try {
+                      document.getElementById(
+                        "live-viewer-count"
+                      ).innerText = `${data.roomSize - 1} Live`
+                    } catch (err) {
+                      /* in-case the roomSize was not a NAN */
+                    }
+                  })
+                  .catch((err) =>
+                    console.error("Live viewer count not fetched")
+                  )
+              }, [4000])
+            })
+            .catch((err) => {})
+          return toast.promise(joinPromise, {
+            pending: "Publishing video via secure connection...",
+            success: "You are live now",
+            error: "Error joining channel",
+          })
         })
-        .catch((error) => console.log(error))
+        .catch((error) => {
+          toast.error("Stream was not setup on the node server!")
+        })
     }
   }, [
     ctx.isLoggedIn,
@@ -413,9 +451,9 @@ function Live() {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
       socket.on("viewer-joined", (data) => {
-        document.getElementById(
-          "live-viewer-count"
-        ).innerText = `${data.roomSize} Live`
+        document.getElementById("live-viewer-count").innerText = `${
+          data.roomSize - 1
+        } Live`
       })
       return () => {
         socket.off("viewer-joined")
@@ -436,13 +474,9 @@ function Live() {
   }, [startStreamTimer, joinState, callOnGoing, streamTimerRef])
 
   const requestServerEndAndStreamLeave = useCallback((joinStatus = true) => {
-    if (!joinStatus) {
-      return
-    }
     if (sessionStorage.getItem("liveNow") === "false") {
       return
     }
-    // alert("will end stream now")
     fetch("/api/website/stream/handle-stream-end", {
       method: "POST",
       cors: "include",
@@ -457,16 +491,17 @@ function Live() {
     })
       .then((res) => res.json())
       .then((data) => {
-        // alert(data.message)
         sessionStorage.setItem("liveNow", "false")
         sessionStorage.removeItem("streamId")
         setCallOnGoing(false)
-        // leaveAndCloseTracks()
+        toast.success("Stream was ended successfully")
       })
       .catch((err) =>
-        alert("Stream was not ended successfully! " + err.message)
+        toast.error("Stream not was ended successfully reason: ", err.message)
       )
   }, [])
+
+  customDataRef.current.streamEndFunction = requestServerEndAndStreamLeave
 
   useEffect(() => {
     requestServerEndAndStreamLeaveRef.current = requestServerEndAndStreamLeave
@@ -587,15 +622,23 @@ function Live() {
           setPendingCallEndRequest(true)
           spinnerCtx.setShowSpinner(true, "Processing transaction...")
           clearInterval(callTimerRef.current)
+          const callEndClear = new Event("clear-viewer-list-going-on-call")
+          document.dispatchEvent(callEndClear)
+          toast.info("Viewer has ended the call", {
+            autoClose: 3000,
+          })
         })
       }
 
       /*  */
       if (!socket.hasListeners("viewer-call-end-request-finished")) {
         socket.on("viewer-call-end-request-finished", async (data) => {
+          toast.success("Call has ended successfully!", {
+            autoClose: false,
+          })
           if (data.ended === "ok") {
             sessionStorage.setItem("callEndDetails", JSON.stringify(data))
-            spinnerCtx.setShowSpinner(false, "Processing transaction...")
+            spinnerCtx.setShowSpinner(false, "Please wait...")
           }
           setPendingCallEndRequest(false)
           // setCallEndDetails(data.callEndDetails)
@@ -622,6 +665,8 @@ function Live() {
 
   const handleModelResponse = (response, relatedUserId, myCallType) => {
     /* can set encryption config */
+    document.getElementById("call-request-audio").pause()
+    document.getElementById("call-request-audio").currentTime = 0
     if (response === "rejected") {
       /* 
           if call rejected then directly emit event via socket no need for http request
@@ -659,15 +704,15 @@ function Live() {
       })
         .then((res) => res.json())
         .then(async (data) => {
-          if (!data.socketDataUpdated) {
-            socket.emit("update-client-info", {
-              action: "set-call-data-model",
-              callId: data.callId,
-              callType: myCallType,
-              sharePercent: data.sharePercent,
-            })
-          }
           if (data.actionStatus === "success") {
+            if (!data.socketDataUpdated) {
+              socket.emit("update-client-info", {
+                action: "set-call-data-model",
+                callId: data.callId,
+                callType: myCallType,
+                sharePercent: data.sharePercent,
+              })
+            }
             if (myCallType === "audioCall") {
               await localVideoTrack.setEnabled(false)
             }
@@ -680,8 +725,19 @@ function Live() {
             setCallOnGoing(true)
             setUpCallListeners()
             sessionStorage.setItem("callId", data.callDoc._id)
-            /* clear call timer */
+            /* clear stream timer */
             clearInterval(streamTimerRef.current)
+
+            // have to use own interval loop to request tokens
+
+            /* fire event for clearing call request */
+            const viewerClearEvent = new CustomEvent(
+              "clean-viewer-list-going-on-call",
+              {
+                detail: { viewerId: relatedUserId },
+              }
+            )
+            document.dispatchEvent(viewerClearEvent)
             const startCallTimerAfter =
               new Date(data.callStartTs).getTime() - Date.now()
             if (startCallTimerAfter <= 1) {
@@ -694,6 +750,11 @@ function Live() {
               maxCallDurationRef.current = setTimeout(() => {
                 handleCallEnd()
               }, [+data.viewerMaxCallDurationSeconds])
+            }
+          } else {
+            if (data?.notStreaming) {
+              /* clear all pending call requests */
+              setPendingCallRequest({ pending: false, callRequests: [] })
             }
           }
         })
@@ -750,6 +811,8 @@ function Live() {
       room: `${sessionStorage.getItem("streamId")}-public`,
     })
 
+    const callEndClear = new Event("clear-viewer-list-going-on-call")
+    document.dispatchEvent(callEndClear)
     /* clear call timer */
     clearInterval(callTimerRef.current)
     /* clear max call duration timeout */
@@ -1072,9 +1135,9 @@ function Live() {
                   >
                     <span
                       id="live-viewer-count"
-                      className="tw-pl-1 tw-tracking-tight"
+                      className="tw-pl-1 tw-tracking-tight tw-text-sm lg:tw-text-base"
                     >{`${
-                      joinState ? "you are live" : "you're not live"
+                      joinState ? "Getting live users..." : "You are not live"
                     }`}</span>
                   </Button>
                 </div>

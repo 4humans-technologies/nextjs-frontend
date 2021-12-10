@@ -1,11 +1,13 @@
 import React, { useState } from "react"
-// import Notification from "../../Notifications/Notification"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
+import { SaveRounded } from "@material-ui/icons"
+import AttachMoneyRoundedIcon from "@material-ui/icons/AttachMoneyRounded"
+import { Button } from "react-bootstrap"
 
 function Pricing() {
   const authContext = useAuthContext()
-  const [priceEdit, setPriceEdited] = useState(false)
 
+  const [priceEdit, setPriceEdited] = useState(false)
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
@@ -17,11 +19,9 @@ function Pricing() {
     setPriceEdited(true)
   }
 
-  // onAudio video set to post the data
   const priceSetting = async () => {
     const res = await fetch("/model.json", {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
       },
@@ -34,51 +34,46 @@ function Pricing() {
     console.log(data)
   }
 
-  // now to fetch the data to make to show the data
-
   return (
-    <div>
-      <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6 tw-text-white">
-        <div className="tw-col-span-1">
-          <p>Private Audio Call</p>
-          <p className="md:tw-my-2">Private video Call</p>
-        </div>
-        <div className="tw-col-span-2">
-          <div className="tw-flex ">
-            <input
-              type="number"
-              name="audio"
-              onChange={(e) => callChangeHandler(e)}
-              id=""
-              max="100"
-              min="20"
-              className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
-              value={audioVideoPrice.audio}
-            />
-          </div>
-          {/*  */}
-
-          <div className="tw-flex  md:tw-my-2 tw-my-10">
-            <input
-              type="number"
-              name="video"
-              onChange={(e) => callChangeHandler(e)}
-              id=""
-              max="100"
-              min="20"
-              className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
-              value={audioVideoPrice.video}
-            />
-          </div>
-          {priceEdit && (
-            <button
-              className="tw-bg-green-color tw-text-white tw-px-4  tw-my-2 tw-rounded-full"
-              onClick={priceSetting}
-            >
-              Save
-            </button>
-          )}
-        </div>
+    <div className="tw-bg-second-color px-4 tw-rounded tw-text-white">
+      <div className="tw-border-b-[1px] tw-border-white-color tw-mb-4 tw-py-4 tw-flex tw-items-center">
+        <AttachMoneyRoundedIcon fontSize="medium" />{" "}
+        <span className="">Set Call Pricing</span>
+      </div>
+      <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
+        <p className="tw-flex-shrink-0 tw-flex-grow">Private Audio Call</p>
+        <input
+          type="number"
+          name="audio"
+          value={audioVideoPrice.audio}
+          placeholder="Coins"
+          className="tw-flex-shrink-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full sm:tw-w-1/2"
+          onChange={(e) => callChangeHandler(e)}
+        />
+      </div>
+      <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
+        <p className="tw-flex-shrink-0 tw-flex-grow">Private Audio Call</p>
+        <input
+          type="number"
+          name="video"
+          value={audioVideoPrice.video}
+          placeholder="Coins"
+          className="tw-flex-shrink-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full sm:tw-w-1/2"
+          onChange={(e) => callChangeHandler(e)}
+        />
+      </div>
+      {priceEdit && (
+        <Button
+          className="tw-rounded-full tw-flex tw-text-sm tw-mb-4"
+          variant="success"
+          onClick={priceSetting}
+        >
+          <SaveRounded fontSize="small" />
+          <span className="tw-pl-1 tw-tracking-tight">Save</span>
+        </Button>
+      )}
+      <div className="tw-mb-4 tw-py-4 tw-border-t tw-border-white-color">
+        <p>Set the Audio/video call's per minutes charges</p>
       </div>
     </div>
   )

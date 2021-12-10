@@ -44,8 +44,8 @@ const MyApp = ({ Component, pageProps }) => {
                     autoClose={5000}
                     hideProgressBar={false}
                     newestOnTop={false}
-                    closeOnClick
                     rtl={false}
+                    closeOnClick
                     draggable
                     pauseOnHover
                     theme="dark"

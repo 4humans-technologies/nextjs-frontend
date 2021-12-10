@@ -5,8 +5,8 @@ import Pricing from "./Pricing"
 
 function Details() {
   return (
-    <div className="tw-bg-second-color tw-pb-8 ">
-      <div className="tw-grid md:tw-grid-cols-3 tw-grid-cols-1">
+    <div className="tw-bg-first-color tw-px-4">
+      <div className="tw-grid md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-grid-cols-1 tw-pb-8  tw-py-4 tw-gap-4">
         <div>
           {/* My show */}
           <Offline />

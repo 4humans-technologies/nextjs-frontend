@@ -109,7 +109,6 @@ function ViewerScreen(props) {
     leave,
     join,
     remoteUsers,
-    leaveDueToPrivateCall,
     switchViewerToHost,
     leaveAndCloseTracks,
   } = useAgora(client, "audience", "videoCall")
@@ -259,84 +258,104 @@ function ViewerScreen(props) {
           url = "/api/website/stream/re-join-models-currentstream-unauthed"
         }
 
-        fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            modelId: window.location.pathname.split("/").reverse()[0],
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.actionStatus === "success") {
-              sessionStorage.setItem("streamId", data.streamId)
-              setPendingCallRequest(false)
-              setOthersCall({
-                acceptedOthersCall: false,
-                rejectedMyCall: false,
-                otherUserData: {
-                  username: "",
-                  profileImage: "",
-                  callType: "",
-                },
-              })
-              join(
-                window.location.pathname.split("/").reverse()[0],
-                localStorage.getItem("rtcToken"),
-                ctx.relatedUserId
-              ).catch((err) => {
-                console.error(
-                  "Error joining the stream, something is not right..!"
+        const newStream = new Promise((resolve, reject) => {
+          fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              modelId: window.location.pathname.split("/").reverse()[0],
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.actionStatus === "success") {
+                sessionStorage.setItem("streamId", data.streamId)
+                setPendingCallRequest(false)
+                setOthersCall({
+                  acceptedOthersCall: false,
+                  rejectedMyCall: false,
+                  otherUserData: {
+                    username: "",
+                    profileImage: "",
+                    callType: "",
+                  },
+                })
+                join(
+                  window.location.pathname.split("/").reverse()[0],
+                  localStorage.getItem("rtcToken"),
+                  ctx.relatedUserId
                 )
-              })
-              props.setIsChatPlanActive(data.isChatPlanActive)
-              setIsModelOffline(false)
-              if (!data.socketUpdated) {
-                if (ctx.isLoggedIn) {
-                  socket.on("rejoin-the-stream-authed-viewer", {
-                    streamId: data.streamId,
-                    modelRoom: `${
-                      window.location.pathname.split("/").reverse()[0]
-                    }-private`,
+                  .then(() => {
+                    resolve()
+                    setTimeout(() => {
+                      /* get the number of users in the stream after x seconds, MANNUALLY */
+                      fetch(
+                        `/api/website/stream/get-live-room-count/${data.streamId}-public`
+                      )
+                        .then((res) => res.json())
+                        .then((data) => {
+                          try {
+                            if (typeof data.roomSize === "number") {
+                              document.getElementById(
+                                "live-viewer-count-lg"
+                              ).innerText = `${data.roomSize - 1} Live`
+                              document.getElementById(
+                                "live-viewer-count-md"
+                              ).innerText = `${data.roomSize - 1} Live`
+                            }
+                          } catch (err) {
+                            /* try/catch as roomSize can be undefined */
+                          }
+                        })
+                    }, [4000])
                   })
-                } else {
-                  socket.on("join-the-stream-unauthed-viewer", {
-                    streamId: data.streamId,
+                  .catch((err) => {
+                    reject(err.message)
                   })
+                props.setIsChatPlanActive(data.isChatPlanActive)
+                setIsModelOffline(false)
+                if (!data.socketUpdated) {
+                  if (ctx.isLoggedIn) {
+                    socket.emit("rejoin-the-stream-authed-viewer", {
+                      streamId: data.streamId,
+                      modelRoom: `${
+                        window.location.pathname.split("/").reverse()[0]
+                      }-private`,
+                    })
+                  } else {
+                    socket.emit("join-the-stream-unauthed-viewer", {
+                      streamId: data.streamId,
+                    })
+                  }
                 }
+
+                document.getElementById("live-viewer-count-lg").innerText =
+                  "Getting live users..."
+                document.getElementById("live-viewer-count-md").innerText =
+                  "Getting live users..."
+              } else {
+                props.setIsChatPlanActive(data.isChatPlanActive)
+                setPendingCallRequest(false)
+                setIsModelOffline(true)
+                reject(err.message)
               }
-              setTimeout(() => {
-                /* get the number of users in the stream after x seconds, MANNUALLY */
-                fetch(
-                  `/api/website/stream/get-live-room-count/${data.streamId}-public`
-                )
-                  .then((res) => res.json())
-                  .then((data) => {
-                    document.getElementById(
-                      "live-viewer-count-lg"
-                    ).innerText = `${data.roomSize} Live`
-                    document.getElementById(
-                      "live-viewer-count-md"
-                    ).innerText = `${data.roomSize} Live`
-                  })
-              }, [4000])
-              document.getElementById(
-                "live-viewer-count-lg"
-              ).innerText = `0 Live`
-              document.getElementById(
-                "live-viewer-count-md"
-              ).innerText = `0 Live`
-            } else {
-              props.setIsChatPlanActive(data.isChatPlanActive)
-              setPendingCallRequest(false)
-              setIsModelOffline(true)
-            }
-          })
-          .catch((err) => {
-            alert(err.message)
-          })
+            })
+            .catch((err) => {
+              reject(err.message)
+            })
+        })
+
+        toast.promise(newStream, {
+          pending: "Model started streaming, establishing secure connection",
+          success: "Successfully join the stream",
+          error: {
+            render(err) {
+              return "Error joining the stream err: " + err
+            },
+          },
+        })
       }
       socket.on("new-model-started-stream", newStreamHandler)
 
@@ -356,8 +375,7 @@ function ViewerScreen(props) {
     /* listen for stream end events */
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
-      let streamDeleteHandler
-      streamDeleteHandler = (data) => {
+      let streamDeleteHandler = (data) => {
         if (data.modelId !== window.location.pathname.split("/").reverse()[0]) {
           return
         }
@@ -369,6 +387,10 @@ function ViewerScreen(props) {
         /* set live viewer count as Zero */
         document.getElementById("live-viewer-count-lg").innerText = "0 Live"
         document.getElementById("live-viewer-count-md").innerText = "0 Live"
+
+        toast.info(
+          "Model ended the stream, will auto-connect if she starts again 😀"
+        )
 
         /* why need this, any way server will send room-left event */
         /* const socketRooms =
@@ -387,7 +409,7 @@ function ViewerScreen(props) {
         }
       }
     }
-  }, [socketCtx.socketSetupDone])
+  }, [socketCtx.socketSetupDone, leave])
 
   useEffect(() => {
     //debugger
@@ -445,6 +467,19 @@ function ViewerScreen(props) {
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
 
+              const modelDataEvent = new CustomEvent(
+                "model-profile-data-fetched",
+                {
+                  detail: {
+                    username: data.theModel.rootUser.username,
+                    profileImage: data.theModel.profileImage,
+                    isStreaming: data.theModel.isStreaming,
+                    onCall: data.theModel.onCall,
+                  },
+                }
+              )
+              document.dispatchEvent(modelDataEvent)
+
               /* check if model is streaming */
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
@@ -469,7 +504,8 @@ function ViewerScreen(props) {
               sessionStorage.setItem("streamId", data.streamId)
 
               setTipMenuActions(data.theModel.tipMenuActions.actions)
-              join(
+
+              const joinPromise = join(
                 window.location.pathname.split("/").reverse()[0],
                 data.rtcToken,
                 ctx.relatedUserId
@@ -478,15 +514,27 @@ function ViewerScreen(props) {
                   "Error joining the stream, something is not right..!"
                 )
               })
+
+              toast.promise(joinPromise, {
+                pending: "Establishing secure connection..",
+                success: "Connected to the server",
+                error: "Error joining the stream, something is not right..!",
+              })
             })
         } else {
           /* get token  from local storage */
-          join(
+          const joinPromise = join(
             window.location.pathname.split("/").reverse()[0],
             localStorage.getItem("rtcToken"),
             ctx.relatedUserId
           ).catch((err) => {
             console.error("Error joining the stream, something is not right..!")
+          })
+
+          toast.promise(joinPromise, {
+            pending: "Establishing secure connection..",
+            success: "Connected to the server, getting stream",
+            error: "Error joining the stream, something is not right..!",
           })
         }
       } else {
@@ -524,6 +572,19 @@ function ViewerScreen(props) {
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
 
+              const modelDataEvent = new CustomEvent(
+                "model-profile-data-fetched",
+                {
+                  detail: {
+                    username: data.theModel.rootUser.username,
+                    profileImage: data.theModel.profileImage,
+                    isStreaming: data.theModel.isStreaming,
+                    onCall: data.theModel.onCall,
+                  },
+                }
+              )
+              document.dispatchEvent(modelDataEvent)
+
               /* check if model is offline */
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
@@ -547,7 +608,7 @@ function ViewerScreen(props) {
               if (!data.newUnAuthedUserCreated) {
                 /* if new viewer was created save the _id in localStorage */
                 /* as 👇 this is async */
-                join(
+                const joinPromise = join(
                   window.location.pathname.split("/").reverse()[0],
                   data.rtcToken,
                   localStorage.getItem("unAuthedUserId")
@@ -556,10 +617,16 @@ function ViewerScreen(props) {
                     "Error joining the stream, something is not right..!"
                   )
                 })
+
+                toast.promise(joinPromise, {
+                  pending: "Establishing secure connection..",
+                  success: "Connected to the server, getting stream",
+                  error: "Error joining the stream, something is not right..!",
+                })
               } else {
                 /* if new Un-Authed user was registered */
                 localStorage.setItem("unAuthedUserId", data.unAuthedUserId)
-                join(
+                const joinPromise = join(
                   window.location.pathname.split("/").reverse()[0],
                   data.rtcToken,
                   data.unAuthedUserId
@@ -568,18 +635,29 @@ function ViewerScreen(props) {
                     "Error joining the stream, something is not right..!"
                   )
                 })
+
+                toast.promise(joinPromise, {
+                  pending: "Establishing secure connection..",
+                  success: "Connected to the server, getting stream",
+                  error: "Error joining the stream, something is not right..!",
+                })
               }
             })
             .catch((err) => alert(err.message))
         } else {
           /* if already have a token no need to fetch new one */
-          const channel = window.location.pathname.split("/").reverse()[0]
-          join(
-            channel,
+          const joinPromise = join(
+            window.location.pathname.split("/").reverse()[0],
             localStorage.getItem("rtcToken"),
             localStorage.getItem("unAuthedUserId")
           ).catch((err) => {
             console.error("Error joining the stream, something is not right..!")
+          })
+
+          toast.promise(joinPromise, {
+            pending: "Establishing secure connection..",
+            success: "Connected to the server, getting stream",
+            error: "Error joining the stream, something is not right..!",
           })
         }
       }
@@ -614,6 +692,9 @@ function ViewerScreen(props) {
           // alert("model ended call")
           setPendingCallEndRequest(true)
           spinnerCtx.setShowSpinner(true, "Processing transaction...")
+          toast.info("Model has ended/disconnected the call", {
+            autoClose: 3000,
+          })
           /**
            * now show spinner and wait for call-end-request-finished
            * do a fetch request in that listener nad fetch the call end details/metrics
@@ -632,13 +713,16 @@ function ViewerScreen(props) {
           }
 
           /* ========================== */
-          spinnerCtx.setShowSpinner(false, "Please wait")
+          spinnerCtx.setShowSpinner(false, "Please wait...")
           setPendingCallEndRequest(false)
           setCallOnGoing(false)
           await leaveAndCloseTracks()
           await client.setClientRole("audience")
           setIsModelOffline(true)
           offCallListeners()
+          toast.success("Call has ended successfully!", {
+            autoClose: false,
+          })
           socket.emit(
             "update-client-info",
             {
@@ -664,23 +748,27 @@ function ViewerScreen(props) {
       let leftHandler
 
       joinHandler = (data) => {
-        document.getElementById(
-          "live-viewer-count-lg"
-        ).innerText = `${data.roomSize} Live`
-        document.getElementById(
-          "live-viewer-count-md"
-        ).innerText = `${data.roomSize} Live`
+        if (typeof data.roomSize === "number") {
+          document.getElementById("live-viewer-count-lg").innerText = `${
+            data.roomSize - 1
+          } Live`
+          document.getElementById("live-viewer-count-md").innerText = `${
+            data.roomSize - 1
+          } Live`
+        }
       }
 
       socket.on("viewer-joined", joinHandler)
 
       leftHandler = (data) => {
-        document.getElementById(
-          "live-viewer-count-lg"
-        ).innerText = `${data.roomSize} Live`
-        document.getElementById(
-          "live-viewer-count-md"
-        ).innerText = `${data.roomSize} Live`
+        if (typeof data.roomSize === "number") {
+          document.getElementById("live-viewer-count-lg").innerText = `${
+            data.roomSize - 1
+          } Live`
+          document.getElementById("live-viewer-count-md").innerText = `${
+            data.roomSize - 1
+          } Live`
+        }
       }
 
       socket.on("viewer-left-stream-received", leftHandler)
@@ -706,6 +794,15 @@ function ViewerScreen(props) {
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               /* dont kick of, switch role to host start the call 📞📞 */
               /* do a fetch request and update the status of the call as ongoing */
+              toast.success(
+                "Model has accepted your call request, Establishing secure connection...",
+                {
+                  autoClose: 2000,
+                }
+              )
+              // toast.info(
+              //   "Please microphone (🎤) and camera (📷) permissions, when asked, else call will not be connected!"
+              // )
               fetch("/api/website/stream/set-call-ongoing", {
                 method: "POST",
                 headers: {
@@ -739,6 +836,27 @@ function ViewerScreen(props) {
                             setCallOnGoing(true)
                             setIsModelOffline(false)
                             setUpCallListeners()
+                            toast.success("Call is now connected 😀", {
+                              autoClose: 2000,
+                            })
+                            if (data.callType === "videoCall") {
+                              toast.info(
+                                " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions, if asked",
+                                {
+                                  position: "top-center",
+                                  autoClose: false,
+                                }
+                              )
+                            } else {
+                              /* if audio call */
+                              toast.info(
+                                " 👈👈 Please ALLOW MICROPHONE permissions, if asked",
+                                {
+                                  position: "top-center",
+                                  autoClose: false,
+                                }
+                              )
+                            }
                             await switchViewerToHost(data.callType)
                           }
                         }
@@ -751,8 +869,29 @@ function ViewerScreen(props) {
                       setCallOnGoing(true)
                       setIsModelOffline(false)
                       setUpCallListeners()
-                      await switchViewerToHost(data.callType)
                       /* actually switch viewer to host and create tracks */
+                      toast.success("Call is now connected 😀", {
+                        autoClose: 2000,
+                      })
+                      if (data.callType === "videoCall") {
+                        toast.info(
+                          " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions, if asked",
+                          {
+                            position: "top-center",
+                            autoClose: false,
+                          }
+                        )
+                      } else {
+                        /* if audio call */
+                        toast.info(
+                          " 👈👈 Please ALLOW MICROPHONE permissions, if asked",
+                          {
+                            position: "top-center",
+                            autoClose: false,
+                          }
+                        )
+                      }
+                      await switchViewerToHost(data.callType)
                     }
                   }
                 })
@@ -812,7 +951,7 @@ function ViewerScreen(props) {
                 })
               }
 
-              leaveDueToPrivateCall()
+              leave()
               /**
                *
                * have kick out all sockets on the server itself as below alogo will

@@ -18,9 +18,9 @@ function ViewersListContainer(props) {
       let userLeftHandler
       if (!socket.hasListeners("viewer-joined-private")) {
         userJoinedHandler = (data) => {
-          document.getElementById(
-            "live-viewer-count"
-          ).innerText = `${data.roomSize} Live`
+          document.getElementById("live-viewer-count").innerText = `${
+            data.roomSize - 1
+          } Live`
           if (data?.reJoin) {
             /* you have access to relatedUserId, do what you want */
             const prevViewer = prevStreamViewers.find(
@@ -46,13 +46,15 @@ function ViewersListContainer(props) {
             }
           } else {
             /* new viewer joined */
-            toast.success(`${data.viewer.username} Has Joined The Stream`, {
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              autoClose: 3000,
-              theme: "colored",
-            })
+            try {
+              toast.success(`${data.viewer.username} Has Joined The Stream`, {
+                autoClose: 1000,
+              })
+            } catch (err) {
+              toast.success(`A Viewer Has Joined The Stream`, {
+                autoClose: 1000,
+              })
+            }
             setViewers((prev) => {
               prev.push(data.viewer)
               return [...prev]
@@ -68,23 +70,13 @@ function ViewersListContainer(props) {
           if (data?.relatedUserId) {
             setViewers((prev) => {
               return prev.filter((viewer) => {
-                if (viewer._id !== data.relatedUserId) {
-                  toast.info(`${viewer.username} Has Joined The Stream`, {
-                    position: "bottom-right",
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    autoClose: 2000,
-                    theme: "colored",
-                  })
-                }
                 return viewer._id !== data.relatedUserId
               })
             })
           }
-          document.getElementById(
-            "live-viewer-count"
-          ).innerText = `${data.roomSize} Live`
+          document.getElementById("live-viewer-count").innerText = `${
+            data.roomSize - 1
+          } Live`
         }
         socket.on("viewer-left-stream-received", userLeftHandler)
       }
@@ -96,7 +88,29 @@ function ViewersListContainer(props) {
         prevStreamViewers = [...viewers]
         setViewers([])
       }
+
       socket.on("delete-stream-room", streamDeleteHandler)
+
+      const cleanForCall = (data) => {
+        /* move the current live user in prev streamViewers */
+        prevStreamViewers = [...viewers]
+
+        /* clear all other user details except the caller one's details */
+        setViewers((prev) => {
+          return [prev.find((viewer) => viewer._id === data.detail.viewerId)]
+        })
+      }
+      const clearForCallEnd = () => {
+        /* clear the list */
+        setViewers([])
+      }
+      document.addEventListener("clean-viewer-list-going-on-call", cleanForCall)
+
+      /* remove all viewers except the caller */
+      document.addEventListener(
+        "clear-viewer-list-going-on-call",
+        clearForCallEnd
+      ) /* clear the list */
 
       return () => {
         if (
@@ -118,7 +132,7 @@ function ViewersListContainer(props) {
   return (
     <>
       {viewers.length > 0 && (
-        <div className="tw-bg-third-color tw-py-1 tw-pb-16">
+        <div className="tw-pb-16 tw-mt-4">
           {viewers.map((viewerData, index) => {
             return (
               <SingleViewerBlock

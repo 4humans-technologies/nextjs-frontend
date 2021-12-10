@@ -74,12 +74,12 @@ function TestComponent() {
         id="superchat-audio"
       ></audio>
       <audio
-        preload
+        preload="true"
         src="/audio/money-debit.mp3"
         id="money-debit-audio"
       ></audio>
       <audio
-        preload
+        preload="true"
         src="/audio/call-end.mp3"
         id="call-end-audio"
       ></audio>
