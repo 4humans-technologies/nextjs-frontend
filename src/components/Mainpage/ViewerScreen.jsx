@@ -71,6 +71,7 @@ function ViewerScreen(props) {
   const spinnerCtx = useSpinnerContext()
   const modalCtx = useModalContext()
   const isLiveNowRef = useRef("not-init")
+  const [fullScreen, setFullScreen] = useState(false)
 
   const [callEndDetails, setCallEndDetails] = useState(null)
   const [othersCall, setOthersCall] = useState({
@@ -234,8 +235,10 @@ function ViewerScreen(props) {
     const palyBackArea = document.getElementById("playback-area")
     if (!document.fullscreenElement) {
       palyBackArea.requestFullscreen()
+      setFullScreen(true)
     } else {
       document.exitFullscreen()
+      setFullScreen(false)
     }
   }, [])
 
@@ -1125,69 +1128,60 @@ function ViewerScreen(props) {
       ) : null}
 
       {/* On call controls */}
-      {callOnGoing && !isModelOffline && (
-        <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
-          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
-            <VolumeUpIcon fontSize="medium" style={{ color: "white" }} />
+      {/* {callOnGoing && !isModelOffline && (
+      <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
+        <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+          <VolumeUpIcon fontSize="medium" style={{ color: "white" }} />
+        </button>
+        <button
+          className="tw-inline-block tw-mx-2 tw-z-[390]"
+          onClick={() => handleCallEnd()}
+        >
+          <CallEndIcon fontSize="medium" style={{ color: "red" }} />
+        </button>
+        {localAudioTrack && (
+          <button className="tw-inline-block tw-z-[390] tw-px-2">
+            {!isMuted ? (
+              <MicIcon
+                fontSize="medium"
+                style={{ color: "white" }}
+                onClick={toggleMuteMic}
+              />
+            ) : (
+              <MicOffIcon
+                fontSize="medium"
+                style={{ color: "red" }}
+                onClick={toggleMuteMic}
+              />
+            )}
           </button>
-          <button
-            className="tw-inline-block tw-mx-2 tw-z-[390]"
-            onClick={() => handleCallEnd()}
-          >
-            <CallEndIcon fontSize="medium" style={{ color: "red" }} />
-          </button>
-          {localAudioTrack && (
-            <button className="tw-inline-block tw-z-[390] tw-px-2">
-              {!isMuted ? (
-                <MicIcon
-                  fontSize="medium"
-                  style={{ color: "white" }}
-                  onClick={toggleMuteMic}
-                />
-              ) : (
-                <MicOffIcon
-                  fontSize="medium"
-                  style={{ color: "red" }}
-                  onClick={toggleMuteMic}
-                />
-              )}
-            </button>
+        )}
+        <button
+          className="tw-inline-block tw-mx-2 tw-z-[390]"
+          onClick={toggleFullscreen}
+        >
+          {document.fullscreenElement ? (
+            <FullscreenExitIcon fontSize="medium" style={{ color: "white" }} />
+          ) : (
+            <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
           )}
-          <button
-            className="tw-inline-block tw-mx-2 tw-z-[390]"
-            onClick={toggleFullscreen}
-          >
-            {document.fullscreenElement ? (
-              <FullscreenExitIcon
-                fontSize="medium"
-                style={{ color: "white" }}
-              />
-            ) : (
-              <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
-            )}
-          </button>
-        </div>
-      )}
-      {!callOnGoing && joinState ? (
-        <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
-          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
-            <MicOffIcon fontSize="medium" style={{ color: "white" }} />
-          </button>
-          <button
-            className="tw-inline-block tw-mx-2 tw-z-[390]"
-            onClick={toggleFullscreen}
-          >
-            {document.fullscreenElement ? (
-              <FullscreenExitIcon
-                fontSize="medium"
-                style={{ color: "white" }}
-              />
-            ) : (
-              <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
-            )}
-          </button>
-        </div>
-      ) : null}
+        </button>
+      </div>
+       ) } */}
+      {/* {!callOnGoing && joinState ? ( */}
+      <div className="tw-absolute  tw-right-0 md:tw-translate-x-[-50%] md:tw-top-10 tw-top-4 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 md:tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] md:tw-backdrop-blur">
+        <button
+          className="tw-inline-block tw-mx-2 tw-z-[390]"
+          onClick={toggleFullscreen}
+        >
+          {!fullScreen ? (
+            <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
+          ) : (
+            <FullscreenExitIcon fontSize="medium" style={{ color: "white" }} />
+          )}
+        </button>
+      </div>
+      {/* ) : null} */}
     </div>
   )
 }

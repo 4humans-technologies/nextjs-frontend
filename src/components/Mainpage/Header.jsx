@@ -199,15 +199,22 @@ function Header(props) {
                             liveModels={props.liveModels}
                           />
                         )}
-                        <div className="tw-flex tw-self-center">
+                        <div
+                          className="tw-flex tw-self-center"
+                          onClick={() =>
+                            router.push(
+                              `/${authContext.user.user.username}/settingToken`
+                            )
+                          }
+                        >
                           <img
                             src="/coins.png"
                             alt=""
-                            className="tw-w-10 tw-h-10 tw-text-white"
+                            className="tw-w-6 tw-h-6 tw-text-white"
                           />
                           <p className="tw-self-center">
                             {
-                              authContext.user.user.relatedUser.wallet
+                              authContext.user.user.relatedUser?.wallet
                                 .currentAmount
                             }
                           </p>

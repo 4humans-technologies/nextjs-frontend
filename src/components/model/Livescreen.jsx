@@ -322,7 +322,7 @@ function LiveScreen(props) {
   return (
     <>
       <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
-        <div className="tw-relative tw-bg-dark-black md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
+        <div className="tw-relative tw-bg-dark-black md:tw-w-[60%] tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
           {/* <img src="brandikaran.jpg" alt="" /> */}
           <ViewerScreen
             setIsChatPlanActive={setIsChatPlanActive}
@@ -472,8 +472,8 @@ function LiveScreen(props) {
             </div>
           ) : null}
         </div>
-        <div className="tw-bg-second-color md:tw-w-4/12 md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-          <div className="tw-flex tw-justify-around md:tw-justify-start tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative tw-shadow-md">
+        <div className="tw-bg-second-color md:tw-w-[40%] md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+          <div className="tw-flex tw-justify-around md:tw-justify-between tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative tw-shadow-md">
             <button
               className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-mr-4 ${
                 chatWindow === chatWindowOptions?.PUBLIC

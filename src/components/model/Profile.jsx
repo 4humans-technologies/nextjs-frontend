@@ -756,6 +756,7 @@ function Profile() {
                 <p>Body Type</p>
                 <p>Hair</p>
                 <p>Eye color</p>
+                {}
               </div>
 
               <div className="md:tw-col-span-5 tw-col-span-4 ">
@@ -803,12 +804,9 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
-                  // value={profileEdit.skinColor}
                 >
                   Fair
-                  {/* {item.Body} */}
                 </p>
-                {/* Body type */}
                 <p
                   onInput={(e) => {
                     setProfileEdit(
@@ -821,12 +819,9 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
-                  // value={profileEdit.skinColor}
                 >
                   slim
-                  {/* {item.Body} */}
                 </p>
-                {/* Body type */}
                 <p
                   onInput={(ev) => {
                     setProfileEdit((prev) => ({
@@ -837,7 +832,6 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
-                  // value={profileEdit.hairColor}
                 >
                   Black
                   {/* {item.Hair} */}
@@ -852,7 +846,6 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
-                  // value={profileEdit.eyeColor}
                 >
                   Black
                 </p>
@@ -1061,6 +1054,10 @@ function Profile() {
               </div>
             </div>
             {/* Call History */}
+
+            {/*Bank details  */}
+
+            {/*Bank details  */}
           </div>
           {/* Scroll */}
         </div>

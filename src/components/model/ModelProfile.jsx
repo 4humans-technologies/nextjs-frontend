@@ -563,7 +563,7 @@ function ModelProfile(props) {
   }
   const [state, dispatch] = useReducer(reducer, intiState)
   return (
-    <div className=" tw-bg-first-color tw-pt-16 tw-pb-8 tw-px-3 md:tw-px-4">
+    <div className=" tw-bg-first-color tw-pt-16 tw-pb-8  md:tw-px-4">
       <div className="">
         {/* checking for tabs */}
         <div className="tw-inline-flex tw-bg-black tw-text-white   tw-rounded-t-2xl">
@@ -612,7 +612,7 @@ function ModelProfile(props) {
           {/* Private videos */}
         </div>
         {/* checking for tabs */}
-        <div className="tw-border-t-[3px] tw-border-second-color">
+        <div className="tw-border-t-[3px] tw-border-second-color tw-pl-4">
           {state.val}
         </div>
       </div>

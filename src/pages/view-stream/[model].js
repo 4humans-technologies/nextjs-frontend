@@ -48,9 +48,7 @@ function ViewModelStream() {
           ]}
         />
       )}
-      {/* <CallEndDetails /> */}
       <Recommendation parent={"viewerScreen"} />
-      {/* <Footer /> */}
     </>
   )
 }
