@@ -16,15 +16,20 @@ function InCallActivities(props) {
   ])
 
   const updateCallActivities = async () => {
-    fetch("url", {
+    fetch("/api/website/profile/update-info-fields", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify({
-        audioCallActivities: audioCallActivities,
-        videoCallActivities: videoCallActivities,
-      }),
+      body: JSON.stringify([
+        {
+          field: "callActivity",
+          value: {
+            audioCall: audioCallActivities,
+            videoCall: videoCallActivities,
+          },
+        },
+      ]),
     })
       .then((resp) => resp.json())
       .then((data) => console.log(data))

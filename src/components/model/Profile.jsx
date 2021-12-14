@@ -39,6 +39,7 @@ function Profile() {
     skinColor: authContext?.user.user.relatedUser.skinColor,
     hairColor: authContext?.user.user.relatedUser.hairColor,
     eyeColor: authContext?.user.user.relatedUser.eyeColor,
+    bio: authContext?.user.user.relatedUser.bio,
   })
 
   // This is for the Image uplode
@@ -756,6 +757,7 @@ function Profile() {
                 <p>Body Type</p>
                 <p>Hair</p>
                 <p>Eye color</p>
+                <p>About me</p>
                 {}
               </div>
 
@@ -848,6 +850,19 @@ function Profile() {
                   contentEditable="true"
                 >
                   Black
+                </p>
+                <p
+                  onInput={(e) => {
+                    setProfileEdit((prev) => ({
+                      ...prev,
+                      bio: e.target.textContent,
+                    })),
+                      setInfoedited(true)
+                  }}
+                  contentEditable="true"
+                  suppressContentEditableWarning={true}
+                >
+                  {authContext.user.user.relatedUser.bio}
                 </p>
               </div>
 

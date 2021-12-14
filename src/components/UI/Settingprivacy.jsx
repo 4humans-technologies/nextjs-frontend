@@ -19,6 +19,7 @@ function Settingprivacy() {
     bankName: "",
     bankIfsc: "",
     accountNumber: 0,
+    bankUpdated: "",
   })
   useEffect(() => {
     fetch("/api/website/profile/get-model-token-history", {
@@ -36,6 +37,32 @@ function Settingprivacy() {
 
   const bankDetailHandler = async (e) => {
     e.preventdefault()
+    fetch("/api/website/profile/update-info-fields", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify([
+        {
+          field: "bankDetails",
+          value: {
+            bankName: bankDetails.bankName,
+            IfscCode: bankDetails.IfscCode,
+            holderName: bankDetails.person,
+            accountNumber: bankDetails.accountNumber,
+          },
+        },
+      ]),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        bankDetails.bankUpdated(
+          "COngratulation !! Your Bank details are update with us"
+        ),
+          setTimeout(() => {
+            bankDetails.bankUpdated("")
+          }, 4000)
+      })
   }
 
   return authContext.user.user ? (
@@ -111,6 +138,7 @@ function Settingprivacy() {
               action=""
               method="post"
               className="tw-flex tw-flex-col tw-pr-4"
+              onSubmit={bankDetailHandler}
             >
               <label htmlFor="accountHolder" className="">
                 Your Name (as per bank)
@@ -177,6 +205,7 @@ function Settingprivacy() {
                 </button>
               </div>
             </form>
+            <p className="font-">{bankDetails.bankUpdated}</p>
           </div>
           <div className="tw-col-span-1 tw-px-4">
             <h1 className=" tw-font-bold tw-text-center tw-my-4">

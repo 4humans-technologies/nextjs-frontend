@@ -455,11 +455,11 @@ function ViewerScreen(props) {
             body: JSON.stringify({
               modelId: myModelId,
               purchasedVideoAlbums:
-                ctx.user.user.relatedUser.privateVideosPlans.find(
+                ctx.user.user?.relatedUser?.privateVideosPlans?.find(
                   (collection) => (collection.model = myModelId)
                 )?.albums || [],
               purchasedImageAlbums:
-                ctx.user.user.relatedUser.privateImagesPlans.find(
+                ctx.user.user.relatedUser?.privateImagesPlans?.find(
                   (collection) => (collection.model = myModelId)
                 )?.albums || [],
             }),

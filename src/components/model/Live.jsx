@@ -209,11 +209,6 @@ function Live() {
                 "putting-me-in-these-rooms",
                 joinRooms,
                 (response) => {
-                  // sessionStorage.setItem(
-                  //   "socket-rooms",
-                  //   joinRooms,
-                  //   JSON.stringify([...socketRooms, ...joinRooms])
-                  // )
                   if (response.status === "ok") {
                     joinAttempts = 0
                     joinRooms = []
@@ -227,15 +222,6 @@ function Live() {
         } else {
           console.log("socket is not connected", "color:green")
         }
-        /* else if (!socket.connected && !reconnectInProgress) {
-        // connect to the socket it's nesscssery
-        reconnectInProgress = true
-        const resetOnReconnect = () => {
-          reconnectInProgress = false
-        }
-        socket.once("connect", resetOnReconnect)
-        io.connect()
-      } */
       }, 3000)
 
       return () => {
@@ -245,10 +231,6 @@ function Live() {
   }, [isLiveNowRef, socketCtx.socketSetupDone])
 
   const scrollOnChat = useCallback((scrollType) => {
-    // document.getElementById("for-scroll-into-view").scrollIntoView({
-    //   behavior: "smooth",
-    //   block: "start",
-    // })
     const containerElement = document.getElementById("chatBoxContainer")
     containerElement.scrollBy({
       top: containerElement.scrollHeight,

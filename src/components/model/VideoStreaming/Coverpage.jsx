@@ -3,9 +3,11 @@ import ImageRoundedIcon from "@material-ui/icons/ImageRounded"
 import { Button } from "react-bootstrap"
 import { SaveRounded } from "@material-ui/icons"
 import BackupRoundedIcon from "@material-ui/icons/BackupRounded"
+import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Coverpage() {
-  const [coverImage, setCoverImage] = useState("/pp.jpg")
+  const [coverImage, setCoverImage] = useState("/cover-photo.png")
+  const authContext = useAuthContext()
   // function to handle cover image change
   const changeCover = async (e) => {
     const image_1 = await e.target.files[0]
@@ -55,13 +57,14 @@ function Coverpage() {
             <ImageRoundedIcon fontSize="medium" />{" "}
             <span className="">Cover Page</span>
           </div>
-          <div className="">
-            <img
-              src={coverImage}
-              alt=""
-              className="tw-max-h-[200px] tw-object-cover tw-rounded tw-my-2"
-            />
-          </div>
+          <img
+            src={
+              authContext.user.user.relatedUser?.coverImage
+                ? `${authContext.user.user.relatedUser.coverImage}`
+                : "/cover-photo.png"
+            }
+            className="tw-max-h-[200px] tw-object-cover tw-rounded tw-my-2"
+          />
           <div className="tw-border-b-[1px] tw-border-white-color tw-py-4">
             <input
               type="file"
