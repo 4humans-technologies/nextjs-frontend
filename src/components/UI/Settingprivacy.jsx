@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { toast } from "react-toastify"
 import { useAuthContext } from "../../app/AuthContext"
 import useModalContext from "../../app/ModalContext"
 import {
@@ -8,10 +9,16 @@ import {
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
 
+let allHistory = []
 function Settingprivacy() {
   const authContext = useAuthContext()
   const modalCtx = useModalContext()
-  const [tokenData, setTokenData] = useState()
+  const [tokenData, setTokenData] = useState(allHistory)
+  const [filterDate, setFilterDate] = useState({
+    start: 0,
+    end: 0,
+  })
+
   const [claimToken, setclaimToken] = useState(0) // Token to be claimed  by model to get
   const [bankDetails, setBankDetails] = useState({
     // Bank details
@@ -29,14 +36,16 @@ function Settingprivacy() {
       },
     })
       .then((resp) => resp.json())
-      .then((data) => setTokenData(data.results))
+      .then((data) => {
+        setTokenData(data.results)
+        allHistory = data.results
+      })
       .catch((err) => console.log(err))
   }, [])
 
   // for the bank account
-
   const bankDetailHandler = async (e) => {
-    e.preventdefault()
+    e.preventDefault()
     fetch("/api/website/profile/update-info-fields", {
       method: "POST",
       headers: {
@@ -47,7 +56,7 @@ function Settingprivacy() {
           field: "bankDetails",
           value: {
             bankName: bankDetails.bankName,
-            IfscCode: bankDetails.IfscCode,
+            IfscCode: bankDetails.bankIfsc,
             holderName: bankDetails.person,
             accountNumber: bankDetails.accountNumber,
           },
@@ -56,23 +65,48 @@ function Settingprivacy() {
     })
       .then((res) => res.json())
       .then((data) => {
-        bankDetails.bankUpdated(
-          "COngratulation !! Your Bank details are update with us"
-        ),
-          setTimeout(() => {
-            bankDetails.bankUpdated("")
-          }, 4000)
+        toast.success("Bank Details Successfully update", {
+          position: "bottom-right",
+          closeOnClick: true,
+          autoClose: 3000,
+        })
       })
   }
 
-  return authContext.user.user ? (
-    <div className="tw-pb-4">
-      <div className="tw-mb-8">
+  // assending And decending from the token
+  const assendHandler = () => {
+    let tok = tokenData?.sort((a, b) => a.tokenAmount - b.tokenAmount)
+    return setTokenData([...tok])
+  }
+  const decendHandler = () => {
+    let tok = tokenData?.sort((a, b) => a.tokenAmount - b.tokenAmount)
+    tok.reverse()
+    return setTokenData([...tok])
+  }
+
+  const dateHandler = (e) => {
+    e.preventDefault()
+    let end = filterDate.end ? filterDate.end : Date.parse(new Date())
+    setTokenData(
+      allHistory.filter((item) => {
+        if (
+          filterDate.start <= Date.parse(item.time.split("T")[0]) &&
+          end >= Date.parse(item.time.split("T")[0])
+        ) {
+          return item
+        }
+      })
+    )
+  }
+
+  return (
+    authContext.isLoggedIn && (
+      <div className="tw-pb-4">
         <div className="tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-text-white tw-w-full ">
           <div className="tw-col-span-1">
             <div className="tw-bg-first-color tw-flex tw-items-center tw-justify-between tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 ">
               <p className="">
-                My Email{" "}
+                My Email
                 <span className="tw-ml-4 tw-text-lg tw-font-semibold">
                   {authContext.user.user.relatedUser.email}
                 </span>
@@ -102,11 +136,70 @@ function Settingprivacy() {
             </div>
           </div>
         </div>
+
         <div className="tw-text-white tw-mt-8 ">
           {/* It's token History */}
           <h1 className="tw-pt-4 tw-text-center tw-font-semibold">
             Token History
           </h1>
+          <div className="tw-flex tw-mt-4 tw-flex-wrap">
+            <form onSubmit={dateHandler}>
+              <label htmlFor="startDate">From</label>
+              <input
+                type="date"
+                name="startDate"
+                id="startDate"
+                className="md:tw-mx-4 tw-mx-1 tw-text-black"
+                onInput={(e) =>
+                  setFilterDate((prev) => ({
+                    ...prev,
+                    start: Date.parse(
+                      document.getElementById("startDate").value
+                    ),
+                  }))
+                }
+                placeholder="Starting Date"
+              />
+              <label htmlFor="lastdate">To</label>
+              <input
+                type="date"
+                name="lastdate"
+                id="lastDate"
+                className="tw-text-black md:tw-ml-4 tw-mx-1"
+                onInput={(e) =>
+                  setFilterDate((prev) => ({
+                    ...prev,
+                    end: Date.parse(document.getElementById("lastDate").value),
+                  }))
+                }
+                placeholder="End Date"
+              />
+              <button
+                type="submit"
+                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-4"
+              >
+                Apply
+              </button>
+            </form>
+            <button
+              className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-4"
+              onClick={() => {
+                assendHandler()
+              }}
+            >
+              Assending
+            </button>
+
+            <button
+              className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-4"
+              onClick={() => {
+                decendHandler()
+              }}
+            >
+              Decending
+            </button>
+          </div>
+
           <div className="tw-grid md:tw-grid-cols-4 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
             <div>Date</div>
             <div>Time</div>
@@ -129,118 +222,124 @@ function Settingprivacy() {
           </div>
         </div>
         {/* Bank Details  */}
-        <div className="tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-text-white tw-w-full tw-my-4 ">
-          <div className="tw-col-span-1 tw-px-4">
-            <h1 className=" tw-font-bold tw-text-center tw-my-4">
-              Bank Details
-            </h1>
-            <form
-              action=""
-              method="post"
-              className="tw-flex tw-flex-col tw-pr-4"
-              onSubmit={bankDetailHandler}
-            >
-              <label htmlFor="accountHolder" className="">
-                Your Name (as per bank)
-              </label>
-              <input
-                type="text"
-                name="accountHolder"
-                id="accountHolder"
-                placeholder="Your name as resgister"
-                onInput={(e) =>
-                  setBankDetails((prev) => ({
-                    ...prev,
-                    person: e.taget.value,
-                  }))
-                }
-                className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
-              />
-              <label htmlFor="Bank-name">BANK NAME</label>
-              <input
-                type="text"
-                name="Bank-name"
-                id="Bank-name"
-                onInput={(e) =>
-                  setBankDetails((prev) => ({
-                    ...prev,
-                    bankName: e.taget.value,
-                  }))
-                }
-                className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
-              />
-              <label htmlFor="accountNumber">Bank account number</label>
-              <input
-                type="text"
-                name="accountNumber"
-                onInput={(e) =>
-                  setBankDetails((prev) => ({
-                    ...prev,
-                    accountNumber: e.taget.value,
-                  }))
-                }
-                id="accountNumber"
-                className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
-              />
-              <label htmlFor="ifscCode">IFSC CODE</label>
-              <input
-                type="text"
-                name="ifscCode"
-                id="ifscCode"
-                onInput={(e) =>
-                  setBankDetails((prev) => ({
-                    ...prev,
-                    bankIfsc: e.taget.value,
-                  }))
-                }
-                className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
-              />
 
-              <div className="tw-flex tw-mx-auto">
-                <button
-                  type="submit"
-                  className=" tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  tw-mt-4"
-                >
-                  Update
-                </button>
-              </div>
-            </form>
-            <p className="font-">{bankDetails.bankUpdated}</p>
-          </div>
-          <div className="tw-col-span-1 tw-px-4">
-            <h1 className=" tw-font-bold tw-text-center tw-my-4">
-              Widrawal Reuest
-            </h1>
-            <p>
-              <span className="tw-font-smibold tw-mr-4">
-                Token in your account :
-              </span>
-              {authContext.user.user.relatedUser.wallet.currentAmount}
-            </p>
-            <p className="flex tw-my-2">
-              <span className="tw-font-smibold tw-mr-4">
-                Withdrawal Token :
-              </span>
-              <input
-                type="text"
-                name=""
-                id=""
-                onInput={(e) => setclaimToken(e.target.value)}
-                className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
-              />
-            </p>
-            <button
-              type="submit"
-              className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  "
-            >
-              Claim token
-            </button>
-          </div>
-        </div>
         {/* Bank Details  */}
+        {authContext.user.userType === "Model" && (
+          <div className="tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-text-white tw-w-full tw-my-8 ">
+            <div className="tw-col-span-1 tw-px-4">
+              <h1 className=" tw-font-bold tw-text-center tw-my-4">
+                Bank Details
+              </h1>
+              <form
+                action=""
+                method="post"
+                className="tw-flex tw-flex-col tw-pr-4"
+                onSubmit={bankDetailHandler}
+              >
+                <label htmlFor="accountHolder" className="">
+                  Your Name (as per bank)
+                </label>
+                <input
+                  type="text"
+                  name="accountHolder"
+                  id="accountHolder"
+                  placeholder="Your name as resgister"
+                  onInput={(e) =>
+                    setBankDetails((prev) => ({
+                      ...prev,
+                      person: e.target.value,
+                    }))
+                  }
+                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                />
+                <label htmlFor="Bank-name">BANK NAME</label>
+                <input
+                  type="text"
+                  name="Bank-name"
+                  id="Bank-name"
+                  onInput={(e) =>
+                    setBankDetails((prev) => ({
+                      ...prev,
+                      bankName: e.target.value,
+                    }))
+                  }
+                  placeholder="Bank with Branch Name"
+                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                />
+                <label htmlFor="accountNumber">Bank account number</label>
+                <input
+                  type="text"
+                  name="accountNumber"
+                  onInput={(e) =>
+                    setBankDetails((prev) => ({
+                      ...prev,
+                      accountNumber: e.target.value,
+                    }))
+                  }
+                  placeholder="Account Number"
+                  id="accountNumber"
+                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                />
+                <label htmlFor="ifscCode">IFSC CODE</label>
+                <input
+                  type="text"
+                  name="ifscCode"
+                  id="ifscCode"
+                  onInput={(e) =>
+                    setBankDetails((prev) => ({
+                      ...prev,
+                      bankIfsc: e.target.value,
+                    }))
+                  }
+                  placeholder="Bank Ifsc code"
+                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                />
+
+                <div className="tw-flex tw-mx-auto">
+                  <button
+                    type="submit"
+                    className=" tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  tw-mt-4"
+                  >
+                    Update
+                  </button>
+                </div>
+              </form>
+              <p className="response"></p>
+            </div>
+            <div className="tw-col-span-1 tw-px-4">
+              <h1 className=" tw-font-bold tw-text-center tw-my-4">
+                Widrawal Reuest
+              </h1>
+              <p>
+                <span className="tw-font-smibold tw-mr-4">
+                  Token in your account :
+                </span>
+                {authContext.user.user.relatedUser.wallet.currentAmount}
+              </p>
+              <p className="flex tw-my-2">
+                <span className="tw-font-smibold tw-mr-4">
+                  Withdrawal Token :
+                </span>
+                <input
+                  type="text"
+                  name=""
+                  id=""
+                  onInput={(e) => setclaimToken(e.target.value)}
+                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                />
+              </p>
+              <button
+                type="submit"
+                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  "
+              >
+                Claim token
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  ) : null
+    )
+  )
 }
 
 export default Settingprivacy

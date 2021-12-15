@@ -38,13 +38,6 @@ function Headerprofile(props) {
         </div>
         {/* Profile edit */}
 
-        {authContext.user.userType === "Model" && (
-          <div className="tw-flex tw-my-2 tw-px-2 ">
-            <PersonIcon />
-            <p className="tw-ml-4">About Me </p>
-          </div>
-        )}
-
         {/* Profile edit */}
 
         <div
