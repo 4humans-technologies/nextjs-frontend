@@ -5,8 +5,8 @@ import { SaveRounded } from "@material-ui/icons"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Topic(props) {
-  const [childState, setChildState] = useState([])
   const authContext = useAuthContext()
+  const [childState, setChildState] = useState([])
   const updateAuthcontext = useAuthUpdateContext()
   //  Topic set while streaming
 

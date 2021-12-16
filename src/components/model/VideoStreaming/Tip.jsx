@@ -7,8 +7,10 @@ import { Button } from "react-bootstrap"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Tip() {
-  const [dynamicData, setDynamicData] = useState([2])
   const authContext = useAuthContext()
+  const [dynamicData, setDynamicData] = useState([
+    authContext.user.user?.relatedUser?.topic,
+  ])
 
   useEffect(() => {
     if (authContext.loadedFromLocalStorage === true) {

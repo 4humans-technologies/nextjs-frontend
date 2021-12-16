@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 import { useAuthContext } from "../../app/AuthContext"
 import useModalContext from "../../app/ModalContext"
+import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 import {
   EmailChange,
   PasswordChange,
@@ -26,7 +27,7 @@ function Settingprivacy() {
     bankName: "",
     bankIfsc: "",
     accountNumber: 0,
-    bankUpdated: "",
+    accountType: "Saving",
   })
   useEffect(() => {
     fetch("/api/website/profile/get-model-token-history", {
@@ -59,6 +60,7 @@ function Settingprivacy() {
             IfscCode: bankDetails.bankIfsc,
             holderName: bankDetails.person,
             accountNumber: bankDetails.accountNumber,
+            // accountType:bankDetails.accountType
           },
         },
       ]),
@@ -67,7 +69,6 @@ function Settingprivacy() {
       .then((data) => {
         toast.success("Bank Details Successfully update", {
           position: "bottom-right",
-          closeOnClick: true,
           autoClose: 3000,
         })
       })
@@ -149,7 +150,7 @@ function Settingprivacy() {
                 type="date"
                 name="startDate"
                 id="startDate"
-                className="md:tw-mx-4 tw-mx-1 tw-text-black"
+                className="md:tw-mx-4 tw-mx-1 tw-text-white tw-bg-second-color tw-rounded-lg tw-px-1"
                 onInput={(e) =>
                   setFilterDate((prev) => ({
                     ...prev,
@@ -165,7 +166,7 @@ function Settingprivacy() {
                 type="date"
                 name="lastdate"
                 id="lastDate"
-                className="tw-text-black md:tw-ml-4 tw-mx-1"
+                className=" md:tw-ml-4 tw-mx-1 tw-text-white tw-bg-second-color tw-rounded-lg tw-px-1"
                 onInput={(e) =>
                   setFilterDate((prev) => ({
                     ...prev,
@@ -181,30 +182,27 @@ function Settingprivacy() {
                 Apply
               </button>
             </form>
-            <button
-              className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-4"
-              onClick={() => {
-                assendHandler()
-              }}
-            >
-              Assending
-            </button>
-
-            <button
-              className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-4"
-              onClick={() => {
-                decendHandler()
-              }}
-            >
-              Decending
-            </button>
           </div>
 
           <div className="tw-grid md:tw-grid-cols-4 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
             <div>Date</div>
             <div>Time</div>
             <div>User</div>
-            <div>Token</div>
+            <div>
+              Token{" "}
+              <ExpandLessIcon
+                className=" tw-cursor-pointer"
+                onClick={() => {
+                  assendHandler()
+                }}
+              />{" "}
+              <ExpandLessIcon
+                className=" tw-cursor-pointer tw-rotate-180"
+                onClick={() => {
+                  decendHandler()
+                }}
+              />
+            </div>
           </div>
 
           <div className="tw-max-h-72 tw-overflow-y-auto">
@@ -233,10 +231,10 @@ function Settingprivacy() {
               <form
                 action=""
                 method="post"
-                className="tw-flex tw-flex-col tw-pr-4"
+                className="tw-flex tw-flex-col tw-bg-second-color tw-p-4 tw-rounded-lg"
                 onSubmit={bankDetailHandler}
               >
-                <label htmlFor="accountHolder" className="">
+                <label htmlFor="accountHolder" className="tw-mt-3">
                   Your Name (as per bank)
                 </label>
                 <input
@@ -250,9 +248,11 @@ function Settingprivacy() {
                       person: e.target.value,
                     }))
                   }
-                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                  className="tw-bg-first-color tw-rounded-full tw-py-1 tw-px-2"
                 />
-                <label htmlFor="Bank-name">BANK NAME</label>
+                <label htmlFor="Bank-name" className="tw-mt-3">
+                  BANK NAME
+                </label>
                 <input
                   type="text"
                   name="Bank-name"
@@ -264,9 +264,11 @@ function Settingprivacy() {
                     }))
                   }
                   placeholder="Bank with Branch Name"
-                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                  className="tw-bg-first-color tw-rounded-full tw-py-1 tw-px-2"
                 />
-                <label htmlFor="accountNumber">Bank account number</label>
+                <label htmlFor="accountNumber" className="tw-mt-3">
+                  Bank account number
+                </label>
                 <input
                   type="text"
                   name="accountNumber"
@@ -278,9 +280,11 @@ function Settingprivacy() {
                   }
                   placeholder="Account Number"
                   id="accountNumber"
-                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                  className="tw-bg-first-color tw-rounded-full tw-py-1 tw-px-2"
                 />
-                <label htmlFor="ifscCode">IFSC CODE</label>
+                <label htmlFor="ifscCode" className="tw-mt-3">
+                  IFSC CODE
+                </label>
                 <input
                   type="text"
                   name="ifscCode"
@@ -291,9 +295,40 @@ function Settingprivacy() {
                       bankIfsc: e.target.value,
                     }))
                   }
-                  placeholder="Bank Ifsc code"
-                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
+                  placeholder="Bank Ifsc"
+                  className="tw-bg-first-color tw-rounded-full tw-py-1 tw-px-2"
                 />
+                <label htmlFor="accountType" className="tw-mt-3">
+                  Type of account
+                </label>
+                <select
+                  name="accountType"
+                  id="accountType"
+                  className="tw-bg-first-color tw-rounded-full tw-py-1 tw-px-2"
+                >
+                  <option
+                    value="saving"
+                    onClick={() =>
+                      setBankDetails((prev) => ({
+                        ...prev,
+                        accountType: "Saving",
+                      }))
+                    }
+                  >
+                    Saving
+                  </option>
+                  <option
+                    value="current"
+                    onClick={() =>
+                      setBankDetails((prev) => ({
+                        ...prev,
+                        accountType: "Current",
+                      }))
+                    }
+                  >
+                    Current
+                  </option>
+                </select>
 
                 <div className="tw-flex tw-mx-auto">
                   <button
@@ -310,30 +345,32 @@ function Settingprivacy() {
               <h1 className=" tw-font-bold tw-text-center tw-my-4">
                 Widrawal Reuest
               </h1>
-              <p>
-                <span className="tw-font-smibold tw-mr-4">
-                  Token in your account :
-                </span>
-                {authContext.user.user.relatedUser.wallet.currentAmount}
-              </p>
-              <p className="flex tw-my-2">
-                <span className="tw-font-smibold tw-mr-4">
-                  Withdrawal Token :
-                </span>
-                <input
-                  type="text"
-                  name=""
-                  id=""
-                  onInput={(e) => setclaimToken(e.target.value)}
-                  className="tw-bg-second-color tw-rounded-full tw-py-1 tw-px-2"
-                />
-              </p>
-              <button
-                type="submit"
-                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  "
-              >
-                Claim token
-              </button>
+              <div className="tw-bg-second-color tw-p-4 tw-rounded-lg">
+                <p>
+                  <span className="tw-font-smibold tw-mr-4">
+                    Token in your account :
+                  </span>
+                  {authContext.user.user.relatedUser.wallet.currentAmount}
+                </p>
+                <p className="flex tw-my-2">
+                  <span className="tw-font-smibold tw-mr-4">
+                    Withdrawal Token :
+                  </span>
+                  <input
+                    type="text"
+                    name=""
+                    id=""
+                    onInput={(e) => setclaimToken(e.target.value)}
+                    className="tw-bg-first-color tw-rounded-full tw-py-1 tw-px-2"
+                  />
+                </p>
+                <button
+                  type="submit"
+                  className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  "
+                >
+                  Claim token
+                </button>
+              </div>
             </div>
           </div>
         )}
