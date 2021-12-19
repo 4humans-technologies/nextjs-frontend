@@ -384,7 +384,7 @@ function ViewerScreen(props) {
 
         toast.promise(newStream, {
           pending: "Model started streaming, establishing secure connection",
-          success: "Successfully join the stream",
+          success: "Successfully joined the stream",
           error: {
             render(err) {
               return "Error joining the stream err: " + err.data
@@ -558,8 +558,8 @@ function ViewerScreen(props) {
               })
 
               toast.promise(joinPromise, {
-                pending: "Establishing secure connection..",
-                success: "Connected to the server",
+                pending: "Establishing secure connection",
+                success: "Successfully joined the stream",
                 error: "Error joining the stream, something is not right..!",
               })
             })
@@ -766,6 +766,10 @@ function ViewerScreen(props) {
         toast.success("Call has ended successfully!", {
           autoClose: false,
         })
+
+        /**
+         * clear the call details from socket
+         */
         socket.emit(
           "update-client-info",
           {
@@ -791,9 +795,17 @@ function ViewerScreen(props) {
               autoClose: 3000,
             }
           )
+
+          /**
+           * clear customDataRef
+           */
+          customDataRef.current.callId = null
+          customDataRef.current.callType = null
+          customDataRef.current.callOngoing = false
+
           timeOutRef = setTimeout(() => {
             afterCallRapUp()
-          }, [1000])
+          }, [15000])
         })
       }
 
@@ -868,208 +880,234 @@ function ViewerScreen(props) {
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               /* dont kick of, switch role to host start the call 📞📞 */
               /* do a fetch request and update the status of the call as ongoing */
-              toast.success(
-                "Model has accepted your call request, Establishing secure connection...",
+              const callConnectPromise = new Promise((resolve, reject) => {
+                fetch("/api/website/stream/set-call-ongoing", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    callId: data.callId,
+                    callType: data.callType,
+                  }),
+                })
+                  .then((res) => res.json())
+                  .then(async (result) => {
+                    if (result.actionStatus === "success") {
+                      customDataRef.current.callId = data.callId
+                      customDataRef.current.callType = data.callType
+                      customDataRef.current.callOngoing = true
+                      if (!result.socketUpdated) {
+                        /* socket was not updated server side update it by socket request */
+                        socket.emit(
+                          "update-client-info",
+                          {
+                            action: "set-call-data-viewer",
+                            sharePercent: result.sharePercent,
+                            callId: data.callId,
+                            callType: data.callType,
+                          },
+                          async (status) => {
+                            if (status.ok) {
+                              /* should show spinner also */
+                              sessionStorage.removeItem("callId")
+                              sessionStorage.setItem("callId", data.callId)
+                              setPendingCallRequest(false)
+                              setCallType(data.callType)
+                              setCallOnGoing(true)
+                              setIsModelOffline(false)
+                              setUpCallListeners()
+                              toast.success("Call is now connected 😀", {
+                                autoClose: 2000,
+                              })
+
+                              /* update the model status to "onCall" in the second header */
+                              const modelDataEvent = new CustomEvent(
+                                "model-profile-data-fetched",
+                                {
+                                  detail: {
+                                    turnStatus: "onCall",
+                                  },
+                                }
+                              )
+                              document.dispatchEvent(modelDataEvent)
+
+                              let hasAudioDevices = false
+                              let hasVideoDevices = false
+                              navigator.mediaDevices
+                                .enumerateDevices()
+                                .then((myData) => {
+                                  myData = myData.filter((device) => {
+                                    return (
+                                      device.label !== "" &&
+                                      device.deviceId !== ""
+                                    )
+                                  })
+                                  myData.forEach((a) => {
+                                    if (a.kind === "audioinput") {
+                                      hasAudioDevices = true
+                                    }
+                                    if (a.kind === "videoinput") {
+                                      hasVideoDevices = true
+                                    }
+                                  })
+                                  return myData
+                                })
+                                .then(() => {
+                                  if (data.callType === "videoCall") {
+                                    if (!hasVideoDevices && !hasAudioDevices) {
+                                      toast.info(
+                                        " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
+                                        {
+                                          position: "top-center",
+                                          autoClose: false,
+                                        }
+                                      )
+                                    } else if (
+                                      hasVideoDevices &&
+                                      !hasAudioDevices
+                                    ) {
+                                      toast.info(
+                                        " 👈👈 Please ALLOW CAMERA permissions.",
+                                        {
+                                          position: "top-center",
+                                          autoClose: false,
+                                        }
+                                      )
+                                    }
+                                  } else {
+                                    /* if audio call */
+                                    if (!hasAudioDevices) {
+                                      toast.info(
+                                        " 👈👈 Please ALLOW MICROPHONE permissions.",
+                                        {
+                                          position: "top-center",
+                                          autoClose: false,
+                                        }
+                                      )
+                                    }
+                                  }
+                                })
+
+                              /* switch to host with the new token */
+                              try {
+                                await switchViewerToHost(
+                                  data.callType,
+                                  data.rtcToken
+                                )
+                                /**
+                                 * resolve the promise
+                                 */
+                                resolve()
+                              } catch (err) {
+                                reject(err)
+                              }
+                            }
+                          }
+                        )
+                      } else {
+                        /* ====== IF SOCKET DATA WAS ALSO SUCCESSFULLY UPDATED IN THE FETCH REQUEST ====== */
+                        sessionStorage.removeItem("callId")
+                        sessionStorage.setItem("callId", data.callId)
+                        const modelDataEvent = new CustomEvent(
+                          "model-profile-data-fetched",
+                          {
+                            detail: {
+                              turnStatus: "onCall",
+                            },
+                          }
+                        )
+                        document.dispatchEvent(modelDataEvent)
+                        setPendingCallRequest(false)
+                        setCallType(data.callType)
+                        setCallOnGoing(true)
+                        setIsModelOffline(false)
+                        setUpCallListeners()
+                        let hasAudioDevices = false
+                        let hasVideoDevices = false
+                        navigator.mediaDevices
+                          .enumerateDevices()
+                          .then((myData) => {
+                            myData = myData.filter((device) => {
+                              return (
+                                device.label !== "" && device.deviceId !== ""
+                              )
+                            })
+                            myData.forEach((a) => {
+                              if (a.kind === "audioinput") {
+                                hasAudioDevices = true
+                              }
+                              if (a.kind === "videoinput") {
+                                hasVideoDevices = true
+                              }
+                            })
+                            return myData
+                          })
+                          .then(() => {
+                            if (data.callType === "videoCall") {
+                              if (!hasVideoDevices && !hasAudioDevices) {
+                                toast.info(
+                                  " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
+                                  {
+                                    position: "top-center",
+                                    autoClose: false,
+                                  }
+                                )
+                              } else if (hasVideoDevices && !hasAudioDevices) {
+                                toast.info(
+                                  " 👈👈 Please ALLOW CAMERA permissions.",
+                                  {
+                                    position: "top-center",
+                                    autoClose: false,
+                                  }
+                                )
+                              }
+                            } else {
+                              /* if audio call */
+                              if (!hasAudioDevices) {
+                                toast.info(
+                                  " 👈👈 Please ALLOW MICROPHONE permissions.",
+                                  {
+                                    position: "top-center",
+                                    autoClose: false,
+                                  }
+                                )
+                              }
+                            }
+                          })
+                        try {
+                          await switchViewerToHost(data.callType, data.rtcToken)
+                          /**
+                           * resolve the promise
+                           */
+                          resolve()
+                        } catch (err) {
+                          reject(err)
+                        }
+                      }
+                    }
+                  })
+                  .catch((err) => {
+                    reject(err)
+                    setPendingCallRequest(false)
+                    setCallType(null)
+                    setCallOnGoing(false)
+                    setIsModelOffline(true)
+                  })
+              })
+
+              toast.promise(
+                callConnectPromise,
                 {
-                  autoClose: 2000,
+                  pending:
+                    "Model has accepted your call request, Establishing secure connection...",
+                  success: "Call connected successfully",
+                  error: "Call was not setup properly, please end the call!",
+                },
+                {
+                  autoClose: 1000,
                 }
               )
-              fetch("/api/website/stream/set-call-ongoing", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  callId: data.callId,
-                  callType: data.callType,
-                }),
-              })
-                .then((res) => res.json())
-                .then(async (result) => {
-                  if (result.actionStatus === "success") {
-                    if (!result.socketUpdated) {
-                      /* socket was not updated server side update it by socket request */
-                      socket.emit(
-                        "update-client-info",
-                        {
-                          action: "set-call-data-viewer",
-                          sharePercent: result.sharePercent,
-                          callId: data.callId,
-                          callType: data.callType,
-                        },
-                        async (status) => {
-                          if (status.ok) {
-                            /* should show spinner also */
-                            sessionStorage.removeItem("callId")
-                            sessionStorage.setItem("callId", data.callId)
-                            setPendingCallRequest(false)
-                            setCallType(data.callType)
-                            setCallOnGoing(true)
-                            setIsModelOffline(false)
-                            setUpCallListeners()
-                            toast.success("Call is now connected 😀", {
-                              autoClose: 2000,
-                            })
-
-                            /* update the model status to "onCall" in the second header */
-                            const modelDataEvent = new CustomEvent(
-                              "model-profile-data-fetched",
-                              {
-                                detail: {
-                                  turnStatus: "onCall",
-                                },
-                              }
-                            )
-                            document.dispatchEvent(modelDataEvent)
-
-                            let hasAudioDevices = false
-                            let hasVideoDevices = false
-                            navigator.mediaDevices
-                              .enumerateDevices()
-                              .then((myData) => {
-                                myData = myData.filter((device) => {
-                                  return (
-                                    device.label !== "" &&
-                                    device.deviceId !== ""
-                                  )
-                                })
-                                myData.forEach((a) => {
-                                  if (a.kind === "audioinput") {
-                                    hasAudioDevices = true
-                                  }
-                                  if (a.kind === "videoinput") {
-                                    hasVideoDevices = true
-                                  }
-                                })
-                                return myData
-                              })
-                              .then(() => {
-                                if (data.callType === "videoCall") {
-                                  if (!hasVideoDevices && !hasAudioDevices) {
-                                    toast.info(
-                                      " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
-                                      {
-                                        position: "top-center",
-                                        autoClose: false,
-                                      }
-                                    )
-                                  } else if (
-                                    hasVideoDevices &&
-                                    !hasAudioDevices
-                                  ) {
-                                    toast.info(
-                                      " 👈👈 Please ALLOW CAMERA permissions.",
-                                      {
-                                        position: "top-center",
-                                        autoClose: false,
-                                      }
-                                    )
-                                  }
-                                } else {
-                                  /* if audio call */
-                                  if (!hasAudioDevices) {
-                                    toast.info(
-                                      " 👈👈 Please ALLOW MICROPHONE permissions.",
-                                      {
-                                        position: "top-center",
-                                        autoClose: false,
-                                      }
-                                    )
-                                  }
-                                }
-                              })
-
-                            /* switch to host with the new token */
-                            await switchViewerToHost(
-                              data.callType,
-                              data.rtcToken
-                            )
-                          }
-                        }
-                      )
-                    } else {
-                      /* ====== IF SOCKET DATA WAS ALSO SUCCESSFULLY UPDATED IN THE FETCH REQUEST ====== */
-                      sessionStorage.removeItem("callId")
-                      sessionStorage.setItem("callId", data.callId)
-                      const modelDataEvent = new CustomEvent(
-                        "model-profile-data-fetched",
-                        {
-                          detail: {
-                            turnStatus: "onCall",
-                          },
-                        }
-                      )
-                      document.dispatchEvent(modelDataEvent)
-                      setPendingCallRequest(false)
-                      setCallType(data.callType)
-                      setCallOnGoing(true)
-                      setIsModelOffline(false)
-                      setUpCallListeners()
-                      /* actually switch viewer to host and create tracks */
-                      toast.success("Call is now connected 😀", {
-                        autoClose: 2000,
-                      })
-                      let hasAudioDevices = false
-                      let hasVideoDevices = false
-                      navigator.mediaDevices
-                        .enumerateDevices()
-                        .then((myData) => {
-                          myData = myData.filter((device) => {
-                            return device.label !== "" && device.deviceId !== ""
-                          })
-                          myData.forEach((a) => {
-                            if (a.kind === "audioinput") {
-                              hasAudioDevices = true
-                            }
-                            if (a.kind === "videoinput") {
-                              hasVideoDevices = true
-                            }
-                          })
-                          return myData
-                        })
-                        .then(() => {
-                          if (data.callType === "videoCall") {
-                            if (!hasVideoDevices && !hasAudioDevices) {
-                              toast.info(
-                                " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
-                                {
-                                  position: "top-center",
-                                  autoClose: false,
-                                }
-                              )
-                            } else if (hasVideoDevices && !hasAudioDevices) {
-                              toast.info(
-                                " 👈👈 Please ALLOW CAMERA permissions.",
-                                {
-                                  position: "top-center",
-                                  autoClose: false,
-                                }
-                              )
-                            }
-                          } else {
-                            /* if audio call */
-                            if (!hasAudioDevices) {
-                              toast.info(
-                                " 👈👈 Please ALLOW MICROPHONE permissions.",
-                                {
-                                  position: "top-center",
-                                  autoClose: false,
-                                }
-                              )
-                            }
-                          }
-                        })
-                      await switchViewerToHost(data.callType, data.rtcToken)
-                    }
-                  }
-                })
-                .catch((err) => {
-                  alert(err.message)
-                  setPendingCallRequest(false)
-                  setCallType(null)
-                  setCallOnGoing(false)
-                  setIsModelOffline(true)
-                })
             } else {
               /* unsubscribe stream and close connection to agora */
               localStorage.removeItem("rtcToken")
@@ -1209,6 +1247,13 @@ function ViewerScreen(props) {
       },
     })
     document.dispatchEvent(modelDataEvent)
+
+    /**
+     * clear customDataRef
+     */
+    customDataRef.current.callId = null
+    customDataRef.current.callType = null
+    customDataRef.current.callOngoing = false
 
     const socket = io.getSocket()
 

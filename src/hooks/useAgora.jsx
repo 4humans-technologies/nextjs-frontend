@@ -18,6 +18,8 @@ function useAgora(client, role, callType) {
    */
   const customDataRef = useRef({
     callOngoing: false,
+    callType: null,
+    callId: null,
     streamEndFunction: null,
     handleCallEnd: null,
     gracefulTokenExpiryAllowed: false,
@@ -39,27 +41,48 @@ function useAgora(client, role, callType) {
     if (role === "host") {
       if (callType === "audioCall" || callType === "videoCall") {
         if (!localAudioTrack) {
-          const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+          let microphoneTrack
+          try {
+            microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+          } catch (err) {
+            toast.error(
+              "Was not able to capture camera track, please try reloading"
+            )
+          }
           tracks.push(microphoneTrack)
           setLocalAudioTrack(microphoneTrack)
         }
       }
       if (callType === "videoCall") {
         if (!localAudioTrack) {
-          const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+          let microphoneTrack
+          try {
+            microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+          } catch (err) {
+            toast.error(
+              "Was not able to capture camera track, please try reloading"
+            )
+          }
           tracks.push(microphoneTrack)
           setLocalAudioTrack(microphoneTrack)
         }
         if (!localVideoTrack) {
-          const cameraTrack = await AgoraRTC.createCameraVideoTrack({
-            optimizationMode: "detail",
-            encoderConfig: {
-              frameRate: 20,
-              height: 400,
-              width: 350,
-              bitrateMin: 600,
-            },
-          })
+          let cameraTrack
+          try {
+            cameraTrack = await AgoraRTC.createCameraVideoTrack({
+              optimizationMode: "detail",
+              encoderConfig: {
+                frameRate: 20,
+                height: 400,
+                width: 350,
+                bitrateMin: 600,
+              },
+            })
+          } catch (err) {
+            toast.error(
+              "Was not able to capture camera track, please try reloading"
+            )
+          }
           tracks.push(cameraTrack)
           setLocalVideoTrack(cameraTrack)
         }
@@ -71,9 +94,6 @@ function useAgora(client, role, callType) {
   }
 
   async function join(channel, token, uid) {
-    //debugger
-    /* relatedUserId Will Be the > uid */
-    console.log("join running..")
     if (!client) {
       return
     }
@@ -222,14 +242,14 @@ function useAgora(client, role, callType) {
       const fetchToken = async () => {
         toast.info("RTC token expired fetching new token!")
         try {
+          let url
+          if (customDataRef.current.callOngoing) {
+            url = `/api/website/token-builder/global-renew-token?channel=${client.channelName}&onCall=${customDataRef.current.callOngoing}&callId=${customDataRef.current.callId}&callType=${customDataRef.current.callType}`
+          } else {
+            url = `/api/website/token-builder/global-renew-token?channel=${client.channelName}&onCall=${customDataRef.current.callOngoing}`
+          }
           const { rtcToken, privilegeExpiredTs, ...rest } = await (
-            await fetch(
-              `/api/website/token-builder/global-renew-token?channel=${
-                client.channelName
-              }&onCall=${
-                customDataRef.current.callOngoing
-              }&userType=${localStorage.getItem("userType")}`
-            )
+            await fetch(url)
           ).json()
 
           if (rest?.canRenew) {
@@ -270,24 +290,24 @@ function useAgora(client, role, callType) {
         } else {
           toast.error("RTC token has EXPIRED, stream will ended now!")
         }
-        /**
-         * if model
-         */
-        if (localStorage.getItem("userType") === "Model") {
-          if (customDataRef.current.callOngoing) {
-            return await customDataRef.current.handleCallEnd()
-          } else {
-            return await customDataRef.current.streamEndFunction()
-          }
-        }
-        /**
-         * if viewer
-         */
+      }
+      /**
+       * if model
+       */
+      if (localStorage.getItem("userType") === "Model") {
         if (customDataRef.current.callOngoing) {
           return await customDataRef.current.handleCallEnd()
         } else {
-          return await leave()
+          return await customDataRef.current.streamEndFunction()
         }
+      }
+      /**
+       * if viewer
+       */
+      if (customDataRef.current.callOngoing) {
+        return await customDataRef.current.handleCallEnd()
+      } else {
+        return await leave()
       }
     }
 

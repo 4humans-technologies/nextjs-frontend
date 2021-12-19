@@ -566,6 +566,10 @@ function Live() {
             offCallListeners()
             spinnerCtx.setShowSpinner(false, "Please wait...")
             await leaveAndCloseTracks()
+
+            /**
+             * clear call details from model's socket
+             */
             socket.emit(
               "update-client-info",
               {
@@ -578,7 +582,7 @@ function Live() {
                 }
               }
             )
-          }, [10000])
+          }, [15000])
         })
       }
 
@@ -604,6 +608,9 @@ function Live() {
           offCallListeners()
           spinnerCtx.setShowSpinner(false, "Please wait...")
           await leaveAndCloseTracks()
+          /**
+           * clear call details from model's socket
+           */
           socket.emit(
             "update-client-info",
             {
@@ -724,26 +731,34 @@ function Live() {
                   fetchAndRenewToken()
                 } else {
                   /* end the call... */
-                  handleCallEnd()
+                  console.debug("Call should end now!🔻🔻🔻🔻")
+                  // handleCallEnd()
                 }
               }, [timeOutAfter])
             }
 
             const fetchAndRenewToken = async () => {
               try {
-                const { rtcToken, privilegeExpiredTs, canRenew } = await (
+                const {
+                  rtcToken,
+                  privilegeExpiredTs,
+                  canRenew,
+                  endImmediately,
+                } = await (
                   await fetch(
                     `/api/website/token-builder/global-renew-token?channel=${client.channelName}&onCall=true&callId=${data.callDoc._id}&callType=${myCallType}&viewerId=${relatedUserId}`
                   )
                 ).json()
 
+                if (endImmediately) {
+                  toast.warn("Viewer has used all coins, call will end now")
+                  handleCallEnd()
+                }
+
                 /**
                  * canRenew tell is next time can i renew the token or not
                  */
                 await client.renewToken(rtcToken)
-                if (!canRenew) {
-                  toast.info("This is the last minute of the call")
-                }
                 setUpNewTimeout(+privilegeExpiredTs * 1000, canRenew)
               } catch (err) {
                 toast.warn(err.message, " Call will end now!")

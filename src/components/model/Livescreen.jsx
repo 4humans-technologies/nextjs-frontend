@@ -246,7 +246,7 @@ function LiveScreen(props) {
 
   const showCallDetailPopUp = useCallback(() => {
     if (!authCtx.isLoggedIn) {
-      toast.error("Please Login To Make Private Call Request 👑👑")
+      toast.error("Please Login To Make Private Call Request 👑")
       return
     }
     modalCtx.showModalWithContent(
@@ -314,7 +314,7 @@ function LiveScreen(props) {
                       if (authCtx.isLoggedIn) {
                         modalCtx.showModalWithContent(<Token />)
                       } else {
-                        toast.error("Please login first, To Gift Coins")
+                        toast.error("Please login first, To Gift Coins 👑")
                       }
                     }}
                   >
@@ -394,7 +394,9 @@ function LiveScreen(props) {
                       if (authCtx.isLoggedIn) {
                         modalCtx.showModalWithContent(<Token />)
                       } else {
-                        toast.error("Please login first")
+                        toast.error(
+                          "Please login first, to request activity 👑"
+                        )
                       }
                     }}
                   >

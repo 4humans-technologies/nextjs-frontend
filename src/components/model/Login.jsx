@@ -63,16 +63,19 @@ function Login() {
             localStorage.setItem("relatedUserId", data.relatedUserId)
             localStorage.setItem("userType", data.userType)
             localStorage.setItem("user", JSON.stringify(data.user))
-            updateCtx.updateViewer({
-              rootUserId: data.userId,
-              relatedUserId: data.relatedUserId,
-              token: data.token,
-              isLoggedIn: true,
-              user: {
-                userType: data.userType,
-                user: data.user,
-              },
-              jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
+            updateCtx.setAuthState((prev) => {
+              return {
+                ...prev,
+                rootUserId: data.rootUserId,
+                relatedUserId: data.relatedUserId,
+                token: data.token,
+                isLoggedIn: true,
+                user: {
+                  userType: data.userType,
+                  user: data.user,
+                },
+                jwtExpiresIn: +data.expiresIn * 60 * 60 * 1000,
+              }
             })
           }
 
