@@ -957,4 +957,4 @@ function TermOfUse() {
   )
 }
 
-export default TermOfUse
+export default React.memo(TermOfUse)

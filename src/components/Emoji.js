@@ -1,14 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react"
 import "emoji-mart/css/emoji-mart.css"
-import dynamic from "next/dynamic"
 import { Picker } from "emoji-mart"
-
-/* const Picker = dynamic(
-  () => import("emoji-mart").then((emojiMart) => emojiMart.Picker),
-  {
-    ssr: false,
-  }
-) */
 
 function Emoji(props) {
   const [showEmoji, setShowEmoji] = useState(false)
@@ -27,18 +19,18 @@ function Emoji(props) {
     },
     [chatInputRef]
   )
-  const MyPicker = useMemo(
-    () => (
-      <Picker
-        native={true}
-        showPreview={false}
-        onSelect={handleSelect}
-        title="Pick Emoji"
-        theme="dark"
-      />
-    ),
-    []
-  )
+  // const MyPicker = useMemo(
+  //   () => (
+  //     <Picker
+  //       native={true}
+  //       showPreview={false}
+  //       onSelect={handleSelect}
+  //       title="Pick Emoji"
+  //       theme="dark"
+  //     />
+  //   ),
+  //   []
+  // )
   return (
     <span className="tw-relative">
       <button
@@ -47,9 +39,21 @@ function Emoji(props) {
       >
         😀
       </button>
-      <span className="tw-absolute tw-bottom-11 tw-right-10 tw-z-[6000]">
-        <span style={{ display: showEmoji ? "inline" : "none" }}>
-          {MyPicker}
+      <span
+        style={{ display: showEmoji ? "inline" : "none" }}
+        className="tw-absolute tw-bottom-11 tw-right-0 tw-z-[6000] tw-pt-16 tw-pl-16 tw-pr-32"
+        onClick={handleClick}
+      >
+        <span className="">
+          {
+            <Picker
+              native={true}
+              showPreview={false}
+              onSelect={handleSelect}
+              title="Pick Emoji"
+              theme="dark"
+            />
+          }
         </span>
       </span>
     </span>

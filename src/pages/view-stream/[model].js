@@ -51,9 +51,8 @@ function ViewModelStream() {
       )}
       {/* <CallEndDetails /> */}
       <Recommendation parent={"viewerScreen"} />
-      {/* <Footer /> */}
     </>
   )
 }
 
-export default ViewModelStream
+export default React.memo(ViewModelStream)

@@ -1,8 +1,7 @@
 import React from "react"
 
 function SingleViewerBlock(props) {
-  const { username, name, walletCoins, profileImage, isChatPlanActive } =
-    props.viewer
+  const { username, walletCoins, profileImage, isChatPlanActive } = props.viewer
   return (
     <div className="tw-py-1 tw-px-2 lg:tw-px-4 tw-bg-third-color tw-text-white-color tw-my-2 tw-mx-2 tw-rounded">
       <div className="tw-flex tw-items-center tw-justify-between">

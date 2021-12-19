@@ -1,5 +1,6 @@
 import io from "socket.io-client"
 let socketConnectionInstance
+import { toast } from "react-toastify"
 
 export default {
   connect: (url) => {
@@ -12,6 +13,7 @@ export default {
         token: localStorage.getItem("jwtToken") || null,
       },
       transports: ["websocket"],
+      upgrade: false,
       query: {
         // will get userType from localStorage
         // if nothing in local storage default to UnAuthedViewer
@@ -43,6 +45,11 @@ export default {
   globalListeners: (socket) => {
     socket.on("you-joined-a-room", (room) => {
       /* dont't join the self rooms 😎😎 */
+      if (process.env.RUN_ENV === "local") {
+        toast.success(`left a room : ${room}`, {
+          autoClose: 2000,
+        })
+      }
       let prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
       if (room.endsWith("-public")) {
         /* remove previous public room before joining new public room */
@@ -73,6 +80,11 @@ export default {
 
     socket.on("you-left-a-room", (roomToLeave) => {
       const prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      if (process.env.RUN_ENV === "local") {
+        toast.warn(`left a room : ${roomToLeave}`, {
+          autoClose: 2000,
+        })
+      }
       if (roomToLeave.endsWith("-public")) {
         const newRooms = prevRooms.filter((room) => room !== roomToLeave)
         sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))

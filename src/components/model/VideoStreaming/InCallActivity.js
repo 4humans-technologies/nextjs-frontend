@@ -35,7 +35,7 @@ function InCallActivities(props) {
       <div>
         <div className="tw-border-b-[1px] tw-border-white-color tw-mb-4 tw-py-4 tw-flex tw-items-center">
           <VideoCallOutlinedIcon fontSize="medium" />{" "}
-          <span className="tw-pl-1">Offline Status</span>
+          <span className="tw-pl-1">What You Will Do...</span>
         </div>
         <div className="tw-border-b-[1px] tw-border-white-color tw-py-3">
           <div className="tw-mb-4">

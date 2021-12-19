@@ -64,6 +64,9 @@ const Home = () => {
                 },
               ]
             } else {
+              /**
+               * hide his own card from landing page
+               */
               return [
                 ...prev,
                 {

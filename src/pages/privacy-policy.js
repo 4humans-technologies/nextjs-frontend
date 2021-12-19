@@ -1209,4 +1209,4 @@ function Privacy() {
   )
 }
 
-export default Privacy
+export default React.memo(Privacy)

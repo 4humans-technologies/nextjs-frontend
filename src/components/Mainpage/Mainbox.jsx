@@ -7,40 +7,30 @@ import StarIcon from "@material-ui/icons/Star"
 import Link from "next/link"
 
 function Mainbox(props) {
-  const watch = () => {
-    console.log("pass dynamic ")
-    router.push("/ravi?streaming=true")
-  }
-
-  // FOR RENDERING STARS
-  // let star = [];
-  // for (let index = 0; index < Rating; index++) {
-  //   star.push(<StarIcon className="tw-text-yellow-300 " />);
-  // }
-
-  let imageUrl
-  if (props.photo.startsWith("http")) {
-    imageUrl = props.photo
-  } else {
-    imageUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${props.photo}`
-  }
-
   return (
-    <div className="tw-font-sans  ">
+    <div className="">
       <Link
         href={props.parent === "index" ? `/view-stream/${props.modelId}` : "/"}
-        // className="tw-cursor-pointer"
       >
-        <span className="tw-cursor-pointer  tw-relative ">
+        <span className="tw-cursor-pointer tw-relative">
           <img
-            src={imageUrl}
-            className="tw-object-cover tw-object-center tw-rounded-t tw-w-[211px]  tw-h-[211px]"
-            alt=""
+            src={props.photo}
+            className="tw-object-cover tw-object-center tw-rounded hover:tw-rounded-t tw-w-[211px]  tw-h-[211px]"
+            alt={
+              props.onCall
+                ? "This model is busy on a call"
+                : "This model is live streaming"
+            }
           />
-
-          <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5  tw-relative tw-bottom-0 tw-w-full">
-            Streaming
-          </p>
+          {props.onCall ? (
+            <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-indigo-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full">
+              On Call
+            </p>
+          ) : (
+            <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5  tw-relative tw-bottom-0 tw-w-full">
+              Streaming
+            </p>
+          )}
         </span>
       </Link>
     </div>

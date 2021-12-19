@@ -5,11 +5,11 @@ function NormalChat(props) {
     <div className="tw-flex-grow tw-pr-2">
       <button
         onClick={props.addAtTheRate}
-        className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3 hover:tw-underline"
+        className="display-name tw-capitalize tw-inline-block tw-pr-3 hover:tw-underline tw-tracking-tight"
       >
         {props.displayName}:
       </button>
-      <span className="user-message tw-text-sm tw-font-normal">
+      <span className="user-message tw-text-sm tw-font-normal tw-w-full">
         {props.message}
       </span>
     </div>

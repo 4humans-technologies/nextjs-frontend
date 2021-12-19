@@ -48,8 +48,9 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             if (canShowSpinner) {
               spinnerCtx.setShowSpinner(true)
             }
-            //debugger
-            const latestCtx = JSON.parse(localStorage.getItem("authContext"))
+
+            const latestCtx =
+              JSON.parse(localStorage.getItem("authContext")) || {}
             /* for GET requests when there is no config */
 
             let baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL
@@ -66,7 +67,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
               config = {}
               urlObj.searchParams.append(
                 "jwtToken",
-                localStorage.getItem("jwtToken")
+                localStorage.getItem("jwtToken") || ""
               )
             }
 
@@ -83,11 +84,12 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
               Date.now() + 2000
             ) {
               /* logout the user */
-              return logoutRef.current()
+              logoutRef.current()
+              return Promise.reject("You were logged out!")
             }
             /* attach jwtToken in the header */
             let finalConfig
-            if (latestCtx.isLoggedIn) {
+            if (latestCtx?.isLoggedIn) {
               if (config?.headers) {
                 finalConfig = {
                   ...config,

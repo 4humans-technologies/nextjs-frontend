@@ -6,7 +6,7 @@ function SelfChatMessage(props) {
       <span className="text-white tw-font-semibold tw-underline tw-flex-grow tw-text-left tw-mr-auto tw-capitalize tw-text-sm">
         You
       </span>
-      <span className="tw-font-normal tw-text-white-color tw-text-left tw-text-sm">
+      <span className="tw-font-normal tw-text-white-color tw-text-left tw-text-sm tw-break-words tw-w-full">
         {props.msg}
       </span>
     </div>

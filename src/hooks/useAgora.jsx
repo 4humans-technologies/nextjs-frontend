@@ -18,9 +18,9 @@ function useAgora(client, role, callType) {
    */
   const customDataRef = useRef({
     callOngoing: false,
-    canRenewToken: true,
-    wasOnCall: false,
     streamEndFunction: null,
+    handleCallEnd: null,
+    gracefulTokenExpiryAllowed: false,
   })
 
   useEffect(() => {
@@ -155,27 +155,35 @@ function useAgora(client, role, callType) {
     [client, localVideoTrackRef, localAudioTrackRef]
   )
 
-  async function switchViewerToHost(callType) {
-    /* switch viewer to host and capture tracks */
-    let microphoneTrack
-    let cameraTrack
+  const switchViewerToHost = useCallback(
+    async (callType, rtcToken) => {
+      /* switch viewer to host and capture tracks */
+      let microphoneTrack
+      let cameraTrack
 
-    if (callType === "audioCall" || callType === "videoCall") {
-      microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
-      setLocalAudioTrack(microphoneTrack)
-      await client.setClientRole("host")
-      if (callType === "audioCall") {
-        await client.publish(microphoneTrack)
+      await client.renewToken(rtcToken)
+
+      /* ========== */
+      if (callType === "audioCall" || callType === "videoCall") {
+        microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+        setLocalAudioTrack(microphoneTrack)
+        await client.setClientRole("host")
+        if (callType === "audioCall") {
+          await client.publish(microphoneTrack)
+        }
       }
-    }
 
-    if (callType === "videoCall") {
-      cameraTrack = await AgoraRTC.createCameraVideoTrack()
-      setLocalVideoTrack(cameraTrack)
-      await client.publish([microphoneTrack, cameraTrack])
-    }
-    setJoinState(true)
-  }
+      /* ========== */
+      if (callType === "videoCall") {
+        cameraTrack = await AgoraRTC.createCameraVideoTrack()
+        setLocalVideoTrack(cameraTrack)
+        await client.publish([microphoneTrack, cameraTrack])
+      }
+
+      setJoinState(true)
+    },
+    [client]
+  )
 
   useEffect(() => {
     if (!localVideoTrackRef.current && !localAudioTrackRef.current) {
@@ -210,13 +218,17 @@ function useAgora(client, role, callType) {
     setRemoteUsers(client.remoteUsers)
 
     const renewRtcToken = async function () {
-      /* do a fetch request to renew token */
-      if (customDataRef.current.callOngoing) {
+      /* do a fetch request to renew token if not oncall */
+      const fetchToken = async () => {
         toast.info("RTC token expired fetching new token!")
         try {
           const { rtcToken, privilegeExpiredTs, ...rest } = await (
             await fetch(
-              `/api/website/token-builder/global-renew-token?channel=${client.channelName}&onCall=${customDataRef.current.callOngoing}`
+              `/api/website/token-builder/global-renew-token?channel=${
+                client.channelName
+              }&onCall=${
+                customDataRef.current.callOngoing
+              }&userType=${localStorage.getItem("userType")}`
             )
           ).json()
 
@@ -226,7 +238,7 @@ function useAgora(client, role, callType) {
 
           if (rtcToken) {
             localStorage.setItem("rtcToken", rtcToken)
-            localStorage.setItem("privilegeExpiredTs", privilegeExpiredTs)
+            localStorage.setItem("rtcTokenExpireIn", +privilegeExpiredTs * 1000)
             await client.renewToken(rtcToken)
             toast.info("fetched-rtc token, renewed!")
           } else {
@@ -236,19 +248,47 @@ function useAgora(client, role, callType) {
           toast.warn(err.message)
         }
       }
+
+      if (localStorage.getItem("userType") === "Model") {
+        if (!customDataRef.current.callOngoing) {
+          return fetchToken()
+        }
+        return
+      } else {
+        return fetchToken()
+      }
     }
 
     const handleTokenExpire = async function () {
-      if (customDataRef.current.callOngoing) {
-        toast.error("RTC token has EXPIRED, call will ended now!")
-      } else {
-        toast.error("RTC token has EXPIRED, stream will ended now!")
+      /* when token did expire */
+      if (!customDataRef.current.gracefulTokenExpiryAllowed) {
+        /**
+         * if graceful token expiry is disAllowed
+         */
+        if (customDataRef.current.callOngoing) {
+          toast.error("RTC token has EXPIRED, call will ended now!")
+        } else {
+          toast.error("RTC token has EXPIRED, stream will ended now!")
+        }
+        /**
+         * if model
+         */
+        if (localStorage.getItem("userType") === "Model") {
+          if (customDataRef.current.callOngoing) {
+            return await customDataRef.current.handleCallEnd()
+          } else {
+            return await customDataRef.current.streamEndFunction()
+          }
+        }
+        /**
+         * if viewer
+         */
+        if (customDataRef.current.callOngoing) {
+          return await customDataRef.current.handleCallEnd()
+        } else {
+          return await leave()
+        }
       }
-      // also have to do a fetch request to end the stream
-      if (localStorage.getItem("userType") === "Model") {
-        await customDataRef.current.streamEndFunction()
-      }
-      await leave()
     }
 
     const handleUserPublished = async function (user, mediaType) {

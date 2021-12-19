@@ -59,7 +59,7 @@ function Coverpage() {
             <img
               src={coverImage}
               alt=""
-              className="tw-max-h-[200px] tw-object-cover tw-rounded tw-my-2"
+              className="tw-object-cover tw-rounded tw-my-2"
             />
           </div>
           <div className="tw-border-b-[1px] tw-border-white-color tw-py-4">
@@ -70,9 +70,13 @@ function Coverpage() {
               className="file-input__input"
               onChange={(e) => changeCover(e)}
             />
-            <label className="file-input__label " htmlFor="file-input">
-              <BackupRoundedIcon />
-              <span>Replace</span>
+            <label className="file-input__label_exception" htmlFor="file-input">
+              <Button
+                className="tw-rounded-full tw-flex tw-items-center tw-text-sm"
+                variant="success"
+              >
+                <BackupRoundedIcon fontSize="small" /> <span className="tw-pl-2">Update Image</span>
+              </Button>
             </label>
           </div>
           <div className="tw-mb-4 tw-py-4">

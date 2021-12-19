@@ -34,7 +34,7 @@ function Topic(props) {
             type="text"
             value={childState}
             placeholder="Topic for live streams"
-            className="tw-rounded-full tw-w-full md:tw-w-1/2 tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2"
+            className="tw-rounded-full tw-w-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2"
             onChange={(e) => setChildState(e.target.value)}
           />
           <div className="tw-flex tw-my-4">
@@ -49,7 +49,10 @@ function Topic(props) {
           </div>
         </div>
         <div className="tw-mb-4 tw-py-4">
-          <p className="tw-capitalize">Topic for live Stream</p>
+          <p className="tw-capitalize">
+            Tell users what's taking place in your chat room and the type of
+            performances you put on.
+          </p>
         </div>
       </div>
     </div>

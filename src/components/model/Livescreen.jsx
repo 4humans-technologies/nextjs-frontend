@@ -77,7 +77,7 @@ function LiveScreen(props) {
 
   const handleModelFollow = useCallback(() => {
     if (!authCtx.isLoggedIn) {
-      return alert("Please login to follow the model!")
+      return toast.error("Please login to follow the model!")
     }
     debugger
     fetch("/api/website/stream/follow-model", {
@@ -100,11 +100,6 @@ function LiveScreen(props) {
   }, [authCtx.isLoggedIn])
 
   const sendChatMessage = () => {
-    if (!chatInputRef.current) {
-      alert("ref not created, updated")
-      return
-    }
-
     if (!chatInputRef.current?.value) {
       return
     }
@@ -116,7 +111,7 @@ function LiveScreen(props) {
       let finalRoom
       if (chatWindow === chatWindowOptions.PRIVATE) {
         if (isModelOffline) {
-          return alert(
+          return toast.error(
             "Live chat with model is only available when model is streaming/live. 📴 😘😘"
           )
         }
@@ -144,7 +139,7 @@ function LiveScreen(props) {
         }
       } else if (chatWindow === chatWindowOptions.PUBLIC) {
         if (isModelOffline) {
-          return alert(
+          return toast.error(
             "chat is only available when model is streaming/live. 📴 😘😘"
           )
         }
@@ -165,14 +160,14 @@ function LiveScreen(props) {
     } else {
       if (chatWindow === chatWindowOptions.PRIVATE) {
         if (isModelOffline) {
-          return alert(
+          return toast.error(
             "Live chat with model is only available when model is streaming/live. 📴 😘😘"
           )
         }
       }
       if (chatWindow === chatWindowOptions.PUBLIC) {
         if (isModelOffline) {
-          return alert(
+          return toast.error(
             "chat is only available when model is streaming/live. 📴 😘😘"
           )
         }
@@ -190,10 +185,6 @@ function LiveScreen(props) {
   }
 
   const addAtTheRate = (username) => {
-    if (!chatInputRef.current) {
-      alert("ref not created, updated")
-      return
-    }
     if (chatInputRef.current.value.trim() !== "") {
       chatInputRef.current.value = `${chatInputRef.current.value} @${username}`
     } else {
@@ -207,7 +198,7 @@ function LiveScreen(props) {
   const onClickSendTipMenu = (activity) => {
     /*  */
     if (!authCtx.isLoggedIn) {
-      return alert("Please login first")
+      return toast.error("Please login first!")
     }
 
     fetch("/api/website/stream/request-process-tip-menu-action", {
@@ -255,7 +246,7 @@ function LiveScreen(props) {
 
   const showCallDetailPopUp = useCallback(() => {
     if (!authCtx.isLoggedIn) {
-      alert("Please Login To Make Private Call Request 👑👑")
+      toast.error("Please Login To Make Private Call Request 👑👑")
       return
     }
     modalCtx.showModalWithContent(
@@ -323,7 +314,7 @@ function LiveScreen(props) {
                       if (authCtx.isLoggedIn) {
                         modalCtx.showModalWithContent(<Token />)
                       } else {
-                        alert("Please login first, To Gift Coins")
+                        toast.error("Please login first, To Gift Coins")
                       }
                     }}
                   >
@@ -403,7 +394,7 @@ function LiveScreen(props) {
                       if (authCtx.isLoggedIn) {
                         modalCtx.showModalWithContent(<Token />)
                       } else {
-                        alert("Please login first")
+                        toast.error("Please login first")
                       }
                     }}
                   >

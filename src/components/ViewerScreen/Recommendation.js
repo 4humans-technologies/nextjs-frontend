@@ -14,12 +14,7 @@ function Recommendation(props) {
           const transformedData = data.resultDocs.map((model) => {
             return {
               ...model,
-              age: new Date().getFullYear() - new Date(model.dob).getFullYear(),
-              languages: model.languages.join(","),
-              rootUserId: model.rootUser._id,
-              userName: model.rootUser.username,
-              userType: model.rootUser.userType,
-              // currentStream: model.rootUser.currentStream || 1 /*🤔🤔 why did i put currentStream??  */
+              relatedUserId: model._id,
             }
           })
           setBoxGroupData((prev) => {

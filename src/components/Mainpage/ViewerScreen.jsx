@@ -22,7 +22,9 @@ import { toast } from "react-toastify"
  */
 const clientOptions = { codec: "h264", mode: "live" }
 let client = AgoraRTC.createClient(clientOptions)
-client.setClientRole("audience")
+client.setClientRole("audience", {
+  level: 1,
+})
 
 /**
  * APPID can in feature be dynamic also
@@ -111,6 +113,7 @@ function ViewerScreen(props) {
     remoteUsers,
     switchViewerToHost,
     leaveAndCloseTracks,
+    customDataRef,
   } = useAgora(client, "audience", "videoCall")
 
   useEffect(() => {
@@ -195,11 +198,6 @@ function ViewerScreen(props) {
             )
             /* join rooms is any room to join */
             socket.emit("putting-me-in-these-rooms", joinRooms, (response) => {
-              // sessionStorage.setItem(
-              //   "socket-rooms",
-              //   joinRooms,
-              //   JSON.stringify([...socketRooms, ...joinRooms])
-              // )
               if (response.status === "ok") {
                 joinAttempts = 0
                 joinRooms = []
@@ -209,7 +207,7 @@ function ViewerScreen(props) {
         } else {
           console.log("Not live but listening")
         }
-      }, 3000)
+      }, 1500)
       return () => {
         clearInterval(myKeepInRoomLoop)
       }
@@ -246,16 +244,23 @@ function ViewerScreen(props) {
         if (data.modelId !== window.location.pathname.split("/").reverse()[0]) {
           return
         }
-        if (!localStorage.getItem("rtcToken")) {
-          /* RELOAD */
-          return window.location.reload()
-        }
-        /*  */
+
         let url
         if (ctx.isLoggedIn) {
           url = "/api/website/stream/re-join-models-currentstream-authed"
         } else {
           url = "/api/website/stream/re-join-models-currentstream-unauthed"
+        }
+
+        let getNewToken = false
+        if (!localStorage.getItem("rtcToken")) {
+          /* RELOAD */
+          return window.location.reload()
+        } else if (
+          +localStorage.getItem("rtcTokenExpireIn") <
+          Date.now() + 60000
+        ) {
+          getNewToken = true
         }
 
         const newStream = new Promise((resolve, reject) => {
@@ -266,12 +271,24 @@ function ViewerScreen(props) {
             },
             body: JSON.stringify({
               modelId: window.location.pathname.split("/").reverse()[0],
+              getNewToken: getNewToken,
+              unAuthedUserId: ctx.isLoggedIn
+                ? null
+                : localStorage.getItem("unAuthedUserId"),
             }),
           })
             .then((res) => res.json())
-            .then((data) => {
+            .then(async (data) => {
               if (data.actionStatus === "success") {
                 sessionStorage.setItem("streamId", data.streamId)
+                if (getNewToken) {
+                  /* save rtcToken in lc */
+                  localStorage.setItem("rtcToken", data.rtcToken)
+                  localStorage.setItem(
+                    "rtcTokenExpireIn",
+                    +data.privilegeExpiredTs * 1000
+                  )
+                }
                 setPendingCallRequest(false)
                 setOthersCall({
                   acceptedOthersCall: false,
@@ -282,59 +299,77 @@ function ViewerScreen(props) {
                     callType: "",
                   },
                 })
-                join(
+                const modelDataEvent = new CustomEvent(
+                  "model-profile-data-fetched",
+                  {
+                    detail: {
+                      turnStatus: "isStreaming",
+                    },
+                  }
+                )
+                document.dispatchEvent(modelDataEvent)
+                setTimeout(() => {
+                  /* get the number of users in the stream after x seconds, MANNUALLY */
+                  fetch(
+                    `/api/website/stream/get-live-room-count/${data.streamId}-public`
+                  )
+                    .then((res) => res.json())
+                    .then((data) => {
+                      try {
+                        if (typeof data.roomSize === "number") {
+                          document.getElementById(
+                            "live-viewer-count-lg"
+                          ).innerText = `${data.roomSize - 1} Live`
+                          document.getElementById(
+                            "live-viewer-count-md"
+                          ).innerText = `${data.roomSize - 1} Live`
+                        }
+                      } catch (err) {
+                        /* try/catch as roomSize can be undefined */
+                      }
+                    })
+                }, [4000])
+                /**
+                 * Agora raising error that client is already connected to the channel
+                 * so have to check if client is correctly leaving or not
+                 * during stream end
+                 */
+                await join(
                   window.location.pathname.split("/").reverse()[0],
                   localStorage.getItem("rtcToken"),
-                  ctx.relatedUserId
+                  ctx.isLoggedIn
+                    ? ctx.relatedUserId
+                    : localStorage.getItem("unAuthedUserId")
                 )
                   .then(() => {
                     resolve()
-                    setTimeout(() => {
-                      /* get the number of users in the stream after x seconds, MANNUALLY */
-                      fetch(
-                        `/api/website/stream/get-live-room-count/${data.streamId}-public`
-                      )
-                        .then((res) => res.json())
-                        .then((data) => {
-                          try {
-                            if (typeof data.roomSize === "number") {
-                              document.getElementById(
-                                "live-viewer-count-lg"
-                              ).innerText = `${data.roomSize - 1} Live`
-                              document.getElementById(
-                                "live-viewer-count-md"
-                              ).innerText = `${data.roomSize - 1} Live`
-                            }
-                          } catch (err) {
-                            /* try/catch as roomSize can be undefined */
-                          }
-                        })
-                    }, [4000])
                   })
                   .catch((err) => {
                     reject(err.message)
                   })
+
                 props.setIsChatPlanActive(data.isChatPlanActive)
                 setIsModelOffline(false)
+                document.getElementById("live-viewer-count-lg").innerText =
+                  "Getting live users..."
+                document.getElementById("live-viewer-count-md").innerText =
+                  "Getting live users..."
                 if (!data.socketUpdated) {
                   if (ctx.isLoggedIn) {
-                    socket.emit("rejoin-the-stream-authed-viewer", {
+                    socket.emit("update-client-info", {
+                      action: "rejoin-the-stream-authed-viewer",
                       streamId: data.streamId,
                       modelRoom: `${
                         window.location.pathname.split("/").reverse()[0]
                       }-private`,
                     })
                   } else {
-                    socket.emit("join-the-stream-unauthed-viewer", {
+                    socket.emit("update-client-info", {
+                      action: "join-the-stream-unauthed-viewer",
                       streamId: data.streamId,
                     })
                   }
                 }
-
-                document.getElementById("live-viewer-count-lg").innerText =
-                  "Getting live users..."
-                document.getElementById("live-viewer-count-md").innerText =
-                  "Getting live users..."
               } else {
                 props.setIsChatPlanActive(data.isChatPlanActive)
                 setPendingCallRequest(false)
@@ -352,7 +387,7 @@ function ViewerScreen(props) {
           success: "Successfully join the stream",
           error: {
             render(err) {
-              return "Error joining the stream err: " + err
+              return "Error joining the stream err: " + err.data
             },
           },
         })
@@ -391,22 +426,17 @@ function ViewerScreen(props) {
         toast.info(
           "Model ended the stream, will auto-connect if she starts again 😀"
         )
-
-        /* why need this, any way server will send room-left event */
-        /* const socketRooms =
-            JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-          sessionStorage.setItem(
-            "socket-rooms",
-            JSON.stringify(
-              socketRooms.filter((room) => !room.endsWith("-public"))
-            )
-          ) */
+        const modelDataEvent = new CustomEvent("model-profile-data-fetched", {
+          detail: {
+            turnStatus: "offline",
+          },
+        })
+        document.dispatchEvent(modelDataEvent)
+        leave()
       }
       socket.on("delete-stream-room", streamDeleteHandler)
       return () => {
-        if (socket.hasListeners("delete-stream-room") && streamDeleteHandler) {
-          socket.off("delete-stream-room", streamDeleteHandler)
-        }
+        socket.off("delete-stream-room", streamDeleteHandler)
       }
     }
   }, [socketCtx.socketSetupDone, leave])
@@ -467,6 +497,7 @@ function ViewerScreen(props) {
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
 
+              /* set header details for the viewer */
               const modelDataEvent = new CustomEvent(
                 "model-profile-data-fetched",
                 {
@@ -479,6 +510,14 @@ function ViewerScreen(props) {
                 }
               )
               document.dispatchEvent(modelDataEvent)
+
+              /* fetch previous chats */
+              const chatEvent = new CustomEvent("fetch-firebase-chats", {
+                detail: {
+                  streamId: data.streamId,
+                },
+              })
+              document.dispatchEvent(chatEvent)
 
               /* check if model is streaming */
               if (data?.message === "model not streaming") {
@@ -499,7 +538,10 @@ function ViewerScreen(props) {
               }
 
               localStorage.setItem("rtcToken", data.rtcToken)
-              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+              localStorage.setItem(
+                "rtcTokenExpireIn",
+                +data.privilegeExpiredTs * 1000
+              )
 
               sessionStorage.setItem("streamId", data.streamId)
 
@@ -585,6 +627,14 @@ function ViewerScreen(props) {
               )
               document.dispatchEvent(modelDataEvent)
 
+              /* fetch previous chats */
+              const chatEvent = new CustomEvent("fetch-firebase-chats", {
+                detail: {
+                  streamId: data.streamId,
+                },
+              })
+              document.dispatchEvent(chatEvent)
+
               /* check if model is offline */
               if (data?.message === "model not streaming") {
                 return setIsModelOffline(true)
@@ -600,7 +650,10 @@ function ViewerScreen(props) {
               }
 
               localStorage.setItem("rtcToken", data.rtcToken)
-              localStorage.setItem("rtcTokenExpireIn", data.privilegeExpiredTs)
+              localStorage.setItem(
+                "rtcTokenExpireIn",
+                +data.privilegeExpiredTs * 1000
+              )
 
               sessionStorage.setItem("streamId", data.streamId)
               setTipMenuActions(data.theModel.tipMenuActions.actions)
@@ -643,7 +696,7 @@ function ViewerScreen(props) {
                 })
               }
             })
-            .catch((err) => alert(err.message))
+            .catch((err) => toast.error(err.message))
         } else {
           /* if already have a token no need to fetch new one */
           const joinPromise = join(
@@ -683,58 +736,76 @@ function ViewerScreen(props) {
     }
   }, [socketCtx.socketSetupDone])
 
+  useEffect(() => {
+    if (socketCtx.socketSetupDone) {
+      return offCallListeners
+    }
+  }, [socketCtx.socketSetupDone])
+
   const setUpCallListeners = useCallback(() => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
+      let timeOutRef
+      const afterCallRapUp = async (timeOut) => {
+        const modelDataEvent = new CustomEvent("model-profile-data-fetched", {
+          detail: {
+            turnStatus: "offline",
+          },
+        })
+        if (timeOut) {
+          clearTimeout(timeOut)
+        }
+        document.dispatchEvent(modelDataEvent)
+        spinnerCtx.setShowSpinner(false, "Please wait...")
+        setPendingCallEndRequest(false)
+        setCallOnGoing(false)
+        await leaveAndCloseTracks()
+        await client.setClientRole("audience")
+        setIsModelOffline(true)
+        offCallListeners()
+        toast.success("Call has ended successfully!", {
+          autoClose: false,
+        })
+        socket.emit(
+          "update-client-info",
+          {
+            action: "clear-call-details",
+          },
+          (status) => {
+            if (!status.ok) {
+              socket.close()
+              socket.open()
+            }
+          }
+        )
+      }
+
       /* model has put call end request before you */
       if (!socket.hasListeners("model-call-end-request-init-received")) {
         socket.on("model-call-end-request-init-received", (data) => {
-          // alert("model ended call")
           setPendingCallEndRequest(true)
           spinnerCtx.setShowSpinner(true, "Processing transaction...")
-          toast.info("Model has ended/disconnected the call", {
-            autoClose: 3000,
-          })
-          /**
-           * now show spinner and wait for call-end-request-finished
-           * do a fetch request in that listener nad fetch the call end details/metrics
-           * then show the call metric/details page/modal
-           */
+          toast.info(
+            "Model has ended/disconnected the call, Processing transaction...",
+            {
+              autoClose: 3000,
+            }
+          )
+          timeOutRef = setTimeout(() => {
+            afterCallRapUp()
+          }, [1000])
         })
       }
 
       /* the, after call transaction is now complete, fetch the details of it now */
       if (!socket.hasListeners("model-call-end-request-finished")) {
-        socket.on("model-call-end-request-finished", async (data) => {
+        socket.on("model-call-end-request-finished", (data) => {
           if (data?.ended === "not-setuped-properly") {
             updateCtx.updateWallet(data.amountToRefund, "add")
           } else if (data?.totalCharges) {
             updateCtx.updateWallet(data.totalCharges, "dec")
           }
-
-          /* ========================== */
-          spinnerCtx.setShowSpinner(false, "Please wait...")
-          setPendingCallEndRequest(false)
-          setCallOnGoing(false)
-          await leaveAndCloseTracks()
-          await client.setClientRole("audience")
-          setIsModelOffline(true)
-          offCallListeners()
-          toast.success("Call has ended successfully!", {
-            autoClose: false,
-          })
-          socket.emit(
-            "update-client-info",
-            {
-              action: "clear-call-details",
-            },
-            (status) => {
-              if (!status.ok) {
-                socket.close()
-                socket.open()
-              }
-            }
-          )
+          afterCallRapUp(timeOutRef)
         })
       }
     }
@@ -762,12 +833,16 @@ function ViewerScreen(props) {
 
       leftHandler = (data) => {
         if (typeof data.roomSize === "number") {
-          document.getElementById("live-viewer-count-lg").innerText = `${
-            data.roomSize - 1
-          } Live`
-          document.getElementById("live-viewer-count-md").innerText = `${
-            data.roomSize - 1
-          } Live`
+          try {
+            document.getElementById("live-viewer-count-lg").innerText = `${
+              data.roomSize - 1
+            } Live`
+            document.getElementById("live-viewer-count-md").innerText = `${
+              data.roomSize - 1
+            } Live`
+          } catch (error) {
+            /* just handle error */
+          }
         }
       }
 
@@ -788,9 +863,8 @@ function ViewerScreen(props) {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
       if (!socket.hasListeners("model-call-request-response-received")) {
-        socket.on("model-call-request-response-received", (data) => {
-          // alert("model response received")
-          if (data.response !== "rejected") {
+        socket.on("model-call-request-response-received", async (data) => {
+          if (data.response === "accepted") {
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               /* dont kick of, switch role to host start the call 📞📞 */
               /* do a fetch request and update the status of the call as ongoing */
@@ -800,9 +874,6 @@ function ViewerScreen(props) {
                   autoClose: 2000,
                 }
               )
-              // toast.info(
-              //   "Please microphone (🎤) and camera (📷) permissions, when asked, else call will not be connected!"
-              // )
               fetch("/api/website/stream/set-call-ongoing", {
                 method: "POST",
                 headers: {
@@ -839,31 +910,96 @@ function ViewerScreen(props) {
                             toast.success("Call is now connected 😀", {
                               autoClose: 2000,
                             })
-                            if (data.callType === "videoCall") {
-                              toast.info(
-                                " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions, if asked",
-                                {
-                                  position: "top-center",
-                                  autoClose: false,
+
+                            /* update the model status to "onCall" in the second header */
+                            const modelDataEvent = new CustomEvent(
+                              "model-profile-data-fetched",
+                              {
+                                detail: {
+                                  turnStatus: "onCall",
+                                },
+                              }
+                            )
+                            document.dispatchEvent(modelDataEvent)
+
+                            let hasAudioDevices = false
+                            let hasVideoDevices = false
+                            navigator.mediaDevices
+                              .enumerateDevices()
+                              .then((myData) => {
+                                myData = myData.filter((device) => {
+                                  return (
+                                    device.label !== "" &&
+                                    device.deviceId !== ""
+                                  )
+                                })
+                                myData.forEach((a) => {
+                                  if (a.kind === "audioinput") {
+                                    hasAudioDevices = true
+                                  }
+                                  if (a.kind === "videoinput") {
+                                    hasVideoDevices = true
+                                  }
+                                })
+                                return myData
+                              })
+                              .then(() => {
+                                if (data.callType === "videoCall") {
+                                  if (!hasVideoDevices && !hasAudioDevices) {
+                                    toast.info(
+                                      " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
+                                      {
+                                        position: "top-center",
+                                        autoClose: false,
+                                      }
+                                    )
+                                  } else if (
+                                    hasVideoDevices &&
+                                    !hasAudioDevices
+                                  ) {
+                                    toast.info(
+                                      " 👈👈 Please ALLOW CAMERA permissions.",
+                                      {
+                                        position: "top-center",
+                                        autoClose: false,
+                                      }
+                                    )
+                                  }
+                                } else {
+                                  /* if audio call */
+                                  if (!hasAudioDevices) {
+                                    toast.info(
+                                      " 👈👈 Please ALLOW MICROPHONE permissions.",
+                                      {
+                                        position: "top-center",
+                                        autoClose: false,
+                                      }
+                                    )
+                                  }
                                 }
-                              )
-                            } else {
-                              /* if audio call */
-                              toast.info(
-                                " 👈👈 Please ALLOW MICROPHONE permissions, if asked",
-                                {
-                                  position: "top-center",
-                                  autoClose: false,
-                                }
-                              )
-                            }
-                            await switchViewerToHost(data.callType)
+                              })
+
+                            /* switch to host with the new token */
+                            await switchViewerToHost(
+                              data.callType,
+                              data.rtcToken
+                            )
                           }
                         }
                       )
                     } else {
+                      /* ====== IF SOCKET DATA WAS ALSO SUCCESSFULLY UPDATED IN THE FETCH REQUEST ====== */
                       sessionStorage.removeItem("callId")
                       sessionStorage.setItem("callId", data.callId)
+                      const modelDataEvent = new CustomEvent(
+                        "model-profile-data-fetched",
+                        {
+                          detail: {
+                            turnStatus: "onCall",
+                          },
+                        }
+                      )
+                      document.dispatchEvent(modelDataEvent)
                       setPendingCallRequest(false)
                       setCallType(data.callType)
                       setCallOnGoing(true)
@@ -873,25 +1009,57 @@ function ViewerScreen(props) {
                       toast.success("Call is now connected 😀", {
                         autoClose: 2000,
                       })
-                      if (data.callType === "videoCall") {
-                        toast.info(
-                          " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions, if asked",
-                          {
-                            position: "top-center",
-                            autoClose: false,
+                      let hasAudioDevices = false
+                      let hasVideoDevices = false
+                      navigator.mediaDevices
+                        .enumerateDevices()
+                        .then((myData) => {
+                          myData = myData.filter((device) => {
+                            return device.label !== "" && device.deviceId !== ""
+                          })
+                          myData.forEach((a) => {
+                            if (a.kind === "audioinput") {
+                              hasAudioDevices = true
+                            }
+                            if (a.kind === "videoinput") {
+                              hasVideoDevices = true
+                            }
+                          })
+                          return myData
+                        })
+                        .then(() => {
+                          if (data.callType === "videoCall") {
+                            if (!hasVideoDevices && !hasAudioDevices) {
+                              toast.info(
+                                " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
+                                {
+                                  position: "top-center",
+                                  autoClose: false,
+                                }
+                              )
+                            } else if (hasVideoDevices && !hasAudioDevices) {
+                              toast.info(
+                                " 👈👈 Please ALLOW CAMERA permissions.",
+                                {
+                                  position: "top-center",
+                                  autoClose: false,
+                                }
+                              )
+                            }
+                          } else {
+                            /* if audio call */
+                            if (!hasAudioDevices) {
+                              toast.info(
+                                " 👈👈 Please ALLOW MICROPHONE permissions.",
+                                {
+                                  position: "top-center",
+                                  autoClose: false,
+                                }
+                              )
+                            }
                           }
-                        )
-                      } else {
-                        /* if audio call */
-                        toast.info(
-                          " 👈👈 Please ALLOW MICROPHONE permissions, if asked",
-                          {
-                            position: "top-center",
-                            autoClose: false,
-                          }
-                        )
-                      }
-                      await switchViewerToHost(data.callType)
+                        })
+                      await switchViewerToHost(data.callType, data.rtcToken)
                     }
                   }
                 })
@@ -909,6 +1077,15 @@ function ViewerScreen(props) {
 
               if (pendingCallRequest) {
                 /* accepted others call, and rejected mine */
+                const modelDataEvent = new CustomEvent(
+                  "model-profile-data-fetched",
+                  {
+                    detail: {
+                      turnStatus: "onCall",
+                    },
+                  }
+                )
+                document.dispatchEvent(modelDataEvent)
                 setPendingCallRequest(false)
                 setCallOnGoing(false)
                 setIsModelOffline(false)
@@ -918,15 +1095,23 @@ function ViewerScreen(props) {
                   acceptedOthersCall: true,
                   otherUserData: {
                     username: data.username,
-                    /* as current viewers don't have a profileimg, using placeholder */
-                    // profileImage: data.profileImage,
-                    // profileImage: "/male-model.jpeg",
-                    profileImage: data.username,
+                    profileImage: data.profileImage,
                     callType: data.callType,
                   },
                 })
               } else {
-                /* accepted someone's call hance have to leave */
+                /**
+                 * for un-authed viewers and viewers who did't put a request
+                 */
+                const modelDataEvent = new CustomEvent(
+                  "model-profile-data-fetched",
+                  {
+                    detail: {
+                      turnStatus: "onCall",
+                    },
+                  }
+                )
+                document.dispatchEvent(modelDataEvent)
                 setPendingCallRequest(false)
                 setCallOnGoing(false)
                 setIsModelOffline(false)
@@ -936,10 +1121,7 @@ function ViewerScreen(props) {
                   acceptedOthersCall: true,
                   otherUserData: {
                     username: data.username,
-                    /* as current viewers don't have a profileimg, using placeholder */
-                    // profileImage: data.profileImage,
-                    // profileImage: "/male-model.jpeg",
-                    profileImage: data.username,
+                    profileImage: data.profileImage,
                     callType: data.callType,
                   },
                 })
@@ -951,7 +1133,7 @@ function ViewerScreen(props) {
                 })
               }
 
-              leave()
+              await leave()
               /**
                *
                * have kick out all sockets on the server itself as below alogo will
@@ -961,7 +1143,8 @@ function ViewerScreen(props) {
                 "0 Live"
               document.getElementById("live-viewer-count-md").innerText =
                 "0 Live"
-              /* const socketRooms =
+
+              const socketRooms =
                 JSON.parse(sessionStorage.getItem("socket-rooms")) || []
               if (socketRooms.find((room) => room.endsWith("-public"))) {
                 socket.emit(
@@ -973,9 +1156,9 @@ function ViewerScreen(props) {
                     }
                   }
                 )
-              } */
+              }
             }
-          } else {
+          } else if (data.response === "rejected") {
             /* clear call type and pending call */
             if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
               document.getElementById("call-end-audio").play()
@@ -987,28 +1170,45 @@ function ViewerScreen(props) {
               })
               setPendingCallRequest(false)
             }
+          } else {
+            toast.error("Invalid response from model", {
+              position: "bottom-right",
+              closeOnClick: true,
+            })
           }
         })
       }
     }
   }, [
+    ctx.isLoggedIn,
     ctx.relatedUserId,
     socketCtx.socketSetupDone,
     switchViewerToHost,
     setUpCallListeners,
+    leave,
   ])
 
   /* handle call end */
   const handleCallEnd = async () => {
     if (pendingCallEndRequest) {
-      return alert(
-        "Your call end request is processing please have patience.... 🙏🎵🎵"
+      return toast.error(
+        "Your call end request is processing please have patience.... 🙏",
+        {
+          autoClose: 3000,
+        }
       )
     }
 
-    if (!callOnGoing && !joinState) {
-      return alert("no ongoing call")
+    if (!callOnGoing) {
+      return alert("No ongoing call")
     }
+
+    const modelDataEvent = new CustomEvent("model-profile-data-fetched", {
+      detail: {
+        turnStatus: "offline",
+      },
+    })
+    document.dispatchEvent(modelDataEvent)
 
     const socket = io.getSocket()
 
@@ -1060,7 +1260,7 @@ function ViewerScreen(props) {
         await leaveAndCloseTracks()
         await client.setClientRole("audience")
       })
-      .catch((err) => alert(err.message))
+      .catch((err) => toast.error(err.message))
 
     /**
      * 1. close agora streaming first
@@ -1068,6 +1268,8 @@ function ViewerScreen(props) {
      * 3. show call end page/summary modal
      */
   }
+
+  customDataRef.current.handleCallEnd = handleCallEnd
 
   return (
     <div

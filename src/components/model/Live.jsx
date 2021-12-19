@@ -39,15 +39,13 @@ import { toast } from "react-toastify"
 
 // Replace with your App ID.
 let token
-let client
-let rtcTokenExpireIn
 
 /**
  * CREATING AGORA CLIENT
  */
 
 const clientOptions = { codec: "h264", mode: "live" }
-client = AgoraRTC.createClient(clientOptions)
+const client = AgoraRTC.createClient(clientOptions)
 client.setClientRole("host")
 
 const chatWindowOptions = {
@@ -77,7 +75,9 @@ const pendingCallInitialData = {
 
 function Live() {
   const chatWindowRef = useRef()
-  const maxCallDurationRef = useRef()
+  const onCallUsefulRef = useRef({
+    loopRef: null,
+  })
 
   const ctx = useAuthContext()
   const socketCtx = useSocketContext()
@@ -127,10 +127,8 @@ function Live() {
     localAudioTrack,
     localVideoTrack,
     joinState,
-    leave,
     join,
     remoteUsers,
-    startLocalCameraPreview,
     leaveAndCloseTracks,
     customDataRef,
   } = useAgora(client, "host", "videoCall")
@@ -209,11 +207,6 @@ function Live() {
                 "putting-me-in-these-rooms",
                 joinRooms,
                 (response) => {
-                  // sessionStorage.setItem(
-                  //   "socket-rooms",
-                  //   joinRooms,
-                  //   JSON.stringify([...socketRooms, ...joinRooms])
-                  // )
                   if (response.status === "ok") {
                     joinAttempts = 0
                     joinRooms = []
@@ -236,7 +229,7 @@ function Live() {
         socket.once("connect", resetOnReconnect)
         io.connect()
       } */
-      }, 3000)
+      }, 1500)
 
       return () => {
         clearInterval(myKeepInRoomLoop)
@@ -300,144 +293,79 @@ function Live() {
       goneLiveOnce = true
     }
     const socket = io.getSocket()
-    if (
-      !localStorage.getItem("rtcToken") &&
-      +localStorage.getItem("rtcTokenExpireIn") <= Date.now() + 180000 &&
-      ctx.loadedFromLocalStorage
-    ) {
-      /* if no token or expired token, fetch new token */
-      if (ctx.isLoggedIn === true && ctx.user.userType === "Model") {
-        fetch("/api/website/token-builder/create-stream-and-gen-token", {
-          method: "POST",
-          cors: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((resp) => {
-            return resp.json()
-          })
-          .then((data) => {
-            if (data.actionStatus === "success") {
-              socket.emit("update-client-info", {
-                action: "join-the-stream-model",
-                streamId: data.streamId,
-              })
-              socket.emit(
-                "putting-me-in-these-rooms",
-                {
-                  room: `${ctx.relatedUserId}-private`,
-                },
-                (status) => {
-                  /* no need to add in session storage */
-                }
-              )
-              sessionStorage.setItem("liveNow", "true")
-              token = data.rtcToken
-              rtcTokenExpireIn = data.privilegeExpiredTs
-              localStorage.setItem("rtcToken", data.rtcToken)
-              localStorage.setItem(
-                "rtcTokenExpireIn",
-                +data.privilegeExpiredTs * 1000
-              )
-              sessionStorage.setItem("streamId", data.streamId)
-
-              const channelJoin = join(
-                ctx.relatedUserId,
-                token,
-                ctx.relatedUserId
-              )
-                .then(() => {
-                  setTimeout(() => {
-                    fetch(
-                      `/api/website/stream/get-live-room-count/${data.streamId}-public`
-                    )
-                      .then((res) => res.json())
-                      .then((data) => {
-                        try {
-                          document.getElementById(
-                            "live-viewer-count"
-                          ).innerText = `${data.roomSize - 1} Live`
-                        } catch (err) {
-                          /* in-case the roomSize was not a NAN */
-                        }
-                      })
-                      .catch((err) =>
-                        console.error("Live viewer count not fetched")
-                      )
-                  }, [4000])
-                })
-                .catch((err) => {
-                  /* toast is handing it's rejection */
-                })
-              return toast.promise(channelJoin, {
-                pending: "Publishing video via secure connection...",
-                success: "You are live now",
-                error: "Error joining channel",
-              })
-            } else {
-              toast.error(data.message)
-            }
-          })
-          .catch((err) => toast.error(err.message))
-      }
-    } else {
-      /* have a valid token, fetch request for status update not for rtc token */
-      fetch("/api/website/stream/create-stream-without-token")
+    if (ctx.isLoggedIn === true && ctx.user.userType === "Model") {
+      fetch("/api/website/token-builder/create-stream-and-gen-token", {
+        method: "POST",
+        cors: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
         .then((resp) => {
           return resp.json()
         })
         .then((data) => {
-          socket.emit("update-client-info", {
-            action: "join-the-stream-model",
-            streamId: data.streamId,
-          })
-          socket.emit(
-            "putting-me-in-these-rooms",
-            {
-              room: `${ctx.relatedUserId}-private`,
-            },
-            (status) => {
-              /* no need to add in session storage */
-            }
-          )
-          sessionStorage.setItem("liveNow", "true")
-          sessionStorage.setItem("streamId", data.streamId)
-          const joinPromise = join(
-            ctx.relatedUserId,
-            localStorage.getItem("rtcToken"),
-            ctx.relatedUserId
-          )
-            .then(() => {
-              setTimeout(() => {
-                fetch(
-                  `/api/website/stream/get-live-room-count/${data.streamId}-public`
-                )
-                  .then((res) => res.json())
-                  .then((data) => {
-                    try {
-                      document.getElementById(
-                        "live-viewer-count"
-                      ).innerText = `${data.roomSize - 1} Live`
-                    } catch (err) {
-                      /* in-case the roomSize was not a NAN */
-                    }
-                  })
-                  .catch((err) =>
-                    console.error("Live viewer count not fetched")
-                  )
-              }, [4000])
+          if (data.actionStatus === "success") {
+            socket.emit("update-client-info", {
+              action: "join-the-stream-model",
+              streamId: data.streamId,
             })
-            .catch((err) => {})
-          return toast.promise(joinPromise, {
-            pending: "Publishing video via secure connection...",
-            success: "You are live now",
-            error: "Error joining channel",
-          })
+            socket.emit(
+              "putting-me-in-these-rooms",
+              {
+                room: `${ctx.relatedUserId}-private`,
+              },
+              (status) => {
+                /* no need to add in session storage */
+              }
+            )
+            sessionStorage.setItem("liveNow", "true")
+            token = data.rtcToken
+            localStorage.setItem("rtcToken", data.rtcToken)
+            localStorage.setItem(
+              "rtcTokenExpireIn",
+              +data.privilegeExpiredTs * 1000
+            )
+            sessionStorage.setItem("streamId", data.streamId)
+
+            const channelJoin = join(
+              ctx.relatedUserId,
+              token,
+              ctx.relatedUserId
+            )
+              .then(() => {
+                setTimeout(() => {
+                  fetch(
+                    `/api/website/stream/get-live-room-count/${data.streamId}-public`
+                  )
+                    .then((res) => res.json())
+                    .then((data) => {
+                      try {
+                        document.getElementById(
+                          "live-viewer-count"
+                        ).innerText = `${data.roomSize - 1} Live`
+                      } catch (err) {
+                        /* in-case the roomSize was not a NAN */
+                      }
+                    })
+                    .catch((err) =>
+                      console.error("Live viewer count not fetched")
+                    )
+                }, [4000])
+              })
+              .catch((err) => {
+                /* toast is handing it's rejection */
+              })
+            return toast.promise(channelJoin, {
+              pending: "Publishing video via secure connection...",
+              success: "You are live now",
+              error: "Error joining channel",
+            })
+          } else {
+            toast.error(data.message)
+          }
         })
-        .catch((error) => {
-          toast.error("Stream was not setup on the node server!")
-        })
+        .catch((err) => toast.error(err.message))
     }
   }, [
     ctx.isLoggedIn,
@@ -520,18 +448,14 @@ function Live() {
   }, [])
 
   const sendChatMessage = () => {
-    if (!chatInputRef.current) {
-      alert("ref not created, updated")
-      return
-    }
-
     if (!chatInputRef.current.value) {
       return
     }
 
     if (!goneLiveOnce) {
-      alert("Please Go Live First, Then Chat Will Start Automatically!")
-      return
+      return toast.info(
+        "Please Go Live First, Then Chat Will Start Automatically!"
+      )
     }
 
     const message = chatInputRef.current.value
@@ -561,10 +485,6 @@ function Live() {
   }
 
   const addAtTheRate = (username) => {
-    if (!chatInputRef.current) {
-      alert("ref not created, updated")
-      return
-    }
     if (chatInputRef.current.value.trim() !== "") {
       chatInputRef.current.value = `${chatInputRef.current.value} @${username}`
     } else {
@@ -601,6 +521,9 @@ function Live() {
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
+      /**
+       * when viewer goes back during call
+       */
       return () => {
         const socket = io.getSocket()
         if (socket.hasListeners("viewer-call-end-request-init-received")) {
@@ -616,32 +539,67 @@ function Live() {
   const setUpCallListeners = () => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
+      let timeOutRef
       if (!socket.hasListeners("viewer-call-end-request-init-received")) {
         socket.on("viewer-call-end-request-init-received", (data) => {
-          /* viewer has put call end request before you */
-          setPendingCallEndRequest(true)
           spinnerCtx.setShowSpinner(true, "Processing transaction...")
+          setPendingCallEndRequest(true)
           clearInterval(callTimerRef.current)
+          clearTimeout(onCallUsefulRef.current.loopRef)
+          onCallUsefulRef.current = {
+            loopRef: null,
+          }
           const callEndClear = new Event("clear-viewer-list-going-on-call")
           document.dispatchEvent(callEndClear)
-          toast.info("Viewer has ended the call", {
-            autoClose: 3000,
-          })
+          /* model is not live from now */
+          sessionStorage.setItem("liveNow", "false")
+
+          /**
+           * if call end response not received
+           */
+          timeOutRef = setTimeout(async () => {
+            /**
+             * rollback as before call
+             */
+            setPendingCallEndRequest(false)
+            setCallOnGoing(false)
+            offCallListeners()
+            spinnerCtx.setShowSpinner(false, "Please wait...")
+            await leaveAndCloseTracks()
+            socket.emit(
+              "update-client-info",
+              {
+                action: "clear-call-details",
+              },
+              (status) => {
+                if (!status.ok) {
+                  socket.close()
+                  socket.open()
+                }
+              }
+            )
+          }, [10000])
         })
       }
 
-      /*  */
+      /**
+       * call was ended successfully by the viewer
+       */
       if (!socket.hasListeners("viewer-call-end-request-finished")) {
         socket.on("viewer-call-end-request-finished", async (data) => {
-          toast.success("Call has ended successfully!", {
-            autoClose: false,
-          })
           if (data.ended === "ok") {
-            sessionStorage.setItem("callEndDetails", JSON.stringify(data))
-            spinnerCtx.setShowSpinner(false, "Please wait...")
           }
+
+          /* re-doing this just to be sure the call loop is clear */
+          if (onCallUsefulRef.current.loopRef) {
+            clearTimeout(onCallUsefulRef.current.loopRef)
+            onCallUsefulRef.current = {
+              loopRef: null,
+            }
+          }
+
+          clearTimeout(timeOutRef)
           setPendingCallEndRequest(false)
-          // setCallEndDetails(data.callEndDetails)
           setCallOnGoing(false)
           offCallListeners()
           spinnerCtx.setShowSpinner(false, "Please wait...")
@@ -660,6 +618,11 @@ function Live() {
           )
         })
       }
+      // toast.promise(thePromise, {
+      //   pending: "Viewer has ended the call, processing transaction...",
+      //   success: "Call was ended successfully",
+      //   error: "Call was not ended successfully",
+      // })
     }
   }
 
@@ -688,6 +651,7 @@ function Live() {
         return { ...prev }
       })
     } else {
+      const socket = io.getSocket()
       fetch("/api/website/stream/accepted-call-request", {
         method: "POST",
         headers: {
@@ -705,6 +669,7 @@ function Live() {
         .then((res) => res.json())
         .then(async (data) => {
           if (data.actionStatus === "success") {
+            customDataRef.current.callOngoing = true
             if (!data.socketDataUpdated) {
               socket.emit("update-client-info", {
                 action: "set-call-data-model",
@@ -713,24 +678,98 @@ function Live() {
                 sharePercent: data.sharePercent,
               })
             }
-            if (myCallType === "audioCall") {
-              await localVideoTrack.setEnabled(false)
-            }
+
+            /* clear all pending call requests */
             setPendingCallRequest((prev) => {
               prev.pending = false
               prev.callRequests = []
               return { ...prev }
             })
+            /* clear stream timer */
+            clearInterval(streamTimerRef.current)
+
+            /* set up call states */
             setCallType(myCallType)
             setCallOnGoing(true)
             setUpCallListeners()
             sessionStorage.setItem("callId", data.callDoc._id)
-            /* clear stream timer */
-            clearInterval(streamTimerRef.current)
+
+            /* re-new with time-bound new token */
+            await client.renewToken(data.rtcToken)
+
+            /* disable video if audio call */
+            if (myCallType === "audioCall") {
+              await localVideoTrack.setEnabled(false)
+            }
 
             // have to use own interval loop to request tokens
+            const RENEW_BUFFER_TIME = 8000 /* fetch new token before this amount of time before actual expiry time */
 
-            /* fire event for clearing call request */
+            const setUpNewTimeout = async (privilegeExpiredTs, canRenew) => {
+              clearTimeout(onCallUsefulRef.current.loopRef)
+              if (!canRenew) {
+                /* alert about the last minute */
+                customDataRef.current.gracefulTokenExpiryAllowed = true
+                setTimeout(() => {
+                  toast.info("This is the last minute of the call")
+                }, [privilegeExpiredTs * 1000 - Date.now() - 60000])
+              }
+
+              const timeOutAfter = canRenew
+                ? privilegeExpiredTs - Date.now() - RENEW_BUFFER_TIME
+                : privilegeExpiredTs - Date.now()
+
+              onCallUsefulRef.current.loopRef = setTimeout(() => {
+                if (canRenew) {
+                  fetchAndRenewToken()
+                } else {
+                  /* end the call... */
+                  handleCallEnd()
+                }
+              }, [timeOutAfter])
+            }
+
+            const fetchAndRenewToken = async () => {
+              try {
+                const { rtcToken, privilegeExpiredTs, canRenew } = await (
+                  await fetch(
+                    `/api/website/token-builder/global-renew-token?channel=${client.channelName}&onCall=true&callId=${data.callDoc._id}&callType=${myCallType}&viewerId=${relatedUserId}`
+                  )
+                ).json()
+
+                /**
+                 * canRenew tell is next time can i renew the token or not
+                 */
+                await client.renewToken(rtcToken)
+                if (!canRenew) {
+                  toast.info("This is the last minute of the call")
+                }
+                setUpNewTimeout(+privilegeExpiredTs * 1000, canRenew)
+              } catch (err) {
+                toast.warn(err.message, " Call will end now!")
+              }
+            }
+
+            if (data.canAffordNextMinute) {
+              onCallUsefulRef.current.loopRef = setTimeout(() => {
+                fetchAndRenewToken()
+              }, [
+                +data.privilegeExpiredTs * 1000 -
+                  Date.now() -
+                  RENEW_BUFFER_TIME,
+              ])
+            } else {
+              /**
+               * anyway token will expire and end the call
+               * hence not need for setting timeout
+               */
+              customDataRef.current.gracefulTokenExpiryAllowed = true
+              setTimeout(() => {
+                toast.info("This is the last minute of the call")
+              }, [+data.privilegeExpiredTs * 1000 - Date.now() - 60000])
+            }
+
+            /* fire event for clearing all viewer list */
             const viewerClearEvent = new CustomEvent(
               "clean-viewer-list-going-on-call",
               {
@@ -740,17 +779,7 @@ function Live() {
             document.dispatchEvent(viewerClearEvent)
             const startCallTimerAfter =
               new Date(data.callStartTs).getTime() - Date.now()
-            if (startCallTimerAfter <= 1) {
-              /* start instantaneously */
-              startCallTimer()
-            } else {
-              setTimeout(() => {
-                startCallTimer()
-              }, startCallTimerAfter)
-              maxCallDurationRef.current = setTimeout(() => {
-                handleCallEnd()
-              }, [+data.viewerMaxCallDurationSeconds])
-            }
+            setTimeout(startCallTimer, [startCallTimerAfter])
           } else {
             if (data?.notStreaming) {
               /* clear all pending call requests */
@@ -758,7 +787,9 @@ function Live() {
             }
           }
         })
-        .catch((err) => alert(err.message))
+        .catch((err) => {
+          toast.error(err.message)
+        })
     }
   }
 
@@ -794,16 +825,23 @@ function Live() {
     }
   }, [socketCtx.socketSetupDone])
 
-  const handleCallEnd = async () => {
+  const handleCallEnd = useCallback(async () => {
+    /**
+     * deps: [callType,localVideoTrack,leaveAndCloseTracks,offCallListeners]
+     */
+
     if (pendingCallEndRequest) {
-      return alert(
-        "Your call end request is processing please have patience.... 🙏🎵🎵"
+      return toast.info(
+        "Your call end request is processing please have patience... 😀"
       )
     }
 
-    if (!callOnGoing && !joinState) {
+    if (!callOnGoing) {
       return alert("no ongoing call")
     }
+
+    /* model is not live from now */
+    sessionStorage.setItem("liveNow", "false")
 
     const socket = io.getSocket()
     socket.emit("model-call-end-request-init-emitted", {
@@ -813,10 +851,13 @@ function Live() {
 
     const callEndClear = new Event("clear-viewer-list-going-on-call")
     document.dispatchEvent(callEndClear)
+
     /* clear call timer */
     clearInterval(callTimerRef.current)
-    /* clear max call duration timeout */
-    clearTimeout(maxCallDurationRef.current)
+    clearTimeout(onCallUsefulRef.current.loopRef)
+    onCallUsefulRef.current = {
+      loopRef: null,
+    }
     spinnerCtx.setShowSpinner(true, "Processing transaction...")
     setPendingCallEndRequest(true)
 
@@ -879,9 +920,10 @@ function Live() {
           /* if was not first wait for the socket end call response for 10 seconds or error out if not received */
           setTimeout(() => {
             setCallOnGoing(async (isCallOngoing) => {
-              if (isCallOngoing) {
-                alert(
-                  "Viewer request for call end before you, call not ended successfully"
+              const a = await isCallOngoing
+              if (a) {
+                toast.warn(
+                  "Viewer requested for call end before you, please wait white transaction is processing"
                 )
                 spinnerCtx.setShowSpinner(false, "Please wait...")
                 await leaveAndCloseTracks()
@@ -904,9 +946,20 @@ function Live() {
         setPendingCallEndRequest(false)
         offCallListeners()
         localVideoTrack.setEnabled(true)
-        // setCallEndDetails(data.callEndDetails)
       })
-  }
+  }, [
+    callType,
+    localVideoTrack,
+    leaveAndCloseTracks,
+    offCallListeners,
+    callOnGoing,
+    pendingCallEndRequest,
+    customDataRef,
+    onCallUsefulRef,
+    callTimerRef,
+  ])
+
+  customDataRef.current.handleCallEnd = handleCallEnd
 
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div className="tw-w-full">
@@ -1074,11 +1127,11 @@ function Live() {
 
             {/* on stream controls */}
             {!callOnGoing && (
-              <div className="tw-absolute tw-w-full tw-bottom-0">
-                <div className="tw-flex tw-justify-between tw-items-center tw-py-2 tw-px-4 tw-z-[300] tw-bg-[rgba(29,26,26,0.62)]">
+              <div className="tw-absolute tw-w-full tw-bottom-0 tw-z-[110] tw-backdrop-blur">
+                <div className="tw-flex tw-justify-between tw-items-center tw-py-2 tw-px-4 tw-bg-[rgba(29,26,26,0.62)]">
                   {!joinState ? (
                     <Button
-                      className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
+                      className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                       variant="success"
                       onClick={startStreamingAndGoLive}
                     >
@@ -1087,7 +1140,7 @@ function Live() {
                     </Button>
                   ) : (
                     <Button
-                      className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
+                      className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                       variant="danger"
                       onClick={() => {
                         requestServerEndAndStreamLeave(joinState)
@@ -1100,37 +1153,40 @@ function Live() {
                       </span>
                     </Button>
                   )}
-                  {joinState && (
-                    <span className="tw-relative tw-z-[390]">
-                      <p
-                        className="tw-px-3 tw-py-1.5 tw-rounded tw-font-semibold tw-bg-[rgba(20,20,20,0.75)] tw-text-white-color tw-z-[110]"
-                        id="stream-timer"
-                      >
-                        00:00
-                      </p>
-                    </span>
-                  )}
-                  {joinState && (
-                    <div className="tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(58,54,54,0.2)] tw-z-[300] tw-backdrop-blur">
-                      <button className="tw-inline-block tw-px-2 tw-z-[390]">
-                        {!muted ? (
-                          <MicIcon
-                            fontSize="medium"
-                            style={{ color: "white" }}
-                            onClick={toggleMuteMic}
-                          />
-                        ) : (
-                          <MicOffIcon
-                            fontSize="medium"
-                            style={{ color: "red" }}
-                            onClick={toggleMuteMic}
-                          />
-                        )}
-                      </button>
-                    </div>
-                  )}
+
+                  <div className="tw-px-3 tw-flex tw-items-center tw-justify-between">
+                    {joinState && (
+                      <span className="tw-relative tw-mr-3">
+                        <p
+                          className="tw-px-3 tw-py-1.5 tw-text-white-color"
+                          id="stream-timer"
+                        >
+                          00:00
+                        </p>
+                      </span>
+                    )}
+                    {joinState && (
+                      <div className="tw-rounded tw-ml-3">
+                        <button className="tw-inline-block tw-px-2">
+                          {!muted ? (
+                            <MicIcon
+                              fontSize="medium"
+                              style={{ color: "white" }}
+                              onClick={toggleMuteMic}
+                            />
+                          ) : (
+                            <MicOffIcon
+                              fontSize="medium"
+                              style={{ color: "red" }}
+                              onClick={toggleMuteMic}
+                            />
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <Button
-                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110] tw-capitalize"
+                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-capitalize"
                     variant={joinState ? "success" : "danger"}
                   >
                     <span

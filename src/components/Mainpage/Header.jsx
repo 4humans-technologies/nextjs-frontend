@@ -7,11 +7,11 @@ import ClearIcon from "@material-ui/icons/Clear"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import logo from "../../../public/logo.png"
-
+import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive"
+import NotificationsIcon from "@material-ui/icons/Notifications"
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
 
-import useModalContext from "../../app/ModalContext"
 import Link from "next/link"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
@@ -20,8 +20,127 @@ import Headerui from "../UI/HeaderUI"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import ModelDetailHeader from "../ViewerScreen/ModelDetailHeader"
+import CameraIcon from "@material-ui/icons/Camera"
+import PlayCircleFilledIcon from "@material-ui/icons/PlayCircleFilled"
 
-let fetchedLiveModelCount = false
+const ViewerFollow = (props) => {
+  return (
+    <div className="tw-bg-first-color tw-rounded tw-mb-2 tw-px-2 tw-py-2 tw-flex tw-items-center tw-justify-start">
+      <span className="tw-uppercase tw-w-10 tw-h-10 tw-rounded-full tw-text-white-color tw-font-semibold tw-text-xl tw-bg-dreamgirl-red tw-grid tw-place-content-center tw-ring-2 tw-ring-text-black">
+        {props?.profileImage ? (
+          <img
+            /* src="/male-model.jpeg" */
+            src={props.profileImage}
+            alt=""
+            className="tw-w-10 tw-h-10 tw-rounded-full tw-ring-2 tw-ring-text-black"
+          />
+        ) : (
+          props.name[0]
+        )}
+      </span>
+      <div className="tw-ml-2 tw-flex-grow">
+        <p className="tw-text-left">{props.message}</p>
+        <p className="tw-text-text-black tw-text-xs tw-text-right">
+          {props.dateTime}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+const ViewerTipped = (props) => {
+  return (
+    <div className="tw-bg-first-color tw-rounded tw-mb-2 tw-px-2 tw-py-2 tw-flex tw-items-center tw-justify-start">
+      <img
+        src="/coins.png"
+        alt=""
+        className="tw-w-10 tw-h-10 tw-object-contain"
+      />
+      <div className="tw-ml-2 tw-flex-grow">
+        <p className="tw-text-left">{props.message}</p>
+        <div className="tw-flex tw-items-center">
+          <span className="tw-flex-grow tw-text-xs tw-text-left">
+            added {props.modelGot} coins
+          </span>
+          <span className="tw-text-text-black tw-text-xs">
+            {props.dateTime}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const AlbumPurchase = (props) => {
+  return (
+    <div className="tw-bg-first-color tw-rounded tw-mb-2 tw-px-2 tw-py-2 tw-flex tw-items-center tw-justify-start">
+      <div className="tw-h-10 tw-w-10 tw-text-white">
+        {props.albumType === "image-album-purchase" ? (
+          <CameraIcon fontSize="large" />
+        ) : (
+          <PlayCircleFilledIcon fontSize="large" />
+        )}
+      </div>
+      <div className="tw-ml-2 tw-flex-grow">
+        <p className="tw-text-left">{props.message}</p>
+        <div className="tw-flex tw-items-center">
+          <span className="tw-flex-grow tw-text-xs tw-text-left">
+            added {props.debited} coins
+          </span>
+          <span className="tw-text-text-black tw-text-xs">
+            {props.dateTime}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const initialNotifications = [
+  {
+    message: "neeraj followed you",
+    tag: "viewer-follow",
+    data: {
+      name: "neeraj rai",
+      profileImage: "/male-model.jpg",
+      _id: "hjk87897jhk886h4h4kl3j45jk",
+    },
+    time: 1639626202369,
+  },
+  {
+    message: "neeraj tipped you 50 coins",
+    tag: "viewer-coins-gift",
+    data: {
+      viewer: {
+        name: "neeraj rai",
+        profileImage: "/male-model.jpg",
+        _id: "hjk87897jhk886h4h4kl3j45jk",
+      },
+      modelGot: 36,
+      amount: 50,
+    },
+    time: 1639626202369,
+  },
+  {
+    message: "neeraj purchased your matrix video album from 100 coins",
+    tag: "video-album-purchase",
+    data: {
+      viewer: {
+        name: "neeraj rai",
+        profileImage: "/male-model.jpeg",
+        _id: "hjk87897jhk886h4h4kl3j45jk",
+      },
+      albumCost: 100,
+      debited: 80,
+      album: {
+        _id: "jkh43hj43kj34h5j534jk3",
+        name: "matrix",
+      },
+    },
+    time: 1639626202369,
+  },
+]
+
 function Header(props) {
   const [menu, setMenu] = useState(false)
   const [searchShow, setSearchShow] = useState(false)
@@ -29,6 +148,19 @@ function Header(props) {
   const [query, setQuery] = useState("")
   const [searchData, setSearchData] = useState([])
   const [liveModels, setLiveModels] = useState(0)
+  const [notifications, setNotification] = useState(initialNotifications)
+
+  /* 
+    notification schema 
+    {
+      msg:"",
+      time:"",
+      viewed:"",
+      tag:""
+    }
+  */
+
+  const [showNotifications, setShowNotification] = useState(false)
 
   /* need to add search parmeters */
   const screenWidth = useWidth()
@@ -74,6 +206,14 @@ function Header(props) {
     if (window.location.pathname.includes("/view-stream/")) {
       setShowSecondHeader(false)
     }
+
+    fetch("/api/website/compose-ui/get-live-models-count")
+      .then((res) => res.json())
+      .then((data) => {
+        setLiveModels(+data.liveNow)
+      })
+      .catch((err) => alert(err.message))
+
     const handleRouteChange = (url) => {
       /* decide display of go live button */
       if (url.includes("/goLive")) {
@@ -91,10 +231,44 @@ function Header(props) {
     }
 
     const handleModelData = (e) => {
-      setModelData({
-        hasData: true,
-        ...e.detail,
-      })
+      if (e.detail?.turnStatus) {
+        switch (e.detail.turnStatus) {
+          case "isStreaming":
+            setModelData((prev) => {
+              return {
+                ...prev,
+                isStreaming: true,
+                onCall: false,
+              }
+            })
+            break
+          case "onCall":
+            setModelData((prev) => {
+              return {
+                ...prev,
+                isStreaming: false,
+                onCall: true,
+              }
+            })
+            break
+          case "offline":
+            setModelData((prev) => {
+              return {
+                ...prev,
+                isStreaming: false,
+                onCall: false,
+              }
+            })
+            break
+          default:
+            break
+        }
+      } else {
+        setModelData({
+          hasData: true,
+          ...e.detail,
+        })
+      }
     }
 
     document.addEventListener("model-profile-data-fetched", handleModelData)
@@ -113,23 +287,42 @@ function Header(props) {
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
-      let streamCreateHandler
-      let streamDeleteHandler
-      let callEndHandler
-      streamCreateHandler = (data) => {
+
+      const streamCreateHandler = (data) => {
         setLiveModels(data.liveNow)
       }
       socket.on("new-model-started-stream", streamCreateHandler)
 
-      streamDeleteHandler = (data) => {
+      const streamDeleteHandler = (data) => {
         setLiveModels(data.liveNow)
       }
       socket.on("delete-stream-room", streamDeleteHandler)
 
-      callEndHandler = (liveNow) => {
+      const callEndHandler = (liveNow) => {
         setLiveModels(liveNow)
       }
       socket.on("a-call-ended", callEndHandler)
+
+      const notificationHandler = (subEvent, data) => {
+        const notifications = localStorage.getItem("notifications") || []
+        const easyData = {
+          ...data,
+          data: JSON.parse(data.data),
+          time: Date.now(),
+        }
+        notifications.push(easyData)
+        switch (subEvent) {
+          case "viewer-follow":
+            break
+
+          default:
+            break
+        }
+
+        localStorage.setItem("notifications", JSON.stringify(notifications))
+      }
+
+      socket.on("new-notification", notificationHandler)
 
       return () => {
         if (
@@ -144,18 +337,10 @@ function Header(props) {
         if (socket.hasListeners("a-call-ended") && callEndHandler) {
           socket.off("a-call-ended", callEndHandler)
         }
+        socket.off("new-notification", notificationHandler)
       }
     }
   }, [socketCtx.socketSetupDone])
-
-  useEffect(() => {
-    fetch("/api/website/compose-ui/get-live-models-count")
-      .then((res) => res.json())
-      .then((data) => {
-        setLiveModels(+data.liveNow)
-      })
-      .catch((err) => alert(err.message))
-  }, [])
 
   return (
     <div className="tw-min-w-full tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[400]">
@@ -244,7 +429,22 @@ function Header(props) {
                             liveModels={props.liveModels}
                           />
                         )}
-                        <div className="tw-flex tw-self-center">
+                        <div className="tw-flex tw-items-center">
+                          <button className="tw-text-white-color tw-pr-2 tw-relative bell-one">
+                            {notifications.length > 0 ? (
+                              <NotificationsActiveIcon />
+                            ) : (
+                              <NotificationsIcon />
+                            )}
+                            <span className="tw-absolute tw-top-0 tw-h-52 tw-bg-green-color tw-p-4">
+                              {/* render all the notification */}
+                              {notifications.map((notification, index) => {
+                                return (
+                                  <div className="">This is notification</div>
+                                )
+                              })}
+                            </span>
+                          </button>
                           <img
                             src="/coins.png"
                             alt=""
@@ -277,7 +477,22 @@ function Header(props) {
                               </a>
                             </Link>
                           )}
-                          <div className="tw-flex">
+                          <div className="tw-flex tw-items-center">
+                            <button className="tw-text-white-color tw-pr-2 tw-relative bell-two">
+                              {notifications.length > 0 ? (
+                                <NotificationsActiveIcon />
+                              ) : (
+                                <NotificationsIcon />
+                              )}
+                              <span className="tw-absolute tw-top-0 tw-h-52 tw-bg-green-color tw-p-4">
+                                {/* render all the notification */}
+                                {notifications.map((notification, index) => {
+                                  return (
+                                    <div className="">This is notification</div>
+                                  )
+                                })}
+                              </span>
+                            </button>
                             <img
                               src="/coins.png"
                               alt=""
@@ -298,7 +513,22 @@ function Header(props) {
                     // login at large screen viwer
                     authContext.user.userType == "Viewer" ? (
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                        <div className="tw-mx-8 tw-flex">
+                        <div className="tw-mx-4 tw-flex tw-items-center">
+                          <button className="tw-text-white-color tw-pr-2 tw-relative bell-three">
+                            {notifications.length > 0 ? (
+                              <NotificationsActiveIcon />
+                            ) : (
+                              <NotificationsIcon />
+                            )}
+                            <span className="tw-absolute tw-top-0 tw-h-52 tw-bg-green-color tw-p-4">
+                              {/* render all the notification */}
+                              {notifications.map((notification, index) => {
+                                return (
+                                  <div className="">This is notification</div>
+                                )
+                              })}
+                            </span>
+                          </button>
                           <img
                             src="/coins.png"
                             alt=""
@@ -351,7 +581,72 @@ function Header(props) {
                         >
                           Logout
                         </button> */}
-                        <div className="tw-mx-4 tw-flex ">
+                        <div className="tw-flex tw-items-center tw-mr-3">
+                          <span className="tw-relative">
+                            <button
+                              onClick={() =>
+                                setShowNotification((prev) => !prev)
+                              }
+                              className="tw-text-white-color tw-pr-5 bell-four"
+                            >
+                              {notifications.length > 0 ? (
+                                <NotificationsActiveIcon />
+                              ) : (
+                                <NotificationsIcon />
+                              )}
+                            </button>
+                            {showNotifications && (
+                              <span className="tw-absolute tw-left-0 tw-top-12 tw-bg-second-color tw-p-2 tw-w-64 tw-translate-x-[-50%] tw-rounded">
+                                <div className="tw-overflow-y-auto tw-h-52 notif-container">
+                                  {notifications.map((notif, index) => {
+                                    switch (notif.tag) {
+                                      case "viewer-follow":
+                                        return (
+                                          <ViewerFollow
+                                            name={notif.data.name}
+                                            message={notif.message}
+                                            profileImage={
+                                              notif.data.profileImage
+                                            }
+                                            dateTime={`${Math.floor(
+                                              (Date.now() - notif.time) /
+                                                3600000
+                                            )}h ago`}
+                                          />
+                                        )
+                                        break
+                                      case "viewer-coins-gift":
+                                        return (
+                                          <ViewerTipped
+                                            message={notif.message}
+                                            modelGot={notif.data.modelGot}
+                                            dateTime={`${Math.floor(
+                                              (Date.now() - notif.time) /
+                                                3600000
+                                            )}h ago`}
+                                          />
+                                        )
+                                      case "video-album-purchase" ||
+                                        "image-album-purchase":
+                                        return (
+                                          <AlbumPurchase
+                                            albumType={notif.tag}
+                                            message={notif.message}
+                                            dateTime={`${Math.floor(
+                                              (Date.now() - notif.time) /
+                                                3600000
+                                            )}h ago`}
+                                            debited={notif.data.debited}
+                                          />
+                                        )
+                                      default:
+                                        break
+                                    }
+                                  })}
+                                </div>
+                              </span>
+                            )}
+                          </span>
                           <img
                             src="/coins.png"
                             alt=""

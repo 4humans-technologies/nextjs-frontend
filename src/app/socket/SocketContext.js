@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react"
 import io from "../../socket/socket"
+import { toast } from "react-toastify"
 
 const SocketContext = createContext({
   socketInstance: null,
@@ -51,7 +52,11 @@ export const SocketContextProvider = ({ children }) => {
     })
 
     socket.on("disconnect", (reason) => {
-      console.log("%csocket disconnected! due to >>>", reason)
+      if (process.env.RUN_ENV === "local") {
+        toast.error(`Socket disconnected Reason : ${reason}`)
+      } else {
+        toast.error(`Something is not right a network error has occurred`)
+      }
       localStorage.removeItem("socketId")
       if (reason === "io server disconnect") {
         /* if server manually disconnected */

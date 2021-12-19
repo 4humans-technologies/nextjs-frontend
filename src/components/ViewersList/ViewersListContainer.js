@@ -74,9 +74,13 @@ function ViewersListContainer(props) {
               })
             })
           }
-          document.getElementById("live-viewer-count").innerText = `${
-            data.roomSize - 1
-          } Live`
+          try {
+            document.getElementById("live-viewer-count").innerText = `${
+              data.roomSize - 1
+            } Live`
+          } catch (err) {
+            /* just don't raise error */
+          }
         }
         socket.on("viewer-left-stream-received", userLeftHandler)
       }
@@ -125,6 +129,14 @@ function ViewersListContainer(props) {
         if (socket.hasListeners("delete-stream-room") && streamDeleteHandler) {
           socket.off("delete-stream-room", streamDeleteHandler)
         }
+        document.removeEventListener(
+          "clean-viewer-list-going-on-call",
+          cleanForCall
+        )
+        document.removeEventListener(
+          "clear-viewer-list-going-on-call",
+          clearForCallEnd
+        ) /* clear the list */
       }
     }
   }, [socketCtx.socketSetupDone])

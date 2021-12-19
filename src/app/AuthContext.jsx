@@ -80,6 +80,15 @@ export const AuthContextProvider = ({ children }) => {
             : operation === "add"
             ? lcUser.relatedUser.wallet.currentAmount + amount
             : lcUser.relatedUser.wallet.currentAmount - amount
+
+        /**
+         * correct the decimal places
+         */
+        if (!Number.isInteger(lcUser.relatedUser.wallet.currentAmount)) {
+          lcUser.relatedUser.wallet.currentAmount = parseFloat(
+            lcUser.relatedUser.wallet.currentAmount.toFixed(1)
+          )
+        }
         localStorage.setItem("user", JSON.stringify(lcUser))
       }
       if (updateFor === "both" || updateFor === "ctx") {
@@ -90,6 +99,17 @@ export const AuthContextProvider = ({ children }) => {
               : operation === "add"
               ? prev.user.user.relatedUser.wallet.currentAmount + amount
               : prev.user.user.relatedUser.wallet.currentAmount - amount
+
+          /**
+           * correct the decimal places
+           */
+          if (
+            !Number.isInteger(prev.user.user.relatedUser.wallet.currentAmount)
+          ) {
+            prev.user.user.relatedUser.wallet.currentAmount = parseFloat(
+              prev.user.user.relatedUser.wallet.currentAmount.toFixed(1)
+            )
+          }
           return { ...prev }
         })
       }
@@ -123,7 +143,14 @@ export const AuthContextProvider = ({ children }) => {
           localStorage.removeItem("rootUserId")
           localStorage.removeItem("relatedUserId")
           localStorage.setItem("userType", "UnAuthedViewer")
-          localStorage.removeItem("authContext")
+          localStorage.setItem(
+            "authContext",
+            JSON.stringify({
+              isLoggedIn: null,
+              jwtToken: null,
+              userType: "UnAuthedViewer",
+            })
+          )
           localStorage.removeItem("user")
           toast.success(`Logged Out successfully!`, {
             hideProgressBar: true,
@@ -169,10 +196,9 @@ export const AuthContextProvider = ({ children }) => {
         localStorage.setItem(
           "authContext",
           JSON.stringify({
-            isLoggedIn: authState.isLoggedIn,
+            isLoggedIn: true,
             jwtToken: authState.jwtToken,
             userType: authState.user.userType,
-            unAuthedUserId: authState.unAuthedUserId,
           })
         )
       } else {
@@ -208,7 +234,6 @@ export const AuthContextProvider = ({ children }) => {
         isLoggedIn: authState.isLoggedIn,
         jwtToken: authState.jwtToken,
         userType: authState.user.userType,
-        unAuthedUserId: authState.unAuthedUserId,
       })
     )
   }, [

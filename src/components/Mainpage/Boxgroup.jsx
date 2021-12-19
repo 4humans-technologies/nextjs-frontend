@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react"
 import Mainbox from "./Mainbox"
 
 function Boxgroup(props) {
-  const [streams, setStreams] = useState([])
-
   return (
     <section className="tw-bg-first-color tw-px-3 tw-border-b tw-border-second-color tw-w-full tw-pb-6">
       <h2 className="tw-text-lg tw-font-medium tw-text-white tw-mb-4 tw-mt-4">
@@ -22,7 +20,7 @@ function Boxgroup(props) {
             return (
               <Mainbox
                 parent={props.parent}
-                key={`${model.rootUserId}_${index}`}
+                key={`${model.relatedUserId}_${index}`}
                 modelId={model.relatedUserId}
                 photo={model.profileImage}
                 onCall={model.onCall}
