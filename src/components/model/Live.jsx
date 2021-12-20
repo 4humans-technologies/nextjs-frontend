@@ -1,11 +1,5 @@
 import Sidebar from "../Mainpage/Sidebar"
-import React, {
-  useReducer,
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-} from "react"
+import React, { useEffect, useState, useRef, useCallback } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
 import { Button } from "react-bootstrap"
 
@@ -117,7 +111,10 @@ function Live() {
   const container = useRef()
   const chatInputRef = useRef()
   const streamTimerRef = useRef()
-  const callTimerRef = useRef()
+  const callTimerRef = useRef({
+    interval: null,
+    initialTimeout: null,
+  })
   const newChatNotifierDotRef = useRef()
   const requestServerEndAndStreamLeaveRef = useRef()
   const leaveAndCloseTracksRef = useRef()
@@ -133,14 +130,16 @@ function Live() {
     customDataRef,
   } = useAgora(client, "host", "videoCall")
 
-  const toggleMuteMic = () => {
-    if (localAudioTrack.muted) {
+  const toggleMuteMic = async () => {
+    if (localAudioTrack.enabled) {
       /* un mute audio */
-      localAudioTrack.setMuted(false)
+      await localAudioTrack.setEnabled(false)
+      console.log(localAudioTrack.enabled)
       setMuted(false)
     } else {
       /* mute the audio */
-      localAudioTrack.setMuted(true)
+      await localAudioTrack.setEnabled(true)
+      console.log(localAudioTrack.enabled)
       setMuted(true)
     }
   }
@@ -232,10 +231,11 @@ function Live() {
       }, 1500)
 
       return () => {
+        console.log("clearing myKeepInRoomLoop interval 🔺🔺⭕⭕🔴🔴⭕⭕🔻🔻")
         clearInterval(myKeepInRoomLoop)
       }
     }
-  }, [isLiveNowRef, socketCtx.socketSetupDone])
+  }, [socketCtx.socketSetupDone])
 
   const scrollOnChat = useCallback((scrollType) => {
     // document.getElementById("for-scroll-into-view").scrollIntoView({
@@ -249,18 +249,21 @@ function Live() {
     })
   }, [])
 
-  const startCallTimer = useCallback(() => {
+  const startCallTimer = useCallback((waitFor = 0) => {
     callTimer.timerElement = document.getElementById("call-timer")
-    callTimerRef.current = setInterval(() => {
-      const totalSeconds = ++callTimer.value
-      let newTime
-      if (totalSeconds < 3600) {
-        newTime = new Date(totalSeconds * 1000).toISOString().substr(14, 5)
-      } else {
-        newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
-      }
-      callTimer.timerElement.innerText = newTime
-    }, [1000])
+    callTimerRef.current.initialTimeout = setTimeout(() => {
+      callTimerRef.current.interval = setInterval(() => {
+        console.log("callTimer running")
+        const totalSeconds = ++callTimer.value
+        let newTime
+        if (totalSeconds < 3600) {
+          newTime = new Date(totalSeconds * 1000).toISOString().substr(14, 5)
+        } else {
+          newTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8)
+        }
+        callTimer.timerElement.innerText = newTime
+      }, [1000])
+    }, [waitFor])
   }, [])
 
   const startStreamTimer = useCallback(() => {
@@ -399,7 +402,7 @@ function Live() {
         streamTimer.value = 0
       }
     }
-  }, [startStreamTimer, joinState, callOnGoing, streamTimerRef])
+  }, [startStreamTimer, joinState, callOnGoing])
 
   const requestServerEndAndStreamLeave = useCallback((joinStatus = true) => {
     if (sessionStorage.getItem("liveNow") === "false") {
@@ -442,10 +445,12 @@ function Live() {
         requestServerEndAndStreamLeaveRef.current()
         leaveAndCloseTracksRef.current(false)
       }
+      console.log("clearing call and stream interval 🔺🔺⭕⭕🔴🔴⭕⭕🔻🔻")
       clearInterval(streamTimerRef.current)
-      clearInterval(callTimerRef.current)
+      clearInterval(callTimerRef.current.interval)
+      clearTimeout(callTimerRef.current.initialTimeout)
     }
-  }, [])
+  }, [streamTimerRef, callTimerRef])
 
   const sendChatMessage = () => {
     if (!chatInputRef.current.value) {
@@ -544,7 +549,9 @@ function Live() {
         socket.on("viewer-call-end-request-init-received", (data) => {
           spinnerCtx.setShowSpinner(true, "Processing transaction...")
           setPendingCallEndRequest(true)
-          clearInterval(callTimerRef.current)
+          clearInterval(callTimerRef.current.interval)
+          clearTimeout(callTimerRef.current.initialTimeout)
+          callTimer.value = 0
           clearTimeout(onCallUsefulRef.current.loopRef)
           onCallUsefulRef.current = {
             loopRef: null,
@@ -561,6 +568,9 @@ function Live() {
             /**
              * rollback as before call
              */
+            clearInterval(callTimerRef.current.interval)
+            clearTimeout(callTimerRef.current.initialTimeout)
+            callTimer.value = 0
             setPendingCallEndRequest(false)
             setCallOnGoing(false)
             offCallListeners()
@@ -593,7 +603,9 @@ function Live() {
         socket.on("viewer-call-end-request-finished", async (data) => {
           if (data.ended === "ok") {
           }
-
+          clearInterval(callTimerRef.current.interval)
+          clearTimeout(callTimerRef.current.initialTimeout)
+          callTimer.value = 0
           /* re-doing this just to be sure the call loop is clear */
           if (onCallUsefulRef.current.loopRef) {
             clearTimeout(onCallUsefulRef.current.loopRef)
@@ -752,7 +764,7 @@ function Live() {
 
                 if (endImmediately) {
                   toast.warn("Viewer has used all coins, call will end now")
-                  handleCallEnd()
+                  return customDataRef.current.handleCallEnd()
                 }
 
                 /**
@@ -792,9 +804,13 @@ function Live() {
               }
             )
             document.dispatchEvent(viewerClearEvent)
+
+            /**
+             * start call timer
+             */
             const startCallTimerAfter =
               new Date(data.callStartTs).getTime() - Date.now()
-            setTimeout(startCallTimer, [startCallTimerAfter])
+            startCallTimer(startCallTimerAfter)
           } else {
             if (data?.notStreaming) {
               /* clear all pending call requests */
@@ -851,7 +867,8 @@ function Live() {
       )
     }
 
-    if (!callOnGoing) {
+    const a = await callOnGoing
+    if (!a) {
       return alert("no ongoing call")
     }
 
@@ -868,7 +885,10 @@ function Live() {
     document.dispatchEvent(callEndClear)
 
     /* clear call timer */
-    clearInterval(callTimerRef.current)
+    clearInterval(callTimerRef.current.interval)
+    clearTimeout(callTimerRef.current.initialTimeout)
+    callTimer.value = 0
+
     clearTimeout(onCallUsefulRef.current.loopRef)
     onCallUsefulRef.current = {
       loopRef: null,
@@ -1086,21 +1106,23 @@ function Live() {
                 >
                   <CallEndIcon fontSize="medium" style={{ color: "red" }} />
                 </button>
-                <button className="tw-inline-block tw-z-[390] tw-px-2">
-                  {!muted ? (
-                    <MicIcon
-                      fontSize="medium"
-                      style={{ color: "white" }}
-                      onClick={toggleMuteMic}
-                    />
-                  ) : (
-                    <MicOffIcon
-                      fontSize="medium"
-                      style={{ color: "red" }}
-                      onClick={toggleMuteMic}
-                    />
-                  )}
-                </button>
+                {localAudioTrack && (
+                  <button className="tw-inline-block tw-z-[390] tw-px-2">
+                    {!muted ? (
+                      <MicIcon
+                        fontSize="medium"
+                        style={{ color: "white" }}
+                        onClick={toggleMuteMic}
+                      />
+                    ) : (
+                      <MicOffIcon
+                        fontSize="medium"
+                        style={{ color: "red" }}
+                        onClick={toggleMuteMic}
+                      />
+                    )}
+                  </button>
+                )}
                 <button
                   className="tw-inline-block tw-mx-2 tw-z-[390]"
                   onClick={toggleFullscreen}
@@ -1182,21 +1204,23 @@ function Live() {
                     )}
                     {joinState && (
                       <div className="tw-rounded tw-ml-3">
-                        <button className="tw-inline-block tw-px-2">
-                          {!muted ? (
-                            <MicIcon
-                              fontSize="medium"
-                              style={{ color: "white" }}
-                              onClick={toggleMuteMic}
-                            />
-                          ) : (
-                            <MicOffIcon
-                              fontSize="medium"
-                              style={{ color: "red" }}
-                              onClick={toggleMuteMic}
-                            />
-                          )}
-                        </button>
+                        {localAudioTrack && (
+                          <button className="tw-inline-block tw-px-2">
+                            {!muted ? (
+                              <MicIcon
+                                fontSize="medium"
+                                style={{ color: "white" }}
+                                onClick={toggleMuteMic}
+                              />
+                            ) : (
+                              <MicOffIcon
+                                fontSize="medium"
+                                style={{ color: "red" }}
+                                onClick={toggleMuteMic}
+                              />
+                            )}
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>

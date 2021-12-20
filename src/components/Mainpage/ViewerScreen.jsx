@@ -209,19 +209,22 @@ function ViewerScreen(props) {
         }
       }, 1500)
       return () => {
+        console.log("clearing myKeepInRoomLoop interval 🔺🔺⭕⭕🔴🔴⭕⭕🔻🔻")
         clearInterval(myKeepInRoomLoop)
       }
     }
   }, [isLiveNowRef, socketCtx.socketSetupDone])
 
-  const toggleMuteMic = () => {
-    if (localAudioTrack.muted) {
+  const toggleMuteMic = async () => {
+    if (localAudioTrack.enabled) {
       /* un mute audio */
-      localAudioTrack.setMuted(false)
+      await localAudioTrack.setEnabled(false)
+      console.log(localAudioTrack.enabled)
       setIsMuted(false)
     } else {
       /* mute the audio */
-      localAudioTrack.setMuted(true)
+      await localAudioTrack.setEnabled(true)
+      console.log(localAudioTrack.enabled)
       setIsMuted(true)
     }
   }
@@ -442,14 +445,10 @@ function ViewerScreen(props) {
   }, [socketCtx.socketSetupDone, leave])
 
   useEffect(() => {
-    //debugger
-    if (ctx.loadedFromLocalStorage) {
-      return () => {
-        tokenRequestDoneOnce = false
-        localStorage.removeItem("rtcToken")
-        localStorage.removeItem("rtcTokenExpireIn")
-        leave()
-      }
+    return () => {
+      tokenRequestDoneOnce = false
+      localStorage.removeItem("rtcToken")
+      localStorage.removeItem("rtcTokenExpireIn")
     }
   }, [])
 
@@ -877,7 +876,10 @@ function ViewerScreen(props) {
       if (!socket.hasListeners("model-call-request-response-received")) {
         socket.on("model-call-request-response-received", async (data) => {
           if (data.response === "accepted") {
-            if (ctx.isLoggedIn && data.relatedUserId === ctx.relatedUserId) {
+            if (
+              localStorage.getItem("jwtToken") &&
+              data.relatedUserId === localStorage.getItem("relatedUserId")
+            ) {
               /* dont kick of, switch role to host start the call 📞📞 */
               /* do a fetch request and update the status of the call as ongoing */
               const callConnectPromise = new Promise((resolve, reject) => {
@@ -912,15 +914,6 @@ function ViewerScreen(props) {
                               /* should show spinner also */
                               sessionStorage.removeItem("callId")
                               sessionStorage.setItem("callId", data.callId)
-                              setPendingCallRequest(false)
-                              setCallType(data.callType)
-                              setCallOnGoing(true)
-                              setIsModelOffline(false)
-                              setUpCallListeners()
-                              toast.success("Call is now connected 😀", {
-                                autoClose: 2000,
-                              })
-
                               /* update the model status to "onCall" in the second header */
                               const modelDataEvent = new CustomEvent(
                                 "model-profile-data-fetched",
@@ -931,6 +924,11 @@ function ViewerScreen(props) {
                                 }
                               )
                               document.dispatchEvent(modelDataEvent)
+                              setPendingCallRequest(false)
+                              setCallType(data.callType)
+                              setCallOnGoing(true)
+                              setIsModelOffline(false)
+                              setUpCallListeners()
 
                               let hasAudioDevices = false
                               let hasVideoDevices = false
@@ -1023,6 +1021,7 @@ function ViewerScreen(props) {
                         setCallOnGoing(true)
                         setIsModelOffline(false)
                         setUpCallListeners()
+
                         let hasAudioDevices = false
                         let hasVideoDevices = false
                         navigator.mediaDevices
@@ -1099,13 +1098,13 @@ function ViewerScreen(props) {
               toast.promise(
                 callConnectPromise,
                 {
-                  pending:
-                    "Model has accepted your call request, Establishing secure connection...",
+                  pending: "Call accepted, Establishing secure connection",
                   success: "Call connected successfully",
                   error: "Call was not setup properly, please end the call!",
                 },
                 {
                   autoClose: 1000,
+                  bodyClassName: "tw-tracking-tight tw-text-sm tw-py-2 tw-px-4",
                 }
               )
             } else {
@@ -1216,15 +1215,14 @@ function ViewerScreen(props) {
           }
         })
       }
+
+      return () => {
+        if (socket.hasListeners("model-call-request-response-received")) {
+          socket.off("model-call-request-response-received")
+        }
+      }
     }
-  }, [
-    ctx.isLoggedIn,
-    ctx.relatedUserId,
-    socketCtx.socketSetupDone,
-    switchViewerToHost,
-    setUpCallListeners,
-    leave,
-  ])
+  }, [socketCtx.socketSetupDone, switchViewerToHost, setUpCallListeners, leave])
 
   /* handle call end */
   const handleCallEnd = async () => {
@@ -1510,7 +1508,7 @@ function ViewerScreen(props) {
           id="self-video-container"
           className="tw-absolute tw-left-4 tw-bottom-1 tw-w-3/12 tw-h-24 md:tw-w-1/5 md:tw-h-32  lg:tw-w-1/6 lg:tw-h-36 tw-rounded tw-z-[390] tw-border tw-border-dreamgirl-red"
         >
-          <div id="self-video" class="tw-relative tw-w-full tw-h-full">
+          <div id="self-video" className="tw-relative tw-w-full tw-h-full">
             <VideoPlayer
               videoTrack={localVideoTrack}
               audioTrack={localAudioTrack}

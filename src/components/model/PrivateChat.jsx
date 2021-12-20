@@ -221,9 +221,7 @@ function PrivateChat(props) {
   }, [ctx.socketSetupDone, hasActivePlan, chatDataRef])
 
   useEffect(() => {
-    if (props.chatWindowRef.current) {
-      scrollOnChat("auto")
-    }
+    props.scrollOnChat("auto")
   }, [])
 
   const noPlanBanner = useMemo(() => {

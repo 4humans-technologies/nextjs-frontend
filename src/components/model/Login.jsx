@@ -113,6 +113,11 @@ function Login() {
         }
       })
       .catch((err) => {
+        if (err?.dgErrorCode === 1000) {
+          return toast.error(err.message, {
+            position: "bottom-right",
+          })
+        }
         toast.error("An Error Has Occurred, Please Correct And Try Again!", {
           position: "bottom-right",
         })

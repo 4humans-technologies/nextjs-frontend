@@ -64,10 +64,6 @@ function LiveScreen(props) {
   }, [chatWindow])
 
   const scrollOnChat = useCallback((scrollType) => {
-    // document.getElementById("for-scroll-into-view").scrollIntoView({
-    //   behavior: "smooth",
-    //   block: "start",
-    // })
     const containerElement = document.getElementById("chatBoxContainer")
     containerElement.scrollBy({
       top: containerElement.scrollHeight,
@@ -269,7 +265,6 @@ function LiveScreen(props) {
     <>
       <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
         <div className="tw-relative tw-bg-dark-black md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
-          {/* <img src="brandikaran.jpg" alt="" /> */}
           <ViewerScreen
             setIsChatPlanActive={setIsChatPlanActive}
             setCallOnGoing={setCallOnGoing}

@@ -19,10 +19,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
   }, [updateCtx.logout])
 
   useEffect(() => {
-    //debugger
     if (!isAlreadyIntercepted) {
-      console.log("Intercepting 🔴🔴🔴")
-      //debugger
       /* when new page is mounted */
       fetchIntercept.clear()
       fetchIntercept.register({
@@ -123,9 +120,10 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
           return [url, config]
         },
         requestError: function (error) {
-          //debugger
-          spinnerCtx.setShowSpinner(false)
-          return Promise.reject(error)
+          spinnerCtx.setShowSpinner(false, "Please wait..")
+          return Promise.reject(
+            "Network error, please check your internet connection"
+          )
         },
         response: function (response) {
           /* Modify the response object */
@@ -136,11 +134,9 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             spinnerCtx.setShowSpinner(false)
             if (!response.ok) {
               return response.json().then((data) => Promise.reject(data))
-              // return Promise.reject(response)
             }
             if (response.status <= 500 && response.status >= 300) {
               return response.json().then((data) => Promise.reject(data))
-              // return Promise.reject(response)
             }
             return response
           }
@@ -148,14 +144,15 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
           return response
         },
         responseError: function (error) {
-          // Handle an fetch error
-          //debugger
-          console.error(error)
-          spinnerCtx.setShowSpinner(false)
+          spinnerCtx.setShowSpinner(false, "Please wait..")
+          if (error?.message === "Failed to fetch") {
+            error.message =
+              "Network error, please check your internet connection"
+            error.dgErrorCode = 1000
+          }
           return Promise.reject(error)
         },
       })
-      //debugger
     }
   }, [isAlreadyIntercepted])
 }

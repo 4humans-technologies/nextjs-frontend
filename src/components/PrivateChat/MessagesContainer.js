@@ -26,18 +26,31 @@ function MessageContainer(props) {
       {/* watsapp like header for helping in identification of of the viewer */}
       <div className="tw-sticky tw-top-0 tw-left-0 tw-right-0 tw-flex-grow tw-w-full tw-py-2 tw-px-2 tw-bg-first-color tw-flex tw-items-center">
         <div className="tw-flex-shrink tw-flex-grow-0 tw-mr-3">
-          <img
-            src="/original.jpg"
-            alt=""
-            className="tw-w-12 tw-h-12 tw-rounded-full tw-border-2 tw-border-dreamgirl-red tw-object-cover"
-          />
+          {currentViewer?.profileImage ? (
+            <>
+              <span className="tw-w-10 tw-h-10 tw-rounded-full tw-border-dreamgirl-red tw-border-2 tw-inline-block tw-relative tw-my-auto">
+                <img
+                  src={currentViewer?.profileImage}
+                  alt=""
+                  className="tw-w-full tw-h-full tw-rounded-full tw-object-cover"
+                />
+                <span className="tw-inline-block tw-w-1 tw-h-1 tw-bg-green-color tw-absolute tw-top-[78%] tw-left-[78%] tw-rounded-full tw-translate-x-[-50%] tw-translate-y-[50%]"></span>
+              </span>
+            </>
+          ) : (
+            <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-10 tw-h-10 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
+              <span className="tw-text-lg tw-text-white-color tw-font-light">
+                {currentViewer.username.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
         </div>
         <div className="tw-flex-grow tw-flex tw-flex-col tw-justify-start tw-text-white-color tw-items-start tw-ml-2">
           <p className="tw-flex-grow tw-flex-shrink-0 tw-font-semibold tw-capitalize tw-my-0">
-            Neeraj Rai
+            {currentViewer.name}
           </p>
           <p className="tw-flex-grow tw-flex-shrink-0 tw-text-sm tw-my-0">
-            @username
+            @{currentViewer.username}
           </p>
         </div>
         <button

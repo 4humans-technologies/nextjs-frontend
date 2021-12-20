@@ -56,7 +56,7 @@ function PublicChatBox(props) {
                 message: authCtx.isLoggedIn
                   ? `Hello my sweetheart ${
                       authCtx.user.user.relatedUser.name.split(" ")[0]
-                    } 💘😘, welcome to me stream, check the tip menu (🔝) to see what can i do for you sweetheart 💘💘.`
+                    } 💘😘, welcome to me stream, check the tip menu (👆) to see what can i do for you.`
                   : "Hello dear 💘, welcome to my stream i here to entertain you... 😘😘",
               },
             ]

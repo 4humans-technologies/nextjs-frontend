@@ -105,7 +105,8 @@ function useAgora(client, role, callType) {
           encoderConfig: { height: 400, width: 400, frameRate: 20 },
         })
       } else {
-        localVideoTrack.setEnabled(true)
+        await localVideoTrack.setEnabled(true)
+        await localAudioTrack.setEnabled(true)
         return [localAudioTrack, localVideoTrack]
       }
     }
@@ -139,21 +140,11 @@ function useAgora(client, role, callType) {
     // spinnerCtx.setShowSpinner(false, "Please wait...")
   }
 
-  const startLocalCameraPreview = useCallback(async () => {
-    if (!client) {
-      return
-    }
+  useEffect(async () => {
     if (role === "host") {
-      let track = await createLocalTracks("videoCall")
-      return track
+      await createLocalTracks("videoCall")
     }
-    if (localAudioTrackRef.current) {
-      localAudioTrackRef.current.paly()
-    }
-    if (localVideoTrackRef.current) {
-      localVideoTrackRef.current.paly()
-    }
-  }, [client, localAudioTrackRef, localVideoTrackRef])
+  }, [])
 
   const leave = useCallback(async () => {
     await client.leave()
@@ -172,7 +163,7 @@ function useAgora(client, role, callType) {
         setJoinState(false)
       }
     },
-    [client, localVideoTrackRef, localAudioTrackRef]
+    [client]
   )
 
   const switchViewerToHost = useCallback(
@@ -206,12 +197,6 @@ function useAgora(client, role, callType) {
   )
 
   useEffect(() => {
-    if (!localVideoTrackRef.current && !localAudioTrackRef.current) {
-      startLocalCameraPreview()
-    }
-  }, [startLocalCameraPreview])
-
-  useEffect(() => {
     return async () => {
       await client.leave()
       if (localAudioTrackRef.current) {
@@ -224,7 +209,7 @@ function useAgora(client, role, callType) {
         await localVideoTrackRef.current.close()
       }
     }
-  }, [client.leave, localAudioTrackRef, localVideoTrackRef])
+  }, [client])
 
   const modelUnPublishVideoTrack = async () => {
     await localVideoTrack.setEnabled(false)
@@ -240,7 +225,7 @@ function useAgora(client, role, callType) {
     const renewRtcToken = async function () {
       /* do a fetch request to renew token if not oncall */
       const fetchToken = async () => {
-        toast.info("RTC token expired fetching new token!")
+        // toast.info("RTC token expired fetching new token!")
         try {
           let url
           if (customDataRef.current.callOngoing) {
@@ -257,12 +242,20 @@ function useAgora(client, role, callType) {
           }
 
           if (rtcToken) {
-            localStorage.setItem("rtcToken", rtcToken)
-            localStorage.setItem("rtcTokenExpireIn", +privilegeExpiredTs * 1000)
+            if (!customDataRef.current.callOngoing) {
+              /**
+               * don't save to local storage if call ongoing, as these tokens are for one time use only
+               */
+              localStorage.setItem("rtcToken", rtcToken)
+              localStorage.setItem(
+                "rtcTokenExpireIn",
+                +privilegeExpiredTs * 1000
+              )
+            }
             await client.renewToken(rtcToken)
-            toast.info("fetched-rtc token, renewed!")
+            // toast.info("fetched-rtc token, renewed!")
           } else {
-            toast.warn("No token is response")
+            // toast.warn("No token is response")
           }
         } catch (err) {
           toast.warn(err.message)
@@ -366,7 +359,6 @@ function useAgora(client, role, callType) {
     leave,
     join,
     remoteUsers,
-    startLocalCameraPreview,
     leaveAndCloseTracks,
     switchViewerToHost,
     modelUnPublishVideoTrack,

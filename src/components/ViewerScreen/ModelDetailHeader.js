@@ -12,7 +12,7 @@ function ModelDetailHeader(props) {
           Live
         </span>
       )}
-      {onCall && (
+      {onCall && !isStreaming && (
         <span className="tw-mr-4 tw-py-1 tw-rounded tw-font-semibold tw-text-purple-600">
           On Call
         </span>
