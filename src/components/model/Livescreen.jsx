@@ -611,7 +611,7 @@ function LiveScreen(props) {
 
           <div
             id="message-input"
-            className="tw-flex tw-items-center tw-py-1.5 tw-bg-second-color tw-text-white tw-absolute tw-bottom-1 tw-w-full tw-z-[300] tw-right-0 tw-left-3 "
+            className="tw-flex tw-items-center tw-py-1.5 tw-bg-second-color tw-text-white tw-absolute tw-bottom-1 tw-w-full tw-z-[300] tw-right-0 tw-left-0 "
           >
             <span className="circle-shadow tw-h-10 tw-w-10 tw-inline-grid tw-flex-shrink-0 tw-p-1  tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]">
               <img
@@ -621,14 +621,14 @@ function LiveScreen(props) {
               />
             </span>
             <input
-              className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow tw-ml-2"
+              className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow md:tw-ml-2"
               placeholder="Start Chatting..."
               ref={chatInputRef}
             ></input>
             <Emoji chatInputRef={chatInputRef} />
             <button
               onClick={sendChatMessage}
-              className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-mr-4"
+              className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-bg-dreamgirl-red tw-px-4 tw-py-2 md:tw-mr-4 tw-mr-2"
             >
               Send
             </button>
