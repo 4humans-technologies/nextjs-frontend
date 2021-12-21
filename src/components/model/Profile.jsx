@@ -39,6 +39,7 @@ function Profile() {
     skinColor: authContext?.user.user.relatedUser.skinColor,
     hairColor: authContext?.user.user.relatedUser.hairColor,
     eyeColor: authContext?.user.user.relatedUser.eyeColor,
+    bio: authContext?.user.user.relatedUser.bio,
   })
 
   // This is for the Image uplode
@@ -702,7 +703,7 @@ function Profile() {
           onClick={() => modalCtx.showModalWithContent(<CoverUpdate />)}
         >
           <CreateIcon className="tw-mr-2" />
-          Edit Background
+          Change Background
         </p>
       </div>
 
@@ -756,6 +757,8 @@ function Profile() {
                 <p>Body Type</p>
                 <p>Hair</p>
                 <p>Eye color</p>
+                <p>About me</p>
+                {}
               </div>
 
               <div className="md:tw-col-span-5 tw-col-span-4 ">
@@ -803,12 +806,9 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
-                  // value={profileEdit.skinColor}
                 >
                   Fair
-                  {/* {item.Body} */}
                 </p>
-                {/* Body type */}
                 <p
                   onInput={(e) => {
                     setProfileEdit(
@@ -821,12 +821,9 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
-                  // value={profileEdit.skinColor}
                 >
                   slim
-                  {/* {item.Body} */}
                 </p>
-                {/* Body type */}
                 <p
                   onInput={(ev) => {
                     setProfileEdit((prev) => ({
@@ -837,7 +834,6 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
-                  // value={profileEdit.hairColor}
                 >
                   Black
                   {/* {item.Hair} */}
@@ -852,9 +848,21 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
-                  // value={profileEdit.eyeColor}
                 >
                   Black
+                </p>
+                <p
+                  onInput={(e) => {
+                    setProfileEdit((prev) => ({
+                      ...prev,
+                      bio: e.target.textContent,
+                    })),
+                      setInfoedited(true)
+                  }}
+                  contentEditable="true"
+                  suppressContentEditableWarning={true}
+                >
+                  {authContext.user.user.relatedUser.bio}
                 </p>
               </div>
 
@@ -1061,6 +1069,10 @@ function Profile() {
               </div>
             </div>
             {/* Call History */}
+
+            {/*Bank details  */}
+
+            {/*Bank details  */}
           </div>
           {/* Scroll */}
         </div>
@@ -1071,7 +1083,7 @@ function Profile() {
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
-              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+              <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
@@ -1097,7 +1109,7 @@ function Profile() {
                         d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
                       ></path>
                     </svg>
-                    <span>Upload file</span>
+                    <span className="tw-text-sm">Uplode Photo</span>
                   </label>
                 </div>
 
@@ -1373,7 +1385,7 @@ function Profile() {
 
           {/* testing dummy videos */}
           <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
-            <h1>Private photo test</h1>
+            <h1>Private photo</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
             <div className="tw-my-4">
@@ -1465,7 +1477,7 @@ function Profile() {
             </div>
             <div className=" tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2">
               {/* This for File uplode  */}
-              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+              <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
@@ -1494,7 +1506,7 @@ function Profile() {
                         d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
                       ></path>
                     </svg>
-                    <span>Upload file</span>
+                    <span className="tw-text-sm">Uplode Photo</span>
                   </label>
                 </div>
 

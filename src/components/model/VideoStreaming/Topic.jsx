@@ -2,26 +2,42 @@ import React, { useState, useEffect } from "react"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { Button } from "react-bootstrap"
 import { SaveRounded } from "@material-ui/icons"
+import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Topic(props) {
-  const [childState, setChildState] = useState([])
+  const authContext = useAuthContext()
+  const [childState, setChildState] = useState([
+    ...authContext.user.user?.relatedUser?.topic.split(","),
+  ])
+  const updateAuthcontext = useAuthUpdateContext()
   //  Topic set while streaming
-
   const topicSetter = async () => {
-    const res = await fetch("url", {
+    const res = await fetch("/api/website/profile/update-info-fields", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        topic: childState,
-      }),
+      body: JSON.stringify([
+        {
+          field: "topic",
+          value: childState,
+        },
+      ]),
     })
-    const data = await res.json()
-    console.log(data)
-  }
+    const lcUser = JSON.parse(localStorage.getItem("user"))
+    lcUser["relatedUser"]["topic"] = childState
+    localStorage.setItem("user", json.stringify("user"))
 
-  useEffect(() => {}, [])
+    updateAuthcontext.setAuthState((prev) => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        user: {
+          ...lcUser,
+        },
+      },
+    }))
+  }
 
   return (
     <div className="tw-bg-second-color tw-text-white tw-px-4 tw-rounded">

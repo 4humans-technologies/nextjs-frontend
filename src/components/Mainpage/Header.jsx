@@ -168,7 +168,6 @@ function Header(props) {
   const sidebarStatus = useSidebarStatus()
   const sidebarUpdate = useSidebarUpdate()
   const authContext = useAuthContext()
-  const updateAuthContext = useAuthUpdateContext()
   const socketCtx = useSocketContext()
 
   const [hide, setHide] =
@@ -342,10 +341,19 @@ function Header(props) {
     }
   }, [socketCtx.socketSetupDone])
 
+  useEffect(() => {
+    fetch("/api/website/compose-ui/get-live-models-count")
+      .then((res) => res.json())
+      .then((data) => {
+        setLiveModels(+data.liveNow)
+      })
+      .catch((err) => alert(err.message))
+  }, [])
+
   return (
     <div className="tw-min-w-full tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[400]">
       {/* HEADER */}
-      <div className="tw-relative tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white tw-pt-2 tw-pb-2 tw-py-4 sm:tw-pr-4 tw-pl-4 tw-z-[410]">
+      <div className="tw-relative tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white  tw-py-1 sm:tw-pr-4 tw-pl-4 tw-z-[410] tw-pt-2">
         {/* ------------------------ */}
         <div className="tw-flex tw-text-center">
           <div onClick={sidebarUpdate} className="tw-self-center tw-mr-4">
@@ -353,7 +361,7 @@ function Header(props) {
           </div>
           <Link href="/">
             <a className="tw-z-50 tw-cursor-pointer">
-              <Image src={logo} width={124} height={65} />
+              <Image src={logo} width={110} height={56} />
             </a>
           </Link>
         </div>
@@ -382,7 +390,7 @@ function Header(props) {
               <SearchIcon className="tw-text-text-black" />
             </button>
             <input
-              className="tw-rounded-full tw-bg-second-color tw-border-transparent tw-outline-none tw-py-3 tw-pl-6 tw-pr-12 tw-capitalize xl:tw-w-96 lg:tw-w-[300px]"
+              className="tw-rounded-full tw-bg-second-color tw-border-transparent tw-outline-none tw-py-2 tw-pl-6 tw-pr-12 tw-capitalize xl:tw-w-96 lg:tw-w-[300px]"
               type="text"
               placeholder="Search Models"
               onFocus={() => setSearchShow(true)}
@@ -445,16 +453,24 @@ function Header(props) {
                               })}
                             </span>
                           </button>
+                        </div>
+                        <div
+                          className="tw-flex tw-self-center"
+                          onClick={() =>
+                            router.push(
+                              `/${authContext.user.user.username}/settingToken`
+                            )
+                          }
+                        >
                           <img
                             src="/coins.png"
                             alt=""
-                            className="tw-w-10 tw-h-10 tw-text-white"
+                            className="tw-w-4 tw-h-4 tw-text-white"
                           />
                           <p className="tw-self-center tw-pl-2">
-                            {
-                              authContext.user.user.relatedUser.wallet
-                                .currentAmount
-                            }
+                            {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                              0
+                            )}
                           </p>
                         </div>
                       </div>
@@ -472,7 +488,7 @@ function Header(props) {
                             <Link
                               href={`/${authContext.user.user.username}/goLive`}
                             >
-                              <a className="tw-bg-white-color text-sm lg:tw-text-base tw-text-black tw-outline-none tw-capitalize tw-px-4 tw-py-2 tw-inline-block tw-mx-4 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
+                              <a className="tw-bg-red-500 text-sm lg:tw-text-base tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1`  tw-inline-block tw-mx-4 tw-rounded-full  tw-whitespace-nowrap">
                                 Go Live
                               </a>
                             </Link>
@@ -496,13 +512,12 @@ function Header(props) {
                             <img
                               src="/coins.png"
                               alt=""
-                              className="tw-w-10 tw-h-10 tw-text-white"
+                              className="tw-w-4 tw-h-4 tw-text-white"
                             />
                             <p className="tw-self-center tw-pl-2">
-                              {
-                                authContext.user.user.relatedUser.wallet
-                                  .currentAmount
-                              }
+                              {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                                0
+                              )}
                             </p>
                           </div>
                         </div>
@@ -532,13 +547,12 @@ function Header(props) {
                           <img
                             src="/coins.png"
                             alt=""
-                            className="tw-w-10 tw-h-10 tw-text-white"
+                            className="tw-w-5 tw-h-5 tw-text-white"
                           />
                           <p className="tw-my-auto tw-ml-2 tw-font-bold">
-                            {
-                              authContext.user.user.relatedUser.wallet
-                                .currentAmount
-                            }
+                            {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                              0
+                            )}
                           </p>
                         </div>
                         <div
@@ -547,7 +561,7 @@ function Header(props) {
                         >
                           {authContext.user.user.relatedUser?.profileImage ? (
                             <img
-                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center tw-bg-dreamgirl-red tw-text-4xl tw-object-cover tw-border-white-color tw-border-2"
+                              className="tw-rounded-full tw-w-8 tw-h-8 flex tw-items-center tw-justify-center tw-bg-dreamgirl-red tw-text-4xl tw-object-cover tw-border-white-color tw-border-2"
                               src={
                                 authContext.user.user.relatedUser.profileImage
                               }
@@ -555,8 +569,8 @@ function Header(props) {
                           ) : (
                             <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
                               <span className="tw-text-4xl tw-text-white-color tw-font-light">
-                                {authContext.user.user.username
-                                  .charAt(0)
+                                {authContext.user.user?.username
+                                  ?.charAt(0)
                                   .toUpperCase()}
                               </span>
                             </div>
@@ -647,23 +661,24 @@ function Header(props) {
                               </span>
                             )}
                           </span>
+                        </div>
+                        <div className="tw-mx-4 tw-flex ">
                           <img
                             src="/coins.png"
                             alt=""
-                            className="tw-w-10 tw-h-10 tw-text-white"
+                            className="tw-w-5 tw-h-5 tw-text-white"
                           />
                           <p className="tw-my-auto tw-ml-2">
-                            {
-                              authContext.user.user.relatedUser.wallet
-                                .currentAmount
-                            }
+                            {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                              0
+                            )}
                           </p>
                         </div>
                         {!hide && (
                           <Link
                             href={`/${authContext.user.user.username}/goLive`}
                           >
-                            <a className="tw-bg-white-color text-sm lg:tw-text-base tw-text-black tw-outline-none tw-capitalize tw-px-4 tw-py-2 tw-inline-block tw-mx-4 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
+                            <a className="tw-bg-red-500 text-sm lg:tw-text-base tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1  tw-inline-block tw-mx-4 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
                               Go Live
                             </a>
                           </Link>
@@ -675,7 +690,7 @@ function Header(props) {
                           {/* if image is not available then show the Name else show the image */}
                           {authContext.user.user.relatedUser?.profileImage ? (
                             <img
-                              className="tw-rounded-full tw-w-12 tw-h-12 flex tw-items-center tw-justify-center  tw-bg-dreamgirl-red tw-text-4xl  tw-object-cover tw-border-white-color tw-border-2"
+                              className="tw-rounded-full tw-w-8 tw-h-8 flex tw-items-center tw-justify-center  tw-bg-dreamgirl-red tw-text-4xl  tw-object-cover tw-border-white-color tw-border-2"
                               src={
                                 authContext.user.user.relatedUser.profileImage
                               }
@@ -711,14 +726,14 @@ function Header(props) {
               ) : (
                 <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
                   <button
-                    className="tw-rounded-full md:tw-py-3 tw-py-2 tw-px-4 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2 tw-text-sm md:tw-text-base"
+                    className="tw-rounded-full  tw-py-2 tw-px-4 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2 tw-text-sm md:tw-text-base"
                     onClick={() => router.push("/auth/viewerRegistration")}
                   >
                     Sign Up
                   </button>
 
                   <button
-                    className="tw-rounded-full sm:tw-py-3 tw-py-2 tw-px-4 md:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black tw-text-sm md:tw-text-base"
+                    className="tw-rounded-full  tw-py-2 tw-px-4 md:tw-px-6 tw-bg-white-color tw-m-2 tw-text-text-black tw-text-sm md:tw-text-base"
                     onClick={() => router.push("/auth/login")}
                   >
                     Login

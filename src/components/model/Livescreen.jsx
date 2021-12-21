@@ -76,7 +76,6 @@ function LiveScreen(props) {
     if (!authCtx.isLoggedIn) {
       return toast.error("Please login to follow the model!")
     }
-    debugger
     fetch("/api/website/stream/follow-model", {
       method: "POST",
       cors: "include",
@@ -89,11 +88,58 @@ function LiveScreen(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        /*  */
-        console.log(data)
+        if (data.actionStatus == "success") {
+          document.getElementById(
+            "model-follower-count-lg"
+          ).innerText = `${data.newCount}`
+          document.getElementById(
+            "model-follower-count-sm"
+          ).innerText = `${data.newCount}`
+
+          if (data.action == "follow") {
+            updateCtx.setAuthState((prev) => {
+              return {
+                ...prev,
+                user: {
+                  ...prev.user,
+                  user: {
+                    ...prev.user.user,
+                    relatedUser: {
+                      ...prev.user.user.relatedUser,
+                      following: [
+                        ...prev.user.user.relatedUser.following,
+                        window.location.pathname.split("/").reverse()[0],
+                      ],
+                    },
+                  },
+                },
+              }
+            })
+          } else {
+            updateCtx.setAuthState((prev) => {
+              return {
+                ...prev,
+                user: {
+                  ...prev.user,
+                  user: {
+                    ...prev.user.user,
+                    relatedUser: {
+                      ...prev.user.user.relatedUser,
+                      following: [
+                        ...prev.user.user.relatedUser.following,
+                      ].filter(
+                        (el) =>
+                          el != window.location.pathname.split("/").reverse()[0]
+                      ),
+                    },
+                  },
+                },
+              }
+            })
+          }
+        }
       })
       .catch((err) => err.message)
-    debugger
   }, [authCtx.isLoggedIn])
 
   const sendChatMessage = () => {
@@ -279,7 +325,7 @@ function LiveScreen(props) {
             </div>
           </div>
         )}
-        <div className="tw-relative tw-bg-dark-black md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
+        <div className="tw-relative tw-bg-dark-black md:tw-w-[60%] tw-w-full  tw-h-[30rem] md:tw-h-[37rem] lg:tw-h-[82vh] ">
           <ViewerScreen
             setIsChatPlanActive={setIsChatPlanActive}
             setCallOnGoing={setCallOnGoing}
@@ -302,11 +348,17 @@ function LiveScreen(props) {
               <div className="tw-grid lg:tw-hidden tw-grid-cols-2 tw-grid-rows-2 tw-gap-y-3 tw-gap-x-2">
                 <div className="tw-col-span-1 tw-row-span-1 tw-flex tw-items-center tw-justify-start">
                   <button onClick={handleModelFollow}>
-                    <span className="tw-p-1 tw-rounded-full tw-bg-white-color tw-inline-block">
-                      <FavoriteIcon className="tw-text-red-600" />
+                    <span
+                      className={`tw-p-1 tw-rounded-full tw-bg-black tw-inline-block`}
+                    >
+                      <FavoriteIcon className="tw-bg-black" />
                     </span>
-                    <span className="tw-pl-2 tw-text-white-color tw-font-semibold">
-                      33.k
+                    <span
+                      id="model-follower-count-lg"
+                      className="tw-pl-2 tw-text-white-color tw-font-semibold"
+                    >
+                      {props?.modelProfileData?.numberOfFollowers &&
+                        props.modelProfileData.numberOfFollowers}
                     </span>
                   </button>
                   <span
@@ -330,7 +382,7 @@ function LiveScreen(props) {
                   >
                     <CardGiftcardIcon fontSize="small" />
                     <span className="tw-pl-1 tw-tracking-tight">
-                      Send Coins
+                      Gift Coins
                     </span>
                   </Button>
                 </div>
@@ -342,7 +394,7 @@ function LiveScreen(props) {
                   >
                     <VideocamIcon fontSize="small" />
                     <p className="tw-pl-1 tw-tracking-tight">
-                      Private video call
+                      Private Video Call
                     </p>
                   </Button>
                 </div>
@@ -354,7 +406,7 @@ function LiveScreen(props) {
                   >
                     <PhoneInTalkIcon fontSize="small" />
                     <span className="tw-pl-1 tw-tracking-tight">
-                      Private Audio call
+                      Private Audio Call
                     </span>
                   </Button>
                 </div>
@@ -365,8 +417,12 @@ function LiveScreen(props) {
                     <span className="tw-p-1 tw-rounded-full tw-bg-white-color tw-inline-block">
                       <FavoriteIcon className="tw-text-red-600" />
                     </span>
-                    <span className="tw-pl-2 tw-text-white-color tw-font-semibold">
-                      33.k
+                    <span
+                      id="model-follower-count-sm"
+                      className="tw-pl-2 tw-text-white-color tw-font-semibold"
+                    >
+                      {props?.modelProfileData?.numberOfFollowers &&
+                        props.modelProfileData.numberOfFollowers}
                     </span>
                   </button>
                   <span
@@ -384,7 +440,7 @@ function LiveScreen(props) {
                   >
                     <PhoneInTalkIcon fontSize="small" />
                     <span className="tw-pl-1 tw-tracking-tight">
-                      Private Audio call
+                      Private Audio Call
                     </span>
                   </Button>
                   <Button
@@ -394,7 +450,7 @@ function LiveScreen(props) {
                   >
                     <VideocamIcon fontSize="small" />
                     <p className="tw-pl-1 tw-tracking-tight">
-                      Private video call
+                      Private Video Call
                     </p>
                   </Button>
                   <Button
@@ -412,7 +468,7 @@ function LiveScreen(props) {
                   >
                     <CardGiftcardIcon fontSize="small" />
                     <span className="tw-pl-1 tw-tracking-tight">
-                      Send Coins
+                      Gift Coins
                     </span>
                   </Button>
                 </div>
@@ -420,10 +476,10 @@ function LiveScreen(props) {
             </div>
           ) : null}
         </div>
-        <div className="tw-bg-second-color md:tw-w-4/12 md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-          <div className="tw-flex tw-justify-around md:tw-justify-start tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative tw-shadow-md tw-z-50">
+        <div className="tw-bg-second-color md:tw-w-[40%] md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-full lg:tw-h-[82vh]">
+          <div className="tw-flex tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative tw-shadow-md">
             <button
-              className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-mr-4 ${
+              className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-pr-4 ${
                 chatWindow === chatWindowOptions?.PUBLIC
                   ? "tw-text-dreamgirl-red tw-font-semibold"
                   : "tw-text-white-color tw-font-normal sm:-font-medium"
@@ -555,26 +611,24 @@ function LiveScreen(props) {
 
           <div
             id="message-input"
-            className="tw-flex tw-items-center tw-py-1.5 tw-bg-second-color tw-text-white tw-absolute tw-bottom-0 tw-w-full tw-z-[300] tw-right-0"
+            className="tw-flex tw-items-center tw-py-1.5 tw-bg-second-color tw-text-white tw-absolute tw-bottom-1 tw-w-full tw-z-[300] tw-right-0 tw-left-3 "
           >
-            {/* <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-px-1 tw-outline-none tw-items-center tw-w-full tw-relative"> */}
-            <span className="circle-shadow tw-h-10 tw-w-10 tw-inline-grid tw-flex-shrink-0 tw-p-1 tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]">
+            <span className="circle-shadow tw-h-10 tw-w-10 tw-inline-grid tw-flex-shrink-0 tw-p-1  tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]">
               <img
                 src="/tips.png"
-                alt=""
                 className="tw-w-6 tw-h-6"
                 onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
               />
             </span>
             <input
               className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow tw-ml-2"
-              placeholder="Chat"
+              placeholder="Start Chatting..."
               ref={chatInputRef}
             ></input>
             <Emoji chatInputRef={chatInputRef} />
             <button
               onClick={sendChatMessage}
-              className="sm:tw-py-3 tw-py-2 tw-px-2 sm:tw-px-4 tw-bg-blue-500 sm:tw-ml-1 tw-ml-2 tw-rounded-full"
+              className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-mr-4"
             >
               Send
             </button>

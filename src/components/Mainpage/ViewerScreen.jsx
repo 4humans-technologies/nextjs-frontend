@@ -5,15 +5,10 @@ import useAgora from "../../hooks/useAgora"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import { nanoid } from "nanoid"
-import VolumeUpIcon from "@material-ui/icons/VolumeUp"
-import CallEndIcon from "@material-ui/icons/CallEnd"
-import MicOffIcon from "@material-ui/icons/MicOff"
 import io from "../../socket/socket"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
-import useModalContext from "../../app/ModalContext"
-import MicIcon from "@material-ui/icons/Mic"
 import { toast } from "react-toastify"
 
 /**
@@ -58,7 +53,6 @@ const unAuthedUserEmojis = [
   "🐬",
   "🦄",
 ]
-let modelEndedStreamOnce = false
 const callTimer = {
   value: 0,
   timerElement: null,
@@ -71,10 +65,9 @@ function ViewerScreen(props) {
   const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
   const spinnerCtx = useSpinnerContext()
-  const modalCtx = useModalContext()
   const isLiveNowRef = useRef("not-init")
+  const [fullScreen, setFullScreen] = useState(false)
 
-  const [callEndDetails, setCallEndDetails] = useState(null)
   const [othersCall, setOthersCall] = useState({
     rejectedMyCall: false,
     acceptedOthersCall: false,
@@ -234,8 +227,10 @@ function ViewerScreen(props) {
     const palyBackArea = document.getElementById("playback-area")
     if (!document.fullscreenElement) {
       palyBackArea.requestFullscreen()
+      setFullScreen(true)
     } else {
       document.exitFullscreen()
+      setFullScreen(false)
     }
   }, [])
 
@@ -477,11 +472,11 @@ function ViewerScreen(props) {
             body: JSON.stringify({
               modelId: myModelId,
               purchasedVideoAlbums:
-                ctx.user.user.relatedUser.privateVideosPlans.find(
+                ctx.user.user?.relatedUser?.privateVideosPlans?.find(
                   (collection) => (collection.model = myModelId)
                 )?.albums || [],
               purchasedImageAlbums:
-                ctx.user.user.relatedUser.privateImagesPlans.find(
+                ctx.user.user.relatedUser?.privateImagesPlans?.find(
                   (collection) => (collection.model = myModelId)
                 )?.albums || [],
             }),
@@ -1353,7 +1348,7 @@ function ViewerScreen(props) {
         isModelOffline ||
         (callOnGoing === true && callType === "audioCall") ||
         othersCall.acceptedOthersCall
-          ? "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10 tw-flex tw-items-center tw-justify-center"
+          ? "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10 tw-flex tw-items-center tw-justify-center "
           : "tw-absolute tw-top-0 tw-bottom-0 tw-w-full tw-z-10"
       }
       ref={container}
@@ -1378,14 +1373,16 @@ function ViewerScreen(props) {
 
       {/* on "any-call" with model */}
       {callOnGoing && callType && !isModelOffline && remoteUsers[0] ? (
-        <VideoPlayer
-          videoTrack={
-            callType === "videoCall" ? remoteUsers[0]?.videoTrack : null
-          }
-          audioTrack={remoteUsers[0].audioTrack} //error of session storage is going
-          playAudio={true}
-          config={callType}
-        />
+        <div>
+          <VideoPlayer
+            videoTrack={
+              callType === "videoCall" ? remoteUsers[0]?.videoTrack : null
+            }
+            audioTrack={remoteUsers[0].audioTrack} //error of session storage is going
+            playAudio={true}
+            config={callType}
+          />
+        </div>
       ) : null}
 
       {/* on audioCall with model */}
@@ -1518,7 +1515,7 @@ function ViewerScreen(props) {
       !callOnGoing &&
       remoteUsers?.length === 0 &&
       !othersCall.acceptedOthersCall ? (
-        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-32 sm:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
+        <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-32 sm:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px] tw-backdrop-opacity-50">
           <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
             {modelProfileData.offlineStatus}
           </p>
@@ -1551,70 +1548,20 @@ function ViewerScreen(props) {
         </div>
       ) : null}
 
-      {/* On call controls */}
-      {callOnGoing && !isModelOffline && (
-        <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
-          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
-            <VolumeUpIcon fontSize="medium" style={{ color: "white" }} />
-          </button>
-          <button
-            className="tw-inline-block tw-mx-2 tw-z-[390]"
-            onClick={() => handleCallEnd()}
-          >
-            <CallEndIcon fontSize="medium" style={{ color: "red" }} />
-          </button>
-          {localAudioTrack && (
-            <button className="tw-inline-block tw-z-[390] tw-px-2">
-              {!isMuted ? (
-                <MicIcon
-                  fontSize="medium"
-                  style={{ color: "white" }}
-                  onClick={toggleMuteMic}
-                />
-              ) : (
-                <MicOffIcon
-                  fontSize="medium"
-                  style={{ color: "red" }}
-                  onClick={toggleMuteMic}
-                />
-              )}
-            </button>
+      {/* {!callOnGoing && joinState ? ( */}
+      <div className="tw-absolute  tw-right-0 md:tw-translate-x-[-50%] md:tw-top-10 tw-top-4 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 md:tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] md:tw-backdrop-blur">
+        <button
+          className="tw-inline-block tw-mx-2 tw-z-[390]"
+          onClick={toggleFullscreen}
+        >
+          {!fullScreen ? (
+            <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
+          ) : (
+            <FullscreenExitIcon fontSize="medium" style={{ color: "white" }} />
           )}
-          <button
-            className="tw-inline-block tw-mx-2 tw-z-[390]"
-            onClick={toggleFullscreen}
-          >
-            {document.fullscreenElement ? (
-              <FullscreenExitIcon
-                fontSize="medium"
-                style={{ color: "white" }}
-              />
-            ) : (
-              <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
-            )}
-          </button>
-        </div>
-      )}
-      {!callOnGoing && joinState ? (
-        <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
-          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
-            <MicOffIcon fontSize="medium" style={{ color: "white" }} />
-          </button>
-          <button
-            className="tw-inline-block tw-mx-2 tw-z-[390]"
-            onClick={toggleFullscreen}
-          >
-            {document.fullscreenElement ? (
-              <FullscreenExitIcon
-                fontSize="medium"
-                style={{ color: "white" }}
-              />
-            ) : (
-              <FullscreenIcon fontSize="medium" style={{ color: "white" }} />
-            )}
-          </button>
-        </div>
-      ) : null}
+        </button>
+      </div>
+      {/* ) : null} */}
     </div>
   )
 }

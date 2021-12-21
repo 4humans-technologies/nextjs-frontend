@@ -1,6 +1,8 @@
 import React from "react"
+import { useWidth } from "../../app/Context"
 
 function ModelDetailHeader(props) {
+  let screenWidth = useWidth()
   const { profileImage, username, isStreaming, onCall } = props.data
   return (
     <div className="tw-flex tw-justify-start tw-items-center tw-py-1.5 tw-px-4 tw-overflow-x-auto tw-flex-nowrap tw-bg-first-color tw-text-white-color tw-shadow-md tw-sticky">
@@ -40,6 +42,7 @@ function ModelDetailHeader(props) {
       <span className="tw-mr-4 tw-cursor-pointer">Profile</span>
       <span className="tw-mr-4 tw-cursor-pointer">Image</span>
       <span className="tw-mr-4 tw-cursor-pointer">Videos</span>
+      <span className="tw-mr-4 tw-cursor-pointer"> {screenWidth}</span>
     </div>
   )
 }

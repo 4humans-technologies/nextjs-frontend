@@ -8,12 +8,12 @@ export const ContextProvider = ({ children }) => {
   const handleResize = () => setInnerWidth(window.innerWidth);
 
   useEffect(() => {
-    setInnerWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
+    setInnerWidth(window.innerWidth)
+    window.addEventListener("resize", handleResize)
     return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [handleResize]);
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
 
   return (
     <Widthcontext.Provider value={innerWidth}>{children}</Widthcontext.Provider>

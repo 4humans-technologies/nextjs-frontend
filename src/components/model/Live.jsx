@@ -238,10 +238,6 @@ function Live() {
   }, [socketCtx.socketSetupDone])
 
   const scrollOnChat = useCallback((scrollType) => {
-    // document.getElementById("for-scroll-into-view").scrollIntoView({
-    //   behavior: "smooth",
-    //   block: "start",
-    // })
     const containerElement = document.getElementById("chatBoxContainer")
     containerElement.scrollBy({
       top: containerElement.scrollHeight,
@@ -1124,27 +1120,6 @@ function Live() {
                 </button>
               </div>
             )}
-
-            {/* {!callOnGoing && joinState && localAudioTrack ? (
-              <div className="tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(58,54,54,0.2)] tw-z-[300] tw-backdrop-blur">
-                <button className="tw-inline-block tw-px-2 tw-z-[390]">
-                  {!muted ? (
-                    <MicIcon
-                      fontSize="medium"
-                      style={{ color: "white" }}
-                      onClick={toggleMuteMic}
-                    />
-                  ) : (
-                    <MicOffIcon
-                      fontSize="medium"
-                      style={{ color: "red" }}
-                      onClick={toggleMuteMic}
-                    />
-                  )}
-                </button>
-              </div>
-            ) : null} */}
-
             {/* on stream controls */}
             {!callOnGoing && (
               <div className="tw-absolute tw-w-full tw-bottom-0 tw-z-[110] tw-backdrop-blur">
@@ -1225,8 +1200,8 @@ function Live() {
 
           {/* ================================================= */}
           {/* chat site | ex right side */}
-          <div className="tw-bg-second-color sm:tw-w-4/12 sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-            <div className="tw-flex tw-justify-around sm:tw-justify-start tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
+          <div className="tw-bg-second-color sm:tw-w-[40%] sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
+            <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
               <button
                 className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-mr-4 ${
                   chatWindow === chatWindowOptions?.PUBLIC
@@ -1393,7 +1368,6 @@ function Live() {
         </div>
       </div>
       <Videoshowcontroller />
-      {/* <Footer /> */}
     </div>
   ) : (
     <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">

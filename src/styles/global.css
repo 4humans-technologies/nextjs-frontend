@@ -620,6 +620,20 @@ select {
 }
 /* Token Grid */
 
+/* user profile */
+.userProfileIntro {
+  display: flex;
+}
+
+.userProfil_1 {
+  display: flex;
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+
+.userProfile-2 {
+  display: flex;
+}
 .my-custom-style {
   border-bottom: 0px !important;
   border-color: rgb(35, 35, 35);
@@ -644,3 +658,23 @@ select {
 .notif-container::-webkit-scrollbar {
   display: none;
 }
+/* state list */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+.dropdown .dropdown-content {
+  display: none;
+  position: absolute;
+  min-width: 160px;
+  background-color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  z-index: 2221;
+  cursor: pointer;
+}
+
+/* state list */
