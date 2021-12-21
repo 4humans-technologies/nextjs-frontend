@@ -40,7 +40,10 @@ function ViewModelStream() {
             categories: ["America", "India", "Bhutan", "USA"],
           }}
           dynamicFields={[
-            { title: "Language", value: modelProfileData.languages.join(", ") },
+            {
+              title: "Language",
+              value: modelProfileData?.languages.join(", "),
+            },
             { title: "body type", value: "curvy" },
             { title: "ethnicity", value: "American" },
             { title: "hair", value: "black" },

@@ -260,7 +260,7 @@ function SignUp() {
                   <div className="tw-flex tw-items-center tw-mt-2">
                     <VerifiedUser className="tw-text-white-color" />
                     <p className="tw-text-white-color tw-font-semibold tw-capitalize tw-pl-2">
-                      200M+ users worldwide
+                      20+ users worldwide
                     </p>
                   </div>
                   <div className="tw-flex tw-items-center tw-mt-2">

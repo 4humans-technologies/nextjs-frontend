@@ -1477,7 +1477,7 @@ function Profile() {
             </div>
             <div className=" tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2">
               {/* This for File uplode  */}
-              <div className="tw-w-3 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+              <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input

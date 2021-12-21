@@ -53,7 +53,7 @@ function ModelProfile(props) {
     </ChipArea>
   ))
 
-  const Profile = (props) => {
+  const Profile = () => {
     return (
       <>
         <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-text-text-black tw-pl-0 md:tw-pl-1 tw-gap-x-4 tw-gap-y-4">
@@ -66,7 +66,7 @@ function ModelProfile(props) {
               }}
             ></div>
             <div className="tw-mt-5">
-              {props.dynamicFields.map((field, index) => {
+              {props.dynamicFields?.map((field, index) => {
                 let value
                 if (Array.isArray(field.value)) {
                   value = field.value.join(" , ")
@@ -592,55 +592,48 @@ function ModelProfile(props) {
         {/* checking for tabs */}
         <div className="tw-inline-flex tw-bg-black tw-text-white   tw-rounded-t-2xl">
           <button
-            className="tw-px-4 focus:tw-bg-second-color   tw-rounded-t-xl tw-py-1"
+            className={`tw-px-4 focus:tw-bg-second-color   tw-rounded-t-xl tw-py-1 `}
             onClick={() => {
               dispatch({ type: "Profile" })
             }}
             style={{ cursor: "pointer" }}
           >
             <div>Profile</div>
-            {/* <Profile /> */}
           </button>
           <button
-            className="tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl"
+            className={`tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl`}
             onClick={() => dispatch({ type: "Image" })}
             style={{ cursor: "pointer" }}
           >
             Images
           </button>
-          {/* Private Images */}
           <button
-            className="tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl"
+            className={`tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl `}
             onClick={() => dispatch({ type: "PrivateImage" })}
             style={{ cursor: "pointer" }}
           >
             Private Images
           </button>
-          {/* Private Images */}
           <button
-            className="tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl"
+            className={`tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl `}
             onClick={() => dispatch({ type: "Videos" })}
             style={{ cursor: "pointer" }}
           >
             Videos
           </button>
-          {/* private videos */}
 
           <button
-            className="tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl"
+            className={`tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl `}
             onClick={() => dispatch({ type: "PrivateVideos" })}
             style={{ cursor: "pointer" }}
           >
             Private Videos
           </button>
-          {/* Private videos */}
         </div>
-        {/* checking for tabs */}
         <div className="tw-border-t-[3px] tw-border-second-color tw-pl-4">
           {state.val}
         </div>
       </div>
-      {/* <button onClick={ctx.toggleModal} className="tw-px-3 tw-py-2 tw-text-white-color">Close</button> */}
     </div>
   )
 }

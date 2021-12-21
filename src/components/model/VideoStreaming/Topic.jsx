@@ -6,10 +6,11 @@ import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Topic(props) {
   const authContext = useAuthContext()
-  const [childState, setChildState] = useState([])
+  const [childState, setChildState] = useState([
+    ...authContext.user.user?.relatedUser?.topic.split(","),
+  ])
   const updateAuthcontext = useAuthUpdateContext()
   //  Topic set while streaming
-
   const topicSetter = async () => {
     const res = await fetch("/api/website/profile/update-info-fields", {
       method: "POST",
@@ -23,7 +24,6 @@ function Topic(props) {
         },
       ]),
     })
-    const data = await res.json()
     const lcUser = JSON.parse(localStorage.getItem("user"))
     lcUser["relatedUser"]["topic"] = childState
     localStorage.setItem("user", json.stringify("user"))

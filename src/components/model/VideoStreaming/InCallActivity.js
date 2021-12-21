@@ -4,15 +4,17 @@ import { Button } from "react-bootstrap"
 import { SaveRounded } from "@material-ui/icons"
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined"
 import ClearIcon from "@material-ui/icons/Clear"
+import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function InCallActivities(props) {
+  const updateAuthCotntext = useAuthUpdateContext()
+  const authContext = useAuthContext()
+
   const [audioCallActivities, setAudioCallActivities] = useState([
-    "Hello",
-    "Jai nomad ki",
+    ...authContext.user.user?.relatedUser?.callActivity.audioCall,
   ])
   const [videoCallActivities, setVideoCallActivities] = useState([
-    "Hello",
-    "Jai nomad ki",
+    ...authContext.user.user?.relatedUser?.callActivity.videoCall,
   ])
 
   const updateCallActivities = async () => {
@@ -32,7 +34,24 @@ function InCallActivities(props) {
       ]),
     })
       .then((resp) => resp.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        const store = JSON.parse(localStorage.getItem("user"))
+        store["relatedUser"]["callActivity"]["audioCall"] = audioCallActivities
+        store["relatedUser"]["callActivity"]["videoCall"] = videoCallActivities
+        localStorage.setItem("user", JSON.stringify(store))
+
+        updateAuthCotntext.setAuthState((prev) => {
+          return {
+            ...prev,
+            user: {
+              ...prev.user,
+              user: {
+                ...store,
+              },
+            },
+          }
+        })
+      })
   }
 
   return (
@@ -40,41 +59,39 @@ function InCallActivities(props) {
       <div>
         <div className="tw-border-b-[1px] tw-border-white-color tw-mb-4 tw-py-4 tw-flex tw-items-center">
           <VideoCallOutlinedIcon fontSize="medium" />{" "}
-          <span className="tw-pl-1">Offline Status</span>
+          <span className="tw-pl-1">Call Activities</span>
         </div>
         <div className="tw-border-b-[1px] tw-border-white-color tw-py-3">
           <div className="tw-mb-4">
             <p className="tw-mb-3">In Audio Calls</p>
             <div className="tw-max-h-36 tw-overflow-y-auto">
-              {audioCallActivities.map((activity, index) => {
-                return (
-                  <div className="tw-flex tw-items-center tw-justify-between">
-                    <input
-                      type="text"
-                      value={activity}
-                      placeholder="Enter offline status"
-                      className="tw-rounded-full tw-flex-grow-0 tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full tw-mb-2"
-                      onChange={(e) =>
+              {audioCallActivities.map((activity, index) => (
+                <div className="tw-flex tw-items-center tw-justify-between">
+                  <input
+                    type="text"
+                    value={activity}
+                    placeholder="Enter offline status"
+                    className="tw-rounded-full tw-flex-grow-0 tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full tw-mb-2"
+                    onChange={(e) =>
+                      setAudioCallActivities((prev) => {
+                        prev[index] = e.target.value
+                        return [...prev]
+                      })
+                    }
+                  />
+                  <span className="tw-flex-shrink tw-flex-grow-0 tw-pl-3 tw-cursor-pointer">
+                    <ClearIcon
+                      className="tw-text-text-black hover:tw-text-white-color tw-transition-colors"
+                      onClick={() =>
                         setAudioCallActivities((prev) => {
-                          prev[index] = e.target.value
+                          prev.splice(index, 1)
                           return [...prev]
                         })
                       }
                     />
-                    <span className="tw-flex-shrink tw-flex-grow-0 tw-pl-3 tw-cursor-pointer">
-                      <ClearIcon
-                        className="tw-text-text-black hover:tw-text-white-color tw-transition-colors"
-                        onClick={() =>
-                          setAudioCallActivities((prev) => {
-                            prev.splice(index, 1)
-                            return [...prev]
-                          })
-                        }
-                      />
-                    </span>
-                  </div>
-                )
-              })}
+                  </span>
+                </div>
+              ))}
             </div>
             <div className="tw-flex tw-my-4">
               <Button
@@ -165,5 +182,7 @@ function InCallActivities(props) {
     </div>
   )
 }
+
+
 
 export default InCallActivities

@@ -9,8 +9,21 @@ import {
   CoverUpdate,
   ProfileUpdate,
 } from "../UI/Profile/Emailpassword"
+import Banned from "../model/Banned"
 
 let allHistory = []
+let act = {
+  0: "AUDIO_CALL_ADV", //audoio call advance cuttinng
+  1: "Audio Call",
+  2: "VIDEO_CALL_ADV",
+  3: "Video Call",
+  4: "Coin gift", //gifted coin
+  5: "Coin gift",
+  6: "Activity request",
+  7: "Activity request",
+  8: "Refund",
+  9: "SYS_ADMIN",
+}
 function Settingprivacy() {
   const authContext = useAuthContext()
   const modalCtx = useModalContext()
@@ -138,8 +151,8 @@ function Settingprivacy() {
           </div>
         </div>
 
+        {/* It's token History */}
         <div className="tw-text-white tw-mt-8 ">
-          {/* It's token History */}
           <h1 className="tw-pt-4 tw-text-center tw-font-semibold">
             Token History
           </h1>
@@ -184,18 +197,19 @@ function Settingprivacy() {
             </form>
           </div>
 
-          <div className="tw-grid md:tw-grid-cols-4 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
+          <div className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
             <div>Date</div>
-            <div>Time</div>
-            <div>User</div>
+            <div className="tw-hidden md:tw-block">Time</div>
+            <div>Action</div>
+            <div>Gifted By</div>
             <div>
-              Token{" "}
+              Token
               <ExpandLessIcon
                 className=" tw-cursor-pointer"
                 onClick={() => {
                   assendHandler()
                 }}
-              />{" "}
+              />
               <ExpandLessIcon
                 className=" tw-cursor-pointer tw-rotate-180"
                 onClick={() => {
@@ -208,20 +222,22 @@ function Settingprivacy() {
           <div className="tw-max-h-72 tw-overflow-y-auto">
             {tokenData?.map((item, index) => (
               <div
-                className="tw-grid md:tw-grid-cols-4 tw-grid-rows-1  tw-bg-second-color tw-text-xl tw-font-bold  tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
+                className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  tw-bg-second-color tw-text-xl tw-font-bold  tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
                 key={index}
               >
                 <div>{item.time.split("T")[0]}</div>
-                <div>{item.time.split("T")[1].split(".")[0]}</div>
+                <div className="tw-hidden md:tw-block">{item.time.split("T")[1].split(".")[0]}
+                </div>
+                <div>{act[item.givenFor]}</div>
                 <div>{item.by.name}</div>
                 <div>{item.tokenAmount}</div>
               </div>
             ))}
           </div>
         </div>
+        {/* it's token history */}
         {/* Bank Details  */}
 
-        {/* Bank Details  */}
         {authContext.user.userType === "Model" && (
           <div className="tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-text-white tw-w-full tw-my-8 ">
             <div className="tw-col-span-1 tw-px-4">
@@ -371,9 +387,14 @@ function Settingprivacy() {
                   Claim token
                 </button>
               </div>
+
+              <div>
+                <Banned />
+              </div>
             </div>
           </div>
         )}
+        {/* Bank Details  */}
       </div>
     )
   )
