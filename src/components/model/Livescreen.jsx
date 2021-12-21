@@ -20,6 +20,7 @@ import { useRouter } from "next/router"
 import io from "../../socket/socket"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
 import { toast } from "react-toastify"
+import ViewerSideViewersListContainer from "../ViewersList/ForViewer/ViewerSideViewersListContainer"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,
@@ -264,6 +265,20 @@ function LiveScreen(props) {
   return (
     <>
       <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
+        {pendingCallRequest && (
+          <div className="tw-px-2 tw-py-2 tw-text-white-color tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
+            <div className="tw-flex tw-justify-center tw-items-center">
+              <p className="tw-mx-2">
+                Your
+                {/* <span className="tw-text-dreamgirl-red">
+                  {request.callType}
+                </span> */}{" "}
+                call request is pending, you will be notified when model
+                responds!
+              </p>
+            </div>
+          </div>
+        )}
         <div className="tw-relative tw-bg-dark-black md:tw-w-8/12 tw-w-full md:tw-h-[37rem] tw-h-[30rem]">
           <ViewerScreen
             setIsChatPlanActive={setIsChatPlanActive}
@@ -454,17 +469,21 @@ function LiveScreen(props) {
                 </span>
               </button>
             )}
-            {/* pending call request  */}
+            <button
+              className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-mr-4 ${
+                chatWindow === chatWindowOptions?.USERS
+                  ? "tw-text-dreamgirl-red tw-font-semibold"
+                  : "tw-text-white-color tw-font-normal sm:-font-medium"
+              }`}
+              onClick={() => setChatWindow(chatWindowOptions.USERS)}
+            >
+              <LocalActivityIcon
+                className="tw-mr-1 tw-my-auto"
+                fontSize="small"
+              />
+              <span className="tw-my-auto tw-text-xs md:tw-text-sm">Users</span>
+            </button>
           </div>
-          {pendingCallRequest && (
-            <div className="tw-absolute tw-top-14 tw-left-1 tw-right-1 tw-py-1.5 tw-px-4 tw-bg-[rgba(56,117,37,0.4)] tw-text-white-color tw-font-semibold tw-z-[300] tw-backdrop-blur">
-              <p className="tw-capitalize tw-text-white-color tw-font-medium">
-                {`Your private
-              ${callType === "videoCall" ? "video call" : "audio call"} request
-              is pending`}
-              </p>
-            </div>
-          )}
           <div
             id="chatBoxContainer"
             className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
@@ -523,7 +542,13 @@ function LiveScreen(props) {
                     chatWindow === chatWindowOptions.USERS ? "block" : "none",
                 }}
               >
-                <div className="">USERS</div>
+                <ViewerSideViewersListContainer
+                  callOnGoing={callOnGoing}
+                  addAtTheRate={(username) => {
+                    addAtTheRate(username)
+                    setChatWindow(chatWindowOptions.PUBLIC)
+                  }}
+                />
               </div>
             </div>
           </div>

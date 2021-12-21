@@ -32,7 +32,8 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
             const NO_SPINNER_URLS = [
               "/api/website/token-builder/global-renew-token",
               "/api/website/stream/private-chat/find-or-create-private-chat",
-              "/api/website/stream/get-live-room-count/",
+              "/api/website/stream/get-live-viewers/",
+              "api/website/stream/private-chat/get-my-private-cht-by-id",
             ]
             let canShowSpinner = true
             NO_SPINNER_URLS.forEach((safeUrl) => {

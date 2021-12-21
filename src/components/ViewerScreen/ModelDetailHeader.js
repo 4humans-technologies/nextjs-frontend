@@ -4,23 +4,35 @@ function ModelDetailHeader(props) {
   const { profileImage, username, isStreaming, onCall } = props.data
   return (
     <div className="tw-flex tw-justify-start tw-items-center tw-py-1.5 tw-px-4 tw-overflow-x-auto tw-flex-nowrap tw-bg-first-color tw-text-white-color tw-shadow-md tw-sticky">
-      <span className="tw-w-10 tw-h-10 tw-ring-2 tw-ring-dreamgirl-red tw-mr-4 tw-rounded-full">
+      <a
+        href="#model-profile-area"
+        className="tw-w-10 tw-h-10 tw-ring-2 tw-ring-dreamgirl-red tw-mr-4 tw-rounded-full"
+      >
         <img src={profileImage} alt="" />
-      </span>
+      </a>
       {isStreaming && (
-        <span className="tw-mr-4 tw-py-1 tw-rounded tw-font-semibold tw-text-green-color">
+        <a
+          href="#model-profile-area"
+          className="tw-mr-4 tw-py-1 tw-rounded tw-font-semibold tw-text-green-color"
+        >
           Live
-        </span>
+        </a>
       )}
       {onCall && !isStreaming && (
-        <span className="tw-mr-4 tw-py-1 tw-rounded tw-font-semibold tw-text-purple-600">
+        <a
+          href="#model-profile-area"
+          className="tw-mr-4 tw-py-1 tw-rounded tw-font-semibold tw-text-purple-600"
+        >
           On Call
-        </span>
+        </a>
       )}
       {!isStreaming && !onCall && (
-        <span className="tw-mr-4 tw-py-1 tw-rounded tw-font-semibold tw-text-red-600">
+        <a
+          href="#model-profile-area"
+          className="tw-mr-4 tw-py-1 tw-rounded tw-font-semibold tw-text-red-600"
+        >
           Offline
-        </span>
+        </a>
       )}
       <span className="tw-mr-4 tw-capitalize tw-cursor-pointer">
         {username}

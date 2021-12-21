@@ -35,17 +35,19 @@ function SingleViewerBlock(props) {
               {username}
             </span>
           </p>
-          <p className="">
-            <span className="tw-font-medium tw-pr-2">Wallet :</span>{" "}
-            {walletCoins} coins{" "}
-            <span className="tw-pl-4">
-              {isChatPlanActive && (
-                <span className="tw-font-light tw-text-white-color tw-px-1 tw-rounded tw-bg-dreamgirl-red tw-text-[10px]">
-                  PRO
-                </span>
-              )}
-            </span>
-          </p>
+          {props.userType === "Model" && (
+            <p className="">
+              <span className="tw-font-medium tw-pr-2">Wallet :</span>{" "}
+              {walletCoins} coins{" "}
+              <span className="tw-pl-4">
+                {isChatPlanActive && (
+                  <span className="tw-font-light tw-text-white-color tw-px-1 tw-rounded tw-bg-dreamgirl-red tw-text-[10px]">
+                    PRO
+                  </span>
+                )}
+              </span>
+            </p>
+          )}
         </div>
       </div>
     </div>

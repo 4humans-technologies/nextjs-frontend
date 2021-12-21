@@ -73,8 +73,8 @@ function useAgora(client, role, callType) {
               optimizationMode: "detail",
               encoderConfig: {
                 frameRate: 20,
-                height: 400,
-                width: 350,
+                height: 580,
+                width: 720,
                 bitrateMin: 600,
               },
             })

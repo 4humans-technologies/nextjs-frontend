@@ -243,6 +243,12 @@ function ViewerScreen(props) {
   useEffect(() => {
     if (socketCtx.socketSetupDone && ctx.loadedFromLocalStorage) {
       const socket = io.getSocket()
+      if (joinState) {
+        /**
+         * when have already joined the channel then no need to rejoin
+         */
+        return
+      }
       let newStreamHandler = (data) => {
         if (data.modelId !== window.location.pathname.split("/").reverse()[0]) {
           return
@@ -311,27 +317,6 @@ function ViewerScreen(props) {
                   }
                 )
                 document.dispatchEvent(modelDataEvent)
-                setTimeout(() => {
-                  /* get the number of users in the stream after x seconds, MANNUALLY */
-                  fetch(
-                    `/api/website/stream/get-live-room-count/${data.streamId}-public`
-                  )
-                    .then((res) => res.json())
-                    .then((data) => {
-                      try {
-                        if (typeof data.roomSize === "number") {
-                          document.getElementById(
-                            "live-viewer-count-lg"
-                          ).innerText = `${data.roomSize - 1} Live`
-                          document.getElementById(
-                            "live-viewer-count-md"
-                          ).innerText = `${data.roomSize - 1} Live`
-                        }
-                      } catch (err) {
-                        /* try/catch as roomSize can be undefined */
-                      }
-                    })
-                }, [4000])
                 /**
                  * Agora raising error that client is already connected to the channel
                  * so have to check if client is correctly leaving or not
@@ -385,15 +370,21 @@ function ViewerScreen(props) {
             })
         })
 
-        toast.promise(newStream, {
-          pending: "Model started streaming, establishing secure connection",
-          success: "Successfully joined the stream",
-          error: {
-            render(err) {
-              return "Error joining the stream err: " + err.data
+        toast.promise(
+          newStream,
+          {
+            pending: "Model started streaming, establishing secure connection",
+            success: "Successfully joined the stream",
+            error: {
+              render(err) {
+                return "Error joining the stream err: " + err.data
+              },
             },
           },
-        })
+          {
+            autoClose: 1000,
+          }
+        )
       }
       socket.on("new-model-started-stream", newStreamHandler)
 
@@ -407,7 +398,12 @@ function ViewerScreen(props) {
         }
       }
     }
-  }, [ctx.isLoggedIn, socketCtx.socketSetupDone, ctx.loadedFromLocalStorage])
+  }, [
+    ctx.isLoggedIn,
+    socketCtx.socketSetupDone,
+    ctx.loadedFromLocalStorage,
+    joinState,
+  ])
 
   useEffect(() => {
     /* listen for stream end events */
@@ -501,14 +497,26 @@ function ViewerScreen(props) {
                 "model-profile-data-fetched",
                 {
                   detail: {
-                    username: data.theModel.rootUser.username,
-                    profileImage: data.theModel.profileImage,
-                    isStreaming: data.theModel.isStreaming,
-                    onCall: data.theModel.onCall,
+                    viewer: {
+                      username: data.theModel.rootUser.username,
+                      profileImage: data.theModel.profileImage,
+                      isStreaming: data.theModel.isStreaming,
+                      onCall: data.theModel.onCall,
+                    },
                   },
                 }
               )
               document.dispatchEvent(modelDataEvent)
+
+              /**
+               * viewers list fetched
+               */
+              const viersListEvent = new CustomEvent("viewers-list-fetched", {
+                detail: {
+                  viewersList: data.liveViewersList,
+                },
+              })
+              document.dispatchEvent(viersListEvent)
 
               /* fetch previous chats */
               const chatEvent = new CustomEvent("fetch-firebase-chats", {
@@ -613,18 +621,31 @@ function ViewerScreen(props) {
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
 
+              /* set header details for the viewer */
               const modelDataEvent = new CustomEvent(
                 "model-profile-data-fetched",
                 {
                   detail: {
-                    username: data.theModel.rootUser.username,
-                    profileImage: data.theModel.profileImage,
-                    isStreaming: data.theModel.isStreaming,
-                    onCall: data.theModel.onCall,
+                    viewer: {
+                      username: data.theModel.rootUser.username,
+                      profileImage: data.theModel.profileImage,
+                      isStreaming: data.theModel.isStreaming,
+                      onCall: data.theModel.onCall,
+                    },
                   },
                 }
               )
               document.dispatchEvent(modelDataEvent)
+
+              /**
+               * viewers list fetched
+               */
+              const viersListEvent = new CustomEvent("viewers-list-fetched", {
+                detail: {
+                  viewersList: data.liveViewersList,
+                },
+              })
+              document.dispatchEvent(viersListEvent)
 
               /* fetch previous chats */
               const chatEvent = new CustomEvent("fetch-firebase-chats", {
@@ -924,6 +945,12 @@ function ViewerScreen(props) {
                                 }
                               )
                               document.dispatchEvent(modelDataEvent)
+
+                              const clearViewerListEvent = new Event(
+                                "clean-viewer-list-going-on-call"
+                              )
+                              document.dispatchEvent(clearViewerListEvent)
+
                               setPendingCallRequest(false)
                               setCallType(data.callType)
                               setCallOnGoing(true)
@@ -1016,6 +1043,12 @@ function ViewerScreen(props) {
                           }
                         )
                         document.dispatchEvent(modelDataEvent)
+
+                        const clearViewerListEvent = new Event(
+                          "clean-viewer-list-going-on-call"
+                        )
+                        document.dispatchEvent(clearViewerListEvent)
+
                         setPendingCallRequest(false)
                         setCallType(data.callType)
                         setCallOnGoing(true)

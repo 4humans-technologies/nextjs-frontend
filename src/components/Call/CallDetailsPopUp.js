@@ -22,11 +22,6 @@ import { useSocketContext } from "../../app/socket/SocketContext"
 import { toast } from "react-toastify"
 
 function CallDetailsPopUp(props) {
-  const router = useRouter()
-
-  const authCtx = useAuthContext()
-  const socketCtx = useSocketContext()
-
   const { model } = props
 
   const handleCallRequest = (myCallType) => {
@@ -125,23 +120,25 @@ function CallDetailsPopUp(props) {
               <p className="tw-text-sm tw-text-center tw-mt-4 tw-text-white-color tw-capitalize">
                 minimum call duration {model.minCallDuration} min
               </p>
-              <p className="tw-text-sm tw-text-center tw-mt-3 tw-mb-2 tw-capitalize tw-text-white">
-                what i do in video calls 👇
-              </p>
-              <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20">
-                {["Show you matrix", "Logo design", "Die with you"].map(
-                  (text, index) => {
-                    return (
-                      <p
-                        className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center"
-                        key={`video_call_activity_${text}`}
-                      >
-                        {text}
-                      </p>
-                    )
-                  }
-                )}
-              </div>
+              {props.model.callActivity.videoCall.length > 0 && (
+                <>
+                  <p className="tw-text-sm tw-text-center tw-mt-3 tw-mb-2 tw-capitalize tw-text-white">
+                    what i do in video calls 👇
+                  </p>
+                  <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20">
+                    {props.model.callActivity.videoCall.map((text, index) => {
+                      return (
+                        <p
+                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center"
+                          key={`video_call_activity_${text}`}
+                        >
+                          {text}
+                        </p>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
               <div className="tw-rounded tw-p-2">
                 <p className="tw-mt-1 tw-capitalize tw-flex tw-justify-center tw-items-center tw-text-white-color tw-text-xs">
                   <span className="tw-pr-1">
@@ -183,23 +180,25 @@ function CallDetailsPopUp(props) {
               <p className="tw-text-sm tw-text-center tw-mt-4 tw-text-white-color tw-capitalize">
                 minimum call duration {model.minCallDuration} min
               </p>
-              <p className="tw-text-sm tw-text-center tw-mt-3 tw-mb-2 tw-capitalize tw-text-white">
-                what i do in audio calls 👇
-              </p>
-              <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20">
-                {["Show you matrix", "Logo design", "Die with you"].map(
-                  (text, index) => {
-                    return (
-                      <p
-                        className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center"
-                        key={`video_call_activity_${text}`}
-                      >
-                        {text}
-                      </p>
-                    )
-                  }
-                )}
-              </div>
+              {props.model.callActivity.audioCall.length > 0 && (
+                <>
+                  <p className="tw-text-sm tw-text-center tw-mt-3 tw-mb-2 tw-capitalize tw-text-white">
+                    what i do in audio calls 👇
+                  </p>
+                  <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20">
+                    {props.model.callActivity.audioCall.map((text, index) => {
+                      return (
+                        <p
+                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center"
+                          key={`video_call_activity_${text}`}
+                        >
+                          {text}
+                        </p>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
               <div className="tw-rounded tw-p-2 tw-mt-2">
                 <p className="tw-mt-1 tw-capitalize tw-flex tw-justify-center tw-items-center tw-text-white-color tw-text-xs">
                   <span className="tw-pr-1">

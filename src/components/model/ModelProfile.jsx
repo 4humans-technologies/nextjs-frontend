@@ -57,7 +57,10 @@ function ModelProfile(props) {
   const Profile = () => {
     return (
       <>
-        <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-text-text-black tw-pl-0 md:tw-pl-1 tw-gap-x-4 tw-gap-y-4">
+        <div
+          id="model-profile-area"
+          className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-text-text-black tw-pl-0 md:tw-pl-1 tw-gap-x-4 tw-gap-y-4"
+        >
           <div className="tw-col-span-1">
             <div
               className="tw-w-44 tw-h-44 tw-rounded-full tw-border-second-color tw-border-4"

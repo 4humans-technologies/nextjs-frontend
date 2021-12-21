@@ -266,7 +266,7 @@ function Header(props) {
       } else {
         setModelData({
           hasData: true,
-          ...e.detail,
+          ...e.detail.viewer,
         })
       }
     }

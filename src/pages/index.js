@@ -6,43 +6,12 @@ import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
 import io from "../socket/socket"
 import { useSocketContext } from "../app/socket/SocketContext"
 
-/**
- * just for development not for production 👇👇
- */
-const data = Array(8)
-  .fill("")
-  .map((_empty) => ({
-    relatedUserId: "615eaeea12a4fc1f2c4d29ea",
-    onCall: [true, false][Math.floor(Math.random() * 10) % 2],
-    isStreaming: [true, false][Math.floor(Math.random() * 10) % 2],
-    name: "Vikas Kumawat",
-    age: 22,
-    gender: "Male",
-    dob: 1999,
-    languages: ["Marwadi"],
-    rating: 5,
-    profileImage:
-      "https://png.pngtree.com/png-clipart/20190614/original/pngtree-female-avatar-vector-icon-png-image_3725439.jpg",
-    rootUserId: "615eaeea12a4fc1f2c4d29ec",
-    userName: "rohitkumar9133@gmail.com",
-    userType: "Model",
-  }))
-
 const Home = () => {
   console.log("rendering home")
   const ctx = useAuthContext()
   const socketContext = useSocketContext()
 
-  const [boxGroupsData, setBoxGroupData] = useState([
-    // {
-    //   title: "This just show the layout",
-    //   data: data.slice(0, 7),
-    // },
-    // {
-    //   title: "Check the layout",
-    //   data: data.slice(0, 7),
-    // },
-  ])
+  const [boxGroupsData, setBoxGroupData] = useState([])
 
   useEffect(() => {
     // fetch all live streams
@@ -51,36 +20,71 @@ const Home = () => {
       fetch("/api/website/compose-ui/get-ranking-online-models")
         .then((res) => res.json())
         .then((data) => {
-          setBoxGroupData((prev) => {
-            if (ctx.user.userType !== "Model") {
-              return [
-                ...prev,
-                {
-                  title: "Live Streaming Model",
-                  data: data.resultDocs.map((model) => ({
-                    ...model,
-                    relatedUserId: model._id,
-                  })),
-                },
-              ]
-            } else {
-              /**
-               * hide his own card from landing page
-               */
-              return [
-                ...prev,
-                {
-                  title: "Live Streaming Model",
-                  data: data.resultDocs
-                    .filter((model) => model._id !== ctx.relatedUserId)
-                    .map((model) => ({
+          const renderLiveModels = (data) => {
+            setBoxGroupData((prev) => {
+              if (ctx.user.userType !== "Model") {
+                return [
+                  ...prev,
+                  {
+                    title: "Live Streaming Model",
+                    data: data.map((model) => ({
                       ...model,
                       relatedUserId: model._id,
                     })),
-                },
-              ]
-            }
-          })
+                  },
+                ]
+              } else {
+                /**
+                 * hide his own card from landing page
+                 */
+                return [
+                  ...prev,
+                  {
+                    title: "Live Streaming Model",
+                    data: data
+                      .filter((model) => model._id !== ctx.relatedUserId)
+                      .map((model) => ({
+                        ...model,
+                        relatedUserId: model._id,
+                      })),
+                  },
+                ]
+              }
+            })
+          }
+
+          if (
+            !localStorage.getItem("geoLocation") ||
+            JSON.parse(localStorage.getItem("geoLocation") || "{}")
+              ?.lastUpdated <
+              Date.now() - 86400000
+          ) {
+            fetch("http://ip-api.com/json")
+              .then((res) => res.json())
+              .then((location) => {
+                localStorage.setItem(
+                  "geoLocation",
+                  JSON.stringify({
+                    regionName: location.regionName,
+                    lastUpdated: Date.now(),
+                  })
+                )
+                data = data.resultDocs.filter((model) => {
+                  return !model.bannedStates.includes(location.regionName)
+                })
+                renderLiveModels(data)
+              })
+              .catch((err) => {})
+          } else {
+            const myRegion = JSON.parse(
+              localStorage.getItem("geoLocation")
+            ).regionName
+
+            data = data.resultDocs.filter((model) => {
+              return !model.bannedStates.includes(myRegion)
+            })
+            renderLiveModels(data)
+          }
         })
         .catch((error) => {
           console.error(error)
@@ -93,6 +97,17 @@ const Home = () => {
     if (socketContext.socketSetupDone) {
       const socket = io.getSocket()
       let newModelHandler = (socketData) => {
+        /**
+         * check if client in banned region
+         */
+        const myRegion = JSON.parse(
+          localStorage.getItem("geoLocation")
+        ).regionName
+
+        if (socketData.bannedStates.includes(myRegion)) {
+          return
+        }
+
         if (ctx?.relatedUserId !== socketData.modelId) {
           setBoxGroupData((prev) => {
             if (

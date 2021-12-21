@@ -6,6 +6,8 @@ import { useAuthContext } from "../../app/AuthContext"
 import { toast } from "react-toastify"
 
 let prevStreamViewers = []
+const userType =
+  typeof window !== "undefined" && localStorage.getItem("userType")
 function ViewersListContainer(props) {
   const [viewers, setViewers] = useState([])
   const authCtx = useAuthContext()
@@ -21,45 +23,21 @@ function ViewersListContainer(props) {
           document.getElementById("live-viewer-count").innerText = `${
             data.roomSize - 1
           } Live`
-          if (data?.reJoin) {
-            /* you have access to relatedUserId, do what you want */
-            const prevViewer = prevStreamViewers.find(
-              (viewer) => viewer._id === data.relatedUserId
-            )
-            if (prevViewer) {
-              setViewers((prev) => {
-                prev.push(prevViewer)
-                return [...prev]
-              })
-            } else {
-              /* fetch the viewer details */
-              fetch(
-                `/api/website/stream/get-a-viewers-details/${data.relatedUserId}`
-              )
-                .then((res) => res.json())
-                .then((data) => {
-                  setViewers((prev) => {
-                    prev.push(data.viewer)
-                    return [...prev]
-                  })
-                })
-            }
-          } else {
-            /* new viewer joined */
-            try {
-              toast.success(`${data.viewer.username} Has Joined The Stream`, {
-                autoClose: 1000,
-              })
-            } catch (err) {
-              toast.success(`A Viewer Has Joined The Stream`, {
-                autoClose: 1000,
-              })
-            }
-            setViewers((prev) => {
-              prev.push(data.viewer)
-              return [...prev]
+
+          /* new viewer joined */
+          try {
+            toast.success(`${data.viewer.username} Has Joined The Stream`, {
+              autoClose: 1000,
+            })
+          } catch (err) {
+            toast.success(`A Viewer Has Joined The Stream`, {
+              autoClose: 1000,
             })
           }
+          setViewers((prev) => {
+            prev.push(data.viewer)
+            return [...prev]
+          })
         }
         socket.on("viewer-joined-private", userJoinedHandler)
       }
@@ -84,21 +62,17 @@ function ViewersListContainer(props) {
         }
         socket.on("viewer-left-stream-received", userLeftHandler)
       }
+
       let streamDeleteHandler = (data) => {
         if (data.modelId !== authCtx.relatedUserId) {
           return
         }
-        /* move the current live user in prev streamViewers */
-        prevStreamViewers = [...viewers]
         setViewers([])
       }
 
       socket.on("delete-stream-room", streamDeleteHandler)
 
       const cleanForCall = (data) => {
-        /* move the current live user in prev streamViewers */
-        prevStreamViewers = [...viewers]
-
         /* clear all other user details except the caller one's details */
         setViewers((prev) => {
           return [prev.find((viewer) => viewer._id === data.detail.viewerId)]
@@ -115,6 +89,35 @@ function ViewersListContainer(props) {
         "clear-viewer-list-going-on-call",
         clearForCallEnd
       ) /* clear the list */
+
+      let newStreamHandlerTimeout
+      const newStreamHandler = (data) => {
+        newStreamHandlerTimeout = setTimeout(() => {
+          fetch(`/api/website/stream/get-live-viewers/${data.streamId}-public`)
+            .then((res) => res.json())
+            .then((data) => {
+              try {
+                document.getElementById("live-viewer-count").innerText = `${
+                  data.roomSize - 1
+                } Live`
+              } catch (err) {
+                /* in-case the roomSize was not a NAN */
+              }
+              setViewers((prev) => {
+                const prevIds = prev.map((viewer) => viewer._id)
+                return [
+                  ...JSON.parse(data.viewersList).filter(
+                    (viewer) => !prevIds.includes(viewer._id)
+                  ),
+                  ...prev,
+                ]
+              })
+            })
+            .catch((err) => console.error("Live viewer count not fetched"))
+        }, [8000])
+      }
+
+      socket.on("new-model-started-stream", newStreamHandler)
 
       return () => {
         if (
@@ -137,6 +140,9 @@ function ViewersListContainer(props) {
           "clear-viewer-list-going-on-call",
           clearForCallEnd
         ) /* clear the list */
+
+        socket.off("new-model-started-stream", newStreamHandler)
+        clearTimeout(newStreamHandlerTimeout)
       }
     }
   }, [socketCtx.socketSetupDone])
@@ -151,6 +157,7 @@ function ViewersListContainer(props) {
                 key={`viewer_block${index}`}
                 viewer={viewerData}
                 addAtTheRate={props.addAtTheRate}
+                userType={userType}
               />
             )
           })}

@@ -13,6 +13,26 @@ function TestComponent() {
   const authUpdateContext = useAuthUpdateContext()
   const socketCtx = useSocketContext()
 
+  useEffect(() => {
+    if (
+      JSON.parse(localStorage.getItem("geoLocation") || "{}")?.lastUpdated <
+      Date.now() - 86400000
+    ) {
+      fetch("http://ip-api.com/json")
+        .then((res) => res.json())
+        .then((data) => {
+          localStorage.setItem(
+            "geoLocation",
+            JSON.stringify({
+              regionName: data.regionName,
+              lastUpdated: Date.now(),
+            })
+          )
+        })
+        .catch((err) => {})
+    }
+  }, [])
+
   /* listen for wallet update events */
   useEffect(() => {
     if (socketCtx.socketSetupDone && authCtx.loadedFromLocalStorage) {

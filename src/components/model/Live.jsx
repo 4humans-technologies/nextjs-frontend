@@ -335,30 +335,9 @@ function Live() {
               ctx.relatedUserId,
               token,
               ctx.relatedUserId
-            )
-              .then(() => {
-                setTimeout(() => {
-                  fetch(
-                    `/api/website/stream/get-live-room-count/${data.streamId}-public`
-                  )
-                    .then((res) => res.json())
-                    .then((data) => {
-                      try {
-                        document.getElementById(
-                          "live-viewer-count"
-                        ).innerText = `${data.roomSize - 1} Live`
-                      } catch (err) {
-                        /* in-case the roomSize was not a NAN */
-                      }
-                    })
-                    .catch((err) =>
-                      console.error("Live viewer count not fetched")
-                    )
-                }, [4000])
-              })
-              .catch((err) => {
-                /* toast is handing it's rejection */
-              })
+            ).catch((err) => {
+              /* toast is handing it's rejection */
+            })
             return toast.promise(channelJoin, {
               pending: "Publishing video via secure connection...",
               success: "You are live now",
@@ -1000,44 +979,48 @@ function Live() {
     <div className="tw-w-full">
       {pendingCallRequest.pending && (
         <div className="tw-px-6 tw-py-4 tw-text-white-color tw-font-semibold tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
-          <div className="tw-flex tw-justify-center tw-items-center">
-            <p className="tw-mx-2">
-              Incoming{" "}
-              <span className="tw-text-dreamgirl-red">
-                {pendingCallRequest.callRequests[0].callType}
-              </span>{" "}
-              from{" "}
-              <span className="tw-font-semibold">
-                {pendingCallRequest.callRequests[0].viewer.rootUser.username}
-              </span>
-            </p>
-            <Button
-              className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
-              variant="success"
-              onClick={() =>
-                handleModelResponse(
-                  "accepted",
-                  pendingCallRequest.callRequests[0].viewer._id,
-                  pendingCallRequest.callRequests[0].callType
-                )
-              }
-            >
-              <span className="tw-pl-1">Accept</span>
-            </Button>
-            <Button
-              className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
-              variant="danger"
-              onClick={() =>
-                handleModelResponse(
-                  "rejected",
-                  pendingCallRequest.callRequests[0].viewer._id,
-                  pendingCallRequest.callRequests[0].callType
-                )
-              }
-            >
-              <span className="tw-pl-1">Cancel</span>
-            </Button>
-          </div>
+          {pendingCallRequest.callRequests.map((request, index) => {
+            return (
+              <div className="tw-flex tw-justify-center tw-items-center tw-mb-0.5">
+                <p className="tw-mx-2">
+                  Incoming{" "}
+                  <span className="tw-text-dreamgirl-red">
+                    {request.callType}
+                  </span>{" "}
+                  from{" "}
+                  <span className="tw-font-semibold">
+                    {request.viewer.rootUser.username}
+                  </span>
+                </p>
+                <Button
+                  className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
+                  variant="success"
+                  onClick={() =>
+                    handleModelResponse(
+                      "accepted",
+                      request.viewer._id,
+                      request.callType
+                    )
+                  }
+                >
+                  <span className="tw-pl-1">Accept</span>
+                </Button>
+                <Button
+                  className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
+                  variant="danger"
+                  onClick={() =>
+                    handleModelResponse(
+                      "rejected",
+                      request.viewer._id,
+                      request.callType
+                    )
+                  }
+                >
+                  <span className="tw-pl-1">Cancel</span>
+                </Button>
+              </div>
+            )
+          })}
         </div>
       )}
       <div className="tw-flex tw-w-full">
