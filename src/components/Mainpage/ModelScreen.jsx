@@ -3,7 +3,6 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import { Button } from "react-bootstrap";
 import MediaPlayer from "../UI/MediaPlayer";
 import VideoPlayer from "../UI/VideoPlayer";
-import useAgora from "./useAgora";
 
 const appId = "ae3edf155f1a4e78a544d125c8f53137"; // Replace with your App ID.
 const token =
