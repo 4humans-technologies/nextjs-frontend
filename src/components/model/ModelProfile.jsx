@@ -593,9 +593,9 @@ function ModelProfile(props) {
     <div className=" tw-bg-first-color tw-pt-16 tw-pb-8  md:tw-px-4">
       <div className="">
         {/* checking for tabs */}
-        <div className="tw-inline-flex tw-bg-black tw-text-white   tw-rounded-t-2xl">
+        <div className="tw-inline-flex tw-bg-black tw-text-white   tw-rounded-t-2xl tw-w-full">
           <button
-            className={`tw-px-4 focus:tw-bg-second-color   tw-rounded-t-xl tw-py-1 `}
+            className={`md:tw-px-4 tw-px-1 focus:tw-bg-second-color   tw-rounded-t-xl tw-py-1 `}
             onClick={() => {
               dispatch({ type: "Profile" })
             }}
@@ -604,21 +604,21 @@ function ModelProfile(props) {
             <div>Profile</div>
           </button>
           <button
-            className={`tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl`}
+            className={`md:tw-px-4 tw-px-1 focus:tw-bg-second-color tw-rounded-t-xl`}
             onClick={() => dispatch({ type: "Image" })}
             style={{ cursor: "pointer" }}
           >
             Images
           </button>
           <button
-            className={`tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl `}
+            className={`md:tw-px-4 tw-px-1 focus:tw-bg-second-color tw-rounded-t-xl `}
             onClick={() => dispatch({ type: "PrivateImage" })}
             style={{ cursor: "pointer" }}
           >
             Private Images
           </button>
           <button
-            className={`tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl `}
+            className={`md:tw-px-4 tw-px-1 focus:tw-bg-second-color tw-rounded-t-xl `}
             onClick={() => dispatch({ type: "Videos" })}
             style={{ cursor: "pointer" }}
           >

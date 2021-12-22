@@ -338,9 +338,9 @@ function ViewerScreen(props) {
                 props.setIsChatPlanActive(data.isChatPlanActive)
                 setIsModelOffline(false)
                 document.getElementById("live-viewer-count-lg").innerText =
-                  "Getting live users..."
+                  "🕓🕔..."
                 document.getElementById("live-viewer-count-md").innerText =
-                  "Getting live users..."
+                  "🕓🕔..."
                 if (!data.socketUpdated) {
                   if (ctx.isLoggedIn) {
                     socket.emit("update-client-info", {

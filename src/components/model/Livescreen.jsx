@@ -616,14 +616,14 @@ function LiveScreen(props) {
               />
             </span>
             <input
-              className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow tw-ml-2"
+              className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow md:tw-ml-2"
               placeholder="Start Chatting..."
               ref={chatInputRef}
             ></input>
             <Emoji chatInputRef={chatInputRef} />
             <button
               onClick={sendChatMessage}
-              className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-bg-dreamgirl-red tw-px-4 tw-py-2 tw-mr-4"
+              className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-bg-dreamgirl-red tw-px-4 tw-py-2 md:tw-mr-4 tw-mr-2"
             >
               Send
             </button>

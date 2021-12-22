@@ -258,7 +258,7 @@ function useAgora(client, role, callType) {
             // toast.warn("No token is response")
           }
         } catch (err) {
-          toast.warn(err.message)
+          // toast.warn(err.message)
         }
       }
 

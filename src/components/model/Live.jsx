@@ -1182,17 +1182,16 @@ function Live() {
                       </div>
                     )}
                   </div>
-                  <Button
-                    className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-capitalize"
-                    variant={joinState ? "success" : "danger"}
+                  <span
+                    id="live-viewer-count"
+                    className={
+                      joinState
+                        ? "tw-text-green-color tw-border tw-border-green-color tw-rounded-full tw-px-2 tw-py-0.5 tw-text-sm tw-tracking-tight"
+                        : "tw-text-red-400 tw-border tw-border-red-400 tw-rounded-full tw-px-2 tw-py-0.5 tw-text-sm tw-tracking-tight"
+                    }
                   >
-                    <span
-                      id="live-viewer-count"
-                      className="tw-pl-1 tw-tracking-tight tw-text-sm lg:tw-text-base"
-                    >{`${
-                      joinState ? "Getting live users..." : "You are not live"
-                    }`}</span>
-                  </Button>
+                    {`${joinState ? "🕓🕔..." : "You are not live"}`}
+                  </span>
                 </div>
               </div>
             )}
@@ -1350,7 +1349,7 @@ function Live() {
             >
               <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
                 <input
-                  className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
+                  className="tw-flex md:tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-2 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                   placeholder="Enter your message here"
                   ref={chatInputRef}
                   id="chat-message-input"

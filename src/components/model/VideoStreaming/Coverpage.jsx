@@ -4,8 +4,11 @@ import { Button } from "react-bootstrap"
 import { SaveRounded } from "@material-ui/icons"
 import BackupRoundedIcon from "@material-ui/icons/BackupRounded"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
+import { CoverUpdate } from "../../UI/Profile/Emailpassword"
+import modalContext from "../../../app/ModalContext"
 
 function Coverpage() {
+  const modalCtx = modalContext()
   const [coverImage, setCoverImage] = useState("/cover-photo.png")
   const authContext = useAuthContext()
   // function to handle cover image change
@@ -54,7 +57,7 @@ function Coverpage() {
       <div className="tw-bg-second-color tw-text-white tw-px-4 tw-rounded">
         <div>
           <div className="tw-border-b-[1px] tw-border-white-color tw-mb-4 tw-py-4 tw-flex tw-items-center">
-            <ImageRoundedIcon fontSize="medium" />{" "}
+            <ImageRoundedIcon fontSize="medium" />
             <span className="">Cover Page</span>
           </div>
           <img
@@ -77,8 +80,10 @@ function Coverpage() {
               <Button
                 className="tw-rounded-full tw-flex tw-items-center tw-text-sm"
                 variant="success"
+                onClick={() => modalCtx.showModalWithContent(<CoverUpdate />)}
               >
-                <BackupRoundedIcon fontSize="small" /> <span className="tw-pl-2">Update Image</span>
+                <BackupRoundedIcon fontSize="small" />
+                <span className="tw-pl-2">Update Image</span>
               </Button>
             </label>
           </div>
