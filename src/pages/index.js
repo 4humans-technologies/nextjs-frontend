@@ -59,7 +59,7 @@ const Home = () => {
               ?.lastUpdated <
               Date.now() - 86400000
           ) {
-            fetch("http://ip-api.com/json")
+            fetch("/api/website/get-geo-location")
               .then((res) => res.json())
               .then((location) => {
                 localStorage.setItem(
