@@ -8,7 +8,7 @@ import Link from "next/link"
 
 function Mainbox(props) {
   return (
-    <div className="">
+    <div className="live-model-box">
       <Link
         href={props.parent === "index" ? `/view-stream/${props.modelId}` : "/"}
       >
@@ -22,13 +22,19 @@ function Mainbox(props) {
                 : "This model is live streaming"
             }
           />
-          {props.onCall ? (
-            <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-indigo-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full">
-              On Call
+          {props.isStreaming ? (
+            <p
+              id="model-status"
+              className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
+            >
+              Streaming
             </p>
           ) : (
-            <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5  tw-relative tw-bottom-0 tw-w-full">
-              Streaming
+            <p
+              id="model-status"
+              className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-indigo-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
+            >
+              On Call
             </p>
           )}
         </span>

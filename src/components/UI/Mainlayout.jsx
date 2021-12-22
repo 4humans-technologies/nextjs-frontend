@@ -10,7 +10,7 @@ function MainLayout(props) {
     <div className="tw-w-full">
       <Header />
       <Sidebar />
-      <div className="tw-w-full tw-mt-[7.2rem]  tw-bg-first-color tw-pb-8 tw-pt-2">
+      <div className="tw-w-full tw-mt-[7.2rem] tw-bg-first-color tw-pb-8">
         {props.children}
       </div>
       <Footer />

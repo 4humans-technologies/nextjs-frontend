@@ -227,7 +227,7 @@ function LiveScreen(props) {
     chatInputRef.current.value = ""
   }
 
-  const addAtTheRate = (username) => {
+  const addAtTheRate = useCallback((username) => {
     if (chatInputRef.current.value.trim() !== "") {
       chatInputRef.current.value = `${chatInputRef.current.value} @${username}`
     } else {
@@ -236,7 +236,7 @@ function LiveScreen(props) {
     document.getElementById("message-input").scrollIntoView({
       block: "center",
     })
-  }
+  }, [])
 
   const onClickSendTipMenu = (activity) => {
     /*  */
@@ -308,6 +308,11 @@ function LiveScreen(props) {
     props.modelProfileData,
   ])
 
+  const viewerListAddAtTheRate = useCallback((username) => {
+    addAtTheRate(username)
+    setChatWindow(chatWindowOptions.PUBLIC)
+  }, [])
+
   return (
     <>
       <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
@@ -325,7 +330,18 @@ function LiveScreen(props) {
             </div>
           </div>
         )}
-        <div className="tw-relative tw-bg-dark-black md:tw-w-[60%] tw-w-full  tw-h-[30rem] md:tw-h-[37rem] lg:tw-h-[82vh] ">
+        <div
+          id="viewerscreen-area"
+          className="tw-relative tw-bg-dark-black md:tw-w-[60%] tw-w-full  tw-h-[30rem] md:tw-h-[37rem] lg:tw-h-[82vh] "
+        >
+          {isModelOffline || callType === "audioCall" ? (
+            <div
+              className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-bg-cover tw-bg-no-repeat tw-z-[9]"
+              style={{
+                backgroundImage: `url('${props.modelProfileData?.backGroundImage}')`,
+              }}
+            ></div>
+          ) : null}
           <ViewerScreen
             setIsChatPlanActive={setIsChatPlanActive}
             setCallOnGoing={setCallOnGoing}
@@ -507,24 +523,6 @@ function LiveScreen(props) {
                 Private Chat
               </span>
             </button>
-            {authCtx.user.userType !== "Model" && (
-              <button
-                className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-mr-4 ${
-                  chatWindow === chatWindowOptions?.TIP_MENU
-                    ? "tw-text-dreamgirl-red tw-font-semibold"
-                    : "tw-text-white-color tw-font-normal sm:-font-medium"
-                }`}
-                onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
-              >
-                <LocalActivityIcon
-                  className="tw-mr-1 tw-my-auto"
-                  fontSize="small"
-                />
-                <span className="tw-my-auto tw-text-xs md:tw-text-sm">
-                  Tip Menu
-                </span>
-              </button>
-            )}
             <button
               className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-mr-4 ${
                 chatWindow === chatWindowOptions?.USERS
@@ -571,7 +569,7 @@ function LiveScreen(props) {
                   scrollOnChat={scrollOnChat}
                   hasActivePlan={isChatPlanActive}
                   setIsChatPlanActive={setIsChatPlanActive}
-                  modalCtx={modalCtx}
+                  modalCtx={!isChatPlanActive && modalCtx}
                   chatWindowRef={chatWindowRef}
                   modelUsername={props.modelProfileData?.rootUser.username}
                 />
@@ -600,10 +598,7 @@ function LiveScreen(props) {
               >
                 <ViewerSideViewersListContainer
                   callOnGoing={callOnGoing}
-                  addAtTheRate={(username) => {
-                    addAtTheRate(username)
-                    setChatWindow(chatWindowOptions.PUBLIC)
-                  }}
+                  addAtTheRate={viewerListAddAtTheRate}
                 />
               </div>
             </div>
@@ -611,7 +606,7 @@ function LiveScreen(props) {
 
           <div
             id="message-input"
-            className="tw-flex tw-items-center tw-py-1.5 tw-bg-second-color tw-text-white tw-absolute tw-bottom-1 tw-w-full tw-z-[300] tw-right-0 tw-left-3 "
+            className="tw-flex tw-items-center tw-pb-2 tw-pt-2.5 tw-bg-second-color tw-text-white tw-absolute tw-w-full tw-z-[300] tw-right-0 tw-left-0 tw-bottom-0"
           >
             <span className="circle-shadow tw-h-10 tw-w-10 tw-inline-grid tw-flex-shrink-0 tw-p-1  tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]">
               <img

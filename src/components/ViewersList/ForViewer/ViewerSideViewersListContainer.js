@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import SingleViewerBlock from "../SingleViewerBlock"
 import io from "../../../socket/socket"
 import { useSocketContext } from "../../../app/socket/SocketContext"
-import { useAuthContext } from "../../../app/AuthContext"
 import { toast } from "react-toastify"
 
 let prevStreamViewers = []
@@ -56,12 +55,6 @@ function ViewerSideViewersListContainer(props) {
       }
       socket.on("viewer-left-stream-received", userLeftHandler)
 
-      let streamDeleteHandler = (data) => {
-        setViewers([])
-      }
-
-      socket.on("delete-stream-room", streamDeleteHandler)
-
       const clearForCall = () => {
         setViewers([])
       }
@@ -114,6 +107,19 @@ function ViewerSideViewersListContainer(props) {
       }
       socket.on("new-model-started-stream", newStreamHandler)
 
+      let streamDeleteHandler = (data) => {
+        if (data.modelId !== localStorage.getItem("relatedUserId")) {
+          return
+        }
+        if (newStreamHandlerTimeout) {
+          clearTimeout(newStreamHandlerTimeout)
+          newStreamHandlerTimeout = null
+        }
+        setViewers([])
+      }
+
+      socket.on("delete-stream-room", streamDeleteHandler)
+
       const handleViewersList = (data) => {
         if (data.detail?.viewersList) {
           setViewers((prev) => {
@@ -154,7 +160,6 @@ function ViewerSideViewersListContainer(props) {
         socket.off("new-model-started-stream", newStreamHandler)
 
         document.removeEventListener("viewers-list-fetched", handleViewersList)
-
         clearTimeout(newStreamHandlerTimeout)
       }
     }

@@ -20,81 +20,7 @@ import Headerui from "../UI/HeaderUI"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import ModelDetailHeader from "../ViewerScreen/ModelDetailHeader"
-import CameraIcon from "@material-ui/icons/Camera"
-import PlayCircleFilledIcon from "@material-ui/icons/PlayCircleFilled"
-
-const ViewerFollow = (props) => {
-  return (
-    <div className="tw-bg-first-color tw-rounded tw-mb-2 tw-px-2 tw-py-2 tw-flex tw-items-center tw-justify-start">
-      <span className="tw-uppercase tw-w-10 tw-h-10 tw-rounded-full tw-text-white-color tw-font-semibold tw-text-xl tw-bg-dreamgirl-red tw-grid tw-place-content-center tw-ring-2 tw-ring-text-black">
-        {props?.profileImage ? (
-          <img
-            /* src="/male-model.jpeg" */
-            src={props.profileImage}
-            alt=""
-            className="tw-w-10 tw-h-10 tw-rounded-full tw-ring-2 tw-ring-text-black"
-          />
-        ) : (
-          props.name[0]
-        )}
-      </span>
-      <div className="tw-ml-2 tw-flex-grow">
-        <p className="tw-text-left">{props.message}</p>
-        <p className="tw-text-text-black tw-text-xs tw-text-right">
-          {props.dateTime}
-        </p>
-      </div>
-    </div>
-  )
-}
-
-const ViewerTipped = (props) => {
-  return (
-    <div className="tw-bg-first-color tw-rounded tw-mb-2 tw-px-2 tw-py-2 tw-flex tw-items-center tw-justify-start">
-      <img
-        src="/coins.png"
-        alt=""
-        className="tw-w-10 tw-h-10 tw-object-contain"
-      />
-      <div className="tw-ml-2 tw-flex-grow">
-        <p className="tw-text-left">{props.message}</p>
-        <div className="tw-flex tw-items-center">
-          <span className="tw-flex-grow tw-text-xs tw-text-left">
-            added {props.modelGot} coins
-          </span>
-          <span className="tw-text-text-black tw-text-xs">
-            {props.dateTime}
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const AlbumPurchase = (props) => {
-  return (
-    <div className="tw-bg-first-color tw-rounded tw-mb-2 tw-px-2 tw-py-2 tw-flex tw-items-center tw-justify-start">
-      <div className="tw-h-10 tw-w-10 tw-text-white">
-        {props.albumType === "image-album-purchase" ? (
-          <CameraIcon fontSize="large" />
-        ) : (
-          <PlayCircleFilledIcon fontSize="large" />
-        )}
-      </div>
-      <div className="tw-ml-2 tw-flex-grow">
-        <p className="tw-text-left">{props.message}</p>
-        <div className="tw-flex tw-items-center">
-          <span className="tw-flex-grow tw-text-xs tw-text-left">
-            added {props.debited} coins
-          </span>
-          <span className="tw-text-text-black tw-text-xs">
-            {props.dateTime}
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
+import Notifications from "./Header/Notifications"
 
 const initialNotifications = [
   {
@@ -438,21 +364,24 @@ function Header(props) {
                           />
                         )}
                         <div className="tw-flex tw-items-center">
-                          <button className="tw-text-white-color tw-pr-2 tw-relative bell-one">
-                            {notifications.length > 0 ? (
-                              <NotificationsActiveIcon />
-                            ) : (
-                              <NotificationsIcon />
-                            )}
-                            <span className="tw-absolute tw-top-0 tw-h-52 tw-bg-green-color tw-p-4">
-                              {/* render all the notification */}
-                              {notifications.map((notification, index) => {
-                                return (
-                                  <div className="">This is notification</div>
-                                )
-                              })}
-                            </span>
-                          </button>
+                          <span className="tw-relative">
+                            <button
+                              onClick={() =>
+                                setShowNotification((prev) => !prev)
+                              }
+                              className="tw-text-white-color tw-pr-5 bell-four"
+                            >
+                              {notifications.length > 0 ? (
+                                <NotificationsActiveIcon />
+                              ) : (
+                                <NotificationsIcon />
+                              )}
+                            </button>
+                            <Notifications
+                              show={showNotifications}
+                              notifications={notifications}
+                            />
+                          </span>
                         </div>
                         <div
                           className="tw-flex tw-self-center"
@@ -488,27 +417,30 @@ function Header(props) {
                             <Link
                               href={`/${authContext.user.user.username}/goLive`}
                             >
-                              <a className="tw-bg-red-500 text-sm lg:tw-text-base tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1`  tw-inline-block tw-mx-4 tw-rounded-full  tw-whitespace-nowrap">
+                              <a className="tw-bg-red-500 text-sm tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1`  tw-inline-block tw-mx-3 tw-rounded-full  tw-whitespace-nowrap">
                                 Go Live
                               </a>
                             </Link>
                           )}
                           <div className="tw-flex tw-items-center">
-                            <button className="tw-text-white-color tw-pr-2 tw-relative bell-two">
-                              {notifications.length > 0 ? (
-                                <NotificationsActiveIcon />
-                              ) : (
-                                <NotificationsIcon />
-                              )}
-                              <span className="tw-absolute tw-top-0 tw-h-52 tw-bg-green-color tw-p-4">
-                                {/* render all the notification */}
-                                {notifications.map((notification, index) => {
-                                  return (
-                                    <div className="">This is notification</div>
-                                  )
-                                })}
-                              </span>
-                            </button>
+                            <span className="tw-relative">
+                              <button
+                                onClick={() =>
+                                  setShowNotification((prev) => !prev)
+                                }
+                                className="tw-text-white-color tw-pr-5 bell-four"
+                              >
+                                {notifications.length > 0 ? (
+                                  <NotificationsActiveIcon />
+                                ) : (
+                                  <NotificationsIcon />
+                                )}
+                              </button>
+                              <Notifications
+                                show={showNotifications}
+                                notifications={notifications}
+                              />
+                            </span>
                             <img
                               src="/coins.png"
                               alt=""
@@ -529,21 +461,24 @@ function Header(props) {
                     authContext.user.userType == "Viewer" ? (
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
                         <div className="tw-mx-4 tw-flex tw-items-center">
-                          <button className="tw-text-white-color tw-pr-2 tw-relative bell-three">
-                            {notifications.length > 0 ? (
-                              <NotificationsActiveIcon />
-                            ) : (
-                              <NotificationsIcon />
-                            )}
-                            <span className="tw-absolute tw-top-0 tw-h-52 tw-bg-green-color tw-p-4">
-                              {/* render all the notification */}
-                              {notifications.map((notification, index) => {
-                                return (
-                                  <div className="">This is notification</div>
-                                )
-                              })}
-                            </span>
-                          </button>
+                          <span className="tw-relative">
+                            <button
+                              onClick={() =>
+                                setShowNotification((prev) => !prev)
+                              }
+                              className="tw-text-white-color tw-pr-5 bell-four"
+                            >
+                              {notifications.length > 0 ? (
+                                <NotificationsActiveIcon />
+                              ) : (
+                                <NotificationsIcon />
+                              )}
+                            </button>
+                            <Notifications
+                              show={showNotifications}
+                              notifications={notifications}
+                            />
+                          </span>
                           <img
                             src="/coins.png"
                             alt=""
@@ -577,7 +512,7 @@ function Header(props) {
                           )}
                           {/* profile */}
                           <div
-                            className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-right-4 ${
+                            className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-2 tw-rounded tw-text-white tw-right-4 ${
                               headerProfileShow ? "" : "tw-hidden"
                             }`}
                           >
@@ -589,12 +524,6 @@ function Header(props) {
                     ) : (
                       // login at large screen model
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                        {/* <button
-                          className="tw-mx-4 tw-px-4 tw-py-2 tw-rounded-full hover:tw-bg-white hover:tw-text-black hover:tw-border tw-border-white tw-capitalize"
-                          onClick={updateAuthContext.logout}
-                        >
-                          Logout
-                        </button> */}
                         <div className="tw-flex tw-items-center tw-mr-3">
                           <span className="tw-relative">
                             <button
@@ -609,57 +538,10 @@ function Header(props) {
                                 <NotificationsIcon />
                               )}
                             </button>
-                            {showNotifications && (
-                              <span className="tw-absolute tw-left-0 tw-top-12 tw-bg-second-color tw-p-2 tw-w-64 tw-translate-x-[-50%] tw-rounded">
-                                <div className="tw-overflow-y-auto tw-h-52 notif-container">
-                                  {notifications.map((notif, index) => {
-                                    switch (notif.tag) {
-                                      case "viewer-follow":
-                                        return (
-                                          <ViewerFollow
-                                            name={notif.data.name}
-                                            message={notif.message}
-                                            profileImage={
-                                              notif.data.profileImage
-                                            }
-                                            dateTime={`${Math.floor(
-                                              (Date.now() - notif.time) /
-                                                3600000
-                                            )}h ago`}
-                                          />
-                                        )
-                                        break
-                                      case "viewer-coins-gift":
-                                        return (
-                                          <ViewerTipped
-                                            message={notif.message}
-                                            modelGot={notif.data.modelGot}
-                                            dateTime={`${Math.floor(
-                                              (Date.now() - notif.time) /
-                                                3600000
-                                            )}h ago`}
-                                          />
-                                        )
-                                      case "video-album-purchase" ||
-                                        "image-album-purchase":
-                                        return (
-                                          <AlbumPurchase
-                                            albumType={notif.tag}
-                                            message={notif.message}
-                                            dateTime={`${Math.floor(
-                                              (Date.now() - notif.time) /
-                                                3600000
-                                            )}h ago`}
-                                            debited={notif.data.debited}
-                                          />
-                                        )
-                                      default:
-                                        break
-                                    }
-                                  })}
-                                </div>
-                              </span>
-                            )}
+                            <Notifications
+                              show={showNotifications}
+                              notifications={notifications}
+                            />
                           </span>
                         </div>
                         <div className="tw-mx-4 tw-flex ">
@@ -678,7 +560,7 @@ function Header(props) {
                           <Link
                             href={`/${authContext.user.user.username}/goLive`}
                           >
-                            <a className="tw-bg-red-500 text-sm lg:tw-text-base tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1  tw-inline-block tw-mx-4 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
+                            <a className="tw-bg-red-500 text-sm tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1  tw-inline-block tw-mx-3 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
                               Go Live
                             </a>
                           </Link>

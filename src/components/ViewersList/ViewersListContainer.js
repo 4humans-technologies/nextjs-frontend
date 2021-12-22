@@ -10,7 +10,6 @@ const userType =
   typeof window !== "undefined" && localStorage.getItem("userType")
 function ViewersListContainer(props) {
   const [viewers, setViewers] = useState([])
-  const authCtx = useAuthContext()
   const socketCtx = useSocketContext()
 
   useEffect(() => {
@@ -63,15 +62,6 @@ function ViewersListContainer(props) {
         socket.on("viewer-left-stream-received", userLeftHandler)
       }
 
-      let streamDeleteHandler = (data) => {
-        if (data.modelId !== authCtx.relatedUserId) {
-          return
-        }
-        setViewers([])
-      }
-
-      socket.on("delete-stream-room", streamDeleteHandler)
-
       const cleanForCall = (data) => {
         /* clear all other user details except the caller one's details */
         setViewers((prev) => {
@@ -116,6 +106,19 @@ function ViewersListContainer(props) {
             .catch((err) => console.error("Live viewer count not fetched"))
         }, [8000])
       }
+
+      let streamDeleteHandler = (data) => {
+        if (data.modelId !== localStorage.getItem("relatedUserId")) {
+          return
+        }
+        if (newStreamHandlerTimeout) {
+          clearTimeout(newStreamHandlerTimeout)
+          newStreamHandlerTimeout = null
+        }
+        setViewers([])
+      }
+
+      socket.on("delete-stream-room", streamDeleteHandler)
 
       socket.on("new-model-started-stream", newStreamHandler)
 

@@ -678,3 +678,18 @@ select {
 }
 
 /* state list */
+#model-status {
+  transition-property: opacity;
+  transition-duration: 300ms;
+}
+.live-model-box:hover #model-status {
+  opacity: 100;
+  transition-property: opacity;
+  transition-duration: 300ms;
+}
+
+.notif-wrapper {
+  box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
+  -webkit-box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
+  -moz-box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
+}
