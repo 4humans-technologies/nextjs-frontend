@@ -190,6 +190,10 @@ function Profile() {
           field: "bodyType",
           value: profileEdit.bodyType,
         },
+        {
+          field: "bio",
+          value: profileEdit.bio,
+        },
       ]),
     })
 
@@ -209,6 +213,7 @@ function Profile() {
             bodyType: profileEdit.bodyType,
             eyeColor: profileEdit.eyeColor,
             hairColor: profileEdit.hairColor,
+            bio: profileEdit.bio,
           },
         },
       },
@@ -696,6 +701,7 @@ function Profile() {
           })`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
+          objectFit: "fill",
         }}
       >
         <p
@@ -873,7 +879,7 @@ function Profile() {
                     setInfoedited(false)
                     profileFunction()
                   }}
-                  className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium"
+                  className="tw-rounded-full md:tw-px-4 tw-px-16 tw-border-2 tw-border-white-color tw-font-medium  "
                 >
                   Save
                 </button>
@@ -881,15 +887,15 @@ function Profile() {
             </div>
 
             {/* change email */}
-            <div className="tw-bg-first-color tw-flex tw-items-center tw-justify-between tw-py-4 tw-rounded-md tw-mt-4 tw-px-4">
-              <p className="">
-                My Email{" "}
-                <span className="tw-ml-4 tw-text-lg tw-font-semibold">
+            <div className="tw-bg-first-color  tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 md:tw-flex md:tw-items-center md:tw-justify-between">
+              <p className="tw-flex tw-items-center tw-justify-between">
+                My Email
+                <span className="md:tw-ml-4 md:tw-text-lg md:tw-font-semibold  tw-text-sm tw-font-normal">
                   {authContext.user.user.relatedUser.email}
                 </span>
               </p>
               <button
-                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium"
+                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium "
                 onClick={() => modalCtx.showModalWithContent(<EmailChange />)}
               >
                 Change Email
@@ -897,9 +903,9 @@ function Profile() {
             </div>
 
             {/* change password */}
-            <div className="tw-bg-first-color tw-flex tw-items-center tw-justify-between tw-py-4 tw-rounded-md tw-mt-4 tw-px-4">
-              <p className="">
-                My Password{" "}
+            <div className="tw-bg-first-color  tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 md:tw-flex md:tw-items-center md:tw-justify-between">
+              <p className="tw-flex tw-items-center tw-justify-between">
+                My Password
                 <span className="tw-ml-4 tw-font-semibold">xxxxxxxx</span>
               </p>
               <button
@@ -1190,7 +1196,7 @@ function Profile() {
                   (url) => {
                     return (
                       <div>
-                        <video src={url} autoPlay controls></video>
+                        <video src={url} controls></video>
                       </div>
                     )
                   }
@@ -1356,7 +1362,7 @@ function Profile() {
                     (url) => {
                       return (
                         <div>
-                          <video src={url} autoPlay controls></video>
+                          <video src={url} controls></video>
                         </div>
                       )
                     }

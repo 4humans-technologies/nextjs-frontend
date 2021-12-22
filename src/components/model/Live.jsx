@@ -1350,7 +1350,7 @@ function Live() {
             >
               <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
                 <input
-                  className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
+                  className="tw-flex md:tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-2 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                   placeholder="Enter your message here"
                   ref={chatInputRef}
                   id="chat-message-input"

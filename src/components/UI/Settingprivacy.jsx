@@ -43,18 +43,32 @@ function Settingprivacy() {
     accountType: "Saving",
   })
   useEffect(() => {
-    fetch("/api/website/profile/get-model-token-history", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((resp) => resp.json())
-      .then((data) => {
-        setTokenData(data.results)
-        allHistory = data.results
+    if (authContext.user.userType === "Model") {
+      fetch("/api/website/profile/get-model-token-history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .catch((err) => console.log(err))
+        .then((resp) => resp.json())
+        .then((data) => {
+          setTokenData(data.results)
+          allHistory = data.results
+        })
+        .catch((err) => console.log(err))
+    } else {
+      fetch("/api/website/profile/viewer/get-viewer-token-history", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          setTokenData(data.results)
+          allHistory = data.results
+        })
+        .catch((err) => console.log(err))
+    }
   }, [])
 
   // for the bank account
@@ -197,43 +211,89 @@ function Settingprivacy() {
             </form>
           </div>
 
-          <div className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
-            <div>Date</div>
-            <div className="tw-hidden md:tw-block">Time</div>
-            <div>Action</div>
-            <div>Gifted By</div>
+          {authContext.user.userType === "Model" ? (
             <div>
-              Token
-              <ExpandLessIcon
-                className=" tw-cursor-pointer"
-                onClick={() => {
-                  assendHandler()
-                }}
-              />
-              <ExpandLessIcon
-                className=" tw-cursor-pointer tw-rotate-180"
-                onClick={() => {
-                  decendHandler()
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="tw-max-h-72 tw-overflow-y-auto">
-            {tokenData?.map((item, index) => (
-              <div
-                className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  tw-bg-second-color tw-text-xl tw-font-bold  tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
-                key={index}
-              >
-                <div>{item.time.split("T")[0]}</div>
-                <div className="tw-hidden md:tw-block">{item.time.split("T")[1].split(".")[0]}
+              <div className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
+                <div>Date</div>
+                <div className="tw-hidden md:tw-block">Time</div>
+                <div>Action</div>
+                <div>Gifted By</div>
+                <div>
+                  Token
+                  <ExpandLessIcon
+                    className=" tw-cursor-pointer"
+                    onClick={() => {
+                      assendHandler()
+                    }}
+                  />
+                  <ExpandLessIcon
+                    className=" tw-cursor-pointer tw-rotate-180"
+                    onClick={() => {
+                      decendHandler()
+                    }}
+                  />
                 </div>
-                <div>{act[item.givenFor]}</div>
-                <div>{item.by.name}</div>
-                <div>{item.tokenAmount}</div>
               </div>
-            ))}
-          </div>
+
+              <div className="tw-max-h-72 tw-overflow-y-auto">
+                {tokenData?.map((item, index) => (
+                  <div
+                    className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  tw-bg-second-color tw-text-xl tw-font-bold  tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
+                    key={index}
+                  >
+                    <div>{item.time.split("T")[0]}</div>
+                    <div className="tw-hidden md:tw-block">
+                      {item.time.split("T")[1].split(".")[0]}
+                    </div>
+                    <div>{act[item.givenFor]}</div>
+                    <div>{item.by.name}</div>
+                    <div>{item.tokenAmount}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
+                <div>Date</div>
+                <div className="tw-hidden md:tw-block">Time</div>
+                <div>Action</div>
+                <div>Gifted To</div>
+                <div>
+                  Token
+                  <ExpandLessIcon
+                    className=" tw-cursor-pointer"
+                    onClick={() => {
+                      assendHandler()
+                    }}
+                  />
+                  <ExpandLessIcon
+                    className=" tw-cursor-pointer tw-rotate-180"
+                    onClick={() => {
+                      decendHandler()
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="tw-max-h-72 tw-overflow-y-auto">
+                {tokenData?.map((item, index) => (
+                  <div
+                    className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  tw-bg-second-color tw-text-xl tw-font-bold  tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
+                    key={index}
+                  >
+                    <div>{item.time.split("T")[0]}</div>
+                    <div className="tw-hidden md:tw-block">
+                      {item.time.split("T")[1].split(".")[0]}
+                    </div>
+                    <div>{act[item.givenFor]}</div>
+                    <div>{item.forModel.name}</div>
+                    <div>{item.tokenAmount}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         {/* it's token history */}
         {/* Bank Details  */}
