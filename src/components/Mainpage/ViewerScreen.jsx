@@ -14,6 +14,7 @@ import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import { toast } from "react-toastify"
+import socket from "../../socket/socket"
 
 /**
  * If this screen is being mounted then it is understood by default that,
@@ -422,7 +423,7 @@ function ViewerScreen(props) {
         document.getElementById("live-viewer-count-md").innerText = "0 Live"
 
         toast.info(
-          "Model ended the stream, will auto-connect if she starts again 😀"
+          "Model ended the stream, will auto-connect if she starts again"
         )
         const modelDataEvent = new CustomEvent("model-profile-data-fetched", {
           detail: {
@@ -983,7 +984,12 @@ function ViewerScreen(props) {
                                       toast.info(
                                         " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
                                         {
-                                          position: "top-center",
+                                          position:
+                                            document.body.clientHeight /
+                                              document.body.clientWidth >
+                                            0
+                                              ? "bottom-center"
+                                              : "top-center",
                                           autoClose: false,
                                         }
                                       )
@@ -994,7 +1000,12 @@ function ViewerScreen(props) {
                                       toast.info(
                                         " 👈👈 Please ALLOW CAMERA permissions.",
                                         {
-                                          position: "top-center",
+                                          position:
+                                            document.body.clientHeight /
+                                              document.body.clientWidth >
+                                            0
+                                              ? "bottom-center"
+                                              : "top-center",
                                           autoClose: false,
                                         }
                                       )
@@ -1005,7 +1016,12 @@ function ViewerScreen(props) {
                                       toast.info(
                                         " 👈👈 Please ALLOW MICROPHONE permissions.",
                                         {
-                                          position: "top-center",
+                                          position:
+                                            document.body.clientHeight /
+                                              document.body.clientWidth >
+                                            0
+                                              ? "bottom-center"
+                                              : "top-center",
                                           autoClose: false,
                                         }
                                       )
@@ -1080,7 +1096,12 @@ function ViewerScreen(props) {
                                 toast.info(
                                   " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
                                   {
-                                    position: "top-center",
+                                    position:
+                                      document.body.clientHeight /
+                                        document.body.clientWidth >
+                                      0
+                                        ? "bottom-center"
+                                        : "top-center",
                                     autoClose: false,
                                   }
                                 )
@@ -1088,7 +1109,12 @@ function ViewerScreen(props) {
                                 toast.info(
                                   " 👈👈 Please ALLOW CAMERA permissions.",
                                   {
-                                    position: "top-center",
+                                    position:
+                                      document.body.clientHeight /
+                                        document.body.clientWidth >
+                                      0
+                                        ? "bottom-center"
+                                        : "top-center",
                                     autoClose: false,
                                   }
                                 )
@@ -1099,7 +1125,12 @@ function ViewerScreen(props) {
                                 toast.info(
                                   " 👈👈 Please ALLOW MICROPHONE permissions.",
                                   {
-                                    position: "top-center",
+                                    position:
+                                      document.body.clientHeight /
+                                        document.body.clientWidth >
+                                      0
+                                        ? "bottom-center"
+                                        : "top-center",
                                     autoClose: false,
                                   }
                                 )
@@ -1140,6 +1171,14 @@ function ViewerScreen(props) {
                 }
               )
             } else {
+              /**
+               * clear viewer list
+               */
+              const clearViewerListEvent = new Event(
+                "clean-viewer-list-going-on-call"
+              )
+              document.dispatchEvent(clearViewerListEvent)
+
               /* unsubscribe stream and close connection to agora */
               localStorage.removeItem("rtcToken")
               localStorage.removeItem("rtcTokenExpireIn")
@@ -1216,15 +1255,9 @@ function ViewerScreen(props) {
               const socketRooms =
                 JSON.parse(sessionStorage.getItem("socket-rooms")) || []
               if (socketRooms.find((room) => room.endsWith("-public"))) {
-                socket.emit(
-                  "take-me-out-of-these-rooms",
-                  [socketRooms.find((room) => room.endsWith("-public"))],
-                  (response) => {
-                    if (response.status === "ok") {
-                      console.log("removed from public room")
-                    }
-                  }
-                )
+                socket.emit("take-me-out-of-these-rooms", [
+                  socketRooms.find((room) => room.endsWith("-public")),
+                ])
               }
             }
           } else if (data.response === "rejected") {

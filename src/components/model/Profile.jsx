@@ -1018,7 +1018,7 @@ function Profile() {
             <div>
               <div className=" tw-bg-first-color tw-py-2 tw-px-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
                 <h1 className="tw-mb-3 tw-font-semibold tw-text-lg tw-text-white">
-                  Set Actions
+                  Set Activities
                 </h1>
                 <form
                   id="action-form"

@@ -61,7 +61,7 @@ function Tip() {
     <div className=" tw-bg-second-color tw-px-4 tw-rounded tw-text-white-color">
       <div className="tw-border-b-[1px] tw-border-white-color tw-mb-4 tw-py-4 tw-flex tw-items-center">
         <LocalActivityOutlinedIcon />{" "}
-        <span className="tw-pl-1.5">Set Actions</span>
+        <span className="tw-pl-1.5">Set Activities</span>
       </div>
       <form id="action-form" className="tw-max-h-64 tw-overflow-y-auto tw-py-2">
         {dynamicData.map((item, index) => {

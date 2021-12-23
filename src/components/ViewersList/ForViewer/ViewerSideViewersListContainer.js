@@ -22,19 +22,13 @@ function ViewerSideViewersListContainer(props) {
            * add viewers excluding self
            */
           if (data.viewer._id !== localStorage.getItem("relatedUserId")) {
-            /* new viewer joined */
-            toast.success(
-              `${
-                data.viewer?.username
-                  ? data.viewer.username + "Has Joined The Stream"
-                  : "A Viewer Has Joined The Stream"
-              }`,
-              {
-                autoClose: 1000,
-              }
-            )
-
             setViewers((prev) => {
+              /**
+               * allow unique users only
+               */
+              if (prev.find((viewer) => viewer._id === data.viewer._id)) {
+                return prev
+              }
               prev.push(data.viewer)
               return [...prev]
             })
@@ -59,7 +53,13 @@ function ViewerSideViewersListContainer(props) {
         setViewers([])
       }
 
-      document.addEventListener("clean-viewer-list-going-on-call", clearForCall)
+      document.addEventListener(
+        "clean-viewer-list-going-on-call",
+        clearForCall,
+        {
+          passive: true,
+        }
+      )
 
       /**
        * listen for new model started streaming
@@ -121,12 +121,16 @@ function ViewerSideViewersListContainer(props) {
       socket.on("delete-stream-room", streamDeleteHandler)
 
       const handleViewersList = (data) => {
+        /**
+         * this is called when data is fetched in viewerScreen initially
+         */
         if (data.detail?.viewersList) {
           setViewers((prev) => {
             const myId = localStorage.getItem("relatedUserId")
+            const prevIds = prev.map((viewer) => viewer._id)
             return [
               ...data.detail.viewersList.filter(
-                (viewer) => viewer._id !== myId
+                (viewer) => viewer._id !== myId && !prevIds.includes(viewer._id)
               ),
               ...prev,
             ]
@@ -136,6 +140,7 @@ function ViewerSideViewersListContainer(props) {
 
       document.addEventListener("viewers-list-fetched", handleViewersList, {
         once: true,
+        passive: true,
       })
 
       return () => {

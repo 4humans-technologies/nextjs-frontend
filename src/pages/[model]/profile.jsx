@@ -1,15 +1,14 @@
 import React from "react"
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import { useAuthContext } from "../../app/AuthContext"
 import dynamic from "next/dynamic"
 
 const Profile = dynamic(() => import("../../components/model/Profile"))
 
 function ModelProfile() {
   const user = useAuthContext()
-  const { updateUser } = useAuthUpdateContext()
 
   return user.isLoggedIn === true && user.user.userType === "Model" ? (
-    <div>
+    <div className="tw-bg-first-color tw-min-h-screen">
       <Profile />
     </div>
   ) : (

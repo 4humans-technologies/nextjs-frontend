@@ -390,7 +390,13 @@ function PrivateChatWrapper(props) {
         }
       }
 
-      document.addEventListener("send-private-message", sendChatAndPushLocally)
+      document.addEventListener(
+        "send-private-message",
+        sendChatAndPushLocally,
+        {
+          passive: true,
+        }
+      )
       return () => {
         document.removeEventListener(
           "send-private-message",

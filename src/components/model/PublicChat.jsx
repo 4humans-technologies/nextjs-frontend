@@ -151,8 +151,32 @@ function PublicChatBox(props) {
           // document.dispatchEvent(chatEvent)
         })
       }
+
+      return () => {
+        /**
+         * get out of the public room
+         */
+        const socketRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        socket.emit("take-me-out-of-these-rooms", [
+          socketRooms.find((room) => room.endsWith("-public")),
+        ])
+
+        if (socket.hasListeners("viewer-message-public-received")) {
+          socket.off("viewer-message-public-received")
+        }
+        if (socket.hasListeners("model-message-public-received")) {
+          socket.off("model-message-public-received")
+        }
+        if (socket.hasListeners("viewer_super_message_pubic-received")) {
+          socket.off("viewer_super_message_pubic-received")
+        }
+        if (socket.hasListeners("viewer-requested-for-call-emitted")) {
+          socket.off("viewer-requested-for-call-emitted")
+        }
+      }
     }
-  }, [ctx.socketSetupDone, io.getSocket()])
+  }, [ctx.socketSetupDone])
 
   /* fetch public chats from firebase */
   useEffect(() => {
@@ -168,53 +192,13 @@ function PublicChatBox(props) {
           }
         })
     }
-    document.addEventListener("fetch-firebase-chats", fetchChats)
+    document.addEventListener("fetch-firebase-chats", fetchChats, {
+      passive: true,
+    })
     return () => {
       document.removeEventListener("fetch-firebase-chats", fetchChats)
     }
   }, [])
-
-  useEffect(() => {
-    /* why you have to remove the event listners any way */
-    //debugger
-    if (ctx.socketSetupDone) {
-      return () => {
-        // alert("removing listners")
-        const socket = io.getSocket()
-        //debugger
-        if (socket.hasListeners("viewer-message-public-received")) {
-          socket.off("viewer-message-public-received")
-        }
-        if (socket.hasListeners("model-message-public-received")) {
-          socket.off("model-message-public-received")
-        }
-        if (socket.hasListeners("viewer_super_message_pubic-received")) {
-          socket.off("viewer_super_message_pubic-received")
-        }
-        if (socket.hasListeners("viewer-requested-for-call-emitted")) {
-          socket.off("viewer-requested-for-call-emitted")
-        }
-      }
-    }
-  }, [ctx.socketSetupDone, io.getSocket()])
-
-  useEffect(() => {
-    /* when the viwerscreen component un-mounts leave the public stream specific rooms */
-    if (ctx.socketSetupDone) {
-      return () => {
-        const socket = io.getSocket()
-        const socketRooms =
-          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-        const roomsToLeave = []
-        socketRooms.forEach((room) => {
-          if (room.endsWith("-public")) {
-            roomsToLeave.push(room)
-          }
-        })
-        socket.emit("take-me-out-of-these-rooms", [...roomsToLeave])
-      }
-    }
-  }, [ctx.socketSetupDone, io.getSocket()])
 
   const shouldHighLight = useCallback(
     (message) => {

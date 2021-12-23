@@ -103,7 +103,6 @@ const PasswordChange = (props) => {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        console.log(data)
         setTimeout(modalCtx.hideModal(), 100)
       })
       .catch((err) => alert(err))
@@ -186,7 +185,6 @@ const CoverUpdate = () => {
       method: "PUT",
       body: image_1,
     })
-    console.log(resp)
 
     // if response is 200 then send the data to your own server
     if (!resp.ok) {
@@ -194,8 +192,6 @@ const CoverUpdate = () => {
     }
 
     const coverUrl = cover_url.split("?")[0]
-
-    // console.log(coverUrl)
 
     const re = await fetch("/api/website/profile/update-model-basic-details", {
       method: "POST",
@@ -286,15 +282,11 @@ const ProfileUpdate = () => {
       method: "PUT",
       body: image_1,
     })
-    // console.log(`send the data to url ${resp}`)
     if (!resp.ok) {
       return alert("OK BRO")
     }
-    // console.log(resp)
     const profileUrl = profile_url.split("?")[0]
     // take this url from the aws and send it to your serve to access it in the future
-    // console.log(`Profile url ------${profileUrl}`)
-
     const re = await fetch("/api/website/profile/update-model-basic-details", {
       method: "POST",
       headers: {
@@ -328,7 +320,6 @@ const ProfileUpdate = () => {
 
     const jsonRe = await re.json()
   }
-  // console.log(`localstorage---- ${localStorage.getItem("user")}`)
   // Profile pic to aws
 
   return (

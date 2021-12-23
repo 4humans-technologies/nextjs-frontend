@@ -34,6 +34,12 @@ function ViewersListContainer(props) {
             })
           }
           setViewers((prev) => {
+            /**
+             * add unique viewers only
+             */
+            if (prev.find((viewer) => viewer._id === data.viewer._id)) {
+              return prev
+            }
             prev.push(data.viewer)
             return [...prev]
           })
@@ -72,12 +78,21 @@ function ViewersListContainer(props) {
         /* clear the list */
         setViewers([])
       }
-      document.addEventListener("clean-viewer-list-going-on-call", cleanForCall)
+      document.addEventListener(
+        "clean-viewer-list-going-on-call",
+        cleanForCall,
+        {
+          passive: true,
+        }
+      )
 
       /* remove all viewers except the caller */
       document.addEventListener(
         "clear-viewer-list-going-on-call",
-        clearForCallEnd
+        clearForCallEnd,
+        {
+          passive: true,
+        }
       ) /* clear the list */
 
       let newStreamHandlerTimeout
@@ -106,6 +121,7 @@ function ViewersListContainer(props) {
             .catch((err) => console.error("Live viewer count not fetched"))
         }, [8000])
       }
+      socket.on("new-model-started-stream", newStreamHandler)
 
       let streamDeleteHandler = (data) => {
         if (data.modelId !== localStorage.getItem("relatedUserId")) {
@@ -119,8 +135,6 @@ function ViewersListContainer(props) {
       }
 
       socket.on("delete-stream-room", streamDeleteHandler)
-
-      socket.on("new-model-started-stream", newStreamHandler)
 
       return () => {
         if (

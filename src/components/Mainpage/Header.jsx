@@ -196,7 +196,9 @@ function Header(props) {
       }
     }
 
-    document.addEventListener("model-profile-data-fetched", handleModelData)
+    document.addEventListener("model-profile-data-fetched", handleModelData, {
+      passive: true,
+    })
     router.events.on("routeChangeComplete", handleRouteChange)
 
     return () => {
@@ -363,7 +365,7 @@ function Header(props) {
                             liveModels={props.liveModels}
                           />
                         )}
-                        <div className="tw-flex tw-items-center">
+                        <div className="tw-flex tw-items-center tw-flex-shrink-0 tw-flex-nowrap">
                           <span className="tw-relative">
                             <button
                               onClick={() =>
@@ -372,7 +374,7 @@ function Header(props) {
                               className="tw-text-white-color tw-pr-5 bell-four"
                             >
                               {notifications.length > 0 ? (
-                                <NotificationsActiveIcon />
+                                <NotificationsActiveIcon fontSize="small" />
                               ) : (
                                 <NotificationsIcon />
                               )}
@@ -422,7 +424,7 @@ function Header(props) {
                               </a>
                             </Link>
                           )}
-                          <div className="tw-flex tw-items-center">
+                          <div className="tw-flex tw-items-center  tw-flex-shrink-0 tw-flex-nowrap">
                             <span className="tw-relative">
                               <button
                                 onClick={() =>
@@ -431,7 +433,7 @@ function Header(props) {
                                 className="tw-text-white-color tw-pr-5 bell-four"
                               >
                                 {notifications.length > 0 ? (
-                                  <NotificationsActiveIcon />
+                                  <NotificationsActiveIcon fontSize="small" />
                                 ) : (
                                   <NotificationsIcon />
                                 )}
@@ -460,7 +462,7 @@ function Header(props) {
                     // login at large screen viwer
                     authContext.user.userType == "Viewer" ? (
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                        <div className="tw-mx-4 tw-flex tw-items-center">
+                        <div className="tw-mx-4 tw-flex tw-items-center tw-flex-shrink-0 tw-flex-nowrap">
                           <span className="tw-relative">
                             <button
                               onClick={() =>
@@ -469,7 +471,7 @@ function Header(props) {
                               className="tw-text-white-color tw-pr-5 bell-four"
                             >
                               {notifications.length > 0 ? (
-                                <NotificationsActiveIcon />
+                                <NotificationsActiveIcon fontSize="small" />
                               ) : (
                                 <NotificationsIcon />
                               )}
@@ -524,7 +526,7 @@ function Header(props) {
                     ) : (
                       // login at large screen model
                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                        <div className="tw-flex tw-items-center tw-mr-3">
+                        <div className="tw-flex tw-items-center tw-mr-3  tw-flex-shrink-0 tw-flex-nowrap">
                           <span className="tw-relative">
                             <button
                               onClick={() =>
@@ -533,7 +535,7 @@ function Header(props) {
                               className="tw-text-white-color tw-pr-5 bell-four"
                             >
                               {notifications.length > 0 ? (
-                                <NotificationsActiveIcon />
+                                <NotificationsActiveIcon fontSize="small" />
                               ) : (
                                 <NotificationsIcon />
                               )}

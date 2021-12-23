@@ -312,7 +312,7 @@ function Live() {
             socket.emit(
               "putting-me-in-these-rooms",
               {
-                room: `${ctx.relatedUserId}-private`,
+                room: [`${ctx.relatedUserId}-private`],
               },
               (status) => {
                 /* no need to add in session storage */
@@ -361,11 +361,101 @@ function Live() {
           data.roomSize - 1
         } Live`
       })
+
+      /**
+       * treat model's socket disconnection same as stream end when model is live
+       * doesn't matter if onCall or isStreaming
+       */
+      var disconnectHandler = async () => {
+        /**
+         * get out of the public room
+         */
+        let socketRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        socketRooms = socketRooms.filter((room) => room.endsWith("-public"))
+        sessionStorage.setItem("socket-rooms", JSON.stringify(socketRooms))
+        if (callOnGoing) {
+          /**
+           * end the call
+           */
+          const callEndPromise = new Promise(async (resolve, reject) => {
+            const callEndClear = new Event("clear-viewer-list-going-on-call")
+            document.dispatchEvent(callEndClear)
+
+            /* clear call timer */
+            clearInterval(callTimerRef.current.interval)
+            clearTimeout(callTimerRef.current.initialTimeout)
+            callTimer.value = 0
+            clearTimeout(onCallUsefulRef.current.loopRef)
+            onCallUsefulRef.current = {
+              loopRef: null,
+            }
+            setCallOnGoing(false)
+            setCallType(null)
+            customDataRef.current.callOngoing = false
+            offCallListeners()
+            sessionStorage.setItem("liveNow", "false")
+            try {
+              await leaveAndCloseTracks()
+              await localVideoTrack.setEnabled(true)
+              resolve()
+            } catch (error) {
+              reject()
+            }
+          })
+          toast.promise(callEndPromise, {
+            pending:
+              "Ending call due to network error, please check your internet connection",
+            success: "Call ended successfully",
+            error: "Please check your internet connection",
+          })
+
+          /**
+           * one time connect event listener to do desired things on
+           * reconnection
+           */
+
+          socket.on("connect", {
+            /* can fetch call details */
+          })
+        } else {
+          /**
+           * end the stream
+           */
+          if (sessionStorage.getItem("liveNow") === "true") {
+            sessionStorage.setItem("liveNow", "false")
+            sessionStorage.removeItem("streamId")
+            setCallOnGoing(false)
+            const streamEnd = new Promise(async (resolve, reject) => {
+              try {
+                await leaveAndCloseTracks()
+                resolve()
+              } catch (err) {
+                reject()
+              }
+            })
+            toast.promise(streamEnd, {
+              pending:
+                "Ending stream due to network error, please check your internet connection",
+              success: "Stream ended successfully",
+              error: "Please check your internet connection",
+            })
+          }
+        }
+      }
+      socket.on("disconnect", disconnectHandler)
+
       return () => {
         socket.off("viewer-joined")
+        socket.off("disconnect", disconnectHandler)
       }
     }
-  }, [socketCtx.socketSetupDone])
+  }, [
+    socketCtx.socketSetupDone,
+    callOnGoing,
+    leaveAndCloseTracks,
+    localVideoTrack,
+  ])
 
   useEffect(() => {
     if (joinState && !callOnGoing) {
@@ -638,10 +728,10 @@ function Live() {
 
       /* clear pending call request */
       setPendingCallRequest((prev) => {
-        prev.pending = false
         prev.callRequests = prev.callRequests.filter(
           (request) => request.viewer._id !== relatedUserId
         )
+        prev.pending = prev.callRequests.length > 0
         return { ...prev }
       })
     } else {
@@ -911,7 +1001,6 @@ function Live() {
           await leaveAndCloseTracks()
           offCallListeners()
           setPendingCallEndRequest(false)
-          offCallListeners()
           localVideoTrack.setEnabled(true)
         } else if (
           !data?.callWasNotSetupProperly &&
@@ -974,7 +1063,7 @@ function Live() {
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
     <div className="tw-w-full">
       {pendingCallRequest.pending && (
-        <div className="tw-px-6 tw-py-4 tw-text-white-color tw-font-semibold tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
+        <div className="tw-px-6 tw-py-1.5 tw-text-white-color tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390] tw-text-sm">
           {pendingCallRequest.callRequests.map((request, index) => {
             return (
               <div className="tw-flex tw-justify-center tw-items-center tw-mb-0.5">
@@ -991,6 +1080,7 @@ function Live() {
                 <Button
                   className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
                   variant="success"
+                  size="sm"
                   onClick={() =>
                     handleModelResponse(
                       "accepted",
@@ -1004,6 +1094,7 @@ function Live() {
                 <Button
                   className="tw-rounded-full tw-self-center tw-text-sm tw-z-[110] tw-inline-block tw-mx-2"
                   variant="danger"
+                  size="sm"
                   onClick={() =>
                     handleModelResponse(
                       "rejected",

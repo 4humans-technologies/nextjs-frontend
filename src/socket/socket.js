@@ -9,7 +9,6 @@ export default {
     }
     socketConnectionInstance = io(url, {
       auth: {
-        // token will be fetched from local storage
         token: localStorage.getItem("jwtToken") || null,
       },
       transports: ["websocket"],
@@ -45,11 +44,6 @@ export default {
   globalListeners: (socket) => {
     socket.on("you-joined-a-room", (room) => {
       /* dont't join the self rooms 😎😎 */
-      if (process.env.RUN_ENV === "local") {
-        toast.success(`left a room : ${room}`, {
-          autoClose: 2000,
-        })
-      }
       let prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
       if (room.endsWith("-public")) {
         /* remove previous public room before joining new public room */

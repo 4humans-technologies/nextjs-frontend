@@ -94,7 +94,9 @@ function PrivateChat(props) {
       })
       scrollOnChat()
     }
-    document.addEventListener("send-private-message", pushPrivateChatLocally)
+    document.addEventListener("send-private-message", pushPrivateChatLocally, {
+      passive: true,
+    })
     return () => {
       document.removeEventListener(
         "send-private-message",

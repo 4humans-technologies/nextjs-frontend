@@ -281,7 +281,9 @@ function LiveScreen(props) {
         sendChatMessage()
       }
     }
-    document.addEventListener("keydown", handleKeyPress)
+    document.addEventListener("keydown", handleKeyPress, {
+      passive: true,
+    })
     return () => {
       document.removeEventListener("keydown", handleKeyPress)
     }
