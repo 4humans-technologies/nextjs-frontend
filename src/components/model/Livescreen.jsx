@@ -59,6 +59,18 @@ function LiveScreen(props) {
   const [callType, setCallType] = useState("videoCall")
   const [pendingCallRequest, setPendingCallRequest] = useState(false)
   const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
+  const [theKey, setTheKey] = useState(0)
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      console.log("handling url change")
+      setTheKey((prev) => prev + 1)
+    }
+    router.events.on("routeChangeComplete", handleRouteChange)
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange)
+    }
+  }, [])
 
   useEffect(() => {
     chatWindowRef.current = chatWindow
@@ -301,6 +313,7 @@ function LiveScreen(props) {
         pendingCallRequest={pendingCallRequest}
         setCallType={setCallType}
         model={props.modelProfileData}
+        key={theKey}
       />
     )
   }, [
@@ -345,6 +358,7 @@ function LiveScreen(props) {
             ></div>
           ) : null}
           <ViewerScreen
+            key={theKey + 200}
             setIsChatPlanActive={setIsChatPlanActive}
             setCallOnGoing={setCallOnGoing}
             setCallType={setCallType}
@@ -392,7 +406,9 @@ function LiveScreen(props) {
                     variant="danger"
                     onClick={() => {
                       if (authCtx.isLoggedIn) {
-                        modalCtx.showModalWithContent(<Token />)
+                        modalCtx.showModalWithContent(
+                          <Token key={theKey + 600} />
+                        )
                       } else {
                         toast.error("Please login first, To Gift Coins 👑")
                       }
@@ -553,6 +569,7 @@ function LiveScreen(props) {
                 }}
               >
                 <PublicChat
+                  key={theKey + 800}
                   scrollOnChat={scrollOnChat}
                   isModelOffline={isModelOffline}
                   addAtTheRate={addAtTheRate}
@@ -568,6 +585,7 @@ function LiveScreen(props) {
                 }}
               >
                 <PrivateChat
+                  key={theKey + 1000}
                   scrollOnChat={scrollOnChat}
                   hasActivePlan={isChatPlanActive}
                   setIsChatPlanActive={setIsChatPlanActive}
@@ -586,6 +604,7 @@ function LiveScreen(props) {
                 }}
               >
                 <TipMenuActions
+                  key={theKey + 1200}
                   tipMenuActions={tipMenuActions}
                   setTipMenuActions={setTipMenuActions}
                   onClickSendTipMenu={onClickSendTipMenu}
@@ -599,6 +618,7 @@ function LiveScreen(props) {
                 }}
               >
                 <ViewerSideViewersListContainer
+                  key={theKey + 1400}
                   callOnGoing={callOnGoing}
                   addAtTheRate={viewerListAddAtTheRate}
                 />

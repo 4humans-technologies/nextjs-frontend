@@ -10,7 +10,8 @@ function Mainbox(props) {
   return (
     <div className="live-model-box">
       <Link
-        href={props.parent === "index" ? `/view-stream/${props.modelId}` : "/"}
+        // href={props.parent === "index" ? `/view-stream/${props.modelId}` : "/"}
+        href={`/view-stream/${props.modelId}`}
       >
         <span className="tw-cursor-pointer tw-relative">
           <img

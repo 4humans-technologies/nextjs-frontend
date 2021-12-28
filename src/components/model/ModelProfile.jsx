@@ -1,9 +1,10 @@
-import React, { useReducer, useState } from "react"
+import React, { useReducer, useState, useEffect } from "react"
 import { PlayCircleFilled } from "@material-ui/icons"
-import useModalContext from "../../app/ModalContext"
 import { toast } from "react-toastify"
 import FsLightbox from "fslightbox-react"
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import { useAuthUpdateContext } from "../../app/AuthContext"
+import { useRouter } from "next/router"
+
 function ChipArea(props) {
   return (
     <p className="tw-text-xs tw-rounded-lg tw-py-1 tw-text-text-black tw-bg-second-color tw-flex-shrink-0 tw-flex-grow-0 tw-inline-block tw-m-1">
@@ -35,8 +36,21 @@ function ModelProfile(props) {
    * ment for use in here only
    */
   const { name, age, profileImage } = props.profileData
-  const modalContext = useModalContext()
   const updateCtx = useAuthUpdateContext()
+  const router = useRouter()
+
+  const [theKey, setTheKey] = useState(0)
+  useEffect(() => {
+    const handleRouteChange = () => {
+      console.log("handling url change")
+      setTheKey((prev) => prev + 1)
+    }
+    router.events.on("routeChangeComplete", handleRouteChange)
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange)
+    }
+  }, [])
+
   const tags = props.profileData.tags.map((tag, index) => (
     <ChipArea key={`tag-chip${index}`}>
       <a href="#" className="hover:tw-text-white-color tw-px-2">
@@ -564,25 +578,25 @@ function ModelProfile(props) {
     )
   }
 
-  const intiState = { val: <Profile /> }
+  const intiState = { val: <Profile key={theKey + 200} /> }
 
   const reducer = (state = intiState, action) => {
     switch (action.type) {
       case "Profile":
-        return { val: <Profile /> }
+        return { val: <Profile key={theKey + 200} /> }
       case "Image":
         return {
-          val: <Images />,
+          val: <Images key={theKey + 400} />,
         }
       case "PrivateImage":
         return {
-          val: <PrivateImages />,
+          val: <PrivateImages key={theKey + 600} />,
         }
       case "Videos":
-        return { val: <Videos /> }
+        return { val: <Videos key={theKey + 800} /> }
       case "PrivateVideos":
         return {
-          val: <PrivateVideos />,
+          val: <PrivateVideos key={theKey + 1000} />,
         }
       default:
         return state

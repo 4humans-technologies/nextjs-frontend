@@ -9,19 +9,10 @@ export default {
     }
     socketConnectionInstance = io(url, {
       auth: {
-        token: localStorage.getItem("jwtToken") || null,
+        token: localStorage.getItem("jwtToken") || undefined,
       },
       transports: ["websocket"],
       upgrade: false,
-      query: {
-        // will get userType from localStorage
-        // if nothing in local storage default to UnAuthedViewer
-        // no worries if user provides wrong info, we have token we can validate
-        userType:
-          localStorage.getItem("userType") ||
-          JSON.parse(localStorage.getItem("authContext"))?.userType ||
-          "UnAuthedViewer",
-      },
       reconnection: true,
     })
     return socketConnectionInstance
