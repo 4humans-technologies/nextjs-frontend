@@ -226,6 +226,12 @@ function Profile() {
     store["bodyType"] = profileEdit.bodyType
     store["hairColor"] = profileEdit.hairColor
     store["eyeColor"] = profileEdit.eyeColor
+    // tumahar beta katgya haya
+    toast.success("Profile update Successfully", {
+      position: "bottom-right",
+      closeOnClick: true,
+      autoClose: 3000,
+    })
   }
 
   // Profile editor
@@ -473,7 +479,7 @@ function Profile() {
             }
           },
           image.type,
-          1
+          0.6
         )
       }
       reader.onerror = (error) => console.log(error)
@@ -978,9 +984,11 @@ function Profile() {
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
                   <h1 className="tw-font-extrabold tw-text-4xl">
-                    {authContext.user.user.relatedUser.wallet.currentAmount}
+                    {authContext.user.user.relatedUser.wallet.currentAmount.toFixed(
+                      2
+                    )}
                   </h1>
-                  <span className="tw-self-center">Token</span>
+                  <span className="tw-self-center tw-ml-2">Token</span>
                 </div>
               </Card>
               <Card>
@@ -1522,7 +1530,7 @@ function Profile() {
                     toggler={lightboxControllerPrivate.toggler}
                     sources={authContext.user.user.relatedUser.privateImages
                       .find((e) => e._id == albumNow._id)
-                      .originalImages.map((url, index) => {
+                      .originalImages?.map((url, index) => {
                         return <img src={url} />
                       })}
                     slide={lightboxControllerPrivate.slide}

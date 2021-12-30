@@ -138,7 +138,7 @@ function UserProfile() {
              <div className="md:tw-col-span-1 tw-col-span-2   ">
                <p>Intrested in</p>
                <p>UserName</p>
-               <p>Hobbies</p>
+               <p>About Me</p>
                <p>Gender</p>
              </div>
              <div className="md:tw-col-span-3 tw-col-span-2 ">

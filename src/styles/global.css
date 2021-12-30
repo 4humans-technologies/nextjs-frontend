@@ -693,3 +693,13 @@ select {
   -webkit-box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
   -moz-box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
 }
+
+
+/* Profile Images */
+.headerUI{
+  display: none;
+}
+.profileImage:hover .headerUI{
+  display: block;
+}
+/* Profile Image hover */

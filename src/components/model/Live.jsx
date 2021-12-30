@@ -361,7 +361,11 @@ function Live() {
           data.roomSize - 1
         } Live`
       })
-
+      socket.on("viewer-joined", (data) => {
+        document.getElementById("viewerCount").innerText = `(${
+          data.roomSize - 1
+        } )`
+      })
       /**
        * treat model's socket disconnection same as stream end when model is live
        * doesn't matter if onCall or isStreaming
@@ -1278,7 +1282,7 @@ function Live() {
                     className={
                       joinState
                         ? "tw-text-green-color tw-border tw-border-green-color tw-rounded-full tw-px-2 tw-py-0.5 tw-text-sm tw-tracking-tight"
-                        : "tw-text-red-400 tw-border tw-border-red-400 tw-rounded-full tw-px-2 tw-py-0.5 tw-text-sm tw-tracking-tight"
+                        : "tw-text-red-400 tw-border tw-border-red-400 tw-rounded-full tw-px-2 tw-py-0.5 tw-text-sm tw-tracking-tight "
                     }
                   >
                     {`${joinState ? "🕓🕔..." : "You are not live"}`}
@@ -1291,7 +1295,7 @@ function Live() {
           {/* ================================================= */}
           {/* chat site | ex right side */}
           <div className="tw-bg-second-color sm:tw-w-[40%] sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-            <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
+            <div className="tw-flex   tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
               <button
                 className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-mr-4 ${
                   chatWindow === chatWindowOptions?.PUBLIC
@@ -1364,6 +1368,12 @@ function Live() {
                   />
                   <span className="tw-font-normal sm:tw-font-medium tw-my-auto tw-text-xs md:tw-text-sm">
                     Users
+                    <span
+                      id="viewerCount"
+                      className="tw-font-semibold tw-text-lg tw-ml-2"
+                    >
+                      (0)
+                    </span>
                   </span>
                 </button>
               ) : null}

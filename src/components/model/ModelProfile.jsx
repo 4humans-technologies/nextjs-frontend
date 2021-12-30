@@ -365,7 +365,7 @@ function ModelProfile(props) {
                       {album.originalImages?.map((image, index) => {
                         return (
                           <div
-                            className="tw-col-span-1 tw-h-full tw-cursor-pointer tw-max-h-40  hover:tw-scale-[1.1] tw-transition-transform"
+                            className="tw-col-span-1 tw-h-full tw-cursor-pointer tw-max-h-40  hover:tw-scale-[1.1] tw-transition-transform "
                             onClick={() =>
                               openLightboxOnSlide(index + 1, album._id)
                             }
@@ -397,7 +397,7 @@ function ModelProfile(props) {
                           >
                             <img
                               src={el}
-                              className="tw-w-full tw-h-full tw-rounded tw-object-cover"
+                              className="tw-w-full tw-h-full tw-rounded tw-object-cover tw-blur-sm"
                             />
                           </div>
                         )

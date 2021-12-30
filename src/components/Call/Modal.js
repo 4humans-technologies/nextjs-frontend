@@ -3,17 +3,17 @@ import useModalContext from "../../app/ModalContext"
 import PropTypes from "prop-types"
 
 function ContentModal(props) {
-  const ctx = useModalContext()
   const modalStyles = {
     content: {
-      ...props.contentStyles,
+      ...(props?.contentStyles || {}),
       top: "50%",
       left: "50%",
       right: "auto",
       bottom: "auto",
       transform: "translate(-50%, -50%)",
-      width: "90%", // width has been reduced to make the modal looks good
-      // backgroundColor: "rgba(25,25,25,0.7)",
+      // minWidth: "400px",
+      // maxWidth: "92%",
+      width: "min(400px,60%)",
       backgroundColor: "rgba(25,25,25,0.7)",
       borderWidth: 0,
       borderRadius: 4,
@@ -23,7 +23,7 @@ function ContentModal(props) {
       paddingBottom: "2rem",
     },
     overlay: {
-      ...props.overlayStyles,
+      ...(props?.overlayStyles || {}),
       position: "fixed",
       zIndex: 500,
       top: 0,

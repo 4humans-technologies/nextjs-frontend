@@ -49,7 +49,7 @@ const EmailChange = () => {
     }
   }
   return (
-    <div className="tw-mx-auto tw-w-full md:tw-w-8/12  lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+    <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
       <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
         Enter New Email
       </h2>
@@ -110,7 +110,7 @@ const PasswordChange = (props) => {
 
   return (
     <>
-      <div className="tw-mx-auto tw-w-full md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+      <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
         <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
           Enter New Password
         </h2>
@@ -205,7 +205,6 @@ const CoverUpdate = () => {
       }),
     })
 
-    console.log(`Response -------${re.json()}`)
     // below is context update for coverImage
     authUpdateContext.updateNestedPaths((prevState) => ({
       ...prevState,
@@ -232,7 +231,7 @@ const CoverUpdate = () => {
   // Now use this url to uploade to serve using url
 
   return (
-    <div className="tw-mx-auto tw-w-full md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+    <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
       <CancelIcon
         className="tw-text-white-color tw-ml-[90%]"
         fontSize="medium"
@@ -323,7 +322,7 @@ const ProfileUpdate = () => {
   // Profile pic to aws
 
   return (
-    <div className="tw-mx-auto tw-w-full md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+    <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
       <CancelIcon
         className="tw-text-white-color tw-ml-[90%]"
         fontSize="medium"

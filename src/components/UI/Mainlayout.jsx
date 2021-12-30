@@ -3,6 +3,7 @@ import Footer from "../Mainpage/Footer"
 import Header from "../Mainpage/Header"
 import Sidebar from "../Mainpage/Sidebar"
 import { useRouter } from "next/router"
+import { useRef } from "react"
 
 function MainLayout(props) {
   const router = useRouter()
@@ -10,7 +11,7 @@ function MainLayout(props) {
     <div className="tw-w-full">
       <Header />
       <Sidebar />
-      <div className="tw-w-full tw-mt-[7.2rem] tw-bg-first-color tw-pb-8">
+      <div className="tw-w-full md:tw-mt-[4.5rem] tw-mt-16 tw-bg-first-color tw-pb-8">
         {props.children}
       </div>
       <Footer />

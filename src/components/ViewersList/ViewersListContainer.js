@@ -61,6 +61,10 @@ function ViewersListContainer(props) {
             document.getElementById("live-viewer-count").innerText = `${
               data.roomSize - 1
             } Live`
+            // live count of user in the live section
+            document.getElementById("viewerCount").innerText = `${
+              data.roomSize - 1
+            } `
           } catch (err) {
             /* just don't raise error */
           }
