@@ -13,14 +13,17 @@ function Footer() {
           </div>
           <div className="mt-2 tw-text-text-black">
             <p className="tw-text-sm tw-font-light tw-mb-1.5">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Pariatur
-              expedita possimus accusantium excepturi delectus quod corporis
-              consequuntur velit rem
+              Deamgirl is a great way to meet new friends, even while practicing
+              social distancing. Is your life boring? Want to make friends
+              worldwide? Need something funny and meaningful? Dreamgirl is what
+              you are looking for!
             </p>
             <p className="tw-text-sm tw-font-light">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Exercitationem quia ad vero corrupti commodi a sit quas
-              repellendus sunt, veritatis quasi.
+              Dreamgirl is a 1-on-1 online video and voice chat app with Live
+              Streaming and Group chat, which opens up possibility to make
+              friends from all over the world. With video Chat and Voice Chat,
+              you can communicate with strangers like face to face anytime and
+              anywhere.
             </p>
           </div>
         </div>
