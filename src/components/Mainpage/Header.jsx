@@ -384,7 +384,7 @@ function Header(props) {
                           </span>
                         </div>
                         <div
-                          className="tw-flex tw-self-center"
+                          className="tw-flex tw-self-center tw-cursor-pointer"
                           onClick={() => router.push(`/user/payment`)}
                         >
                           <img
@@ -440,7 +440,7 @@ function Header(props) {
                             <img
                               src="/coins.png"
                               alt=""
-                              className="tw-w-4 tw-h-4 tw-text-white"
+                              className="tw-w-4 tw-h-4 tw-text-white tw-cursor-pointer"
                               onClick={() =>
                                 router.push(
                                   `/${authContext.user.user.username}/settingToken`
@@ -544,7 +544,7 @@ function Header(props) {
                             />
                           </span>
                         </div>
-                        <div className="tw-mx-4 tw-flex ">
+                        <div className="tw-mx-4 tw-flex tw-cursor-pointer">
                           <img
                             src="/coins.png"
                             alt=""

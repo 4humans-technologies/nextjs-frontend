@@ -1369,7 +1369,7 @@ function Live() {
                     Users
                     <span
                       id="viewerCount"
-                      className="tw-font-semibold tw-text-lg tw-ml-2"
+                      className="tw-font-extralight tw-text-xs tw-ml-2"
                     >
                       (0)
                     </span>
