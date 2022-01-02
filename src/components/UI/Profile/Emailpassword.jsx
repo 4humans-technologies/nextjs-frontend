@@ -49,7 +49,12 @@ const EmailChange = () => {
     }
   }
   return (
-    <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+    <div className="md:tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 md:tw-border-white-color tw-border-transparent">
+      <CancelIcon
+        className="tw-text-white-color tw-ml-[90%]"
+        fontSize="medium"
+        onClick={modalCtx.hideModal}
+      />
       <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
         Enter New Email
       </h2>
@@ -60,7 +65,7 @@ const EmailChange = () => {
           id=""
           placeholder="New Email Id"
           onChange={(e) => setEmail({ ...email, newEmail: e.target.value })}
-          className="tw-my-2 tw-mx-4 tw-px-8 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
+          className="tw-my-2 md:tw-mx-4 md:tw-px-8 tw-px-1 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
         />
       </div>
       <div className=" tw-my-6">
@@ -110,7 +115,12 @@ const PasswordChange = (props) => {
 
   return (
     <>
-      <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+      <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 md:tw-border-white-color tw-border-transparent">
+        <CancelIcon
+          className="tw-text-white-color tw-ml-[90%]"
+          fontSize="medium"
+          onClick={modalCtx.hideModal}
+        />
         <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
           Enter New Password
         </h2>
@@ -122,7 +132,7 @@ const PasswordChange = (props) => {
             // value={oldPassword}
             onChange={changeHandler}
             placeholder="Enter your old Password"
-            className="tw-my-2 tw-mx-4 tw-px-8 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
+            className="tw-my-2 md:tw-mx-4 md:tw-px-8 tw-px-1 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
           />
 
           <input
@@ -132,7 +142,7 @@ const PasswordChange = (props) => {
             // value={newPassword}
             onChange={changeHandler}
             placeholder="Your new Password"
-            className="tw-my-2 tw-mx-4 tw-px-8 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
+            className="tw-my-2 md:tw-mx-4 md:tw-px-8 tw-px-1 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
           />
 
           <input
@@ -142,7 +152,7 @@ const PasswordChange = (props) => {
             // value={newPassword}
             onChange={changeHandler}
             placeholder="Eneter your new Password"
-            className="tw-my-2 tw-mx-4 tw-px-8 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
+            className="tw-my-2 md:tw-mx-4 md:tw-px-8 tw-px-1 tw-py-1 tw-h-8 tw-rounded-full tw-outline-none tw-bg-first-color tw-font-medium"
           />
         </div>
         <div className="tw-my-6 tw-text-center">

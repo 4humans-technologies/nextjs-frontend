@@ -168,12 +168,12 @@ const Home = () => {
   }, [socketContext.socketSetupDone])
 
   return (
-    <div className="tw-min-h-screen tw-bg-first-color">
+    <div className="tw-min-h-screen tw-bg-first-color ">
       <Head>
         <title>DreamGirl Live Online Video Chat</title>
         <link rel="icon" href="/DG_icon.jpg" />
       </Head>
-      <div className="tw-flex">
+      <div className="tw-flex ">
         <div className="">
           {boxGroupsData.map((data, index) => {
             return (

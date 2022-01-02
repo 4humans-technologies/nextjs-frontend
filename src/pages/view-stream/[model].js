@@ -33,6 +33,7 @@ function ViewModelStream() {
       {modelProfileData && (
         <ModelProfile
           key={theKey + 200}
+          modelProfileData={modelProfileData}
           profileData={{
             name: modelProfileData.name,
             age: new Date().getFullYear() - modelProfileData.dob,
@@ -41,31 +42,22 @@ function ViewModelStream() {
             publicVideos: modelProfileData.publicVideos,
             privateImages: modelProfileData.privateImages,
             privateVideos: modelProfileData.privateVideos,
-            tags: [
-              "Black",
-              "White",
-              "Artist",
-              "Intelligent",
-              "Black",
-              "White",
-              "Artist",
-              "Black",
-              "White",
-              "Artist",
-            ],
-            categories: ["America", "India", "Bhutan", "USA"],
+            tags:
+              modelProfileData.tags.length > 0
+                ? elProfileData.tags
+                : [
+                    "Black",
+                    "White",
+                    "Artist",
+                    "Intelligent",
+                    "Black",
+                    "White",
+                    "Artist",
+                    "Black",
+                    "White",
+                    "Artist",
+                  ],
           }}
-          dynamicFields={[
-            {
-              title: "Language",
-              value: modelProfileData?.languages.join(", "),
-            },
-            { title: "body type", value: "curvy" },
-            { title: "ethnicity", value: "American" },
-            { title: "hair", value: "black" },
-            { title: "eye color", value: "black" },
-            { title: "features", value: ["nice", "artist", "fast"] },
-          ]}
         />
       )}
       <Recommendation

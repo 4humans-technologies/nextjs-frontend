@@ -129,10 +129,10 @@ function CallDetailsPopUp(props) {
                     {props.model.callActivity.videoCall.map((text, index) => {
                       return (
                         <p
-                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center"
+                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center tw-mx-1"
                           key={`video_call_activity_${text}`}
                         >
-                          {text}
+                          {text},
                         </p>
                       )
                     })}
@@ -189,10 +189,10 @@ function CallDetailsPopUp(props) {
                     {props.model.callActivity.audioCall.map((text, index) => {
                       return (
                         <p
-                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center"
+                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center tw-mx-1"
                           key={`video_call_activity_${text}`}
                         >
-                          {text}
+                          {text},
                         </p>
                       )
                     })}

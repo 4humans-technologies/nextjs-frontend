@@ -694,12 +694,26 @@ select {
   -moz-box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
 }
 
-
 /* Profile Images */
-.headerUI{
+.headerUI {
   display: none;
 }
-.profileImage:hover .headerUI{
+.profileImage:hover .headerUI {
   display: block;
 }
 /* Profile Image hover */
+
+/* to put the scroll bar hide */
+
+.scrollHide::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* No scroll bar Thanks shalendra */
+::-webkit-scrollbar {
+  width: 0; /* Remove scrollbar space */
+  display: none;
+  /* background: transparent;  Optional: just make scrollbar invisible */
+}
+/* to put the scroll bar hide */

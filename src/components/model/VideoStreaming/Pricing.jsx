@@ -47,7 +47,7 @@ function Pricing() {
           name="audio"
           value={audioVideoPrice.audio}
           placeholder="Coins"
-          className="tw-flex-shrink-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full sm:tw-w-1/2"
+          className="md:tw-flex-shrink-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full sm:tw-w-1/2 tw-ml-2"
           onChange={(e) => callChangeHandler(e)}
         />
       </div>
@@ -58,7 +58,7 @@ function Pricing() {
           name="video"
           value={audioVideoPrice.video}
           placeholder="Coins"
-          className="tw-flex-shrink-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full sm:tw-w-1/2"
+          className="md:tw-flex-shrink-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full sm:tw-w-1/2 tw-ml-2"
           onChange={(e) => callChangeHandler(e)}
         />
       </div>

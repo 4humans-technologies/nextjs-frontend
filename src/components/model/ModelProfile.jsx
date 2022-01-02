@@ -59,14 +59,6 @@ function ModelProfile(props) {
     </ChipArea>
   ))
 
-  const categories = props.profileData.categories.map((category, index) => (
-    <ChipArea key={`category-chip${index}`}>
-      <a href="#" className="hover:tw-text-white-color tw-px-4">
-        {category}
-      </a>
-    </ChipArea>
-  ))
-
   const Profile = () => {
     return (
       <>
@@ -83,7 +75,31 @@ function ModelProfile(props) {
               }}
             ></div>
             <div className="tw-mt-5">
-              {props.dynamicFields?.map((field, index) => {
+              <ProfileRow
+                title="Body Type: "
+                data={props.modelProfileData.bodyType}
+              />
+              <ProfileRow
+                title="Eye Color: "
+                data={props.modelProfileData.eyeColor}
+              />
+              <ProfileRow
+                title="Hair Color: "
+                data={props.modelProfileData.hairColor}
+              />
+              <ProfileRow
+                title="Skin Color: "
+                data={props.modelProfileData.skinColor}
+              />
+              <ProfileRow
+                title="Ethnicity: "
+                data={props.modelProfileData.ethnicity}
+              />
+              <ProfileRow
+                title="Coutry: "
+                data={props.modelProfileData.country}
+              />
+              {props.modelProfileData.dynamicFields?.map((field, index) => {
                 let value
                 if (Array.isArray(field.value)) {
                   value = field.value.join(" , ")
@@ -104,17 +120,12 @@ function ModelProfile(props) {
             <ProfileRow title="Name: " data={<p>{name}</p>} />
             <ProfileRow title="Age: " data={<p>{age}</p>} />
             <ProfileRow title="Tags: " data={tags} />
-            <ProfileRow title="Categories: " data={categories} />
             <ProfileRow title="My Hobbies: " data={tags} />
             <ProfileRow
               title="Bio: "
               // there need to add model profile data and Images
               data={
-                <p className="tw-col-span-3">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Delectus esse reiciendis aperiam inventore eveniet voluptatum
-                  sit, molestias quidem cumque sint?
-                </p>
+                <p className="tw-col-span-3">{props.modelProfileData.bio}</p>
               }
             />
           </div>
