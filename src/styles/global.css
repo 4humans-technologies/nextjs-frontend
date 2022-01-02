@@ -701,3 +701,25 @@ select {
     rgba(227, 125, 0, 1) 88%
   );
 }
+/* Profile Images */
+.headerUI {
+  display: none;
+}
+.profileImage:hover .headerUI {
+  display: block;
+}
+/* Profile Image hover */
+
+/* to put the scroll bar hide */
+
+.scrollHide::-webkit-scrollbar {
+  display: none;
+}
+
+/* No scroll bar Thanks shalendra */
+::-webkit-scrollbar {
+  width: 0; /* Remove scrollbar space */
+  display: none;
+  /* background: transparent;  Optional: just make scrollbar invisible */
+}
+/* to put the scroll bar hide */

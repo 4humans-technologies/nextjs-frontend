@@ -226,6 +226,15 @@ function Profile() {
     store["bodyType"] = profileEdit.bodyType
     store["hairColor"] = profileEdit.hairColor
     store["eyeColor"] = profileEdit.eyeColor
+
+    // save the data json stringyfy
+    localStorage.setItem("user", JSON.stringify(store))
+    // tumahar beta katgya haya
+    toast.success("Profile update Successfully", {
+      position: "bottom-right",
+      closeOnClick: true,
+      autoClose: 3000,
+    })
   }
 
   // Profile editor
@@ -473,7 +482,7 @@ function Profile() {
             }
           },
           image.type,
-          1
+          0.6
         )
       }
       reader.onerror = (error) => console.log(error)
@@ -748,7 +757,7 @@ function Profile() {
 
       {/* Profile compy from grid */}
       <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4 tw-bg-dark-background tw-w-full tw-mt-16">
-        <div className="md:tw-col-span-4 tw-col-span-1 tw-px-4">
+        <div className="md:tw-col-span-4 tw-col-span-1 md:tw-px-4">
           <div className="  tw-px-4 tw-py-4 tw-text-white tw-leading-8">
             <h1 className="tw-ml-4 tw-mb-4 tw-text-xl tw-font-semibold">
               My Information
@@ -764,9 +773,7 @@ function Profile() {
                 <p>Hair</p>
                 <p>Eye color</p>
                 <p>About me</p>
-                {}
               </div>
-
               <div className="md:tw-col-span-5 tw-col-span-4 ">
                 <p>EveryOne</p>
                 <p
@@ -920,11 +927,11 @@ function Profile() {
 
             {/* Pricing */}
             <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
-              <div className="tw-col-span-1">
+              <div className="tw-col-span-2">
                 <p>Private Audio Call</p>
                 <p className="md:tw-my-2">Private video Call</p>
               </div>
-              <div className="tw-col-span-2">
+              <div className="tw-col-span-1">
                 <div className="tw-flex ">
                   <input
                     type="number"
@@ -939,7 +946,7 @@ function Profile() {
                 </div>
                 {/*  */}
 
-                <div className="tw-flex  md:tw-my-2 tw-my-10">
+                <div className="tw-flex md:tw-mt-2 ">
                   <input
                     type="number"
                     name="video"
@@ -978,9 +985,11 @@ function Profile() {
                 </div>
                 <div className="tw-flex tw-mt-4 tw-text-center">
                   <h1 className="tw-font-extrabold tw-text-4xl">
-                    {authContext.user.user.relatedUser.wallet.currentAmount}
+                    {authContext.user.user.relatedUser.wallet.currentAmount.toFixed(
+                      2
+                    )}
                   </h1>
-                  <span className="tw-self-center">Token</span>
+                  <span className="tw-self-center tw-ml-2">Token</span>
                 </div>
               </Card>
               <Card>
@@ -1022,7 +1031,7 @@ function Profile() {
                 </h1>
                 <form
                   id="action-form"
-                  className="tw-max-h-64 tw-min-h-[8rem]  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 "
+                  className="tw-max-h-64 tw-min-h-[8rem]  tw-overflow-y-auto tw-mb-3 tw-bg-second-color tw-rounded-lg tw-p-2 tw-flex tw-flex-col tw-flex-shrink-0 scrollHide "
                 >
                   {dynamicData.map((item, index) => {
                     return (
@@ -1522,7 +1531,7 @@ function Profile() {
                     toggler={lightboxControllerPrivate.toggler}
                     sources={authContext.user.user.relatedUser.privateImages
                       .find((e) => e._id == albumNow._id)
-                      .originalImages.map((url, index) => {
+                      .originalImages?.map((url, index) => {
                         return <img src={url} />
                       })}
                     slide={lightboxControllerPrivate.slide}

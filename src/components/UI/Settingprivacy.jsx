@@ -3,12 +3,7 @@ import { toast } from "react-toastify"
 import { useAuthContext } from "../../app/AuthContext"
 import useModalContext from "../../app/ModalContext"
 import ExpandLessIcon from "@material-ui/icons/ExpandLess"
-import {
-  EmailChange,
-  PasswordChange,
-  CoverUpdate,
-  ProfileUpdate,
-} from "../UI/Profile/Emailpassword"
+import { EmailChange, PasswordChange } from "../UI/Profile/Emailpassword"
 import Banned from "../model/Banned"
 
 let allHistory = []
@@ -126,7 +121,7 @@ function Settingprivacy() {
       })
     )
   }
-
+  let modelAmout
   return (
     authContext.isLoggedIn && (
       <div className="tw-pb-4">
@@ -170,7 +165,7 @@ function Settingprivacy() {
           <h1 className="tw-pt-4 tw-text-center tw-font-semibold">
             Token History
           </h1>
-          <div className="tw-flex tw-mt-4 tw-flex-wrap">
+          <div className="tw-flex tw-mt-4 tw-flex-wrap md:tw-ml-4">
             <form onSubmit={dateHandler}>
               <label htmlFor="startDate">From</label>
               <input
@@ -235,10 +230,12 @@ function Settingprivacy() {
                 </div>
               </div>
 
-              <div className="tw-max-h-72 tw-overflow-y-auto">
+              {/* Hide scroll bar that is the case to the thing */}
+
+              <div className="tw-max-h-72 tw-overflow-y-auto scrollHide">
                 {tokenData?.map((item, index) => (
                   <div
-                    className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  tw-bg-second-color tw-text-xl tw-font-bold  tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
+                    className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  tw-bg-second-color tw-text-xl  tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
                     key={index}
                   >
                     <div>{item.time.split("T")[0]}</div>
@@ -247,7 +244,11 @@ function Settingprivacy() {
                     </div>
                     <div>{act[item.givenFor]}</div>
                     <div>{item.by.name}</div>
-                    <div>{item.tokenAmount}</div>
+                    <div>
+                      {item.sharePercent
+                        ? item.tokenAmount * (item.sharePercent / 100)
+                        : item.tokenAmount}
+                    </div>
                   </div>
                 ))}
               </div>

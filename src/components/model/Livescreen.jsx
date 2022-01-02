@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react"
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble"
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer"
 import PublicChat from "./PublicChat"
 import PrivateChat from "./PrivateChat"
 import dynamic from "next/dynamic"
@@ -317,7 +316,12 @@ function LiveScreen(props) {
         setCallType={setCallType}
         model={props.modelProfileData}
         key={theKey}
-      />
+      />,
+      {
+        contentStyles: {
+          minWidth: "min(700px, 90%)",
+        },
+      }
     )
   }, [
     modalCtx.showModalWithContent,
@@ -333,7 +337,7 @@ function LiveScreen(props) {
 
   return (
     <>
-      <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans">
+      <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans md:tw-pt-12 tw-pt-16">
         {pendingCallRequest && (
           <div className="tw-px-2 tw-py-2 tw-text-white-color tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-backdrop-blur tw-z-[390]">
             <div className="tw-flex tw-justify-center tw-items-center">
@@ -646,7 +650,7 @@ function LiveScreen(props) {
 
           <div
             id="message-input"
-            className="tw-flex tw-items-center tw-pb-2 tw-pt-2.5 tw-bg-second-color tw-text-white tw-absolute tw-w-full tw-z-[300] tw-right-0 tw-left-0 tw-bottom-0"
+            className="tw-flex tw-items-center tw-pb-2 tw-pt-2.5 tw-bg-second-color tw-text-white tw-absolute tw-w-full tw-z-[300] tw-right-0 tw-left-0 md:tw-bottom-0"
           >
             <span className="circle-shadow tw-h-10 tw-w-10 tw-inline-grid tw-flex-shrink-0 tw-p-1  tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]">
               <img

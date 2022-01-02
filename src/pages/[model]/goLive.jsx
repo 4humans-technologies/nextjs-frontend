@@ -3,8 +3,7 @@ import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useEffect } from "react"
-import Videoshowcontroller from "../../components/model/VideoStreaming/Videoshowcontroller"
-import Showcontroler from "../../components/model/VideoStreaming/Showcontroler"
+
 
 const LiveComponent = dynamic(() => import("../../components/model/Live"), {
   ssr: false,

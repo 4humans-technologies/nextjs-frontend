@@ -69,7 +69,7 @@ function CallDetailsPopUp(props) {
   return (
     <>
       <div className="tw-relative">
-        <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-5 tw-justify-center tw-justify-items-stretch tw-place-content-center tw-w-11/12 md:tw-w-10/12 lg:tw-w-8/12 xl:tw-w-7/12 2xl:tw-w-6/12 tw-mx-auto">
+        <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-5 tw-justify-center tw-justify-items-stretch tw-place-content-center tw-w-full tw-mx-auto">
           <div className="tw-col-span-1 md:tw-col-span-2">
             <div className="tw-flex tw-justify-between tw-items-center tw-px-3 tw-mb-2 tw-bg-second-color/70 tw-rounded-md tw-py-2">
               <div className="tw-inline-flex tw-justify-between tw-items-center">
@@ -106,7 +106,7 @@ function CallDetailsPopUp(props) {
                 />
               </div>
               <h2 className="tw-text-lg tw-font-bold tw-mb-2 tw-text-white-color tw-uppercase">
-                private video call
+                Private video call
               </h2>
               <hr className="tw-w-8/12 tw-my-4 tw-text-white-color tw-mx-auto" />
               <div className="mt-2">
@@ -123,16 +123,16 @@ function CallDetailsPopUp(props) {
               {props.model.callActivity.videoCall.length > 0 && (
                 <>
                   <p className="tw-text-sm tw-text-center tw-mt-3 tw-mb-2 tw-capitalize tw-text-white">
-                    what i do in video calls 👇
+                    I do in video calls 👇
                   </p>
-                  <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20">
+                  <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20 tw-flex">
                     {props.model.callActivity.videoCall.map((text, index) => {
                       return (
                         <p
-                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center"
+                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center tw-mx-1"
                           key={`video_call_activity_${text}`}
                         >
-                          {text}
+                          {text},
                         </p>
                       )
                     })}
@@ -183,16 +183,16 @@ function CallDetailsPopUp(props) {
               {props.model.callActivity.audioCall.length > 0 && (
                 <>
                   <p className="tw-text-sm tw-text-center tw-mt-3 tw-mb-2 tw-capitalize tw-text-white">
-                    what i do in audio calls 👇
+                    I do in audio calls 👇
                   </p>
-                  <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20">
+                  <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20 tw-flex tw-flex-wrap">
                     {props.model.callActivity.audioCall.map((text, index) => {
                       return (
                         <p
-                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center"
+                          className="tw-mb-0.5 tw-text-sm tw-lowercase tw-text-center tw-mx-1"
                           key={`video_call_activity_${text}`}
                         >
-                          {text}
+                          {text},
                         </p>
                       )
                     })}

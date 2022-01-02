@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import MenuIcon from "@material-ui/icons/Menu"
 import SearchIcon from "@material-ui/icons/Search"
 import BarChartIcon from "@material-ui/icons/BarChart"
@@ -13,7 +13,7 @@ import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
 
 import Link from "next/link"
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import { useAuthContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
 import SecondHeader from "./SecondHeader"
 import Headerui from "../UI/HeaderUI"
@@ -95,6 +95,8 @@ function Header(props) {
   const sidebarUpdate = useSidebarUpdate()
   const authContext = useAuthContext()
   const socketCtx = useSocketContext()
+
+  // This to the hide the header UI to the click to  the outside of ref
 
   const [hide, setHide] =
     useState(false) /* control display of go live button */
@@ -300,11 +302,7 @@ function Header(props) {
               <span className="tw-pr-2">{liveModels}</span>
               <span className="">Live</span>
             </div>
-          ) : (
-            <span className="tw-capitalize tw-text-sm tw-font-medium">
-              No model live
-            </span>
-          )}
+          ) : null}
 
           <div className="lg:tw-flex tw-items-center tw-pl-4 tw-hidden">
             <BarChartIcon />
@@ -387,11 +385,7 @@ function Header(props) {
                         </div>
                         <div
                           className="tw-flex tw-self-center"
-                          onClick={() =>
-                            router.push(
-                              `/${authContext.user.user.username}/settingToken`
-                            )
-                          }
+                          onClick={() => router.push(`/user/payment`)}
                         >
                           <img
                             src="/coins.png"
@@ -447,6 +441,11 @@ function Header(props) {
                               src="/coins.png"
                               alt=""
                               className="tw-w-4 tw-h-4 tw-text-white"
+                              onClick={() =>
+                                router.push(
+                                  `/${authContext.user.user.username}/settingToken`
+                                )
+                              }
                             />
                             <p className="tw-self-center tw-pl-2">
                               {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
@@ -485,6 +484,7 @@ function Header(props) {
                             src="/coins.png"
                             alt=""
                             className="tw-w-5 tw-h-5 tw-text-white"
+                            onClick={() => router.push(`/user/payment`)}
                           />
                           <p className="tw-my-auto tw-ml-2 tw-font-bold">
                             {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
@@ -493,7 +493,7 @@ function Header(props) {
                           </p>
                         </div>
                         <div
-                          className="tw-mr-4  tw-cursor-pointer"
+                          className="tw-mr-4  tw-cursor-pointer profileImage"
                           onClick={() => setHeaderProfileShow((prev) => !prev)}
                         >
                           {authContext.user.user.relatedUser?.profileImage ? (
@@ -514,9 +514,7 @@ function Header(props) {
                           )}
                           {/* profile */}
                           <div
-                            className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-2 tw-rounded tw-text-white tw-right-4 ${
-                              headerProfileShow ? "" : "tw-hidden"
-                            }`}
+                            className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-0 tw-rounded tw-text-white tw-right-4 headerUI `}
                           >
                             <Headerprofile userType="Viewer" />
                           </div>
@@ -551,6 +549,11 @@ function Header(props) {
                             src="/coins.png"
                             alt=""
                             className="tw-w-5 tw-h-5 tw-text-white"
+                            onClick={() =>
+                              router.push(
+                                `/${authContext.user.user.username}/settingToken`
+                              )
+                            }
                           />
                           <p className="tw-my-auto tw-ml-2">
                             {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
@@ -568,7 +571,7 @@ function Header(props) {
                           </Link>
                         )}
                         <div
-                          className="tw-mr-4 tw-cursor-pointer"
+                          className="tw-mr-4 tw-cursor-pointer profileImage"
                           onClick={() => setHeaderProfileShow((prev) => !prev)}
                         >
                           {/* if image is not available then show the Name else show the image */}
@@ -591,9 +594,7 @@ function Header(props) {
 
                           {/* Profile  */}
                           <div
-                            className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-right-4 ${
-                              headerProfileShow ? "" : "tw-hidden"
-                            }`}
+                            className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-0 tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-right-4 headerUI `}
                           >
                             <Headerprofile userType="Model" />
                           </div>
@@ -671,9 +672,7 @@ function Header(props) {
             </div>
           )}
       </div>
-      {showSecondHeader ? (
-        <SecondHeader />
-      ) : (
+      {showSecondHeader ? null : ( // <SecondHeader />
         <ModelDetailHeader data={modelData} />
       )}
     </div>

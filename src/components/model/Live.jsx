@@ -356,6 +356,16 @@ function Live() {
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
+      socket.on("viewer-joined", (data) => {
+        document.getElementById("live-viewer-count").innerText = `${
+          data.roomSize - 1
+        } Live`
+      })
+      socket.on("viewer-joined", (data) => {
+        document.getElementById("viewerCount").innerText = `(${
+          data.roomSize - 1
+        } )`
+      })
       /**
        * treat model's socket disconnection same as stream end when model is live
        * doesn't matter if onCall or isStreaming
@@ -1107,7 +1117,7 @@ function Live() {
       <div className="tw-flex tw-w-full">
         <div className={"sm:tw-flex sm:tw-flex-1 tw-bg-dark-black"}>
           <div
-            className="tw-bg-first-color tw-flex-[5] sm:tw-h-[37rem] tw-h-[50rem] tw-relative"
+            className="tw-bg-first-color tw-flex-[5] sm:tw-h-[37rem] tw-h-[40rem] tw-relative xl:tw-h-[90vh] "
             ref={container}
             id="playback-area"
           >
@@ -1272,7 +1282,7 @@ function Live() {
                     className={
                       joinState
                         ? "tw-text-green-color tw-border tw-border-green-color tw-rounded-full tw-px-2 tw-py-0.5 tw-text-sm tw-tracking-tight"
-                        : "tw-text-red-400 tw-border tw-border-red-400 tw-rounded-full tw-px-2 tw-py-0.5 tw-text-sm tw-tracking-tight"
+                        : "tw-text-red-400 tw-border tw-border-red-400 tw-rounded-full tw-px-2 tw-py-0.5 tw-text-sm tw-tracking-tight "
                     }
                   >
                     {`${joinState ? "🕓🕔..." : "You are not live"}`}
@@ -1283,8 +1293,8 @@ function Live() {
           </div>
 
           {/* chat site | ex right side */}
-          <div className="tw-bg-second-color sm:tw-w-[40%] sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
-            <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
+          <div className="tw-bg-second-color sm:tw-w-[40%] sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen xl:tw-h-[90vh]">
+            <div className="tw-flex   tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
               <button
                 className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-mr-4 ${
                   chatWindow === chatWindowOptions?.PUBLIC
@@ -1357,6 +1367,12 @@ function Live() {
                   />
                   <span className="tw-font-normal sm:tw-font-medium tw-my-auto tw-text-xs md:tw-text-sm">
                     Users
+                    <span
+                      id="viewerCount"
+                      className="tw-font-semibold tw-text-lg tw-ml-2"
+                    >
+                      (0)
+                    </span>
                   </span>
                 </button>
               ) : null}
@@ -1364,9 +1380,9 @@ function Live() {
 
             <div
               id="chatBoxContainer"
-              className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
+              className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full "
             >
-              <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color">
+              <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color tw-mt-16 md:tw-mt-1">
                 <div
                   className="tw-relative"
                   style={{
@@ -1429,11 +1445,11 @@ function Live() {
 
             <div
               id="message-input"
-              className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute tw-bottom-0 tw-w-full tw-border-b tw-border-first-color"
+              className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute md:tw-bottom-0 tw-w-full tw-border-b tw-border-first-color"
             >
               <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
                 <input
-                  className="tw-flex md:tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-2 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
+                  className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-2 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                   placeholder="Enter your message here"
                   ref={chatInputRef}
                   id="chat-message-input"

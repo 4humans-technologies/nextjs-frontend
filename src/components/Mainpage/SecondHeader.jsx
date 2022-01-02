@@ -49,7 +49,7 @@ function SecondHeader() {
                 <input
                   className="tw-rounded-full tw-w-full tw-bg-dark-black tw-border-transparent tw-outline-none tw-px-1 tw-text-white second_search"
                   type="text"
-                  placeholder="Search Neeraj"
+                  placeholder="Search ..."
                 />
                 <ClearIcon
                   onClick={() => setSearch((prevState) => !prevState)}
@@ -60,7 +60,10 @@ function SecondHeader() {
                 isStream ? (
                   <div className="tw-grid tw-grid-cols-8 tw-w-full tw-gap-x-2">
                     <div className=" tw-col-span-7 tw-flex tw-justify-around">
-                      <div className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2">
+                      <div
+                        className="sm:tw-ml-2 sm:tw-mr-2 tw-mx-1 hover:tw-bg-first-color tw-py-2"
+                        onClick={scrollDown}
+                      >
                         {authContext?.isLoggedIn
                           ? authContext.user.user?.username
                           : null}
@@ -127,7 +130,10 @@ function SecondHeader() {
         : [
             isStream ? (
               <div className="tw-flex tw-my-auto">
-                <div className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer">
+                <div
+                  className="tw-px-4 hover:tw-bg-first-color tw-py-2 tw-cursor-pointer"
+                  onClick={scrollDown}
+                >
                   {authContext.user.user
                     ? authContext.user.user.username
                     : null}

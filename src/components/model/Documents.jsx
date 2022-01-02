@@ -1,7 +1,5 @@
 import React, { useRef, useEffect, useState } from "react"
-import { Button } from "react-bootstrap"
 import useModalContext from "../../app/ModalContext"
-import Header from "../Mainpage/Header"
 import Link from "next/link"
 import DocumentUpload from "../UI/Profile/DocumentUplode"
 
@@ -57,12 +55,12 @@ function Documents() {
         }),
       }
     )
-     const resp = await docUploadResponse.json()
-     if (resp.actionStatus === "success") {
-       modalCtx.showModalWithContent(<DocumentUpload />)
-     } else {
-       alert("Document images ware not uploaded")
-     }
+    const resp = await docUploadResponse.json()
+    if (resp.actionStatus === "success") {
+      modalCtx.showModalWithContent(<DocumentUpload />)
+    } else {
+      alert("Document images ware not uploaded")
+    }
   }
   // this data need to be send to server for to store at the server
   return (

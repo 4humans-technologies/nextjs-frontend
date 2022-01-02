@@ -67,14 +67,6 @@ function ModelProfile(props) {
     </ChipArea>
   ))
 
-  const categories = props.profileData.categories.map((category, index) => (
-    <ChipArea key={`category-chip${index}`}>
-      <a href="#" className="hover:tw-text-white-color tw-px-4">
-        {category}
-      </a>
-    </ChipArea>
-  ))
-
   const Profile = () => {
     return (
       <>
@@ -91,7 +83,31 @@ function ModelProfile(props) {
               }}
             ></div>
             <div className="tw-mt-5">
-              {props.dynamicFields?.map((field, index) => {
+              <ProfileRow
+                title="Body Type: "
+                data={props.modelProfileData.bodyType}
+              />
+              <ProfileRow
+                title="Eye Color: "
+                data={props.modelProfileData.eyeColor}
+              />
+              <ProfileRow
+                title="Hair Color: "
+                data={props.modelProfileData.hairColor}
+              />
+              <ProfileRow
+                title="Skin Color: "
+                data={props.modelProfileData.skinColor}
+              />
+              <ProfileRow
+                title="Ethnicity: "
+                data={props.modelProfileData.ethnicity}
+              />
+              <ProfileRow
+                title="Coutry: "
+                data={props.modelProfileData.country}
+              />
+              {props.modelProfileData.dynamicFields?.map((field, index) => {
                 let value
                 if (Array.isArray(field.value)) {
                   value = field.value.join(" , ")
@@ -112,17 +128,12 @@ function ModelProfile(props) {
             <ProfileRow title="Name: " data={<p>{name}</p>} />
             <ProfileRow title="Age: " data={<p>{age}</p>} />
             <ProfileRow title="Tags: " data={tags} />
-            <ProfileRow title="Categories: " data={categories} />
             <ProfileRow title="My Hobbies: " data={tags} />
             <ProfileRow
               title="Bio: "
               // there need to add model profile data and Images
               data={
-                <p className="tw-col-span-3">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Delectus esse reiciendis aperiam inventore eveniet voluptatum
-                  sit, molestias quidem cumque sint?
-                </p>
+                <p className="tw-col-span-3">{props.modelProfileData.bio}</p>
               }
             />
           </div>
@@ -373,7 +384,7 @@ function ModelProfile(props) {
                       {album.originalImages?.map((image, index) => {
                         return (
                           <div
-                            className="tw-col-span-1 tw-h-full tw-cursor-pointer tw-max-h-40  hover:tw-scale-[1.1] tw-transition-transform"
+                            className="tw-col-span-1 tw-h-full tw-cursor-pointer tw-max-h-40  hover:tw-scale-[1.1] tw-transition-transform "
                             onClick={() =>
                               openLightboxOnSlide(index + 1, album._id)
                             }
@@ -405,7 +416,7 @@ function ModelProfile(props) {
                           >
                             <img
                               src={el}
-                              className="tw-w-full tw-h-full tw-rounded tw-object-cover"
+                              className="tw-w-full tw-h-full tw-rounded tw-object-cover tw-blur-sm"
                             />
                           </div>
                         )

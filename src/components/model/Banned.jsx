@@ -86,7 +86,7 @@ function Banned() {
           </button>
         </div>
 
-        <div className="tw-mt-4 dropdwown tw-bg-first-color tw-capitalize ">
+        <div className="tw-mt-4 dropdwown tw-bg-first-color tw-capitalize">
           <label
             htmlFor="banned-states"
             className="tw-text-lg tw-bg-first-color  tw-font-semibold tw-text-white tw-px-2 tw-rounded"
@@ -97,7 +97,7 @@ function Banned() {
             name="banned-states"
             id="banned-states"
             multiple
-            className="tw-w-full tw-min-h-[156px] tw-bg-second-color tw-px-2 tw-py-3 tw-rounded"
+            className="tw-w-full tw-min-h-[156px] tw-bg-second-color tw-px-2 tw-py-3 tw-rounded scrollHide"
           >
             {indianstate.map((item) => (
               <option
