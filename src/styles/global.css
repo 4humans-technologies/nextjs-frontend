@@ -36,12 +36,11 @@ html {
 }
 
 .coin-superchat-bg {
-  background: rgb(255, 226, 0);
+  background: rgb(255, 206, 0);
   background: linear-gradient(
     45deg,
-    rgba(255, 226, 0, 0.06486344537815125) 64%,
-    rgba(252, 182, 0, 0.3925945378151261) 83%,
-    rgba(250, 62, 0, 0.4374124649859944) 96%
+    rgba(255, 206, 0, 0.4009978991596639) 0%,
+    rgba(255, 140, 0, 0.40379901960784315) 100%
   );
 }
 
@@ -692,4 +691,13 @@ select {
   box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
   -webkit-box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
   -moz-box-shadow: 0px 0px 8px 1px rgba(30, 30, 30 0.28);
+}
+
+.king-bg {
+  background: rgb(237, 191, 0);
+  background: radial-gradient(
+    circle,
+    rgba(237, 191, 0, 1) 0%,
+    rgba(227, 125, 0, 1) 88%
+  );
 }

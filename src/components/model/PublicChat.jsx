@@ -9,7 +9,6 @@ import TipMenuActivityRequest from "../ChatMessageTypes/TipMenuActivity"
 import CallRequestChat from "../ChatMessageTypes/CallRequest"
 import GiftSuperChat from "../ChatMessageTypes/GiftSuperChat"
 
-let chatIndex = 0
 let messageShowed = false
 const chatWindowOptions = {
   PUBLIC: "public",
@@ -26,9 +25,10 @@ function PublicChatBox(props) {
 
   const [chatMessages, setChatMessages] = useState([])
   const [prevChats, setPrevChats] = useState([])
+  const [welcomeMsg, setWelcomeMsg] = useState("")
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
-  const { isModelOffline } = props
+  const { isModelOffline, modelWelcomeMessage } = props
 
   const scrollOnChat = useCallback(
     (option) => {
@@ -43,30 +43,32 @@ function PublicChatBox(props) {
     if (
       !isModelOffline &&
       authCtx.isLoggedIn &&
-      authCtx.user.userType === "Viewer"
+      authCtx.user.userType === "Viewer" &&
+      modelWelcomeMessage
     ) {
       if (!messageShowed) {
         messageShowed = true
-        setTimeout(() => {
-          setChatMessages((prevChats) => {
-            const newChats = [
-              ...prevChats,
-              {
-                type: "model-public-message",
-                message: authCtx.isLoggedIn
-                  ? `Hello my sweetheart ${
-                      authCtx.user.user.relatedUser.name.split(" ")[0]
-                    } 💘😘, welcome to me stream, check the tip menu (👆) to see what can i do for you.`
-                  : "Hello dear 💘, welcome to my stream i here to entertain you... 😘😘",
-              },
-            ]
-            chatIndex++
-            return newChats
-          })
-        }, [1000])
+        if (modelWelcomeMessage) {
+          // setTimeout(() => {
+          setWelcomeMsg(
+            modelWelcomeMessage.replaceAll(
+              "__name__",
+              authCtx.user.user.relatedUser.name
+            )
+          )
+          // }, [8000])
+        }
+      }
+      return () => {
+        messageShowed = false
       }
     }
-  }, [isModelOffline, authCtx.isLoggedIn, authCtx.user.userType])
+  }, [
+    isModelOffline,
+    authCtx.isLoggedIn,
+    modelWelcomeMessage,
+    authCtx.user.userType,
+  ])
 
   useEffect(() => {
     if (ctx.socketSetupDone) {
@@ -99,8 +101,10 @@ function PublicChatBox(props) {
             chat = {
               type: data.chatType,
               username: data.username,
-              activityName: data.activity.action,
-              activityPrice: data.activity.price,
+              activity: {
+                action: data.activity.action,
+                price: data.activity.price,
+              },
               walletCoins: data.walletCoins,
             }
             if (authCtx.user.userType !== "Model") {
@@ -125,7 +129,6 @@ function PublicChatBox(props) {
                 message: data.message,
               },
             ]
-            chatIndex++
             return newChats
           })
           scrollOnChat()
@@ -144,7 +147,6 @@ function PublicChatBox(props) {
                 walletCoins: data.walletCoins,
               },
             ]
-            chatIndex++
             return newChats
           })
           scrollOnChat()
@@ -158,9 +160,11 @@ function PublicChatBox(props) {
          */
         const socketRooms =
           JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-        socket.emit("take-me-out-of-these-rooms", [
-          socketRooms.find((room) => room.endsWith("-public")),
-        ])
+        if (socketRooms.find((room) => room.endsWith("-public"))) {
+          socket.emit("take-me-out-of-these-rooms", [
+            socketRooms.find((room) => room.endsWith("-public")),
+          ])
+        }
 
         if (socket.hasListeners("viewer-message-public-received")) {
           socket.off("viewer-message-public-received")
@@ -287,8 +291,10 @@ function PublicChatBox(props) {
             key={prefix + "activity" + index}
             username={chat.username}
             callType={chat.callType}
-            activityName={chat.activityName}
-            activityPrice={chat.activityPrice}
+            // activityName={chat?.activityName || chat?.activity?.action}
+            // activityPrice={chat?.activityPrice || chat?.activity?.price}
+            activityName={chat.activity.action}
+            activityPrice={chat.activity.price}
             walletCoins={chat.walletCoins}
             message={`${chat.username} requested activity`}
             addAtTheRate={() => props.addAtTheRate(chat?.username)}
@@ -300,8 +306,17 @@ function PublicChatBox(props) {
   }
 
   return (
-    <div className="chat-box tw-max-w-full tw-mb-14 tw-pr-2 tw-mt-4">
+    <div className="chat-box tw-max-w-full tw-mb-14 tw-pr-2">
       {prevChats.map((chat, index) => renderChats(chat, index, "prev_"))}
+      {welcomeMsg && authCtx.user.userType === "Viewer" ? (
+        <ModelChatMessage
+          key={"model_welcome_message"}
+          message={welcomeMsg}
+          highlight={false}
+          addAtTheRate={() => props.addAtTheRate(props?.modelUsername)}
+          modelUsername={props?.modelUsername}
+        />
+      ) : null}
       {chatMessages.map((chat, index) => renderChats(chat, index))}
     </div>
   )

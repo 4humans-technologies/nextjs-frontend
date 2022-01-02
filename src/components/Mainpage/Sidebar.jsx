@@ -55,20 +55,6 @@ function Sidebar(props) {
         </p>
       </div>
       {/* register as model */}
-      {/* Modle login  */}
-      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
-        <ExitToAppIcon className="tw-mr-4" />
-        <p
-          id="sidebar_item_name"
-          onClick={() => {
-            route.push("/auth/login")
-            updateSidebar()
-          }}
-          className="tw-cursor-pointer"
-        >
-          Model Login
-        </p>
-      </div>
       {!authContext.isLoggedIn && (
         <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
           <ExitToAppIcon className="tw-mr-4" />

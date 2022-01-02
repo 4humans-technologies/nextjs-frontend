@@ -331,6 +331,12 @@ function PrivateChatWrapper(props) {
           }
         })
       }
+      return () => {
+        /* remove listeners */
+        if (socket.hasListeners("viewer-private-message-received")) {
+          socket.off("viewer-private-message-received", (data) => {})
+        }
+      }
     }
   }, [socketCtx.socketSetupDone])
 

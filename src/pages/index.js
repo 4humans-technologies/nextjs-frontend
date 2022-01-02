@@ -140,16 +140,23 @@ const Home = () => {
       let modelDeleteHandler = (socketData) => {
         setBoxGroupData((prev) => {
           const prevLastPopped = prev.pop()
-          const poppedModelDataList = prevLastPopped.data.filter(
-            (stream) => stream.relatedUserId !== socketData.modelId
-          )
-          return [
-            ...prev,
-            {
-              ...prevLastPopped,
-              data: [...poppedModelDataList],
-            },
-          ]
+          /**
+           * prevLastPopped.data is the array of actual array of live streaming/onCall model
+           */
+          if (prevLastPopped) {
+            const poppedModelDataList = prevLastPopped?.data?.filter(
+              (stream) => stream.relatedUserId !== socketData.modelId
+            )
+            return [
+              ...prev,
+              {
+                ...prevLastPopped,
+                data: [...poppedModelDataList],
+              },
+            ]
+          } else {
+            return []
+          }
         })
       }
       socket.on("delete-stream-room", modelDeleteHandler)

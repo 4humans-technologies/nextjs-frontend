@@ -7,20 +7,23 @@ import useModalContext from "../../../app/ModalContext"
 function DocumentUplode() {
   const authContext = useAuthContext()
   const router = useRouter()
-  const modalContext = useModalContext()
   return (
-    <div className="tw-mx-auto tw-w-12 md:tw-w-8/12 lg:tw-w-2/6 tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
-      <h1 className="tw-text-white  ">
-        <span className="tw-font-semibold tw-text-lg">{`Thanks  ${authContext.user.user.relatedUser.name} to register  With Dreamgril ,We will contect you soon `}</span>
+    <div className="tw-mx-auto tw-text-white-color tw-px-3">
+      <div className="tw-text-center tw-mb-6">
+        <img
+          src="./thank-you.png"
+          alt=""
+          className="tw-w-48 tw-h-48 tw-mx-auto"
+        />
+      </div>
+      <h1 className="tw-text-white tw-text-center">
+        <span className="tw-text-lg">{`Thanks  ${authContext.user.user.relatedUser.name}, for registering  With dreamgirl, we will soon contact you for verification purposes, Have a nice day!`}</span>
       </h1>
       <div className="tw-flex  tw-justify-center">
         <button
           className="tw-rounded-full tw-bg-green-color tw-px-4 tw-py-2 tw-my-4 tw-cursor-pointer "
           onClick={() => {
-            modalContext.hideModal()
-            setTimeout(() => {
-              router.replace("/")
-            }, 200)
+            router.replace("/")
           }}
         >
           Go Home

@@ -135,12 +135,12 @@ function Live() {
       /* un mute audio */
       await localAudioTrack.setEnabled(false)
       console.log(localAudioTrack.enabled)
-      setMuted(false)
+      setMuted(true)
     } else {
       /* mute the audio */
       await localAudioTrack.setEnabled(true)
       console.log(localAudioTrack.enabled)
-      setMuted(true)
+      setMuted(false)
     }
   }
 
@@ -356,12 +356,6 @@ function Live() {
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
       const socket = io.getSocket()
-      socket.on("viewer-joined", (data) => {
-        document.getElementById("live-viewer-count").innerText = `${
-          data.roomSize - 1
-        } Live`
-      })
-
       /**
        * treat model's socket disconnection same as stream end when model is live
        * doesn't matter if onCall or isStreaming
@@ -446,7 +440,6 @@ function Live() {
       socket.on("disconnect", disconnectHandler)
 
       return () => {
-        socket.off("viewer-joined")
         socket.off("disconnect", disconnectHandler)
       }
     }
@@ -510,7 +503,6 @@ function Live() {
         requestServerEndAndStreamLeaveRef.current()
         leaveAndCloseTracksRef.current(false)
       }
-      console.log("clearing call and stream interval 🔺🔺⭕⭕🔴🔴⭕⭕🔻🔻")
       clearInterval(streamTimerRef.current)
       clearInterval(callTimerRef.current.interval)
       clearTimeout(callTimerRef.current.initialTimeout)
@@ -667,6 +659,7 @@ function Live() {
       if (!socket.hasListeners("viewer-call-end-request-finished")) {
         socket.on("viewer-call-end-request-finished", async (data) => {
           if (data.ended === "ok") {
+            updateCtx.updateWallet(data.currentAmount, "set")
           }
           clearInterval(callTimerRef.current.interval)
           clearTimeout(callTimerRef.current.initialTimeout)
@@ -1015,6 +1008,7 @@ function Live() {
           setPendingCallEndRequest(false)
           offCallListeners()
           localVideoTrack.setEnabled(true)
+          updateCtx.updateWallet(data.currentAmount, "set")
         } else if (!data?.callWasNotSetupProperly && data.wasFirst === "no") {
           /* if was not first wait for the socket end call response for 10 seconds or error out if not received */
           setTimeout(() => {
@@ -1288,7 +1282,6 @@ function Live() {
             )}
           </div>
 
-          {/* ================================================= */}
           {/* chat site | ex right side */}
           <div className="tw-bg-second-color sm:tw-w-[40%] sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen">
             <div className="tw-flex tw-justify-around sm:tw-justify-between tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
