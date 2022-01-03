@@ -20,11 +20,11 @@ function TestComponent() {
     ) {
       fetch("/api/website/get-geo-location")
         .then((res) => res.json())
-        .then((data) => {
+        .then((regionName) => {
           localStorage.setItem(
             "geoLocation",
             JSON.stringify({
-              regionName: data.regionName,
+              regionName: regionName,
               lastUpdated: Date.now(),
             })
           )

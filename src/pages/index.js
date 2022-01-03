@@ -59,13 +59,14 @@ const Home = () => {
               ?.lastUpdated <
               Date.now() - 86400000
           ) {
-            fetch("/api/website/get-geo-location")
+            // fetch("/api/website/get-geo-location")
+            fetch("https://ipapi.co/region")
               .then((res) => res.json())
-              .then((location) => {
+              .then((regionName) => {
                 localStorage.setItem(
                   "geoLocation",
                   JSON.stringify({
-                    regionName: location.regionName,
+                    regionName: regionName,
                     lastUpdated: Date.now(),
                   })
                 )

@@ -277,7 +277,7 @@ function ViewersListContainer(props) {
       )}
       {viewers.length === 0 && (
         <p className="tw-mt-4 tw-text-center tw-px-4 tw-bg-dark-black tw-mx-2 tw-text-white-color tw-rounded tw-p-3 tw-font-medium">
-          No Authenticated User Is Live Now 😟
+          No User Is Live Now 😟
         </p>
       )}
     </>
