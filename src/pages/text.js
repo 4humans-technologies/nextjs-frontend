@@ -29,7 +29,15 @@ function TestComponent() {
             })
           )
         })
-        .catch((err) => {})
+        .catch((err) => {
+          localStorage.setItem(
+            "geoLocation",
+            JSON.stringify({
+              regionName: "delta",
+              lastUpdated: Date.now(),
+            })
+          )
+        })
     }
   }, [])
 

@@ -75,7 +75,19 @@ const Home = () => {
                 })
                 renderLiveModels(data)
               })
-              .catch((err) => {})
+              .catch((err) => {
+                localStorage.setItem(
+                  "geoLocation",
+                  JSON.stringify({
+                    regionName: "delta",
+                    lastUpdated: Date.now(),
+                  })
+                )
+                data = data.resultDocs.filter((model) => {
+                  return !model.bannedStates.includes(location.regionName)
+                })
+                renderLiveModels(data)
+              })
           } else {
             const myRegion = JSON.parse(
               localStorage.getItem("geoLocation")
