@@ -21,6 +21,8 @@ import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
 import ModelDetailHeader from "../ViewerScreen/ModelDetailHeader"
 import Notifications from "./Header/Notifications"
+import AdjustIcon from "@material-ui/icons/Adjust"
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord"
 
 const initialNotifications = [
   {
@@ -384,7 +386,7 @@ function Header(props) {
                           </span>
                         </div>
                         <div
-                          className="tw-flex tw-self-center tw-cursor-pointer"
+                          className="tw-flex tw-self-center"
                           onClick={() => router.push(`/user/payment`)}
                         >
                           <img
@@ -413,8 +415,8 @@ function Header(props) {
                             <Link
                               href={`/${authContext.user.user.username}/goLive`}
                             >
-                              <a className="tw-bg-red-500 text-sm tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1`  tw-inline-block tw-mx-3 tw-rounded-full  tw-whitespace-nowrap">
-                                Go Live
+                              <a className="tw-bg-red-500 hover:tw-bg-white  hover:tw-text-red-500  tw-font-bold tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1`  tw-inline-block tw-mx-3 tw-rounded-full  tw-whitespace-nowrap">
+                                <AdjustIcon /> Go Live
                               </a>
                             </Link>
                           )}
@@ -440,7 +442,7 @@ function Header(props) {
                             <img
                               src="/coins.png"
                               alt=""
-                              className="tw-w-4 tw-h-4 tw-text-white tw-cursor-pointer"
+                              className="tw-w-4 tw-h-4 tw-text-white"
                               onClick={() =>
                                 router.push(
                                   `/${authContext.user.user.username}/settingToken`
@@ -544,7 +546,7 @@ function Header(props) {
                             />
                           </span>
                         </div>
-                        <div className="tw-mx-4 tw-flex tw-cursor-pointer">
+                        <div className="tw-mx-4 tw-flex ">
                           <img
                             src="/coins.png"
                             alt=""
@@ -565,8 +567,9 @@ function Header(props) {
                           <Link
                             href={`/${authContext.user.user.username}/goLive`}
                           >
-                            <a className="tw-bg-red-500 text-sm tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1  tw-inline-block tw-mx-3 tw-rounded-full hover:tw-text-black tw-whitespace-nowrap">
-                              Go Live
+                            <a className="tw-bg-red-500 tw-my-auto tw-font-bold tw-text-white hover:tw-bg-white hover:tw-text-red-500  tw-outline-none tw-capitalize tw-px-2 tw-py-1  tw-inline-block tw-mx-3 tw-rounded-full  tw-whitespace-nowrap">
+                              <FiberManualRecordIcon />{" "}
+                              <span className="tw-mr-1 ">Go Live </span>
                             </a>
                           </Link>
                         )}

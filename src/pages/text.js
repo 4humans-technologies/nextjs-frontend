@@ -19,7 +19,7 @@ function TestComponent() {
       Date.now() - 86400000
     ) {
       fetch("/api/website/get-geo-location")
-        .then((res) => res.json())
+        .then((res) => res.text())
         .then((regionName) => {
           localStorage.setItem(
             "geoLocation",

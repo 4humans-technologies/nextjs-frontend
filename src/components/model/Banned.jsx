@@ -73,13 +73,13 @@ function Banned() {
 
         <div className="tw-flex tw-w-full tw-mt-2">
           <button
-            className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-auto"
+            className="tw-rounded-full tw-px-4  tw-font-medium tw-ml-auto tw-bg-green-color"
             onClick={blockHandler}
           >
-            Submit
+            Update
           </button>
           <button
-            className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-4"
+            className="tw-rounded-full tw-px-4  tw-font-medium tw-ml-4 tw-bg-dreamgirl-red"
             onClick={() => setSelected([])}
           >
             Reset

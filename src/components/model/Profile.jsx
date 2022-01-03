@@ -764,15 +764,15 @@ function Profile() {
             </h1>
             <div className="tw-grid tw-grid-cols-6 tw-gap-4 tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md tw-pb-6">
               <div className=" md:tw-col-span-1 tw-col-span-2 ">
-                <p>Intrested in</p>
-                <p>From</p>
-                <p>Language</p>
-                <p>Age</p>
-                <p>Skin Type</p>
-                <p>Body Type</p>
-                <p>Hair</p>
-                <p>Eye color</p>
-                <p>About me</p>
+                <p>Intrested in :</p>
+                <p>From :</p>
+                <p>Language :</p>
+                <p>Age :</p>
+                <p>Skin Type :</p>
+                <p>Body Type :</p>
+                <p>Hair :</p>
+                <p>Eye color :</p>
+                <p>About me :</p>
               </div>
               <div className="md:tw-col-span-5 tw-col-span-4 ">
                 <p>EveryOne</p>
@@ -819,8 +819,10 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
+                  placeholder="Type your skin type"
+                  className="placeholder-shown:tw-text-white"
                 >
-                  Fair
+                  {authContext.user.user.relatedUser.skinColor}
                 </p>
                 <p
                   onInput={(e) => {
@@ -834,8 +836,10 @@ function Profile() {
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
+                  placeholder="Write skin type"
+                  className="placeholder-shown:tw-text-white"
                 >
-                  slim
+                  {authContext.user.user.relatedUser.bodyType}
                 </p>
                 <p
                   onInput={(ev) => {
@@ -848,8 +852,7 @@ function Profile() {
                   suppressContentEditableWarning={true}
                   contentEditable="true"
                 >
-                  Black
-                  {/* {item.Hair} */}
+                  {authContext.user.user.relatedUser.hairColor}
                 </p>
                 <p
                   onInput={(e) => {
@@ -862,7 +865,7 @@ function Profile() {
                   suppressContentEditableWarning={true}
                   contentEditable="true"
                 >
-                  Black
+                  {authContext.user.user.relatedUser.eyeColor}
                 </p>
                 <p
                   onInput={(e) => {
@@ -896,7 +899,7 @@ function Profile() {
             {/* change email */}
             <div className="tw-bg-first-color  tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 md:tw-flex md:tw-items-center md:tw-justify-between">
               <p className="tw-flex tw-items-center tw-justify-between">
-                My Email
+                My Email :
                 <span className="md:tw-ml-4 md:tw-text-lg md:tw-font-semibold  tw-text-sm tw-font-normal">
                   {authContext.user.user.relatedUser.email}
                 </span>
@@ -912,7 +915,7 @@ function Profile() {
             {/* change password */}
             <div className="tw-bg-first-color  tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 md:tw-flex md:tw-items-center md:tw-justify-between">
               <p className="tw-flex tw-items-center tw-justify-between">
-                My Password
+                My Password :
                 <span className="tw-ml-4 tw-font-semibold">xxxxxxxx</span>
               </p>
               <button
@@ -927,12 +930,12 @@ function Profile() {
 
             {/* Pricing */}
             <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
-              <div className="tw-col-span-2">
-                <p>Private Audio Call</p>
-                <p className="md:tw-my-2">Private video Call</p>
+              <div className="tw-col-span-[1.1]">
+                <p>Private Audio Call :</p>
+                <p className="md:tw-my-2">Private video Call :</p>
               </div>
-              <div className="tw-col-span-1">
-                <div className="tw-flex ">
+              <div className="tw-col-span-[1.7]">
+                <div className="tw-flex  ">
                   <input
                     type="number"
                     name="audio"
@@ -943,6 +946,7 @@ function Profile() {
                     className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
                     value={audioVideoPrice.audio}
                   />
+                  <span className="tw-ml-2">Coins/minutes</span>
                 </div>
                 {/*  */}
 
@@ -957,6 +961,7 @@ function Profile() {
                     className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
                     value={audioVideoPrice.video}
                   />
+                  <span className="tw-ml-2">Coins/minutes</span>
                 </div>
                 {priceEdit && (
                   <button
@@ -1098,7 +1103,7 @@ function Profile() {
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
-              <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+              <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
@@ -1164,7 +1169,7 @@ function Profile() {
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
-              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
@@ -1222,7 +1227,7 @@ function Profile() {
                       >
                         <video
                           src={image}
-                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2"
                         ></video>
                       </div>
                     )
@@ -1329,7 +1334,7 @@ function Profile() {
             {/* Privete video Input field */}
 
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
-              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+              <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input
@@ -1390,7 +1395,7 @@ function Profile() {
                     >
                       <video
                         src={image}
-                        className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4"
+                        className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2"
                       ></video>
                     </div>
                   ))}
@@ -1492,7 +1497,7 @@ function Profile() {
             </div>
             <div className=" tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2">
               {/* This for File uplode  */}
-              <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-4 tw-mb-4">
+              <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
                 <div className="file-input tw-mt-10 tw-ml-2">
                   <input

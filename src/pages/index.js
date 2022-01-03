@@ -61,7 +61,7 @@ const Home = () => {
           ) {
             // fetch("/api/website/get-geo-location")
             fetch("https://ipapi.co/region")
-              .then((res) => res.json())
+              .then((res) => res.text())
               .then((regionName) => {
                 localStorage.setItem(
                   "geoLocation",

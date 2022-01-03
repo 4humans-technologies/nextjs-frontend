@@ -30,6 +30,7 @@ module.exports = {
         "dark-background": "#000000", // #dark background
         "dreamgirl-red": "#FD1E47",
         "dreamgirl-darkred": "#780016",
+        "netural-Black": "#171717",
       },
       fontFamily: {
         sans: ["PT sans", "sans-serif"],

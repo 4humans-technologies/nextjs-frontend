@@ -125,48 +125,13 @@ function Settingprivacy() {
   return (
     authContext.isLoggedIn && (
       <div className="tw-pb-4">
-        <div className="tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-text-white tw-w-full ">
-          <div className="tw-col-span-1">
-            <div className="tw-bg-first-color tw-flex tw-items-center tw-justify-between tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 ">
-              <p className="">
-                My Email
-                <span className="tw-ml-4 tw-text-lg tw-font-semibold">
-                  {authContext.user.user.relatedUser.email}
-                </span>
-              </p>
-              <button
-                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium "
-                onClick={() => modalCtx.showModalWithContent(<EmailChange />)}
-              >
-                Change Email
-              </button>
-            </div>
-          </div>
-          <div className="tw-col-span-1">
-            <div className="tw-bg-first-color tw-flex tw-items-center tw-justify-between tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 ">
-              <p className="">
-                My Password{" "}
-                <span className="tw-ml-4 tw-font-semibold">xxxxxxxx</span>
-              </p>
-              <button
-                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium "
-                onClick={() =>
-                  modalCtx.showModalWithContent(<PasswordChange />)
-                }
-              >
-                Change Password
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* It's token History */}
         <div className="tw-text-white tw-mt-8 ">
-          <h1 className="tw-pt-4 tw-text-center tw-font-semibold">
-            Token History
+          <h1 className="tw-pt-4 tw-text-center tw-font-bold tw-text-lg">
+            Token History :
           </h1>
-          <div className="tw-flex tw-mt-4 tw-flex-wrap md:tw-ml-4">
-            <form onSubmit={dateHandler}>
+          <div className="tw-flex  tw-flex-wrap">
+            <form onSubmit={dateHandler} className=" md:tw-ml-auto">
               <label htmlFor="startDate">From</label>
               <input
                 type="date"
@@ -208,12 +173,20 @@ function Settingprivacy() {
 
           {authContext.user.userType === "Model" ? (
             <div>
-              <div className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
-                <div>Date</div>
-                <div className="tw-hidden md:tw-block">Time</div>
-                <div>Action</div>
-                <div>Gifted By</div>
-                <div>
+              <div className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  md:tw-font-bold tw-font-semibold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid tw-text-lg  ">
+                <div className=" md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
+                  Date
+                </div>
+                <div className="tw-hidden md:tw-block md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
+                  Time
+                </div>
+                <div className="md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
+                  Action
+                </div>
+                <div className="md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black tw-mx-2">
+                  Gifted By
+                </div>
+                <div className="md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
                   Token
                   <ExpandLessIcon
                     className=" tw-cursor-pointer"
@@ -222,7 +195,7 @@ function Settingprivacy() {
                     }}
                   />
                   <ExpandLessIcon
-                    className=" tw-cursor-pointer tw-rotate-180"
+                    className=" tw-cursor-pointer tw-rotate-180 tw--ml-2"
                     onClick={() => {
                       decendHandler()
                     }}
@@ -280,7 +253,7 @@ function Settingprivacy() {
               <div className="tw-max-h-72 tw-overflow-y-auto">
                 {tokenData?.map((item, index) => (
                   <div
-                    className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  tw-bg-second-color tw-text-xl tw-font-bold  tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
+                    className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1  tw-bg-second-color tw-text-lg   tw-mt-2 md:tw-mx-16 tw-text-center token_grid "
                     key={index}
                   >
                     <div>{item.time.split("T")[0]}</div>
@@ -303,7 +276,7 @@ function Settingprivacy() {
           <div className="tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-text-white tw-w-full tw-my-8 ">
             <div className="tw-col-span-1 tw-px-4">
               <h1 className=" tw-font-bold tw-text-center tw-my-4">
-                Bank Details
+                Bank Details :
               </h1>
               <form
                 action=""
@@ -325,7 +298,7 @@ function Settingprivacy() {
                       person: e.target.value,
                     }))
                   }
-                  className="tw-bg-first-color tw-rounded-full tw-py-1 tw-px-2"
+                  className="tw-bg-first-color tw-rounded-full tw-py-1 tw-px-2 tw-outline-none "
                 />
                 <label htmlFor="Bank-name" className="tw-mt-3">
                   BANK NAME
@@ -410,9 +383,9 @@ function Settingprivacy() {
                 <div className="tw-flex tw-mx-auto">
                   <button
                     type="submit"
-                    className=" tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  tw-mt-4"
+                    className=" tw-rounded-full tw-px-4  tw-border-white-color tw-font-medium  tw-mt-4 tw-bg-green-color"
                   >
-                    Update
+                    Submit
                   </button>
                 </div>
               </form>
@@ -420,18 +393,20 @@ function Settingprivacy() {
             </div>
             <div className="tw-col-span-1 tw-px-4">
               <h1 className=" tw-font-bold tw-text-center tw-my-4">
-                Widrawal Reuest
+                Widrawal Request :
               </h1>
               <div className="tw-bg-second-color tw-p-4 tw-rounded-lg">
                 <p>
                   <span className="tw-font-smibold tw-mr-4">
-                    Token in your account :
+                    Coin in your account :
                   </span>
-                  {authContext.user.user.relatedUser.wallet.currentAmount}
+                  {authContext.user.user.relatedUser.wallet.currentAmount.toFixed(
+                    0
+                  )}
                 </p>
                 <p className="flex tw-my-2">
                   <span className="tw-font-smibold tw-mr-4">
-                    Withdrawal Token :
+                    Withdrawal Coin :
                   </span>
                   <input
                     type="text"
@@ -443,9 +418,14 @@ function Settingprivacy() {
                 </p>
                 <button
                   type="submit"
-                  className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium  "
+                  className={` ${
+                    authContext.user.user.relatedUser.wallet.currentAmount >
+                    3000
+                      ? " tw-rounded-full tw-px-4  tw-bg-green-color tw-font-medium  tw-text-white tw-py-2"
+                      : " tw-rounded-full tw-px-4 tw-border-2 tw-border-gray-500 tw-font-medium  tw-text-gray-500 "
+                  }`}
                 >
-                  Claim token
+                  Request Withdrawal
                 </button>
               </div>
 
