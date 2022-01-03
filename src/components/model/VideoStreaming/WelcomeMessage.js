@@ -7,9 +7,9 @@ import { toast } from "react-toastify"
 
 function WelcomeMessage() {
   const authContext = useAuthContext()
-  const [childState, setChildState] = useState([
-    ...authContext.user.user?.relatedUser?.welcomeMessage.split(","),
-  ])
+  const [childState, setChildState] = useState(
+    authContext.user.user.relatedUser.welcomeMessage
+  )
   const updateAuthcontext = useAuthUpdateContext()
   const topicSetter = async () => {
     if (!childState.includes("__name__")) {
@@ -18,31 +18,39 @@ function WelcomeMessage() {
       )
       return
     }
-    const res = await fetch("/api/website/profile/update-info-fields", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify([
-        {
-          field: "welcomeMessage",
-          value: childState,
-        },
-      ]),
-    })
-    const lcUser = JSON.parse(localStorage.getItem("user"))
-    lcUser.relatedUser.welcomeMessage = childState
-    localStorage.setItem("user", JSON.stringify(lcUser))
 
-    updateAuthcontext.setAuthState((prev) => ({
-      ...prev,
-      user: {
-        ...prev.user,
-        user: {
-          ...lcUser,
+    try {
+      const res = await fetch("/api/website/profile/update-info-fields", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      },
-    }))
+        body: JSON.stringify([
+          {
+            field: "welcomeMessage",
+            value: childState,
+          },
+        ]),
+      })
+
+      const lcUser = JSON.parse(localStorage.getItem("user"))
+      lcUser.relatedUser.welcomeMessage = childState
+      localStorage.setItem("user", JSON.stringify(lcUser))
+
+      updateAuthcontext.setAuthState((prev) => ({
+        ...prev,
+        user: {
+          ...prev.user,
+          user: {
+            ...lcUser,
+          },
+        },
+      }))
+      toast.success("updated successfully!")
+    } catch (err) {
+      /*  */
+      toast.error(err.message)
+    }
   }
 
   return (

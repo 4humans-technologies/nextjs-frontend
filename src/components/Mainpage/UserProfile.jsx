@@ -88,9 +88,9 @@ function UserProfile() {
    // I need a function
 
    return (
-     <div className="tw-bg-dark-background">
+     <div className="tw-bg-dark-background ">
        {/* Cover page */}
-       <div className="tw-w-full tw-relative  tw-bg-dark-background ">
+       <div className="tw-w-full tw-relative  tw-bg-dark-background tw-mt-[4.5rem]">
          <img
            src={
              authContext.user.user.relatedUser?.coverImage
@@ -132,9 +132,9 @@ function UserProfile() {
          </div>
        </div>
        {/* name and profile */}
-       <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4   md:tw-py-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-w-full tw-bg-dark-background">
-         <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 ">
-           <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 tw-bg-first-color  tw-py-4 md:tw-my-0 tw-mt-4 tw-mb-4 tw-rounded-t-lg tw-rounded-b-lg tw-pl-4">
+       <div className="tw-grid md:tw-grid-cols-7 tw-grid-cols-1 md:tw-gap-4   md:tw-py-2 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-text-white tw-w-full tw-bg-dark-background ">
+         <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 tw-mx-2 ">
+           <div className="md:tw-col-span-4 tw-col-span-4 tw-grid tw-grid-cols-4 tw-bg-first-color  tw-py-4 md:tw-my-0 tw-mt-4 tw-mb-4 tw-rounded-t-lg tw-rounded-b-lg tw-pl-4">
              <div className="md:tw-col-span-1 tw-col-span-2   ">
                <p>Intrested in</p>
                <p>UserName</p>
@@ -176,17 +176,17 @@ function UserProfile() {
              )}
            </div>
            {/* Email */}
-           <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4 tw-bg-first-color tw-my-8 tw-px-4 tw-rounded-t-lg tw-rounded-b-lg tw-py-4 ">
+           <div className="md:tw-col-span-4 tw-col-span-4 tw-grid tw-grid-cols-4 tw-bg-first-color tw-my-8 tw-px-4 tw-rounded-t-lg tw-rounded-b-lg tw-py-4 ">
              <div className="tw-col-span-4 tw-flex tw-justify-between">
                <p className="tw-flex tw-my-4 ">
-                 <p>My Email</p>
+                 <p>Email</p>
                  <span className="tw-ml-4 tw-text-lg tw-font-semibold ">
                    {authContext.user.user.relatedUser?.email}
                  </span>
                </p>
                <div className="tw-my-auto">
                  <button
-                   className="tw-rounded-full  tw-border-2 tw-border-white-color tw-font-medium tw-px-2"
+                   className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium "
                    onClick={() =>
                      modelCtx.showModalWithContent(<EmailChange />)
                    }
@@ -198,7 +198,7 @@ function UserProfile() {
            </div>
            {/* Email */}
            {/* password */}
-           <div className="md:tw-col-span-4 tw-col-span-1 tw-grid tw-grid-cols-4  tw-bg-first-color tw-px-4  tw-rounded-t-lg tw-rounded-b-lg tw-py-4">
+           <div className="md:tw-col-span-4 tw-col-span-4 tw-grid tw-grid-cols-4  tw-bg-first-color tw-px-4  tw-rounded-t-lg tw-rounded-b-lg tw-py-4">
              <div className="tw-col-span-4 tw-flex tw-justify-between">
                <p className=" tw-flex tw-my-4">
                  <p>My Password</p>
@@ -219,7 +219,7 @@ function UserProfile() {
          </div>
          {/* Password */}
 
-         <div className="tw-bg-first-color md:tw-col-span-3 tw-col-span-1 md:tw-my-0 tw-my-4 tw-rounded-t-lg tw-rounded-b-lg tw-justify-items-start ">
+         <div className="tw-bg-first-color md:tw-col-span-3 tw-col-span-1 md:tw-my-0 tw-my-4 tw-rounded-t-lg tw-rounded-b-lg tw-justify-items-start tw-mx-2">
            <h1 className="tw-pl-4 tw-pt-4">Dummy Freinds</h1>
            {/* Problem with useEffect and useState is that it is update after all data loaded that you have to remmembember */}
            <div className="tw-max-h-96   tw-text-white tw-overflow-y-auto">
@@ -236,7 +236,9 @@ function UserProfile() {
                  ))}
                </div>
              ) : (
-               <h1>No Friends</h1>
+               <h1 className="tw-text-white tw-font-bold tw-pt-4">
+                 No Friends
+               </h1>
              )}
            </div>
          </div>

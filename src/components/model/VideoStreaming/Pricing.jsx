@@ -3,10 +3,10 @@ import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 import { SaveRounded } from "@material-ui/icons"
 import AttachMoneyRoundedIcon from "@material-ui/icons/AttachMoneyRounded"
 import { Button } from "react-bootstrap"
-
+import { toast } from "react-toastify"
 function Pricing() {
   const authContext = useAuthContext()
-
+  const updateAuthcontext = useAuthUpdateContext()
   const [priceEdit, setPriceEdited] = useState(false)
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
@@ -19,19 +19,49 @@ function Pricing() {
     setPriceEdited(true)
   }
 
-  const priceSetting = async () => {
-    const res = await fetch("/model.json", {
+  const priceSetting = () => {
+    fetch("/api/website/profile/update-info-fields", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        audio: audioVideoPrice.audio,
-        video: audioVideoPrice.video,
-      }),
+      body: JSON.stringify([
+        {
+          field: "charges.audioCall",
+          value: audioVideoPrice.audio,
+        },
+        {
+          field: "charges.videoCall",
+          value: audioVideoPrice.video,
+        },
+      ]),
     })
-    const data = await res.json()
-    console.log(data)
+      .then((res) => res.json())
+      .then(() => {
+        const lcUser = JSON.parse(localStorage.getItem("user"))
+        lcUser.relatedUser.charges = {
+          audioCall: audioVideoPrice.audio,
+          videoCall: audioVideoPrice.video,
+        }
+        localStorage.setItem("user", JSON.stringify(lcUser))
+
+        updateAuthcontext.setAuthState((prev) => ({
+          ...prev,
+          user: {
+            ...prev.user,
+            user: {
+              ...lcUser,
+            },
+          },
+        }))
+        setPriceEdited(false)
+      })
+      .then(() => {
+        toast.success("updated successfully!")
+      })
+      .catch((err) => {
+        toast.error(err.message)
+      })
   }
 
   return (
@@ -47,9 +77,10 @@ function Pricing() {
           name="audio"
           value={audioVideoPrice.audio}
           placeholder="Coins"
-          className="md:tw-flex-shrink-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full sm:tw-w-1/2 tw-ml-2"
+          className="tw-flex-shrink tw-flex-grow-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-2 tw-py-1 tw-w-full sm:tw-w-1/2 tw-ml-2"
           onChange={(e) => callChangeHandler(e)}
         />
+        <p className="tw-ml-1">(min/sec)</p>
       </div>
       <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <p className="tw-flex-shrink-0 tw-flex-grow">Private Audio Call</p>
@@ -58,9 +89,10 @@ function Pricing() {
           name="video"
           value={audioVideoPrice.video}
           placeholder="Coins"
-          className="md:tw-flex-shrink-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-full sm:tw-w-1/2 tw-ml-2"
+          className="tw-flex-shrink tw-flex-grow-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-2 tw-py-1 tw-w-full sm:tw-w-1/2 tw-ml-2"
           onChange={(e) => callChangeHandler(e)}
         />
+        <p className="tw-ml-1">(min/sec)</p>
       </div>
       {priceEdit && (
         <Button

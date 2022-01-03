@@ -3,40 +3,48 @@ import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { Button } from "react-bootstrap"
 import { SaveRounded } from "@material-ui/icons"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
+import { toast } from "react-toastify"
 
 function Topic() {
   const authContext = useAuthContext()
-  const [childState, setChildState] = useState([
-    ...authContext.user.user?.relatedUser?.topic.split(","),
-  ])
+  const [childState, setChildState] = useState(
+    authContext.user.user.relatedUser?.topic
+  )
   const updateAuthcontext = useAuthUpdateContext()
   //  Topic set while streaming
   const topicSetter = async () => {
-    const res = await fetch("/api/website/profile/update-info-fields", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify([
-        {
-          field: "topic",
-          value: childState,
+    try {
+      const res = await fetch("/api/website/profile/update-info-fields", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ]),
-    })
-    const lcUser = JSON.parse(localStorage.getItem("user"))
-    lcUser["relatedUser"]["topic"] = childState
-    localStorage.setItem("user", JSON.stringify(lcUser))
+        body: JSON.stringify([
+          {
+            field: "topic",
+            value: childState,
+          },
+        ]),
+      })
 
-    updateAuthcontext.setAuthState((prev) => ({
-      ...prev,
-      user: {
-        ...prev.user,
+      const lcUser = JSON.parse(localStorage.getItem("user"))
+      lcUser["relatedUser"]["topic"] = childState
+      localStorage.setItem("user", JSON.stringify(lcUser))
+
+      updateAuthcontext.setAuthState((prev) => ({
+        ...prev,
         user: {
-          ...lcUser,
+          ...prev.user,
+          user: {
+            ...lcUser,
+          },
         },
-      },
-    }))
+      }))
+      toast.success("updated successfully!")
+    } catch (err) {
+      /*  */
+      toast.error(err.message)
+    }
   }
 
   return (

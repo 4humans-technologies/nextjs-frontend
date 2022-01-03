@@ -5,12 +5,14 @@ import SaveRoundedIcon from "@material-ui/icons/SaveRounded"
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined"
 import { Button } from "react-bootstrap"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
+import { toast } from "react-toastify"
 
 function Tip() {
   const authContext = useAuthContext()
-  const [dynamicData, setDynamicData] = useState([
-    authContext.user.user?.relatedUser?.topic,
-  ])
+  const updateAuthcontext = useAuthUpdateContext()
+  const [dynamicData, setDynamicData] = useState(
+    authContext.user.user.relatedUser.tipMenuActions.actions
+  )
 
   useEffect(() => {
     if (authContext.loadedFromLocalStorage === true) {
@@ -42,7 +44,6 @@ function Tip() {
       const actionValue = allInputs[index + 1].value
       actionArray.push({ action: action, price: actionValue })
     }
-    // console.log(actionArray)
 
     fetch("/api/website/profile/update-model-tipmenu-actions", {
       method: "POST",
@@ -54,7 +55,32 @@ function Tip() {
       }),
     })
       .then((resp) => resp.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        const lcUser = JSON.parse(localStorage.getItem("user"))
+        lcUser["relatedUser"]["tipMenuActions"]["actions"] = dynamicData
+        localStorage.setItem("user", JSON.stringify(lcUser))
+
+        updateAuthcontext.setAuthState((prev) => ({
+          ...prev,
+          user: {
+            ...prev.user,
+            user: {
+              ...lcUser,
+            },
+          },
+        }))
+        toast.success("updated successfully!")
+      })
+      .catch((err) => {
+        toast.error(err.message)
+      })
+  }
+
+  const handleChange = (e, index) => {
+    setDynamicData((prev) => {
+      prev[index][e.target.name] = e.target.value
+      return [...prev]
+    })
   }
 
   return (
@@ -75,12 +101,16 @@ function Tip() {
                 className="tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2 tw-w-9/12 tw-mr-2"
                 placeholder="Actions"
                 value={item.action}
+                name="action"
+                onChange={(e) => handleChange(e, index)}
                 required={true}
               />
               <input
                 className="tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-2 tw-py-2 tw-w-3/12"
                 type="number"
                 value={item.price}
+                onChange={(e) => handleChange(e, index)}
+                name="price"
                 required={true}
               />
               <span className="tw-flex-shrink tw-flex-grow-0 tw-pl-2 tw-cursor-pointer">
@@ -100,7 +130,7 @@ function Tip() {
           className="tw-rounded-full tw-flex tw-text-sm tw-mr-4"
           variant="outline-secondary"
           onClick={() =>
-            setDynamicData((prev) => [...prev, { action: null, price: null }])
+            setDynamicData((prev) => [...prev, { action: "", price: "" }])
           }
         >
           <AddOutlinedIcon fontSize="small" />

@@ -29,16 +29,12 @@ function Topic(props) {
       }
     )
       .then((resp) => resp.json())
-      .then((data) => {
-        /* update ctx and local storage */
-        toast.success("offline status updated successfully")
+      .then(() => {
+        toast.success("updated successfully!")
       })
-
-    // toast.promise(offlineStatusPromise, {
-    //   pending: "updating offline status",
-    //   success: "offline status updated successfully",
-    //   error: "status not updated",
-    // })
+      .catch((err) => {
+        toast.error(err.message)
+      })
   }
 
   return (

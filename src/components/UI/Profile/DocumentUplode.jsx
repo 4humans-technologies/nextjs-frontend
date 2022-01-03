@@ -6,6 +6,7 @@ import useModalContext from "../../../app/ModalContext"
 
 function DocumentUplode() {
   const authContext = useAuthContext()
+  const modelContext = useModalContext()
   const router = useRouter()
   return (
     <div className="tw-mx-auto tw-text-white-color tw-px-3">
@@ -24,6 +25,7 @@ function DocumentUplode() {
           className="tw-rounded-full tw-bg-green-color tw-px-4 tw-py-2 tw-my-4 tw-cursor-pointer "
           onClick={() => {
             router.replace("/")
+            modelContext.hideModal()
           }}
         >
           Go Home

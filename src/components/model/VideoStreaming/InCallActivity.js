@@ -5,19 +5,20 @@ import { SaveRounded } from "@material-ui/icons"
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined"
 import ClearIcon from "@material-ui/icons/Clear"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
+import { toast } from "react-toastify"
 
 function InCallActivities(props) {
   const updateAuthCotntext = useAuthUpdateContext()
   const authContext = useAuthContext()
 
   const [audioCallActivities, setAudioCallActivities] = useState([
-    ...authContext.user.user?.relatedUser?.callActivity.audioCall,
+    ...authContext.user.user.relatedUser.callActivity?.audioCall,
   ])
   const [videoCallActivities, setVideoCallActivities] = useState([
-    ...authContext.user.user?.relatedUser?.callActivity.videoCall,
+    ...authContext.user.user.relatedUser.callActivity?.videoCall,
   ])
 
-  const updateCallActivities = async () => {
+  const updateCallActivities = () => {
     fetch("/api/website/profile/update-info-fields", {
       method: "POST",
       headers: {
@@ -34,7 +35,7 @@ function InCallActivities(props) {
       ]),
     })
       .then((resp) => resp.json())
-      .then((data) => {
+      .then(() => {
         const store = JSON.parse(localStorage.getItem("user"))
         store["relatedUser"]["callActivity"]["audioCall"] = audioCallActivities
         store["relatedUser"]["callActivity"]["videoCall"] = videoCallActivities
@@ -51,6 +52,12 @@ function InCallActivities(props) {
             },
           }
         })
+      })
+      .then(() => {
+        toast.success("updated successfully!")
+      })
+      .catch((err) => {
+        toast.error(err.message)
       })
   }
 

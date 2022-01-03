@@ -34,20 +34,28 @@ function Coverpage() {
     })
 
     const coverUrl = cover_url.split("?")[0]
-    const re = await fetch("/api/website/profile/update-info-fields", {
+    fetch("/api/website/profile/update-info-fields", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify([{ field: "backGroundImage", value: coverUrl }]),
     })
-    const lcUser = JSON.parse(localStorage.getItem("user"))
-    lcUser.relatedUser.backGroundImage = coverUrl
-    localStorage.setItem("user", JSON.stringify(lcUser))
-    updateCtx.setAuthState((prev) => {
-      prev.user.user.relatedUser.backGroundImage = coverUrl
-      return { ...prev }
-    })
+      .then((res) => res.json())
+      .then(() => {
+        const lcUser = JSON.parse(localStorage.getItem("user"))
+        lcUser.relatedUser.backGroundImage = coverUrl
+        localStorage.setItem("user", JSON.stringify(lcUser))
+        updateCtx.setAuthState((prev) => {
+          prev.user.user.relatedUser.backGroundImage = coverUrl
+          return { ...prev }
+        })
+
+        toast.success("updated successfully!")
+      })
+      .catch((err) => {
+        toast.error(err.message)
+      })
   }
 
   return (

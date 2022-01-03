@@ -967,7 +967,8 @@ function Profile() {
                   <button
                     className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-inline-block tw-my-4"
                     onClick={() => {
-                      priceSetting(), setPriceEdited(false)
+                      priceSetting()
+                      setPriceEdited(false)
                     }}
                   >
                     Save
