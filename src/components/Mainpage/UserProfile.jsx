@@ -177,7 +177,7 @@ function UserProfile() {
            </div>
            {/* Email */}
            <div className="md:tw-col-span-4 tw-col-span-4 tw-grid tw-grid-cols-4 tw-bg-first-color tw-my-8 tw-px-4 tw-rounded-t-lg tw-rounded-b-lg tw-py-4 ">
-             <div className="tw-col-span-4 tw-flex tw-justify-between">
+             <div className="tw-col-span-4 tw-flex tw-justify-start tw-flex-wrap">
                <p className="tw-flex tw-my-4 ">
                  <p>Email</p>
                  <span className="tw-ml-4 tw-text-lg tw-font-semibold ">
@@ -200,7 +200,7 @@ function UserProfile() {
            {/* password */}
            <div className="md:tw-col-span-4 tw-col-span-4 tw-grid tw-grid-cols-4  tw-bg-first-color tw-px-4  tw-rounded-t-lg tw-rounded-b-lg tw-py-4">
              <div className="tw-col-span-4 tw-flex tw-justify-between">
-               <p className=" tw-flex tw-my-4">
+               <p className=" tw-flex tw-my-4 tw-justify-start tw-flex-wrap">
                  <p>My Password</p>
                  <span className="tw-ml-4 tw-font-semibold">xxxxxxxx</span>
                </p>

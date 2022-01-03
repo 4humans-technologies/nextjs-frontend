@@ -898,7 +898,7 @@ function Profile() {
 
             {/* change email */}
             <div className="tw-bg-first-color  tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 md:tw-flex md:tw-items-center md:tw-justify-between">
-              <p className="tw-flex tw-items-center tw-justify-between">
+              <p className="tw-flex tw-items-center tw-justify-between tw-flex-wrap">
                 My Email :
                 <span className="md:tw-ml-4 md:tw-text-lg md:tw-font-semibold  tw-text-sm tw-font-normal">
                   {authContext.user.user.relatedUser.email}
@@ -914,7 +914,7 @@ function Profile() {
 
             {/* change password */}
             <div className="tw-bg-first-color  tw-py-4 tw-rounded-md tw-mt-4 tw-px-4 md:tw-flex md:tw-items-center md:tw-justify-between">
-              <p className="tw-flex tw-items-center tw-justify-between">
+              <p className="tw-flex tw-items-center tw-justify-between tw-flex-wrap">
                 My Password :
                 <span className="tw-ml-4 tw-font-semibold">xxxxxxxx</span>
               </p>

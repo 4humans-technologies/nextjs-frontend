@@ -576,7 +576,7 @@ function LiveScreen(props) {
             id="chatBoxContainer"
             className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
           >
-            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color">
+            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color tw-mt-14 md:tw-mt-1">
               <div className="tw-px-2 tw-py-1 tw-text-white-color tw-text-center tw-text-sm">
                 {props.modelProfileData?.topic}
               </div>
@@ -660,7 +660,7 @@ function LiveScreen(props) {
               />
             </span>
             <input
-              className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow md:tw-ml-2"
+              className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow md:tw-ml-2 "
               placeholder="Start Chatting..."
               ref={chatInputRef}
             ></input>
