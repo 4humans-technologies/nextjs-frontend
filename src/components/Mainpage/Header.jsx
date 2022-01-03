@@ -384,21 +384,21 @@ import Notifications from "./Header/Notifications"
                                notifications={notifications}
                              />
                            </span>
-                         </div>
-                         <div
-                           className="tw-flex tw-self-center"
-                           onClick={() => router.push(`/user/payment`)}
-                         >
-                           <img
-                             src="/coins.png"
-                             alt=""
-                             className="tw-w-4 tw-h-4 tw-text-white"
-                           />
-                           <p className="tw-self-center tw-pl-2">
-                             {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
-                               0
-                             )}
-                           </p>
+                           <div
+                             className="tw-flex tw-self-center"
+                             onClick={() => router.push(`/user/payment`)}
+                           >
+                             <img
+                               src="/coins.png"
+                               alt=""
+                               className="tw-w-4 tw-h-4 tw-text-white tw-my-auto"
+                             />
+                             <p className="tw-self-center tw-pl-2">
+                               {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                                 0
+                               )}
+                             </p>
+                           </div>
                          </div>
                        </div>
                      ) : (

@@ -241,29 +241,27 @@ const CoverUpdate = () => {
   // Now use this url to uploade to serve using url
 
   return (
-    <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+    <div className="md:tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color md:tw-border-2 md:tw-border-white-color tw-border-transparent">
       <CancelIcon
         className="tw-text-white-color tw-ml-[90%]"
         fontSize="medium"
         onClick={modelCtx.hideModal}
       />
-      <div className="">
-        <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
-          Update cover Image
-        </h2>
-        <img
-          src={authContext.user.user.relatedUser.coverImage}
-          className="tw-w-96 tw-h-48 tw-my-4"
+      <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+        Update cover Image
+      </h2>
+      <img
+        src={authContext.user.user.relatedUser.coverImage}
+        className="tw-w-full tw-h-48 tw-my-4"
+      />
+      <label className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium">
+        <input
+          type="file"
+          onChange={(e) => changeCover(e)}
+          className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color"
         />
-        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2">
-          <input
-            type="file"
-            onChange={(e) => changeCover(e)}
-            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color"
-          />
-          Update Cover Page
-        </label>
-      </div>
+        Update Cover Page
+      </label>
     </div>
   )
 }
@@ -332,30 +330,27 @@ const ProfileUpdate = () => {
   // Profile pic to aws
 
   return (
-    <div className="tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color tw-border-2 tw-border-white-color">
+    <div className="md:tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color md:tw-border-2 md:tw-border-white-color tw-border-transparent">
       <CancelIcon
         className="tw-text-white-color tw-ml-[90%]"
         fontSize="medium"
         onClick={modelCtx.hideModal}
       />
-
-      <div className="">
-        <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
-          Update profile Image
-        </h2>
-        <img
-          src={authContext.user.user.relatedUser.profileImage}
-          className="tw-w-96 tw-h-48 tw-my-4"
+      <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+        Update profile Image
+      </h2>
+      <img
+        src={authContext.user.user.relatedUser.profileImage}
+        className=" tw-h-48 tw-my-4 tw-w-full"
+      />
+      <label className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium ">
+        <input
+          type="file"
+          onChange={(e) => changeCover(e)}
+          className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color "
         />
-        <label className="tw-bg-dreamgirl-red tw-rounded-full tw-px-4 tw-py-2 ">
-          <input
-            type="file"
-            onChange={(e) => changeCover(e)}
-            className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color "
-          />
-          Update Profile Image
-        </label>
-      </div>
+        Update Profile Image
+      </label>
     </div>
   )
 }
