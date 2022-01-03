@@ -71,7 +71,7 @@ function Login() {
             })
           }
 
-          const emitToUpdateClientData = () => {
+          const emitToUpdateClientData = (socket) => {
             socket.emit(
               "update-client-info",
               {
@@ -91,7 +91,7 @@ function Login() {
             const socket = io.getSocket()
             if (!socket.connected) {
               /* if not connected then first connect and then emit to update */
-              socket.once("connect", emitToUpdateClientData)
+              socket.once("connect", emitToUpdateClientData.bind(this, socket))
               io.connect()
             } else {
               /* update client info */
@@ -110,7 +110,7 @@ function Login() {
             position: "bottom-right",
           })
         }
-        toast.error("An Error Has Occurred, Please Correct And Try Again!", {
+        toast.error("Please check the error and try again!", {
           position: "bottom-right",
         })
         document.getElementById("action-btn").scrollIntoView({

@@ -29,7 +29,6 @@ client.setClientRole("audience", {
 /**
  * APPID can in feature be dynamic also
  */
-let token
 let tokenRequestDoneOnce = false
 const unAuthedUserEmojis = [
   "🎈",
@@ -91,6 +90,7 @@ function ViewerScreen(props) {
     setTipMenuActions,
     pendingCallEndRequest,
     setPendingCallEndRequest,
+    setKing,
   } = props
 
   const {
@@ -203,11 +203,10 @@ function ViewerScreen(props) {
             })
           }
         } else {
-          console.log("Not live but listening")
+          // console.log("Not live but listening")
         }
       }, 1500)
       return () => {
-        console.log("clearing myKeepInRoomLoop interval 🔺🔺⭕⭕🔴🔴⭕⭕🔻🔻")
         clearInterval(myKeepInRoomLoop)
       }
     }
@@ -217,13 +216,13 @@ function ViewerScreen(props) {
     if (localAudioTrack.enabled) {
       /* un mute audio */
       await localAudioTrack.setEnabled(false)
-      console.log(localAudioTrack.enabled)
-      setIsMuted(false)
+      // console.log(localAudioTrack.enabled)
+      setIsMuted(true)
     } else {
       /* mute the audio */
       await localAudioTrack.setEnabled(true)
-      console.log(localAudioTrack.enabled)
-      setIsMuted(true)
+      // console.log(localAudioTrack.enabled)
+      setIsMuted(false)
     }
   }
 
@@ -477,7 +476,7 @@ function ViewerScreen(props) {
             body: JSON.stringify({
               modelId: myModelId,
               purchasedVideoAlbums:
-                ctx.user.user?.relatedUser?.privateVideosPlans?.find(
+                ctx.user.user.relatedUser?.privateVideosPlans?.find(
                   (collection) => (collection.model = myModelId)
                 )?.albums || [],
               purchasedImageAlbums:
@@ -491,7 +490,7 @@ function ViewerScreen(props) {
               /* model offline or online need to know chat plan status & get model data */
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
-
+              setKing(data.king)
               /* set header details for the viewer */
               const modelDataEvent = new CustomEvent(
                 "model-profile-data-fetched",
@@ -571,26 +570,28 @@ function ViewerScreen(props) {
               })
             })
         } else {
-          /* get token  from local storage */
-          const joinPromise = join(
-            window.location.pathname.split("/").reverse()[0],
-            localStorage.getItem("rtcToken"),
-            ctx.relatedUserId
-          ).catch((err) => {
-            console.error("Error joining the stream, something is not right..!")
-          })
-
-          toast.promise(joinPromise, {
-            pending: "Establishing secure connection..",
-            success: "Connected to the server, getting stream",
-            error: "Error joining the stream, something is not right..!",
-          })
+          /**
+           * use less peice of code
+           */
+          // /* get token  from local storage */
+          // const joinPromise = join(
+          //   window.location.pathname.split("/").reverse()[0],
+          //   localStorage.getItem("rtcToken"),
+          //   ctx.relatedUserId
+          // ).catch((err) => {
+          //   console.error("Error joining the stream, something is not right..!")
+          // })
+          // toast.promise(joinPromise, {
+          //   pending: "Establishing secure connection..",
+          //   success: "Connected to the server, getting stream",
+          //   error: "Error joining the stream, something is not right..!",
+          // })
         }
       } else {
         if (!localStorage.getItem("unAuthed-user-chat-name")) {
           localStorage.setItem(
             "unAuthed-user-chat-name",
-            `Guest User-${nanoid(8)} ${
+            `Guest-${nanoid(8)} ${
               unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
             }`
           )
@@ -620,6 +621,7 @@ function ViewerScreen(props) {
               */
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
+              setKing(data.king)
 
               /* set header details for the viewer */
               const modelDataEvent = new CustomEvent(
@@ -718,30 +720,31 @@ function ViewerScreen(props) {
             })
             .catch((err) => toast.error(err.message))
         } else {
-          /* if already have a token no need to fetch new one */
-          const joinPromise = join(
-            window.location.pathname.split("/").reverse()[0],
-            localStorage.getItem("rtcToken"),
-            localStorage.getItem("unAuthedUserId")
-          ).catch((err) => {
-            console.error("Error joining the stream, something is not right..!")
-          })
-
-          toast.promise(joinPromise, {
-            pending: "Establishing secure connection..",
-            success: "Connected to the server, getting stream",
-            error: "Error joining the stream, something is not right..!",
-          })
+          /**
+           * useless peice of code
+           */
+          // /* if already have a token no need to fetch new one */
+          // const joinPromise = join(
+          //   window.location.pathname.split("/").reverse()[0],
+          //   localStorage.getItem("rtcToken"),
+          //   localStorage.getItem("unAuthedUserId")
+          // ).catch((err) => {
+          //   console.error("Error joining the stream, something is not right..!")
+          // })
+          // toast.promise(joinPromise, {
+          //   pending: "Establishing secure connection..",
+          //   success: "Connected to the server, getting stream",
+          //   error: "Error joining the stream, something is not right..!",
+          // })
         }
       }
     }
   }, [
     ctx.isLoggedIn,
     ctx.relatedUserId,
-    window.location.pathname,
     socketCtx.socketSetupDone,
-    tokenRequestDoneOnce,
     ctx.loadedFromLocalStorage,
+    tokenRequestDoneOnce,
   ])
 
   const offCallListeners = useCallback(() => {
@@ -832,64 +835,18 @@ function ViewerScreen(props) {
       /* the, after call transaction is now complete, fetch the details of it now */
       if (!socket.hasListeners("model-call-end-request-finished")) {
         socket.on("model-call-end-request-finished", (data) => {
-          if (data?.ended === "not-setuped-properly") {
-            updateCtx.updateWallet(data.amountToRefund, "add")
-          } else if (data?.totalCharges) {
-            updateCtx.updateWallet(data.totalCharges, "dec")
+          if (data.ended === "ok") {
+            updateCtx.updateWallet(data.currentAmount, "set")
+          } else if (data.ended === "not-setuped-properly") {
+            toast.info(
+              "Advance cut for call booking was refunded!, as the call was not setup properly"
+            )
           }
           afterCallRapUp(timeOutRef)
         })
       }
     }
   }, [socketCtx.socketSetupDone, offCallListeners])
-
-  /* live viewer count listeners */
-  useEffect(() => {
-    if (socketCtx.socketSetupDone) {
-      const socket = io.getSocket()
-      let joinHandler
-      let leftHandler
-
-      joinHandler = (data) => {
-        if (typeof data.roomSize === "number") {
-          document.getElementById("live-viewer-count-lg").innerText = `${
-            data.roomSize - 1
-          } Live`
-          document.getElementById("live-viewer-count-md").innerText = `${
-            data.roomSize - 1
-          } Live`
-        }
-      }
-
-      socket.on("viewer-joined", joinHandler)
-
-      leftHandler = (data) => {
-        if (typeof data.roomSize === "number") {
-          try {
-            document.getElementById("live-viewer-count-lg").innerText = `${
-              data.roomSize - 1
-            } Live`
-            document.getElementById("live-viewer-count-md").innerText = `${
-              data.roomSize - 1
-            } Live`
-          } catch (error) {
-            /* just handle error */
-          }
-        }
-      }
-
-      socket.on("viewer-left-stream-received", leftHandler)
-
-      return () => {
-        if (socket.hasListeners("viewer-left-stream-received") && leftHandler) {
-          socket.off("viewer-left-stream-received", leftHandler)
-        }
-        if (socket.hasListeners("viewer-joined") && joinHandler) {
-          socket.off("viewer-joined", joinHandler)
-        }
-      }
-    }
-  }, [socketCtx.socketSetupDone])
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
@@ -1345,28 +1302,35 @@ function ViewerScreen(props) {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        socket.emit(
-          "update-client-info",
-          {
-            action: "clear-call-details",
-          },
-          (status) => {
-            if (!status.ok) {
-              socket.close()
-              socket.open()
+        if (data.actionStatus === "success") {
+          socket.emit(
+            "update-client-info",
+            {
+              action: "clear-call-details",
+            },
+            (status) => {
+              if (!status.ok) {
+                socket.close()
+                socket.open()
+              }
             }
+          )
+
+          setPendingCallEndRequest(false)
+          setCallOnGoing(false)
+          setIsModelOffline(true)
+          offCallListeners()
+          await leaveAndCloseTracks()
+          await client.setClientRole("audience")
+          updateCtx.updateWallet(data.currentAmount, "set")
+        } else {
+          if (data?.wasFirst === "no") {
+            toast.info(data.message)
+          } else {
+            /* should log in console */
+            toast.error("Call Not Ended ")
           }
-        )
-        if (data.wasFirst === "yes") {
-          // spinnerCtx.setShowSpinner(false, "Please wait...")
-          // sessionStorage.setItem("callEndDetails", JSON.stringify(data))
         }
-        setPendingCallEndRequest(false)
-        setCallOnGoing(false)
-        setIsModelOffline(true)
-        offCallListeners()
-        await leaveAndCloseTracks()
-        await client.setClientRole("audience")
       })
       .catch((err) => toast.error(err.message))
 

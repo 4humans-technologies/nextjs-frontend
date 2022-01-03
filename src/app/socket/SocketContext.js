@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useRef } from "react"
 import io from "../../socket/socket"
 import { toast } from "react-toastify"
 
@@ -20,6 +20,7 @@ export const SocketContextProvider = ({ children }) => {
    */
   const [isConnected, setIsConnected] = useState(false)
   const [socketSetupDone, setSocketSetupDone] = useState(false)
+  const networkErrorRef = useRef(null)
 
   const initSocket = () => {
     const socket = io.connect(process.env.NEXT_PUBLIC_BACKEND_URL)
@@ -27,6 +28,13 @@ export const SocketContextProvider = ({ children }) => {
     socket.on("connect", () => {
       if (!socketSetupDone) {
         setSocketSetupDone(true)
+      }
+      if (networkErrorRef.current) {
+        networkErrorRef.current = toast.success("reconnection successful!", {
+          autoClose: 2000,
+          pauseOnFocusLoss: false,
+          hideProgressBar: true,
+        })
       }
       localStorage.setItem("socketId", socket.id)
       const socketRooms =
@@ -53,9 +61,23 @@ export const SocketContextProvider = ({ children }) => {
 
     socket.on("disconnect", (reason) => {
       if (process.env.RUN_ENV === "local") {
-        toast.error(`Socket disconnected Reason : ${reason}`)
+        networkErrorRef.current = toast.error(
+          `Socket disconnected Reason : ${reason}`,
+          {
+            autoClose: false,
+            pauseOnFocusLoss: false,
+            hideProgressBar: true,
+          }
+        )
       } else {
-        toast.error(`Something is not right a network error has occurred`)
+        networkErrorRef.current = toast.error(
+          `Something is not right a network error has occurred`,
+          {
+            autoClose: 2000,
+            pauseOnFocusLoss: false,
+            hideProgressBar: true,
+          }
+        )
       }
       localStorage.removeItem("socketId")
       if (reason === "io server disconnect") {
@@ -66,7 +88,12 @@ export const SocketContextProvider = ({ children }) => {
 
     socket.on("connect_error ", (err) => {
       if (err?.message === "Invalid Jwt") {
-        toast.error("Invalid or Expired Credential, Please try re-login")
+        networkErrorRef.current = toast.error(
+          "Invalid or Expired Credential, Please try re-login",
+          {
+            autoClose: 2000,
+          }
+        )
       }
       setTimeout(() => {
         io.connect()

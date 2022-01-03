@@ -59,13 +59,14 @@ const Home = () => {
               ?.lastUpdated <
               Date.now() - 86400000
           ) {
-            fetch("/api/website/get-geo-location")
-              .then((res) => res.json())
-              .then((location) => {
+            // fetch("/api/website/get-geo-location")
+            fetch("https://ipapi.co/region")
+              .then((res) => res.text())
+              .then((regionName) => {
                 localStorage.setItem(
                   "geoLocation",
                   JSON.stringify({
-                    regionName: location.regionName,
+                    regionName: regionName,
                     lastUpdated: Date.now(),
                   })
                 )
@@ -74,7 +75,19 @@ const Home = () => {
                 })
                 renderLiveModels(data)
               })
-              .catch((err) => {})
+              .catch((err) => {
+                localStorage.setItem(
+                  "geoLocation",
+                  JSON.stringify({
+                    regionName: "delta",
+                    lastUpdated: Date.now(),
+                  })
+                )
+                data = data.resultDocs.filter((model) => {
+                  return !model.bannedStates.includes(location.regionName)
+                })
+                renderLiveModels(data)
+              })
           } else {
             const myRegion = JSON.parse(
               localStorage.getItem("geoLocation")
@@ -140,16 +153,23 @@ const Home = () => {
       let modelDeleteHandler = (socketData) => {
         setBoxGroupData((prev) => {
           const prevLastPopped = prev.pop()
-          const poppedModelDataList = prevLastPopped.data.filter(
-            (stream) => stream.relatedUserId !== socketData.modelId
-          )
-          return [
-            ...prev,
-            {
-              ...prevLastPopped,
-              data: [...poppedModelDataList],
-            },
-          ]
+          /**
+           * prevLastPopped.data is the array of actual array of live streaming/onCall model
+           */
+          if (prevLastPopped) {
+            const poppedModelDataList = prevLastPopped?.data?.filter(
+              (stream) => stream.relatedUserId !== socketData.modelId
+            )
+            return [
+              ...prev,
+              {
+                ...prevLastPopped,
+                data: [...poppedModelDataList],
+              },
+            ]
+          } else {
+            return []
+          }
         })
       }
       socket.on("delete-stream-room", modelDeleteHandler)

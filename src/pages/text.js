@@ -19,17 +19,25 @@ function TestComponent() {
       Date.now() - 86400000
     ) {
       fetch("/api/website/get-geo-location")
-        .then((res) => res.json())
-        .then((data) => {
+        .then((res) => res.text())
+        .then((regionName) => {
           localStorage.setItem(
             "geoLocation",
             JSON.stringify({
-              regionName: data.regionName,
+              regionName: regionName,
               lastUpdated: Date.now(),
             })
           )
         })
-        .catch((err) => {})
+        .catch((err) => {
+          localStorage.setItem(
+            "geoLocation",
+            JSON.stringify({
+              regionName: "delta",
+              lastUpdated: Date.now(),
+            })
+          )
+        })
     }
   }, [])
 

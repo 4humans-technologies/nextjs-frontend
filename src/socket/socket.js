@@ -14,6 +14,7 @@ export default {
       transports: ["websocket"],
       upgrade: false,
       reconnection: true,
+      autoConnect: true,
     })
     return socketConnectionInstance
   },

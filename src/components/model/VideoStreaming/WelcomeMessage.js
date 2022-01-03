@@ -3,15 +3,21 @@ import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import { Button } from "react-bootstrap"
 import { SaveRounded } from "@material-ui/icons"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
+import { toast } from "react-toastify"
 
-function Topic() {
+function WelcomeMessage() {
   const authContext = useAuthContext()
   const [childState, setChildState] = useState([
-    ...authContext.user.user?.relatedUser?.topic.split(","),
+    ...authContext.user.user?.relatedUser?.welcomeMessage.split(","),
   ])
   const updateAuthcontext = useAuthUpdateContext()
-  //  Topic set while streaming
   const topicSetter = async () => {
+    if (!childState.includes("__name__")) {
+      toast.error(
+        "Please include at least one __name__, in you welcome message"
+      )
+      return
+    }
     const res = await fetch("/api/website/profile/update-info-fields", {
       method: "POST",
       headers: {
@@ -19,13 +25,13 @@ function Topic() {
       },
       body: JSON.stringify([
         {
-          field: "topic",
+          field: "welcomeMessage",
           value: childState,
         },
       ]),
     })
     const lcUser = JSON.parse(localStorage.getItem("user"))
-    lcUser["relatedUser"]["topic"] = childState
+    lcUser.relatedUser.welcomeMessage = childState
     localStorage.setItem("user", JSON.stringify(lcUser))
 
     updateAuthcontext.setAuthState((prev) => ({
@@ -43,13 +49,13 @@ function Topic() {
     <div className="tw-bg-second-color tw-text-white tw-px-4 tw-rounded">
       <div>
         <div className="tw-border-b-[1px] tw-border-white-color tw-mb-4 tw-py-4 tw-flex tw-items-center">
-          <VolumeUpIcon /> <span className="tw-pl-1">Topic</span>
+          <VolumeUpIcon /> <span className="tw-pl-1">Set Welcome Message</span>
         </div>
         <div className="tw-border-b-[1px] tw-border-white-color tw-py-3">
           <input
             type="text"
             value={childState}
-            placeholder="Topic for live streams"
+            placeholder="Welcome message for viewers"
             className="tw-rounded-full tw-w-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-4 tw-py-2"
             onChange={(e) => setChildState(e.target.value)}
           />
@@ -66,8 +72,8 @@ function Topic() {
         </div>
         <div className="tw-mb-4 tw-py-4">
           <p className="tw-capitalize">
-            Tell users what's taking place in your chat room and the type of
-            performances you put on.
+            Set welcome message for viewers, use __name__ as a placeholder for
+            viewers name
           </p>
         </div>
       </div>
@@ -75,4 +81,4 @@ function Topic() {
   )
 }
 
-export default Topic
+export default WelcomeMessage

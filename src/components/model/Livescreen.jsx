@@ -20,6 +20,7 @@ import io from "../../socket/socket"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
 import { toast } from "react-toastify"
 import ViewerSideViewersListContainer from "../ViewersList/ForViewer/ViewerSideViewersListContainer"
+import { useSocketContext } from "../../app/socket/SocketContext"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,
@@ -42,6 +43,7 @@ function LiveScreen(props) {
 
   const modalCtx = useModalContext()
   const authCtx = useAuthContext()
+  const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
   const router = useRouter()
 
@@ -53,6 +55,7 @@ function LiveScreen(props) {
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.PUBLIC)
   const [tipMenuActions, setTipMenuActions] = useState([])
   const [isModelOffline, setIsModelOffline] = useState(false)
+  const [king, setKing] = useState(false)
   const [isChatPlanActive, setIsChatPlanActive] = useState(false)
   const [callOnGoing, setCallOnGoing] = useState(false)
   const [callType, setCallType] = useState("videoCall")
@@ -369,6 +372,7 @@ function LiveScreen(props) {
             setPendingCallRequest={setPendingCallRequest}
             setIsModelOffline={setIsModelOffline}
             setTipMenuActions={setTipMenuActions}
+            setKing={setKing}
             setModelProfileData={props.setModelProfileData}
             callOnGoing={callOnGoing}
             pendingCallRequest={pendingCallRequest}
@@ -557,14 +561,25 @@ function LiveScreen(props) {
                 className="tw-mr-1 tw-my-auto"
                 fontSize="small"
               />
-              <span className="tw-my-auto tw-text-xs md:tw-text-sm">Users</span>
+              <span className="tw-my-auto tw-text-xs md:tw-text-sm">
+                Users{" "}
+                <span
+                  className="tw-text-xs tw-font-extralight"
+                  id="live-user-count-highlight"
+                >
+                  {"(0)"}
+                </span>
+              </span>
             </button>
           </div>
           <div
             id="chatBoxContainer"
             className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
           >
-            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color tw-pt-8 md:tw-pt-0">
+            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color">
+              <div className="tw-px-2 tw-py-1 tw-text-white-color tw-text-center tw-text-sm">
+                {props.modelProfileData?.topic}
+              </div>
               <div
                 className=""
                 style={{
@@ -576,9 +591,10 @@ function LiveScreen(props) {
                   key={theKey + 800}
                   scrollOnChat={scrollOnChat}
                   isModelOffline={isModelOffline}
+                  modelWelcomeMessage={props.modelProfileData?.welcomeMessage}
                   addAtTheRate={addAtTheRate}
                   chatWindowRef={chatWindowRef}
-                  modelUsername={props.modelProfileData?.rootUser.username}
+                  modelUsername={props.modelProfileData?.rootUser?.username}
                 />
               </div>
               <div
@@ -625,6 +641,8 @@ function LiveScreen(props) {
                   key={theKey + 1400}
                   callOnGoing={callOnGoing}
                   addAtTheRate={viewerListAddAtTheRate}
+                  modelId={props.modelProfileData?._id}
+                  king={king}
                 />
               </div>
             </div>

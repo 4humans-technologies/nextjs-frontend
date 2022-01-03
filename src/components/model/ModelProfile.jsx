@@ -31,6 +31,14 @@ function ProfileRow(props) {
   )
 }
 
+const windowOptions = {
+  PROFILE: "profile",
+  PUBLIC_IMAGES: "public-images",
+  PUBLIC_VIDEOS: "public-videos",
+  PRIVATE_IMAGES: "private-images",
+  PRIVATE_VIDEOS: "private-videos",
+}
+
 function ModelProfile(props) {
   /**
    * ment for use in here only
@@ -420,7 +428,7 @@ function ModelProfile(props) {
             )
           })
         ) : (
-          <div>There is no Private Image of Model</div>
+          <div>There Is no Private Image of Model</div>
         )}
       </>
     )
@@ -443,7 +451,7 @@ function ModelProfile(props) {
         slide: number,
       })
     }
-    // videoBuyer at the thing
+
     const videoBuyHandler = async (albumId) => {
       try {
         const imageBuyRequest = await fetch(
@@ -589,31 +597,10 @@ function ModelProfile(props) {
     )
   }
 
-  const intiState = { val: <Profile key={theKey + 200} /> }
+  const intiState = { val: "Profile" }
 
-  const reducer = (state = intiState, action) => {
-    switch (action.type) {
-      case "Profile":
-        return { val: <Profile key={theKey + 200} /> }
-      case "Image":
-        return {
-          val: <Images key={theKey + 400} />,
-        }
-      case "PrivateImage":
-        return {
-          val: <PrivateImages key={theKey + 600} />,
-        }
-      case "Videos":
-        return { val: <Videos key={theKey + 800} /> }
-      case "PrivateVideos":
-        return {
-          val: <PrivateVideos key={theKey + 1000} />,
-        }
-      default:
-        return state
-    }
-  }
-  const [state, dispatch] = useReducer(reducer, intiState)
+  const [state, setState] = useState("Profile")
+
   return (
     <div className=" tw-bg-first-color tw-pt-16 tw-pb-8  md:tw-px-4">
       <div className="">
@@ -622,7 +609,7 @@ function ModelProfile(props) {
           <button
             className={`md:tw-px-4 tw-px-1 focus:tw-bg-second-color   tw-rounded-t-xl tw-py-1 `}
             onClick={() => {
-              dispatch({ type: "Profile" })
+              setState("Profile")
             }}
             style={{ cursor: "pointer" }}
           >
@@ -630,21 +617,21 @@ function ModelProfile(props) {
           </button>
           <button
             className={`md:tw-px-4 tw-px-1 focus:tw-bg-second-color tw-rounded-t-xl`}
-            onClick={() => dispatch({ type: "Image" })}
+            onClick={() => setState("Image")}
             style={{ cursor: "pointer" }}
           >
             Images
           </button>
           <button
             className={`md:tw-px-4 tw-px-1 focus:tw-bg-second-color tw-rounded-t-xl `}
-            onClick={() => dispatch({ type: "PrivateImage" })}
+            onClick={() => setState("PrivateImage")}
             style={{ cursor: "pointer" }}
           >
             Private Images
           </button>
           <button
             className={`md:tw-px-4 tw-px-1 focus:tw-bg-second-color tw-rounded-t-xl `}
-            onClick={() => dispatch({ type: "Videos" })}
+            onClick={() => setState("Videos")}
             style={{ cursor: "pointer" }}
           >
             Videos
@@ -652,14 +639,31 @@ function ModelProfile(props) {
 
           <button
             className={`tw-px-4 focus:tw-bg-second-color tw-rounded-t-xl `}
-            onClick={() => dispatch({ type: "PrivateVideos" })}
+            onClick={() => setState("PrivateVideos")}
             style={{ cursor: "pointer" }}
           >
             Private Videos
           </button>
         </div>
         <div className="tw-border-t-[3px] tw-border-second-color tw-pl-4">
-          {state.val}
+          <section style={{ display: state === "Profile" ? "block" : "none" }}>
+            {<Profile key={theKey + 200} />}
+          </section>
+          <section style={{ display: state === "Image" ? "block" : "none" }}>
+            {<Images key={theKey + 400} />}
+          </section>
+          <section
+            style={{ display: state === "PrivateImage" ? "block" : "none" }}
+          >
+            {<PrivateImages key={theKey + 600} />}
+          </section>
+          <section style={{ display: state === "Videos" ? "block" : "none" }}>
+            {<Videos key={theKey + 800} />}
+          </section>
+          <section
+            style={{ display: state === "PrivateVideos" ? "block" : "none" }}
+          ></section>
+          {<PrivateVideos key={theKey + 1000} />}
         </div>
       </div>
     </div>

@@ -72,6 +72,9 @@ export const AuthContextProvider = ({ children }) => {
   const updateWallet = useCallback(
     (amount, operation = "add", updateFor = "both") => {
       /* for === ["lc" || "ctx" || "both"] */
+      if (typeof amount !== "number") {
+        return
+      }
       if (updateFor === "both" || updateFor === "lc") {
         const lcUser = JSON.parse(localStorage.getItem("user"))
         lcUser.relatedUser.wallet.currentAmount =

@@ -11,7 +11,6 @@ function useAgora(client, role, callType) {
   const [remoteUsers, setRemoteUsers] = useState([])
   const localAudioTrackRef = useRef()
   const localVideoTrackRef = useRef()
-
   /**
    * for saving some meta data about the current state
    * ex: is is call on-going
@@ -34,7 +33,6 @@ function useAgora(client, role, callType) {
   }, [localVideoTrack])
 
   const spinnerCtx = useSpinnerContext()
-  const statsRef = useRef()
 
   async function createLocalTracks(callType = "videoCall") {
     const tracks = []
