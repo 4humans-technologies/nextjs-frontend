@@ -32,7 +32,7 @@ function Token() {
             (room) => room.includes("-public")
           )[0],
           amountGiven: token,
-          username: `${authContext.user.user.username} 👑`,
+          username: `${authContext.user.user.username}`,
           walletCoins: authContext.user.user.relatedUser.wallet.currentAmount,
           message: `${authContext.user.user.username} 👑 gifted ${token} coins`,
         },
@@ -40,7 +40,7 @@ function Token() {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        debugger
+        
         // alert(data.message)
         // update the authCtx & localstorage with new wallet amount
         modalCtx.hideModal()

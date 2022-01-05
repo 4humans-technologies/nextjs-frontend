@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import SingleViewerBlock from "./SingleViewerBlock"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import { useAuthContext } from "../../app/AuthContext"
 import { toast } from "react-toastify"
 import { nanoid } from "nanoid"
 
-let prevStreamViewers = []
 const userType =
   typeof window !== "undefined" && localStorage.getItem("userType")
 function ViewersListContainer(props) {
+  const kingRef = useRef(null)
   const [viewers, setViewers] = useState([])
   const [king, setKing] = useState(null)
   const socketCtx = useSocketContext()
+
+  useEffect(() => {
+    kingRef.current = king
+  }, [king])
 
   useEffect(() => {
     if (socketCtx.socketSetupDone) {
@@ -177,6 +180,32 @@ function ViewersListContainer(props) {
       }
       socket.on("viewer-joined", viewerJoinedHandler)
 
+      const handleKingsDonations = (data) => {
+        if (!kingRef.current) {
+          return
+        }
+        if (data.chatType === "coin-superchat-public") {
+          if (data.username === kingRef.current?.username) {
+            setKing((prev) => {
+              prev.spent = +prev.spent + +data.amountGiven
+              return { ...prev }
+            })
+            toast.info(`King 🏆 gifted ${data.amountGiven} coins`)
+          }
+        } else if (data.chatType === "tipmenu-activity-superchat-public") {
+          if (data.username === kingRef.current?.username) {
+            setKing((prev) => {
+              prev.spent = +prev.spent + +data.activity.price
+              return { ...prev }
+            })
+            toast.info(
+              `King 🏆 request ${data.activity.action} for ${data.amountGiven} coins`
+            )
+          }
+        }
+      }
+      socket.on("viewer_super_message_pubic-received", handleKingsDonations)
+
       return () => {
         if (
           socket.hasListeners("viewer-left-stream-received") &&
@@ -205,6 +234,8 @@ function ViewersListContainer(props) {
         socket.off("new-king", handleNewKing)
 
         socket.off("viewer-joined", viewerJoinedHandler)
+
+        socket.off("viewer_super_message_pubic-received", handleKingsDonations)
       }
     }
   }, [socketCtx.socketSetupDone])

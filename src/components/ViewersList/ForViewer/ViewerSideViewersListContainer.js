@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import SingleViewerBlock from "../SingleViewerBlock"
 import io from "../../../socket/socket"
 import { useSocketContext } from "../../../app/socket/SocketContext"
 import { toast } from "react-toastify"
 import { nanoid } from "nanoid"
 
-let prevStreamViewers = []
 const userType =
   typeof window !== "undefined" && localStorage.getItem("userType")
 function ViewerSideViewersListContainer(props) {
+  const kingRef = useRef(null)
   const [viewers, setViewers] = useState([])
   const [king, setKing] = useState(props?.king)
   const socketCtx = useSocketContext()
+
+  useEffect(() => {
+    kingRef.current = king
+  }, [king])
 
   useEffect(() => {
     setKing(props.king)
@@ -149,6 +153,32 @@ function ViewerSideViewersListContainer(props) {
 
       socket.on("viewer-joined", joinHandler)
 
+      const handleKingsDonations = (data) => {
+        if (!kingRef.current) {
+          return
+        }
+        if (data.chatType === "coin-superchat-public") {
+          if (data.username === kingRef.current?.username) {
+            setKing((prev) => {
+              prev.spent = +prev.spent + +data.amountGiven
+              return { ...prev }
+            })
+            toast.info(`King 🏆 gifted ${data.amountGiven} coins`)
+          }
+        } else if (data.chatType === "tipmenu-activity-superchat-public") {
+          if (data.username === kingRef.current?.username) {
+            setKing((prev) => {
+              prev.spent = +prev.spent + +data.activity.price
+              return { ...prev }
+            })
+            toast.info(
+              `King 🏆 request ${data.activity.action} for ${data.amountGiven} coins`
+            )
+          }
+        }
+      }
+      socket.on("viewer_super_message_pubic-received", handleKingsDonations)
+
       return () => {
         if (socket.hasListeners("viewer-joined-private") && userJoinedHandler) {
           socket.off("viewer-joined-private", userJoinedHandler)
@@ -172,6 +202,8 @@ function ViewerSideViewersListContainer(props) {
         if (socket.hasListeners("viewer-joined") && joinHandler) {
           socket.off("viewer-joined", joinHandler)
         }
+
+        socket.off("viewer_super_message_pubic-received", handleKingsDonations)
       }
     }
   }, [socketCtx.socketSetupDone])

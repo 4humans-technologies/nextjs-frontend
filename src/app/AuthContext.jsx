@@ -50,7 +50,7 @@ export const AuthContextProvider = ({ children }) => {
   const updateViewer = useCallback(
     (newViewer) => {
       setAuthState((prevValue) => {
-        //debugger
+        //
         let newState
         if (newViewer.user) {
           newState = { ...prevValue, ...newViewer, user: { ...newViewer.user } }
@@ -225,7 +225,7 @@ export const AuthContextProvider = ({ children }) => {
   }
 
   if (!authState.loadedFromLocalStorage && typeof window !== "undefined") {
-    //debugger
+    //
     readFromLocalStorage()
   }
 

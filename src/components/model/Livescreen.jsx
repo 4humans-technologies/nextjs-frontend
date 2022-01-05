@@ -318,7 +318,7 @@ function LiveScreen(props) {
         socketData: {
           chatType: "tipmenu-activity-superchat-public",
           activity: activity,
-          username: `${authCtx.user.user.username} 👑`,
+          username: `${authCtx.user.user.username}`,
           walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
         },
       }),

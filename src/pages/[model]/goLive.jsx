@@ -15,7 +15,7 @@ function GoLive() {
   const router = useRouter()
 
   useEffect(() => {
-    //debugger
+    //
     if (ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === false && ctx.user.userType !== "Model") {
         updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname })

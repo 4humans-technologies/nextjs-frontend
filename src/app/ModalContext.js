@@ -51,7 +51,7 @@ export function ModalContextProvider(props) {
   }, [])
 
   const hideModal = useCallback(() => {
-    //debugger
+    //
     setIsOpen(false)
   }, [])
 

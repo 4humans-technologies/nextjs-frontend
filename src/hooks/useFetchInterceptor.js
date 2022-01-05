@@ -113,7 +113,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                 finalConfig = config
               }
             }
-            //debugger
+            //
             return [urlObj.toString(), finalConfig]
           } else if (url.includes("amazonaws.com")) {
             spinnerCtx.setShowSpinner(true, "Uploading please wait")
