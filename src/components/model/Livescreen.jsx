@@ -220,7 +220,7 @@ function LiveScreen(props) {
           /**
            * if not final room put in public room
            */
-          socket.emit(
+          io.getSocket().emit(
             "putting-me-in-these-rooms",
             [`${sessionStorage.getItem("streamId")}-public`],
             (response) => {
@@ -267,7 +267,7 @@ function LiveScreen(props) {
         }
         io.getSocket().emit("viewer-message-public-emitted", payLoad)
       } else {
-        socket.emit(
+        io.getSocket().emit(
           "putting-me-in-these-rooms",
           [`${sessionStorage.getItem("streamId")}-public`],
           (response) => {
