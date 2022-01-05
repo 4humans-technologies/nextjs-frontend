@@ -200,7 +200,6 @@ function LiveScreen(props) {
             "chat is only available when model is streaming/live. 📴 😘😘"
           )
         }
-        /* logged in, on public tab */
         /**
          * fetch the public rom
          */
@@ -219,7 +218,7 @@ function LiveScreen(props) {
           io.getSocket().emit("viewer-message-public-emitted", payLoad)
         } else {
           /**
-           * put in public room
+           * if not final room put in public room
            */
           socket.emit(
             "putting-me-in-these-rooms",
@@ -240,6 +239,9 @@ function LiveScreen(props) {
         }
       }
     } else {
+      /**
+       * if un-authed
+       */
       if (chatWindow === chatWindowOptions.PRIVATE) {
         if (isModelOffline) {
           return toast.error(
@@ -250,18 +252,37 @@ function LiveScreen(props) {
       if (chatWindow === chatWindowOptions.PUBLIC) {
         if (isModelOffline) {
           return toast.error(
-            "chat is only available when model is streaming/live. 📴 😘😘"
+            "Chat is only available when model is streaming/live. 📴 😘😘"
           )
         }
       }
       /* un-authed user, no private room*/
-      payLoad = {
-        room: JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
-        message: message,
-        username: localStorage.getItem("unAuthed-user-chat-name"),
-        walletCoins: 0,
+      const toRoom = JSON.parse(sessionStorage.getItem("socket-rooms"))?.[0]
+      if (!toRoom) {
+        payLoad = {
+          room: JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
+          message: message,
+          username: localStorage.getItem("unAuthed-user-chat-name"),
+          walletCoins: 0,
+        }
+        io.getSocket().emit("viewer-message-public-emitted", payLoad)
+      } else {
+        socket.emit(
+          "putting-me-in-these-rooms",
+          [`${sessionStorage.getItem("streamId")}-public`],
+          (response) => {
+            if (response.status === "ok") {
+              payLoad = {
+                room: `${sessionStorage.getItem("streamId")}-public`,
+                message: message,
+                username: localStorage.getItem("unAuthed-user-chat-name"),
+                walletCoins: 0,
+              }
+              io.getSocket().emit("viewer-message-public-emitted", payLoad)
+            }
+          }
+        )
       }
-      io.getSocket().emit("viewer-message-public-emitted", payLoad)
     }
     chatInputRef.current.value = ""
   }

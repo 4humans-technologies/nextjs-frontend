@@ -71,7 +71,8 @@ function Login() {
             })
           }
 
-          const emitToUpdateClientData = (socket) => {
+          const emitToUpdateClientData = () => {
+            const socket = io.getSocket()
             socket.emit(
               "update-client-info",
               {
@@ -91,7 +92,7 @@ function Login() {
             const socket = io.getSocket()
             if (!socket.connected) {
               /* if not connected then first connect and then emit to update */
-              socket.once("connect", emitToUpdateClientData.bind(this, socket))
+              socket.once("connect", emitToUpdateClientData)
               io.connect()
             } else {
               /* update client info */
