@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap"
 import BackupRoundedIcon from "@material-ui/icons/BackupRounded"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 import { CoverUpdate } from "../../UI/Profile/Emailpassword"
-
+import { toast } from "react-toastify"
 function Coverpage() {
   const [coverImage, setCoverImage] = useState()
   const authContext = useAuthContext()

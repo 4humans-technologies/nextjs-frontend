@@ -201,18 +201,43 @@ function LiveScreen(props) {
           )
         }
         /* logged in, on public tab */
+        /**
+         * fetch the public rom
+         */
         JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
           if (room.includes("-public")) {
             finalRoom = room
           }
         })
-        payLoad = {
-          room: finalRoom,
-          message: message,
-          username: authCtx.user.user.username,
-          walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+        if (finalRoom) {
+          payLoad = {
+            room: finalRoom,
+            message: message,
+            username: authCtx.user.user.username,
+            walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
+          }
+          io.getSocket().emit("viewer-message-public-emitted", payLoad)
+        } else {
+          /**
+           * put in public room
+           */
+          socket.emit(
+            "putting-me-in-these-rooms",
+            [`${sessionStorage.getItem("streamId")}-public`],
+            (response) => {
+              if (response.status === "ok") {
+                payLoad = {
+                  room: finalRoom,
+                  message: message,
+                  username: authCtx.user.user.username,
+                  walletCoins:
+                    authCtx.user.user.relatedUser.wallet.currentAmount,
+                }
+                io.getSocket().emit("viewer-message-public-emitted", payLoad)
+              }
+            }
+          )
         }
-        io.getSocket().emit("viewer-message-public-emitted", payLoad)
       }
     } else {
       if (chatWindow === chatWindowOptions.PRIVATE) {
