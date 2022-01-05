@@ -227,7 +227,7 @@ function LiveScreen(props) {
             (response) => {
               if (response.status === "ok") {
                 payLoad = {
-                  room: finalRoom,
+                  room: `${sessionStorage.getItem("streamId")}-public`,
                   message: message,
                   username: authCtx.user.user.username,
                   walletCoins:
