@@ -276,7 +276,7 @@ function ViewerSideViewersListContainer(props) {
             .catch((err) => {
               toast.error("Live viewers list not fetched!")
             })
-        }, [5000])
+        }, [8000])
       }
       socket.on("new-model-started-stream", newStreamHandler)
 
