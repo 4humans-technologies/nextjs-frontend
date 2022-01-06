@@ -56,8 +56,8 @@ function ViewerToken() {
       <h1 className="tw-font-bold tw-text-xl tw-pt-4 tw-text-center tw-mb-4 tw-text-white">
         Redeem Code
       </h1>
-      <div className="tw-text-white tw-bg-first-color tw-h-screen tw-pt-4 ">
-        <div className="tw-text-center md:tw-mx-auto tw-w-full tw-mx-3 md:tw-w-4/12 tw-bg-second-color tw-rounded-md">
+      <div className="tw-text-white tw-bg-first-color tw-h-screen tw-pt-4  ">
+        <div className="tw-text-center md:tw-mx-auto tw-w-full tw-px-2 md:tw-w-4/12 tw-bg-second-color tw-rounded-md ">
           <div className="tw-flex tw-pt-2 tw-px-2 tw-cursor-pointer">
             <Link href="/">
               <ArrowBackIcon fontSize="medium" />
@@ -69,7 +69,7 @@ function ViewerToken() {
               name="payment"
               id="payment"
               placeholder="Enter your coupon code "
-              className="tw-rounded tw-w-96 tw-h-8  tw-outline-none tw-text-black tw-px-4 tw-font-medium tw-py-2"
+              className="tw-rounded tw-w-full tw-h-8  tw-outline-none tw-text-black tw-px-4 tw-font-medium tw-py-2"
             />
           </div>
           <div className="">
@@ -96,7 +96,7 @@ function ViewerToken() {
         <h1 className="tw-font-bold tw-text-xl tw-pt-4 tw-text-center tw-mb-4">
           Buy New Coupon Code
         </h1>
-        <div className="tw-text-center md:tw-mx-auto tw-w-full tw-mx-3 md:tw-w-4/12 tw-bg-second-color tw-rounded-md   tw-py-4">
+        <div className="tw-text-center md:tw-mx-auto tw-w-full tw-px-2 md:tw-w-4/12 tw-bg-second-color tw-rounded-md   tw-py-4">
           <p className="tw-text-center tw-text-white tw-mb-3 md:tw-py-6">
             You can Buy Coins Via Google Pay, Phone Pay, PayTM, UPI
           </p>

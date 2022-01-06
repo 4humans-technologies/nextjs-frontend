@@ -352,21 +352,21 @@ function Header(props) {
         {/* ------------- experiment----------- */}
         {/* usertype viwer and unauth  */}
 
-         {authContext.isLoggedIn
-           ? [
-               screenWidth < 600
-                 ? [
-                     // login and at small screen and viwer
-                     authContext.user.userType == "Viewer" ? (
-                       <div>
-                         {menu && (
-                           <Headerui
-                             manu={setMenu}
-                             liveModels={props.liveModels}
-                           />
-                         )}
-                         <div className="tw-flex tw-items-center tw-flex-shrink-0 tw-flex-nowrap">
-                           <span className="tw-relative">
+        {authContext.isLoggedIn
+          ? [
+              screenWidth < 600
+                ? [
+                    // login and at small screen and viwer
+                    authContext.user.userType == "Viewer" ? (
+                      <div>
+                        {menu && (
+                          <Headerui
+                            manu={setMenu}
+                            liveModels={props.liveModels}
+                          />
+                        )}
+                        <div className="tw-flex tw-items-center tw-flex-shrink-0 tw-flex-nowrap">
+                          {/* <span className="tw-relative">
                              <button
                                onClick={() =>
                                  setShowNotification((prev) => !prev)
@@ -383,45 +383,45 @@ function Header(props) {
                                show={showNotifications}
                                notifications={notifications}
                              />
-                           </span>
-                           <div
-                             className="tw-flex tw-self-center"
-                             onClick={() => router.push(`/user/payment`)}
-                           >
-                             <img
-                               src="/coins.png"
-                               alt=""
-                               className="tw-w-4 tw-h-4 tw-text-white tw-my-auto"
-                             />
-                             <p className="tw-self-center tw-pl-2">
-                               {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
-                                 0
-                               )}
-                             </p>
-                           </div>
-                         </div>
-                       </div>
-                     ) : (
-                       // login at smaller screen and model
-                       <div>
-                         {menu && (
-                           <Headerui
-                             manu={setMenu}
-                             liveModels={props.liveModels}
-                           />
-                         )}
-                         <div className="tw-flex tw-self-center">
-                           {!hide && (
-                             <Link
-                               href={`/${authContext.user.user.username}/goLive`}
-                             >
-                               <a className="tw-bg-red-500 hover:tw-bg-white  hover:tw-text-red-500  tw-font-bold tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1`  tw-inline-block tw-mx-3 tw-rounded-full  tw-whitespace-nowrap">
-                                 <AdjustIcon /> Go Live
-                               </a>
-                             </Link>
-                           )}
-                           <div className="tw-flex tw-items-center  tw-flex-shrink-0 tw-flex-nowrap">
-                             <span className="tw-relative">
+                           </span> */}
+                          <div
+                            className="tw-flex tw-self-center"
+                            onClick={() => router.push(`/user/payment`)}
+                          >
+                            <img
+                              src="/coins.png"
+                              alt=""
+                              className="tw-w-4 tw-h-4 tw-text-white tw-my-auto"
+                            />
+                            <p className="tw-self-center tw-pl-2">
+                              {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                                0
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // login at smaller screen and model
+                      <div>
+                        {menu && (
+                          <Headerui
+                            manu={setMenu}
+                            liveModels={props.liveModels}
+                          />
+                        )}
+                        <div className="tw-flex tw-self-center">
+                          {!hide && (
+                            <Link
+                              href={`/${authContext.user.user.username}/goLive`}
+                            >
+                              <a className="tw-bg-red-500 hover:tw-bg-white  hover:tw-text-red-500  tw-font-bold tw-text-white tw-outline-none tw-capitalize tw-px-2 tw-py-1`  tw-inline-block tw-mx-3 tw-rounded-full  tw-whitespace-nowrap">
+                                <AdjustIcon /> Go Live
+                              </a>
+                            </Link>
+                          )}
+                          <div className="tw-flex tw-items-center  tw-flex-shrink-0 tw-flex-nowrap">
+                            {/* <span className="tw-relative">
                                <button
                                  onClick={() =>
                                    setShowNotification((prev) => !prev)
@@ -438,33 +438,33 @@ function Header(props) {
                                  show={showNotifications}
                                  notifications={notifications}
                                />
-                             </span>
-                             <img
-                               src="/coins.png"
-                               alt=""
-                               className="tw-w-4 tw-h-4 tw-text-white"
-                               onClick={() =>
-                                 router.push(
-                                   `/${authContext.user.user.username}/settingToken`
-                                 )
-                               }
-                             />
-                             <p className="tw-self-center tw-pl-2">
-                               {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
-                                 0
-                               )}
-                             </p>
-                           </div>
-                         </div>
-                       </div>
-                     ),
-                   ]
-                 : [
-                     // login at large screen viwer
-                     authContext.user.userType == "Viewer" ? (
-                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                         <div className="tw-mx-4 tw-flex tw-items-center tw-flex-shrink-0 tw-flex-nowrap">
-                           <span className="tw-relative">
+                             </span> */}
+                            <img
+                              src="/coins.png"
+                              alt=""
+                              className="tw-w-4 tw-h-4 tw-text-white"
+                              onClick={() =>
+                                router.push(
+                                  `/${authContext.user.user.username}/settingToken`
+                                )
+                              }
+                            />
+                            <p className="tw-self-center tw-pl-2">
+                              {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                                0
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ),
+                  ]
+                : [
+                    // login at large screen viwer
+                    authContext.user.userType == "Viewer" ? (
+                      <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
+                        <div className="tw-mx-4 tw-flex tw-items-center tw-flex-shrink-0 tw-flex-nowrap">
+                          {/* <span className="tw-relative">
                              <button
                                onClick={() =>
                                  setShowNotification((prev) => !prev)
@@ -481,53 +481,53 @@ function Header(props) {
                                show={showNotifications}
                                notifications={notifications}
                              />
-                           </span>
-                           <img
-                             src="/coins.png"
-                             alt=""
-                             className="tw-w-5 tw-h-5 tw-text-white"
-                             onClick={() => router.push(`/user/payment`)}
-                           />
-                           <p className="tw-my-auto tw-ml-2 tw-font-bold">
-                             {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
-                               0
-                             )}
-                           </p>
-                         </div>
-                         <div
-                           className="tw-mr-4  tw-cursor-pointer profileImage"
-                           onClick={() => setHeaderProfileShow((prev) => !prev)}
-                         >
-                           {authContext.user.user.relatedUser?.profileImage ? (
-                             <img
-                               className="tw-rounded-full tw-w-8 tw-h-8 flex tw-items-center tw-justify-center tw-bg-dreamgirl-red tw-text-4xl tw-object-cover tw-border-white-color tw-border-2"
-                               src={
-                                 authContext.user.user.relatedUser.profileImage
-                               }
-                             />
-                           ) : (
-                             <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
-                               <span className="tw-text-4xl tw-text-white-color tw-font-light">
-                                 {authContext.user.user?.username
-                                   ?.charAt(0)
-                                   .toUpperCase()}
-                               </span>
-                             </div>
-                           )}
-                           {/* profile */}
-                           <div
-                             className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-0 tw-rounded tw-text-white tw-right-4 headerUI `}
-                           >
-                             <Headerprofile userType="Viewer" />
-                           </div>
-                           {/* profile */}
-                         </div>
-                       </div>
-                     ) : (
-                       // login at large screen model
-                       <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
-                         <div className="tw-flex tw-items-center tw-mr-3  tw-flex-shrink-0 tw-flex-nowrap">
-                           <span className="tw-relative">
+                           </span> */}
+                          <img
+                            src="/coins.png"
+                            alt=""
+                            className="tw-w-5 tw-h-5 tw-text-white"
+                            onClick={() => router.push(`/user/payment`)}
+                          />
+                          <p className="tw-my-auto tw-ml-2 tw-font-bold">
+                            {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                              0
+                            )}
+                          </p>
+                        </div>
+                        <div
+                          className="tw-mr-4  tw-cursor-pointer profileImage"
+                          onClick={() => setHeaderProfileShow((prev) => !prev)}
+                        >
+                          {authContext.user.user.relatedUser?.profileImage ? (
+                            <img
+                              className="tw-rounded-full tw-w-8 tw-h-8 flex tw-items-center tw-justify-center tw-bg-dreamgirl-red tw-text-4xl tw-object-cover tw-border-white-color tw-border-2"
+                              src={
+                                authContext.user.user.relatedUser.profileImage
+                              }
+                            />
+                          ) : (
+                            <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
+                              <span className="tw-text-4xl tw-text-white-color tw-font-light">
+                                {authContext.user.user?.username
+                                  ?.charAt(0)
+                                  .toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                          {/* profile */}
+                          <div
+                            className={`tw-absolute tw-z-[120] tw-bg-second-color  tw-w-48 tw-mt-0 tw-rounded tw-text-white tw-right-4 headerUI `}
+                          >
+                            <Headerprofile userType="Viewer" />
+                          </div>
+                          {/* profile */}
+                        </div>
+                      </div>
+                    ) : (
+                      // login at large screen model
+                      <div className="sm:tw-flex sm:tw-justify-between tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black  ">
+                        <div className="tw-flex tw-items-center tw-mr-3  tw-flex-shrink-0 tw-flex-nowrap">
+                          {/* <span className="tw-relative">
                              <button
                                onClick={() =>
                                  setShowNotification((prev) => !prev)
@@ -544,56 +544,56 @@ function Header(props) {
                                show={showNotifications}
                                notifications={notifications}
                              />
-                           </span>
-                         </div>
-                         <div className="tw-mx-4 tw-flex ">
-                           <img
-                             src="/coins.png"
-                             alt=""
-                             className="tw-w-5 tw-h-5 tw-text-white"
-                             onClick={() =>
-                               router.push(
-                                 `/${authContext.user.user.username}/settingToken`
-                               )
-                             }
-                           />
-                           <p className="tw-my-auto tw-ml-2">
-                             {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
-                               0
-                             )}
-                           </p>
-                         </div>
-                         {!hide && (
-                           <Link
-                             href={`/${authContext.user.user.username}/goLive`}
-                           >
-                             <a className="tw-bg-red-500 tw-my-auto tw-font-bold tw-text-white hover:tw-bg-white hover:tw-text-red-500  tw-outline-none tw-capitalize tw-px-2 tw-py-1  tw-inline-block tw-mx-3 tw-rounded-full  tw-whitespace-nowrap">
-                               <FiberManualRecordIcon />{" "}
-                               <span className="tw-mr-1 ">Go Live </span>
-                             </a>
-                           </Link>
-                         )}
-                         <div
-                           className="tw-mr-4 tw-cursor-pointer profileImage"
-                           onClick={() => setHeaderProfileShow((prev) => !prev)}
-                         >
-                           {/* if image is not available then show the Name else show the image */}
-                           {authContext.user.user.relatedUser?.profileImage ? (
-                             <img
-                               className="tw-rounded-full tw-w-8 tw-h-8 flex tw-items-center tw-justify-center  tw-bg-dreamgirl-red tw-text-4xl  tw-object-cover tw-border-white-color tw-border-2"
-                               src={
-                                 authContext.user.user.relatedUser.profileImage
-                               }
-                             />
-                           ) : (
-                             <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
-                               <span className="tw-text-4xl tw-text-white-color tw-font-light">
-                                 {authContext.user.user.username
-                                   .charAt(0)
-                                   .toUpperCase()}
-                               </span>
-                             </div>
-                           )}
+                           </span> */}
+                        </div>
+                        <div className="tw-mx-4 tw-flex ">
+                          <img
+                            src="/coins.png"
+                            alt=""
+                            className="tw-w-5 tw-h-5 tw-text-white"
+                            onClick={() =>
+                              router.push(
+                                `/${authContext.user.user.username}/settingToken`
+                              )
+                            }
+                          />
+                          <p className="tw-my-auto tw-ml-2">
+                            {(authContext.user.user.relatedUser?.wallet.currentAmount).toFixed(
+                              0
+                            )}
+                          </p>
+                        </div>
+                        {!hide && (
+                          <Link
+                            href={`/${authContext.user.user.username}/goLive`}
+                          >
+                            <a className="tw-bg-red-500 tw-my-auto tw-font-bold tw-text-white hover:tw-bg-white hover:tw-text-red-500  tw-outline-none tw-capitalize tw-px-2 tw-py-1  tw-inline-block tw-mx-3 tw-rounded-full  tw-whitespace-nowrap">
+                              <FiberManualRecordIcon />{" "}
+                              <span className="tw-mr-1 ">Go Live </span>
+                            </a>
+                          </Link>
+                        )}
+                        <div
+                          className="tw-mr-4 tw-cursor-pointer profileImage"
+                          onClick={() => setHeaderProfileShow((prev) => !prev)}
+                        >
+                          {/* if image is not available then show the Name else show the image */}
+                          {authContext.user.user.relatedUser?.profileImage ? (
+                            <img
+                              className="tw-rounded-full tw-w-8 tw-h-8 flex tw-items-center tw-justify-center  tw-bg-dreamgirl-red tw-text-4xl  tw-object-cover tw-border-white-color tw-border-2"
+                              src={
+                                authContext.user.user.relatedUser.profileImage
+                              }
+                            />
+                          ) : (
+                            <div className="tw-bg-dreamgirl-red tw-rounded-full tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-ring-2 tw-ring-white-color">
+                              <span className="tw-text-4xl tw-text-white-color tw-font-light">
+                                {authContext.user.user.username
+                                  .charAt(0)
+                                  .toUpperCase()}
+                              </span>
+                            </div>
+                          )}
 
                           {/* Profile  */}
                           <div
@@ -630,7 +630,7 @@ function Header(props) {
               ),
             ]}
         {/* --------------------------------------------------------------*/}
-        <div className={`sm:tw-hidden tw-mr-4l`} onClick={() => setMenu(!menu)}>
+        <div className={`sm:tw-hidden tw-mr-4`} onClick={() => setMenu(!menu)}>
           <MoreVertIcon />
         </div>
       </div>

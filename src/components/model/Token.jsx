@@ -62,7 +62,7 @@ function Token() {
   }
 
   return (
-    <div className="tw-w-96 tw-place-items-center tw-text-white tw-mx-auto">
+    <div className="md:tw-w-96  tw-w-full tw-place-items-center tw-text-white md:tw-mx-auto">
       <div className="tw-flex tw-justify-between ">
         <div className="tw-mx-2 tw-text-lg tw-mb-4"> Tip to Model Name</div>
         <CancelIcon
@@ -87,8 +87,8 @@ function Token() {
               value="50"
               onClick={() => handleAmountInput(20)}
             />
-            <label htmlFor="Twenty" className="tw-ml-2 ">
-              20 <span>Tokens</span>
+            <label htmlFor="Twenty" className="tw-ml-2 tw-flex">
+              20 <span className="tw-ml-1">Coins</span>
             </label>
           </div>
           <div
@@ -96,7 +96,8 @@ function Token() {
               token == "20" ? "tw-border-green-400" : null
             }`}
           >
-            Tip the model 20 token
+            <p className="tw-hidden md:tw-block">Tip the model 20 coins</p>
+            <p className="md:tw-hidden tw-block">Tip 20 coins</p>
           </div>
         </div>
         {/*  */}
@@ -114,7 +115,7 @@ function Token() {
               onClick={() => handleAmountInput(50)}
             />
             <label htmlFor="fifty" className="tw-ml-2 ">
-              50 <span>Tokens</span>
+              50 <span>Coins</span>
             </label>
           </div>
           <div
@@ -122,7 +123,8 @@ function Token() {
               token == "50" ? "tw-border-green-400" : null
             }`}
           >
-            Tip the model 50 token
+            <p className="tw-hidden md:tw-block">Tip the model 50 coins</p>
+            <p className="md:tw-hidden tw-block">Tip 50 coins</p>
           </div>
         </div>
         {/*  */}
@@ -140,7 +142,7 @@ function Token() {
               onClick={() => handleAmountInput(100)}
             />
             <label htmlFor="hundred" className="tw-ml-2 ">
-              100 <span>Tokens</span>
+              100 <span>Coins</span>
             </label>
           </div>
           <div
@@ -148,7 +150,8 @@ function Token() {
               token == "100" ? "tw-border-green-400" : null
             }`}
           >
-            Tip the model 100 token
+            <p className="tw-hidden md:tw-block"> Tip the model 100 coins</p>
+            <p className="md:tw-hidden tw-block">Tip 100 coins</p>
           </div>
         </div>
         {/*  */}
@@ -166,7 +169,7 @@ function Token() {
               onClick={() => handleAmountInput(200)}
             />
             <label htmlFor="twohundred" className="tw-ml-2 ">
-              200 <span>Tokens</span>
+              200 <span>Coins</span>
             </label>
           </div>
           <div
@@ -174,7 +177,8 @@ function Token() {
               token == "200" ? "tw-border-green-400" : null
             }`}
           >
-            Tip the model 200 token
+            <p className="tw-hidden md:tw-block"> Tip the model 200 coins</p>
+            <p className="md:tw-hidden tw-block">Tip 200 coins</p>
           </div>
         </div>
         <div
@@ -195,7 +199,7 @@ function Token() {
           </div>
           <input
             type="text"
-            className="tw-rounded tw-h-8 tw-outline-none tw-px-2 tw-flex-grow tw-bg-second-color"
+            className="tw-rounded tw-h-8 tw-outline-none tw-px-2 tw-flex-grow tw-bg-second-color tw-ml-4 tw-w-full"
             onChange={(e) => handleAmountInput(e.target.value)}
           />
         </div>

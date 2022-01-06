@@ -125,7 +125,7 @@ function CallDetailsPopUp(props) {
                   <p className="tw-text-sm tw-text-center tw-mt-3 tw-mb-2 tw-capitalize tw-text-white">
                     I do in video calls 👇
                   </p>
-                  <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20 tw-flex">
+                  <div className="tw-mb-3 tw-w-8/12 tw-mx-auto tw-p-1 tw-rounded-md tw-text-white-color tw-font-medium tw-bg-black/20 tw-flex  tw-flex-wrap">
                     {props.model.callActivity.videoCall.map((text, index) => {
                       return (
                         <p
