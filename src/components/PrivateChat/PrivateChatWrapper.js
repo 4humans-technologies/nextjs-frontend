@@ -9,7 +9,6 @@ import MessageContainer from "./MessagesContainer"
 import ViewerTile from "./ViewerTile"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import { useAuthContext } from "../../app/AuthContext"
 import { toast } from "react-toastify"
 
 const chatScreens = {
@@ -41,14 +40,12 @@ const chatWindowOptions = {
 }
 
 function PrivateChatWrapper(props) {
-  const { newChatNotifierDotRef } = props
+  const { newChatNotifierDotRef, scrollOnChat } = props
 
   const socketCtx = useSocketContext()
   const currentChatScreenStateRef = useRef()
   const currentViewerRef = useRef()
   const dbChatIdsRef = useRef()
-
-  const scrollOnChat = () => {}
 
   /**
    * handling viewer tile or on chat screen with viewer
@@ -62,7 +59,6 @@ function PrivateChatWrapper(props) {
   }
 
   const [currentViewer, setCurrentViewer] = useState(null)
-  // const [chatState, setChatState] = useState(initialChatState)
   const [chatState, setChatState] = useState([])
   const [dbChatIds, setDbChatIds] = useState([
     {
@@ -185,7 +181,7 @@ function PrivateChatWrapper(props) {
                 dbChatId: data.dbId,
                 viewerId: data.viewerId,
               })
-              return [...prevIds]
+              return prevIds.map((a) => a)
             })
             /* init chat state for this viewer,meanwhile we fetch chats data from database */
             setChatState((prevChats) => {
@@ -251,7 +247,7 @@ function PrivateChatWrapper(props) {
                 } else {
                   alert("Error chats not fetched!")
                 }
-                scrollOnChat()
+                scrollOnChat("private")
               })
               .catch((err) => alert(err.message))
           } else {
@@ -294,7 +290,7 @@ function PrivateChatWrapper(props) {
                 //     : 0
                 // )
               })
-              scrollOnChat()
+              scrollOnChat("private")
             } else {
               /* directly add in latest chats */
               setChatState((prev) => {
@@ -322,28 +318,14 @@ function PrivateChatWrapper(props) {
                 //     : 0
                 // )
               })
-              scrollOnChat()
+              scrollOnChat("private")
             }
           }
         })
       }
       return () => {
-        /* remove listeners */
         if (socket.hasListeners("viewer-private-message-received")) {
-          socket.off("viewer-private-message-received", (data) => {})
-        }
-      }
-    }
-  }, [socketCtx.socketSetupDone, setDbChatIds])
-
-  /* remove chat event listeners */
-  useEffect(() => {
-    if (socketCtx.socketSetupDone) {
-      return () => {
-        /* remove listeners */
-        const socket = io.getSocket()
-        if (socket.hasListeners("viewer-private-message-received")) {
-          socket.off("viewer-private-message-received", (data) => {})
+          socket.off("viewer-private-message-received")
         }
       }
     }
@@ -385,7 +367,7 @@ function PrivateChatWrapper(props) {
               }
             })
           })
-          scrollOnChat()
+          scrollOnChat("private")
         } else {
           document.getElementById("chat-message-input").value = e.detail.message
           return alert("Please click on the viewer to send this message")
@@ -409,7 +391,7 @@ function PrivateChatWrapper(props) {
   }, [socketCtx.socketSetupDone])
 
   return (
-    <>
+    <div className="tw-h-full">
       {/* render viewer tile list */}
       {currentChatScreen === chatScreens.VIEWERS_LIST && (
         <div className="tw-w-full tw-h-full tw-pb-16">
@@ -452,7 +434,7 @@ function PrivateChatWrapper(props) {
           />
         </div>
       )}
-    </>
+    </div>
   )
 }
 

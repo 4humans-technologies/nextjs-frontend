@@ -12,15 +12,12 @@ import VideoPlayer from "../UI/VideoPlayer"
 import { useAuthContext } from "../../app/AuthContext"
 import { useAuthUpdateContext } from "../../app/AuthContext"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
-import { useRouter } from "next/router"
 import LocalActivityIcon from "@material-ui/icons/LocalActivity"
 import MarkChatReadIcon from "@material-ui/icons/Markunread"
-import TipMenuActions from "../ViewerScreen/TipMenuActions"
 import io from "../../socket/socket"
 import Videoshowcontroller from "./VideoStreaming/Videoshowcontroller"
 import LiveTvIcon from "@material-ui/icons/LiveTv"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import useModalContext from "../../app/ModalContext"
 import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
 import MicIcon from "@material-ui/icons/Mic"
@@ -73,11 +70,13 @@ function Live() {
     loopRef: null,
   })
 
+  const publicChatContainerRef = useRef()
+  const privateChatContainerRef = useRef()
+
   const ctx = useAuthContext()
-  const socketCtx = useSocketContext()
   const spinnerCtx = useSpinnerContext()
   const updateCtx = useAuthUpdateContext()
-  const modalCtx = useModalContext()
+  const socketCtx = useSocketContext()
   const [fullScreen, setFullScreen] = useState(false)
   const [chatWindow, setChatWindow] = useState(chatWindowOptions.USERS)
 
@@ -237,8 +236,14 @@ function Live() {
     }
   }, [socketCtx.socketSetupDone])
 
-  const scrollOnChat = useCallback((scrollType) => {
-    const containerElement = document.getElementById("chatBoxContainer")
+  const scrollOnChat = useCallback((forBox, scrollType) => {
+    if (forBox === "public") {
+      var containerElement = publicChatContainerRef.current
+    } else if (forBox === "private") {
+      var containerElement = privateChatContainerRef.current
+    } else {
+      return
+    }
     containerElement.scrollBy({
       top: containerElement.scrollHeight,
       behavior: scrollType ? scrollType : "smooth",
@@ -1316,7 +1321,7 @@ function Live() {
           </div>
 
           {/* chat site | ex right side */}
-          <div className="tw-bg-second-color sm:tw-w-[40%] sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen xl:tw-h-[90vh]">
+          <div className="tw-bg-second-color sm:tw-w-[40%] sm:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-screen xl:tw-h-[90vh] tw-flex tw-flex-col tw-justify-between tw-items-stretch">
             <div className="tw-flex   tw-text-white sm:tw-pt-3 tw-pb-3 tw-px-2 sm:tw-px-4 tw-text-center tw-content-center tw-items-center tw-shadow-md">
               <button
                 className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-mr-4 ${
@@ -1401,78 +1406,63 @@ function Live() {
               ) : null}
             </div>
 
+            {/* PUBLIC CHAT */}
             <div
-              id="chatBoxContainer"
-              className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full "
+              ref={publicChatContainerRef}
+              style={{
+                display:
+                  chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
+              }}
+              className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
             >
-              <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color tw-mt-16 md:tw-mt-1">
-                <div
-                  className="tw-relative"
-                  style={{
-                    display:
-                      chatWindow === chatWindowOptions.PUBLIC
-                        ? "block"
-                        : "none",
-                  }}
-                >
-                  <PublicChat
-                    scrollOnChat={scrollOnChat}
-                    addAtTheRate={addAtTheRate}
-                    chatWindowRef={chatWindowRef}
-                  />
-                </div>
-                <div
-                  className="tw-relative"
-                  style={{
-                    display:
-                      chatWindow === chatWindowOptions.PRIVATE
-                        ? "block"
-                        : "none",
-                  }}
-                >
-                  <PrivateChatWrapper
-                    scrollOnChat={scrollOnChat}
-                    chatWindowRef={chatWindowRef}
-                    newChatNotifierDotRef={newChatNotifierDotRef}
-                  />
-                </div>
-                <div
-                  className="tw-relative"
-                  style={{
-                    display:
-                      chatWindow === chatWindowOptions.TIP_MENU
-                        ? "block"
-                        : "none",
-                  }}
-                >
-                  <TipMenuActions />
-                </div>
-                <div
-                  className=""
-                  style={{
-                    display:
-                      chatWindow === chatWindowOptions.USERS ? "block" : "none",
-                  }}
-                >
-                  <ViewersListContainer
-                    callOnGoing={callOnGoing}
-                    addAtTheRate={(username) => {
-                      addAtTheRate(username)
-                      setChatWindow(chatWindowOptions.PUBLIC)
-                    }}
-                  />
-                </div>
-              </div>
-              <div id="for-scroll-into-view"></div>
+              <PublicChat
+                scrollOnChat={scrollOnChat}
+                addAtTheRate={addAtTheRate}
+                chatWindowRef={chatWindowRef}
+              />
             </div>
 
+            {/* PRIVATE CHAT */}
+            <div
+              ref={privateChatContainerRef}
+              style={{
+                display:
+                  chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
+              }}
+              className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
+            >
+              <PrivateChatWrapper
+                scrollOnChat={scrollOnChat}
+                chatWindowRef={chatWindowRef}
+                newChatNotifierDotRef={newChatNotifierDotRef}
+              />
+            </div>
+
+            {/* VIEWERS LIST */}
+            <div
+              style={{
+                display:
+                  chatWindow === chatWindowOptions.USERS ? "block" : "none",
+              }}
+              className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
+            >
+              <ViewersListContainer
+                callOnGoing={callOnGoing}
+                addAtTheRate={(username) => {
+                  addAtTheRate(username)
+                  setChatWindow(chatWindowOptions.PUBLIC)
+                }}
+              />
+            </div>
+
+            {/* MESSAGE INPUT */}
             <div
               id="message-input"
-              className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-absolute md:tw-bottom-0 tw-w-full tw-border-b tw-border-first-color"
+              className="tw-flex tw-py-1.5 tw-bg-second-color tw-text-white tw-place-items-center tw-w-full tw-border-b tw-border-first-color tw-flex-shrink tw-flex-grow-0"
             >
               <div className="tw-rounded-full tw-bg-dark-black tw-flex md:tw-mx-1 tw-outline-none tw-place-items-center tw-w-full tw-relative">
                 <input
-                  className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-2 tw-px-2 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
+                  className="tw-flex tw-flex-1 tw-mx-2 tw-rounded-full tw-py-1 tw-px-2 tw-bg-dark-black tw-border-0 md:tw-mx-1 tw-outline-none"
                   placeholder="Enter your message here"
                   ref={chatInputRef}
                   id="chat-message-input"

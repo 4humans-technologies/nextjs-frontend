@@ -643,6 +643,7 @@ function LiveScreen(props) {
               isModelOffline={isModelOffline}
               modelWelcomeMessage={props.modelProfileData?.welcomeMessage}
               addAtTheRate={addAtTheRate}
+              scrollOnChat={scrollOnChat}
               chatWindowRef={chatWindowRef}
               containerRef={publicChatContainerRef}
               modelUsername={props.modelProfileData?.rootUser?.username}
@@ -661,6 +662,7 @@ function LiveScreen(props) {
             <PrivateChat
               key={theKey + 1000}
               hasActivePlan={isChatPlanActive}
+              scrollOnChat={scrollOnChat}
               setIsChatPlanActive={setIsChatPlanActive}
               modalCtx={!isChatPlanActive && modalCtx}
               chatWindowRef={chatWindowRef}

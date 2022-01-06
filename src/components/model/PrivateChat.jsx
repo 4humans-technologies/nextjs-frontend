@@ -71,9 +71,7 @@ function PrivateChat(props) {
 
   const [privateChatDbId, setPrivateChatDbId] = useState(null)
 
-  const { hasActivePlan } = props
-
-  const scrollOnChat = (option) => {}
+  const { hasActivePlan, scrollOnChat } = props
 
   useEffect(() => {
     chatDataRef.current = chatsData
@@ -90,7 +88,7 @@ function PrivateChat(props) {
         })
         return { ...prev }
       })
-      scrollOnChat()
+      scrollOnChat("private")
     }
     document.addEventListener("send-private-message", pushPrivateChatLocally, {
       passive: true,
@@ -170,7 +168,7 @@ function PrivateChat(props) {
               prev.highLightChat = false
               return prev
             })
-            scrollOnChat()
+            scrollOnChat("private")
           } else {
             /* if not in focus, viewing some other tab */
             if (
@@ -300,6 +298,7 @@ function PrivateChat(props) {
   }, [authCtx.isLoggedIn, hasActivePlan, authCtx.user.userType, chatsData])
 
   useEffect(() => {
+    scrollOnChat("private")
     return () => sessionStorage.removeItem("privateChatDbId")
   }, [])
 

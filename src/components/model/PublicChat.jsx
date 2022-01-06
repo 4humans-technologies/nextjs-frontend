@@ -18,21 +18,12 @@ if (typeof window !== "undefined") {
   UnAuthedViewerChatName = localStorage.getItem("unAuthed-user-chat-name")
 }
 function PublicChatBox(props) {
-  let pageUrl
-  if (typeof window !== "undefined") {
-    pageUrl = window.location.pathname
-  }
-
   const [chatMessages, setChatMessages] = useState([])
   const [prevChats, setPrevChats] = useState([])
   const [welcomeMsg, setWelcomeMsg] = useState("")
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
-  const { isModelOffline, modelWelcomeMessage } = props
-
-  const scrollOnChat = useCallback((option) => {
-    /*  */
-  }, [])
+  const { isModelOffline, modelWelcomeMessage, scrollOnChat } = props
 
   useEffect(() => {
     if (
@@ -110,7 +101,7 @@ function PublicChatBox(props) {
             // document.dispatchEvent(chatScrollEvent)
             return [...prevChats, chat]
           })
-          scrollOnChat()
+          scrollOnChat("public")
           // document.dispatchEvent(chatEvent)
         })
       }
@@ -126,7 +117,7 @@ function PublicChatBox(props) {
             ]
             return newChats
           })
-          scrollOnChat()
+          scrollOnChat("public")
           // document.dispatchEvent(chatEvent)
         })
       }
@@ -144,7 +135,7 @@ function PublicChatBox(props) {
             ]
             return newChats
           })
-          scrollOnChat()
+          scrollOnChat("public")
           // document.dispatchEvent(chatEvent)
         })
       }
@@ -185,7 +176,7 @@ function PublicChatBox(props) {
       fetch(`${url}${e.detail.streamId}/chats.json`)
         .then((res) => res.json())
         .then((chats) => {
-          scrollOnChat()
+          scrollOnChat("public")
           if (chats) {
             setPrevChats(Object.values(chats))
           }
