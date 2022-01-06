@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import CancelIcon from "@material-ui/icons/Cancel"
 import useModalContext from "../../app/ModalContext"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
-import io from "../../socket/socket"
-import { useSocketContext } from "../../app/socket/SocketContext"
+import { toast } from "react-toastify"
 
 function Token() {
   const [token, setToken] = useState("")
@@ -40,13 +39,14 @@ function Token() {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        
-        // alert(data.message)
-        // update the authCtx & localstorage with new wallet amount
         modalCtx.hideModal()
-        authUpdateCtx.updateWallet(token, "dec")
+        if (data?.viewerNewWalletAmount) {
+          authUpdateCtx.updateWallet(data.viewerNewWalletAmount, "set")
+        }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        toast.error(err.message)
+      })
   }
 
   const handleAmountInput = (amount) => {

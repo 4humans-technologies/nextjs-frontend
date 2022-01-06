@@ -160,7 +160,10 @@ function ViewersListContainer(props) {
 
       const handleNewKing = (king) => {
         toast.info(`@${king.username} is now the 🏆 king of the room!`)
-        setKing(king)
+        setKing({
+          ...king,
+          whileKingSpentTimes: 0,
+        })
       }
       socket.on("new-king", handleNewKing)
 
@@ -181,13 +184,22 @@ function ViewersListContainer(props) {
       socket.on("viewer-joined", viewerJoinedHandler)
 
       const handleKingsDonations = (data) => {
-        if (!kingRef.current) {
+        if (!kingRef.current || kingRef.current?.whileKingSpentTimes === 0) {
+          if (kingRef.current) {
+            if (kingRef.current?.whileKingSpentTimes === 0) {
+              setKing((prev) => {
+                prev.whileKingSpentTimes += 1
+                return { ...prev }
+              })
+            }
+          }
           return
         }
         if (data.chatType === "coin-superchat-public") {
           if (data.username === kingRef.current?.username) {
             setKing((prev) => {
               prev.spent = +prev.spent + +data.amountGiven
+              prev.whileKingSpentTimes += 1
               return { ...prev }
             })
             toast.info(`King 🏆 gifted ${data.amountGiven} coins`)
@@ -196,10 +208,11 @@ function ViewersListContainer(props) {
           if (data.username === kingRef.current?.username) {
             setKing((prev) => {
               prev.spent = +prev.spent + +data.activity.price
+              prev.whileKingSpentTimes += 1
               return { ...prev }
             })
             toast.info(
-              `King 🏆 request ${data.activity.action} for ${data.amountGiven} coins`
+              `King 🏆 request ${data.activity.action} for ${data.activity.price} coins`
             )
           }
         }

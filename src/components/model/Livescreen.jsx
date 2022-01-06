@@ -381,6 +381,14 @@ function LiveScreen(props) {
     setChatWindow(chatWindowOptions.PUBLIC)
   }, [])
 
+  const openGiftGiver = useCallback(() => {
+    if (authCtx.isLoggedIn) {
+      modalCtx.showModalWithContent(<Token key={theKey + 600} />)
+    } else {
+      toast.error("Please login first, To Gift Coins 👑")
+    }
+  }, [authCtx.isLoggedIn, modalCtx.showModalWithContent, theKey])
+
   return (
     <>
       <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans md:tw-pt-12 tw-pt-16">
@@ -427,6 +435,7 @@ function LiveScreen(props) {
             pendingCallEndRequest={pendingCallEndRequest}
             setPendingCallEndRequest={setPendingCallEndRequest}
             callType={callType}
+            openGiftGiver={openGiftGiver}
           />
 
           {!callOnGoing ? (
@@ -458,15 +467,7 @@ function LiveScreen(props) {
                   <Button
                     className="tw-rounded-full tw-flex tw-self-center tw-text-sm"
                     variant="danger"
-                    onClick={() => {
-                      if (authCtx.isLoggedIn) {
-                        modalCtx.showModalWithContent(
-                          <Token key={theKey + 600} />
-                        )
-                      } else {
-                        toast.error("Please login first, To Gift Coins 👑")
-                      }
-                    }}
+                    onClick={openGiftGiver}
                   >
                     <CardGiftcardIcon fontSize="small" />
                     <span className="tw-pl-1 tw-tracking-tight">
@@ -544,15 +545,7 @@ function LiveScreen(props) {
                   <Button
                     className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-z-[110]"
                     variant="danger"
-                    onClick={() => {
-                      if (authCtx.isLoggedIn) {
-                        modalCtx.showModalWithContent(<Token />)
-                      } else {
-                        toast.error(
-                          "Please login first, to request activity 👑"
-                        )
-                      }
-                    }}
+                    onClick={openGiftGiver}
                   >
                     <CardGiftcardIcon fontSize="small" />
                     <span className="tw-pl-1 tw-tracking-tight">
@@ -626,6 +619,8 @@ function LiveScreen(props) {
               <div className="tw-px-2 tw-py-1 tw-text-white-color tw-text-center tw-text-sm">
                 {props.modelProfileData?.topic}
               </div>
+
+              {/* PUBLIC CHAT */}
               <div
                 className=""
                 style={{
@@ -643,6 +638,8 @@ function LiveScreen(props) {
                   modelUsername={props.modelProfileData?.rootUser?.username}
                 />
               </div>
+
+              {/* PRIVATE CHAT */}
               <div
                 className=""
                 style={{
@@ -660,6 +657,8 @@ function LiveScreen(props) {
                   modelUsername={props.modelProfileData?.rootUser.username}
                 />
               </div>
+
+              {/* ACTIVITY */}
               <div
                 className=""
                 style={{
@@ -676,6 +675,8 @@ function LiveScreen(props) {
                   onClickSendTipMenu={onClickSendTipMenu}
                 />
               </div>
+
+              {/* USERS LIST */}
               <div
                 className=""
                 style={{

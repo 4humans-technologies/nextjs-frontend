@@ -539,13 +539,34 @@ function Live() {
             finalRoom = room
           }
         })
-        const payLoad = {
-          room: finalRoom,
-          message: message,
-          username: ctx.user.user.username,
+        if (finalRoom) {
+          const payLoad = {
+            room: finalRoom,
+            message: message,
+            username: ctx.user.user.username,
+          }
+          io.getSocket().emit("model-message-public-emitted", payLoad)
+          chatInputRef.current.value = ""
+        } else {
+          /**
+           * public room not in session
+           */
+          io.getSocket().emit(
+            "putting-me-in-these-rooms",
+            [`${sessionStorage.getItem("streamId")}-public`],
+            (response) => {
+              if (response.status === "ok") {
+                const payLoad = {
+                  room: `${sessionStorage.getItem("streamId")}-public`,
+                  message: message,
+                  username: ctx.user.user.username,
+                }
+                io.getSocket().emit("model-message-public-emitted", payLoad)
+                chatInputRef.current.value = ""
+              }
+            }
+          )
         }
-        io.getSocket().emit("model-message-public-emitted", payLoad)
-        chatInputRef.current.value = ""
       } else if (chatWindow === chatWindowOptions.PRIVATE) {
         const customEvent = new CustomEvent("send-private-message", {
           detail: { message: message },
@@ -798,8 +819,10 @@ function Live() {
                 /* alert about the last minute */
                 customDataRef.current.gracefulTokenExpiryAllowed = true
                 setTimeout(() => {
-                  toast.info("This is the last minute of the call")
-                }, [privilegeExpiredTs * 1000 - Date.now() - 60000])
+                  toast.info(
+                    "This is the last minute of the call, rap-up lady!"
+                  )
+                }, [privilegeExpiredTs - Date.now() - 60000])
               }
 
               const timeOutAfter = canRenew
@@ -860,7 +883,7 @@ function Live() {
                */
               customDataRef.current.gracefulTokenExpiryAllowed = true
               setTimeout(() => {
-                toast.info("This is the last minute of the call")
+                toast.info("This is the last minute of the call, rap-up lady!")
               }, [+data.privilegeExpiredTs * 1000 - Date.now() - 60000])
             }
 

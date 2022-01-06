@@ -12,6 +12,7 @@ import MicIcon from "@material-ui/icons/Mic"
 import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
+import LocalAtmIcon from "@material-ui/icons/LocalAtm"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import { toast } from "react-toastify"
 import socket from "../../socket/socket"
@@ -1572,12 +1573,18 @@ function ViewerScreen(props) {
       {/* On call controls */}
       {callOnGoing && !isModelOffline && (
         <div className="tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-3 tw-flex tw-justify-around tw-items-center tw-rounded tw-px-4 tw-py-2 tw-bg-[rgba(255,255,255,0.1)] tw-z-[390] tw-backdrop-blur">
-          <button className="tw-inline-block tw-mx-2 tw-z-[390]">
+          {/* <button className="tw-inline-block tw-mx-2 tw-z-[390]">
             <VolumeUpIcon fontSize="medium" style={{ color: "white" }} />
+          </button> */}
+          <button
+            className="tw-inline-block tw-mx-2 tw-z-[390]"
+            onClick={props.openGiftGiver}
+          >
+            <LocalAtmIcon fontSize="medium" style={{ color: "lightgreen" }} />
           </button>
           <button
             className="tw-inline-block tw-mx-2 tw-z-[390]"
-            onClick={() => handleCallEnd()}
+            onClick={handleCallEnd}
           >
             <CallEndIcon fontSize="medium" style={{ color: "red" }} />
           </button>
