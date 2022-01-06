@@ -199,6 +199,10 @@ function Profile() {
           value: profileEdit.bodyType,
         },
         {
+          field: "hairColor",
+          value: profileEdit.hairColor,
+        },
+        {
           field: "bio",
           value: profileEdit.bio,
         },
@@ -227,13 +231,13 @@ function Profile() {
       },
     }))
 
-    let store = JSON.parse(localStorage.getItem("user"))["relatedUser"]
-    store["country"] = profileEdit.country
-    store["skinColor"] = profileEdit.skinColor
-    store["languages"] = profileEdit.languages
-    store["bodyType"] = profileEdit.bodyType
-    store["hairColor"] = profileEdit.hairColor
-    store["eyeColor"] = profileEdit.eyeColor
+    let store = JSON.parse(localStorage.getItem("user"))
+    store["relatedUser"]["country"] = profileEdit.country
+    store["relatedUser"]["skinColor"] = profileEdit.skinColor
+    store["relatedUser"]["languages"] = profileEdit.languages
+    store["relatedUser"]["bodyType"] = profileEdit.bodyType
+    store["relatedUser"]["hairColor"] = profileEdit.hairColor
+    store["relatedUser"]["eyeColor"] = profileEdit.eyeColor
 
     // save the data json stringyfy
     localStorage.setItem("user", JSON.stringify(store))
@@ -948,7 +952,7 @@ function Profile() {
             <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6 call_price">
               <div className="">
                 <p>Private Audio Call :</p>
-                <p className="md:tw-my-2">Private video Call :</p>
+                <p className="tw-my-2">Private video Call :</p>
               </div>
               <div className="">
                 <div className="tw-flex  ">
@@ -1114,7 +1118,7 @@ function Profile() {
           </div>
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
-            <div className="tw-flex">
+            {/* <div className="tw-flex">
               {edit.publicImages && (
                 <button
                   className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full tw-capitalize tw-px-4"
@@ -1134,7 +1138,7 @@ function Profile() {
                 }
               />
               <p className="tw-my-auto tw-cursor-pointer">Edit</p>
-            </div>
+            </div> */}
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
@@ -1212,7 +1216,7 @@ function Profile() {
             <h1>My videos</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <div className="tw-flex">
+            {/* <div className="tw-flex">
               <EditIcon
                 fontSize="large"
                 className="tw-ml-auto tw-underline tw-cursor-pointer"
@@ -1224,7 +1228,7 @@ function Profile() {
                 }
               />
               <p className="tw-my-auto tw-cursor-pointer">Edit</p>
-            </div>
+            </div> */}
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
@@ -1299,7 +1303,7 @@ function Profile() {
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
             {/* Private video Input field */}
-            <div className="tw-flex">
+            {/* <div className="tw-flex">
               <EditIcon
                 fontSize="large"
                 className="tw-ml-auto tw-underline tw-cursor-pointer"
@@ -1311,7 +1315,7 @@ function Profile() {
                 }
               />
               <p className="tw-my-auto tw-cursor-pointer">Edit</p>
-            </div>
+            </div> */}
             <div className="tw-my-4">
               {showVideoInput && (
                 <div className="tw-flex tw-justify-between">
@@ -1478,7 +1482,7 @@ function Profile() {
             <h1>Private photo</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            <div className="tw-flex">
+            {/* <div className="tw-flex">
               <EditIcon
                 fontSize="large"
                 className="tw-ml-auto tw-underline tw-cursor-pointer"
@@ -1490,7 +1494,7 @@ function Profile() {
                 }
               />
               <p className="tw-my-auto tw-cursor-pointer">Edit</p>
-            </div>
+            </div> */}
             <div className="tw-my-4">
               {showInput && (
                 <div className="tw-flex tw-justify-between">

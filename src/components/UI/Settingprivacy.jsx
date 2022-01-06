@@ -164,7 +164,7 @@ function Settingprivacy() {
               />
               <button
                 type="submit"
-                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-ml-4"
+                className="tw-rounded-full tw-px-4 tw-border-2 tw-border-white-color tw-font-medium tw-mr-4"
               >
                 Apply
               </button>
@@ -229,11 +229,19 @@ function Settingprivacy() {
           ) : (
             <div>
               <div className="tw-grid md:tw-grid-cols-5 tw-grid-rows-1 tw-text-xl tw-font-bold  tw-mt-4 md:tw-mx-16 tw-text-center token_grid ">
-                <div>Date</div>
-                <div className="tw-hidden md:tw-block">Time</div>
-                <div>Action</div>
-                <div>Gifted To</div>
-                <div>
+                <div className=" md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
+                  Date
+                </div>
+                <div className="tw-hidden md:tw-block  md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
+                  Time
+                </div>
+                <div className=" md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
+                  Action
+                </div>
+                <div className=" md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
+                  Gifted To
+                </div>
+                <div className=" md:tw-rounded-full md:tw-px-4 md:tw-py-2 md:tw-bg-netural-Black">
                   Token
                   <ExpandLessIcon
                     className=" tw-cursor-pointer"

@@ -70,10 +70,10 @@ function UserProfile() {
        },
      }))
 
-     //  let store = JSON.parse(localStorage.getItem("user"))
-     //  store.relatedUser.hobbies = profileEdit.hobbies
+     let store = JSON.parse(localStorage.getItem("user"))
+     store.relatedUser.hobbies = profileEdit.hobbies
 
-     //  localStorage.setItem("user", JSON.stringify(store))
+     localStorage.setItem("user", JSON.stringify(store))
    }
 
    // Is to get the data of the user following
@@ -177,7 +177,7 @@ function UserProfile() {
            </div>
            {/* Email */}
            <div className="md:tw-col-span-4 tw-col-span-4 tw-grid tw-grid-cols-4 tw-bg-first-color tw-my-8 tw-px-4 tw-rounded-t-lg tw-rounded-b-lg tw-py-4 ">
-             <div className="tw-col-span-4 tw-flex tw-justify-start tw-flex-wrap">
+             <div className="tw-col-span-4 tw-flex tw-justify-between tw-flex-wrap">
                <p className="tw-flex tw-my-4 ">
                  <p>Email</p>
                  <span className="tw-ml-4 tw-text-lg tw-font-semibold ">
