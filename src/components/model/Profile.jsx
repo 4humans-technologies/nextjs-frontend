@@ -15,6 +15,7 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import FsLightbox from "fslightbox-react"
 import { DropdownButton, Dropdown, Button } from "react-bootstrap"
 import { toast } from "react-toastify"
+import EditIcon from "@material-ui/icons/Edit"
 // ========================================================
 
 function Profile() {
@@ -24,6 +25,13 @@ function Profile() {
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
+  })
+
+  const [edit, setEdit] = useState({
+    publicImages: false,
+    publicVideos: false,
+    privateImages: false,
+    privateVideos: false,
   })
 
   const [infoedited, setInfoedited] = useState(false)
@@ -698,27 +706,33 @@ function Profile() {
   let today = new Date()
   let thisYear = today.getFullYear()
 
+  const deletPublicImage = () => {
+    const deleteImage = document.querySelectorAll(".publicImage")
+    // console.log(deleteImage)
+    Object.keys(deleteImage).forEach((key) => {
+      if (deleteImage[key].checked == true) {
+        console.log(key, deleteImage[key].name)
+      }
+    })
+  }
+
   return authContext.user.user ? (
     <div>
-      <div
-        className="tw-w-full tw-relative tw-h-96 "
-        style={{
-          backgroundImage: `url(${
-            authContext.user.user.relatedUser.coverImage
-              ? [`${authContext.user.user.relatedUser.coverImage}`]
+      <div className="tw-w-full tw-relative  tw-bg-dark-background tw-mt-[4.5rem]">
+        <img
+          src={
+            authContext.user.user.relatedUser?.coverImage
+              ? `${authContext.user.user.relatedUser.coverImage}`
               : "/cover-photo.png"
-          })`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          objectFit: "fill",
-        }}
-      >
+          }
+          className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
+        />
         <p
           className=" tw-absolute tw-z-10 tw-bottom-4 tw-bg-dark-background tw-text-white-color tw-right-8 tw-py-2 tw-px-4 tw-rounded-full tw-cursor-pointer"
-          onClick={() => modalCtx.showModalWithContent(<CoverUpdate />)}
+          onClick={() => modelCtx.showModalWithContent(<CoverUpdate />)}
         >
           <CreateIcon className="tw-mr-2" />
-          Change Background
+          Background
         </p>
       </div>
 
@@ -842,12 +856,14 @@ function Profile() {
                   {authContext.user.user.relatedUser.bodyType}
                 </p>
                 <p
-                  onInput={(ev) => {
-                    setProfileEdit((prev) => ({
-                      ...prev,
-                      hairColor: ev.target.textContent,
-                    })),
+                  onInput={(e) => {
+                    setProfileEdit(
+                      (prev) => ({
+                        ...prev,
+                        hairColor: e.target.textContent,
+                      }),
                       setInfoedited(true)
+                    )
                   }}
                   suppressContentEditableWarning={true}
                   contentEditable="true"
@@ -929,12 +945,12 @@ function Profile() {
             </div>
 
             {/* Pricing */}
-            <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6">
-              <div className="tw-col-span-[1.1]">
+            <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-md tw-grid-cols-3 tw-grid tw-leading-9 tw-mt-6 call_price">
+              <div className="">
                 <p>Private Audio Call :</p>
                 <p className="md:tw-my-2">Private video Call :</p>
               </div>
-              <div className="tw-col-span-[1.7]">
+              <div className="">
                 <div className="tw-flex  ">
                   <input
                     type="number"
@@ -946,11 +962,11 @@ function Profile() {
                     className=" tw-rounded-t-xl tw-rounded-b-xl tw-w-20  tw-bg-dark-black   tw-text-center tw-outline-none"
                     value={audioVideoPrice.audio}
                   />
-                  <span className="tw-ml-2">Coins/minutes</span>
+                  <span className="tw-ml-2 ">Coins/minutes</span>
                 </div>
                 {/*  */}
 
-                <div className="tw-flex md:tw-mt-2 ">
+                <div className="tw-flex md:tw-mt-2 tw-mt-2 ">
                   <input
                     type="number"
                     name="video"
@@ -1089,10 +1105,6 @@ function Profile() {
               </div>
             </div>
             {/* Call History */}
-
-            {/*Bank details  */}
-
-            {/*Bank details  */}
           </div>
           {/* Scroll */}
         </div>
@@ -1102,6 +1114,27 @@ function Profile() {
           </div>
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
+            <div className="tw-flex">
+              {edit.publicImages && (
+                <button
+                  className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full tw-capitalize tw-px-4"
+                  onClick={deletPublicImage}
+                >
+                  Delete
+                </button>
+              )}
+              <EditIcon
+                fontSize="large"
+                className="tw-ml-auto tw-underline tw-cursor-pointer"
+                onClick={() =>
+                  setEdit((prev) => ({
+                    ...prev,
+                    publicImages: !edit.publicImages,
+                  }))
+                }
+              />
+              <p className="tw-my-auto tw-cursor-pointer">Edit</p>
+            </div>
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
@@ -1147,12 +1180,23 @@ function Profile() {
               {authContext.user.user.relatedUser
                 ? authContext.user.user.relatedUser.publicImages.map(
                     (image, index) => (
-                      <div
-                        className=" tw-mb-4 tw-cursor-pointer"
-                        key={index}
-                        onClick={() => openLightboxOnSlide(index + 1)}
-                      >
-                        <img src={image} className="tw-w-32 tw-h-32" />
+                      <div>
+                        {edit.publicImages && (
+                          <input
+                            type="checkbox"
+                            name={image}
+                            id={image}
+                            value={image}
+                            className="publicImage"
+                          />
+                        )}
+                        <div
+                          className=" tw-mb-4 tw-cursor-pointer"
+                          key={index}
+                          onClick={() => openLightboxOnSlide(index + 1)}
+                        >
+                          <img src={image} className="tw-w-32 tw-h-32" />
+                        </div>
                       </div>
                     )
                   )
@@ -1168,6 +1212,19 @@ function Profile() {
             <h1>My videos</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+            <div className="tw-flex">
+              <EditIcon
+                fontSize="large"
+                className="tw-ml-auto tw-underline tw-cursor-pointer"
+                onClick={() =>
+                  setEdit((prev) => ({
+                    ...prev,
+                    publicVideos: true,
+                  }))
+                }
+              />
+              <p className="tw-my-auto tw-cursor-pointer">Edit</p>
+            </div>
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
@@ -1242,6 +1299,19 @@ function Profile() {
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
             {/* Private video Input field */}
+            <div className="tw-flex">
+              <EditIcon
+                fontSize="large"
+                className="tw-ml-auto tw-underline tw-cursor-pointer"
+                onClick={() =>
+                  setEdit((prev) => ({
+                    ...prev,
+                    privateVideos: true,
+                  }))
+                }
+              />
+              <p className="tw-my-auto tw-cursor-pointer">Edit</p>
+            </div>
             <div className="tw-my-4">
               {showVideoInput && (
                 <div className="tw-flex tw-justify-between">
@@ -1408,6 +1478,19 @@ function Profile() {
             <h1>Private photo</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
+            <div className="tw-flex">
+              <EditIcon
+                fontSize="large"
+                className="tw-ml-auto tw-underline tw-cursor-pointer"
+                onClick={() =>
+                  setEdit((prev) => ({
+                    ...prev,
+                    publicVideos: true,
+                  }))
+                }
+              />
+              <p className="tw-my-auto tw-cursor-pointer">Edit</p>
+            </div>
             <div className="tw-my-4">
               {showInput && (
                 <div className="tw-flex tw-justify-between">

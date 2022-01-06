@@ -562,7 +562,7 @@ function LiveScreen(props) {
                 fontSize="small"
               />
               <span className="tw-my-auto tw-text-xs md:tw-text-sm">
-                Users{" "}
+                Users
                 <span
                   className="tw-text-xs tw-font-extralight"
                   id="live-user-count-highlight"

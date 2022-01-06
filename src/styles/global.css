@@ -723,3 +723,7 @@ select {
   /* background: transparent;  Optional: just make scrollbar invisible */
 }
 /* to put the scroll bar hide */
+
+.call_price{
+  grid-template-columns: 1.5fr 1.5fr;
+}
