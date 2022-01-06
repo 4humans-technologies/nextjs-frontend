@@ -20,21 +20,23 @@ function TipMenuActions(props) {
   const { tipMenuActions, setTipMenuActions, onClickSendTipMenu } = props
 
   return (
-    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-10 tw-h-full tw-ml-1 tw-pb-4 tw-mt-4">
-      {tipMenuActions?.length > 0 ? (
-        tipMenuActions.map((activity, index) => {
-          return (
-            <TipAction
-              key={`${index}_&*(JK^&)`}
-              action={activity.action}
-              price={activity.price}
-              onClickSendTipMenu={() => onClickSendTipMenu(activity)}
-            />
-          )
-        })
-      ) : (
-        <TipAction action={"Not activity added by the model"} price={0} />
-      )}
+    <div className="chat-box-container tw-overflow-y-scroll">
+      <div className="tw-flex tw-flex-col tw-items-center tw-mb-10 tw-h-full tw-ml-1 tw-pb-4 tw-mt-4">
+        {tipMenuActions?.length > 0 ? (
+          tipMenuActions.map((activity, index) => {
+            return (
+              <TipAction
+                key={`${index}_&*(JK^&)`}
+                action={activity.action}
+                price={activity.price}
+                onClickSendTipMenu={() => onClickSendTipMenu(activity)}
+              />
+            )
+          })
+        ) : (
+          <TipAction action={"Not activity added by the model"} price={0} />
+        )}
+      </div>
     </div>
   )
 }

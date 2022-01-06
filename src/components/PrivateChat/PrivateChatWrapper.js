@@ -48,11 +48,7 @@ function PrivateChatWrapper(props) {
   const currentViewerRef = useRef()
   const dbChatIdsRef = useRef()
 
-  const scrollOnChat = () => {
-    if (props.chatWindowRef.current) {
-      props.scrollOnChat()
-    }
-  }
+  const scrollOnChat = () => {}
 
   /**
    * handling viewer tile or on chat screen with viewer
@@ -338,7 +334,7 @@ function PrivateChatWrapper(props) {
         }
       }
     }
-  }, [socketCtx.socketSetupDone])
+  }, [socketCtx.socketSetupDone, setDbChatIds])
 
   /* remove chat event listeners */
   useEffect(() => {

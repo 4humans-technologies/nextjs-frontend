@@ -724,6 +724,16 @@ select {
 }
 /* to put the scroll bar hide */
 
-.call_price{
+.call_price {
   grid-template-columns: 1.5fr 1.5fr;
+}
+#topic-bg {
+  background: rgb(255, 0, 0);
+  background: linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 0.8) 0%,
+    rgba(255, 231, 0, 0.8) 26%,
+    rgba(0, 255, 46, 0.8) 57%,
+    rgba(255, 0, 0, 0.8) 88%
+  );
 }

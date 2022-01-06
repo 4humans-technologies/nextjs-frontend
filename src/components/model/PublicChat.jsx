@@ -30,14 +30,9 @@ function PublicChatBox(props) {
   const authCtx = useAuthContext()
   const { isModelOffline, modelWelcomeMessage } = props
 
-  const scrollOnChat = useCallback(
-    (option) => {
-      if (props.chatWindowRef.current) {
-        props.scrollOnChat(option)
-      }
-    },
-    [props.chatWindowRef]
-  )
+  const scrollOnChat = useCallback((option) => {
+    /*  */
+  }, [])
 
   useEffect(() => {
     if (
@@ -306,7 +301,7 @@ function PublicChatBox(props) {
   }
 
   return (
-    <div className="chat-box tw-max-w-full tw-mb-14 tw-pr-2">
+    <div className="tw-h-full">
       {prevChats.map((chat, index) => renderChats(chat, index, "prev_"))}
       {welcomeMsg && authCtx.user.userType === "Viewer" ? (
         <ModelChatMessage

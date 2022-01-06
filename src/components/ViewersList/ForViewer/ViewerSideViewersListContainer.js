@@ -305,7 +305,7 @@ function ViewerSideViewersListContainer(props) {
   }, [socketCtx.socketSetupDone, props.modelId])
 
   return (
-    <>
+    <div className="chat-box-container tw-overflow-y-scroll">
       {king ? (
         <div className="tw-mb-2 tw-pl-2 tw-rounded king-bg tw-text-white-color tw-ml-1">
           <div className="tw-flex tw-w-full tw-items-center">
@@ -378,7 +378,7 @@ function ViewerSideViewersListContainer(props) {
           No User Is Live Now 😟
         </p>
       )}
-    </>
+    </div>
   )
 }
 

@@ -40,10 +40,11 @@ const chatWindowOptions = {
 function LiveScreen(props) {
   const chatInputRef = useRef()
   const chatWindowRef = useRef()
+  const publicChatContainerRef = useRef()
+  const privateChatContainerRef = useRef()
 
   const modalCtx = useModalContext()
   const authCtx = useAuthContext()
-  const socketCtx = useSocketContext()
   const updateCtx = useAuthUpdateContext()
   const router = useRouter()
 
@@ -78,8 +79,14 @@ function LiveScreen(props) {
     chatWindowRef.current = chatWindow
   }, [chatWindow])
 
-  const scrollOnChat = useCallback((scrollType) => {
-    const containerElement = document.getElementById("chatBoxContainer")
+  const scrollOnChat = useCallback((forBox, scrollType) => {
+    if (forBox === "public") {
+      var containerElement = publicChatContainerRef.current
+    } else if (forBox === "private") {
+      var containerElement = privateChatContainerRef.current
+    } else {
+      return
+    }
     containerElement.scrollBy({
       top: containerElement.scrollHeight,
       behavior: scrollType ? scrollType : "smooth",
@@ -160,7 +167,6 @@ function LiveScreen(props) {
     if (!chatInputRef.current?.value) {
       return
     }
-
     let payLoad
     const message = chatInputRef.current.value
     if (authCtx.isLoggedIn) {
@@ -216,6 +222,7 @@ function LiveScreen(props) {
             walletCoins: authCtx.user.user.relatedUser.wallet.currentAmount,
           }
           io.getSocket().emit("viewer-message-public-emitted", payLoad)
+          scrollOnChat("public")
         } else {
           /**
            * if not final room put in public room
@@ -233,6 +240,7 @@ function LiveScreen(props) {
                     authCtx.user.user.relatedUser.wallet.currentAmount,
                 }
                 io.getSocket().emit("viewer-message-public-emitted", payLoad)
+                scrollOnChat("public")
               }
             }
           )
@@ -266,6 +274,7 @@ function LiveScreen(props) {
           walletCoins: 0,
         }
         io.getSocket().emit("viewer-message-public-emitted", payLoad)
+        scrollOnChat("public")
       } else {
         io.getSocket().emit(
           "putting-me-in-these-rooms",
@@ -279,6 +288,7 @@ function LiveScreen(props) {
                 walletCoins: 0,
               }
               io.getSocket().emit("viewer-message-public-emitted", payLoad)
+              scrollOnChat("public")
             }
           }
         )
@@ -561,8 +571,11 @@ function LiveScreen(props) {
             </div>
           ) : null}
         </div>
-        <div className="tw-bg-second-color md:tw-w-[40%] md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-full lg:tw-h-[82vh]">
-          <div className="tw-flex tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative tw-shadow-md">
+
+        {/* >>>>>>> THE SECOND HALF <<<<<<<<<<< */}
+        <div className="tw-bg-second-color md:tw-w-[40%] md:tw-h-[37rem] tw-h-[30rem] tw-relative tw-w-full lg:tw-h-[82vh] tw-flex tw-flex-col tw-justify-between tw-items-stretch">
+          {/* TAB SWITCH BUTTONS */}
+          <div className="tw-flex-shrink-0 tw-flex-grow-0 tw-w-full tw-flex tw-text-white md:tw-pt-3 tw-pb-3 tw-px-2 md:tw-px-4 tw-text-center tw-content-center tw-items-center tw-relative tw-shadow-md">
             <button
               className={`tw-inline-flex tw-items-center tw-content-center tw-py-2 tw-z-[110] tw-pr-4 ${
                 chatWindow === chatWindowOptions?.PUBLIC
@@ -615,93 +628,83 @@ function LiveScreen(props) {
               </span>
             </button>
           </div>
+
+          {/* CHAT PANES */}
           <div
-            id="chatBoxContainer"
-            className="tw-absolute tw-h-[90%] tw-bottom-0 tw-max-w-[100vw] lg:tw-max-w-[49vw] chat-box-container tw-overflow-y-scroll tw-w-full"
+            ref={publicChatContainerRef}
+            style={{
+              display:
+                chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
+            }}
+            className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
           >
-            <div className="tw-bottom-0 tw-relative tw-w-full tw-pb-18 tw-bg-second-color tw-mt-14 md:tw-mt-1">
-              <div className="tw-px-2 tw-py-1 tw-text-white-color tw-text-center tw-text-sm">
-                {props.modelProfileData?.topic}
-              </div>
+            <PublicChat
+              key={theKey + 800}
+              isModelOffline={isModelOffline}
+              modelWelcomeMessage={props.modelProfileData?.welcomeMessage}
+              addAtTheRate={addAtTheRate}
+              chatWindowRef={chatWindowRef}
+              containerRef={publicChatContainerRef}
+              modelUsername={props.modelProfileData?.rootUser?.username}
+            />
+          </div>
 
-              {/* PUBLIC CHAT */}
-              <div
-                className=""
-                style={{
-                  display:
-                    chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
-                }}
-              >
-                <PublicChat
-                  key={theKey + 800}
-                  scrollOnChat={scrollOnChat}
-                  isModelOffline={isModelOffline}
-                  modelWelcomeMessage={props.modelProfileData?.welcomeMessage}
-                  addAtTheRate={addAtTheRate}
-                  chatWindowRef={chatWindowRef}
-                  modelUsername={props.modelProfileData?.rootUser?.username}
-                />
-              </div>
+          {/*  */}
+          <div
+            ref={privateChatContainerRef}
+            style={{
+              display:
+                chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
+            }}
+            className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
+          >
+            <PrivateChat
+              key={theKey + 1000}
+              hasActivePlan={isChatPlanActive}
+              setIsChatPlanActive={setIsChatPlanActive}
+              modalCtx={!isChatPlanActive && modalCtx}
+              chatWindowRef={chatWindowRef}
+              containerRef={privateChatContainerRef}
+              modelUsername={props.modelProfileData?.rootUser.username}
+            />
+          </div>
 
-              {/* PRIVATE CHAT */}
-              <div
-                className=""
-                style={{
-                  display:
-                    chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
-                }}
-              >
-                <PrivateChat
-                  key={theKey + 1000}
-                  scrollOnChat={scrollOnChat}
-                  hasActivePlan={isChatPlanActive}
-                  setIsChatPlanActive={setIsChatPlanActive}
-                  modalCtx={!isChatPlanActive && modalCtx}
-                  chatWindowRef={chatWindowRef}
-                  modelUsername={props.modelProfileData?.rootUser.username}
-                />
-              </div>
-
-              {/* ACTIVITY */}
-              <div
-                className=""
-                style={{
-                  display:
-                    chatWindow === chatWindowOptions.TIP_MENU
-                      ? "block"
-                      : "none",
-                }}
-              >
-                <TipMenuActions
-                  key={theKey + 1200}
-                  tipMenuActions={tipMenuActions}
-                  setTipMenuActions={setTipMenuActions}
-                  onClickSendTipMenu={onClickSendTipMenu}
-                />
-              </div>
-
-              {/* USERS LIST */}
-              <div
-                className=""
-                style={{
-                  display:
-                    chatWindow === chatWindowOptions.USERS ? "block" : "none",
-                }}
-              >
-                <ViewerSideViewersListContainer
-                  key={theKey + 1400}
-                  callOnGoing={callOnGoing}
-                  addAtTheRate={viewerListAddAtTheRate}
-                  modelId={props.modelProfileData?._id}
-                  king={king}
-                />
-              </div>
-            </div>
+          {/*  */}
+          <div
+            style={{
+              display:
+                chatWindow === chatWindowOptions.TIP_MENU ? "block" : "none",
+            }}
+            className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
+          >
+            <TipMenuActions
+              key={theKey + 1200}
+              tipMenuActions={tipMenuActions}
+              setTipMenuActions={setTipMenuActions}
+              onClickSendTipMenu={onClickSendTipMenu}
+            />
           </div>
 
           <div
+            style={{
+              display:
+                chatWindow === chatWindowOptions.USERS ? "block" : "none",
+            }}
+            className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
+          >
+            <ViewerSideViewersListContainer
+              key={theKey + 1400}
+              callOnGoing={callOnGoing}
+              addAtTheRate={viewerListAddAtTheRate}
+              modelId={props.modelProfileData?._id}
+              king={king}
+            />
+          </div>
+
+          {/* MESSAGE INPUT PANE */}
+          <div
             id="message-input"
-            className="tw-flex tw-items-center tw-pb-2 tw-pt-2.5 tw-bg-second-color tw-text-white tw-absolute tw-w-full tw-z-[300] tw-right-0 tw-left-0 md:tw-bottom-0"
+            className="tw-flex tw-items-center tw-bg-second-color tw-text-white tw-w-full tw-z-[300] tw-pb-2 tw-pt-2.5"
           >
             <span className="circle-shadow tw-h-10 tw-w-10 tw-inline-grid tw-flex-shrink-0 tw-p-1  tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]">
               <img
@@ -723,7 +726,6 @@ function LiveScreen(props) {
               Send
             </button>
           </div>
-          {/* </div> */}
         </div>
       </div>
     </>
