@@ -139,6 +139,11 @@ function PrivateChat(props) {
               }
             })
             sessionStorage.setItem("privateChatDbId", data.privateChat._id)
+            document.getElementById("private-chat-container").scrollBy({
+              top: document.getElementById("private-chat-container")
+                .scrollHeight,
+              behavior: "auto",
+            })
           } else {
             setPrivateChatDbId(false)
           }
@@ -216,7 +221,7 @@ function PrivateChat(props) {
         }
       }
     }
-  }, [ctx.socketSetupDone, hasActivePlan, chatDataRef])
+  }, [ctx.socketSetupDone, hasActivePlan, chatDataRef, scrollOnChat])
 
   const noPlanBanner = useMemo(() => {
     return (
@@ -298,7 +303,6 @@ function PrivateChat(props) {
   }, [authCtx.isLoggedIn, hasActivePlan, authCtx.user.userType, chatsData])
 
   useEffect(() => {
-    scrollOnChat("private")
     return () => sessionStorage.removeItem("privateChatDbId")
   }, [])
 

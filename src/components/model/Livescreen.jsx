@@ -629,78 +629,93 @@ function LiveScreen(props) {
             </button>
           </div>
 
-          {/* CHAT PANES */}
-          <div
-            ref={publicChatContainerRef}
-            style={{
-              display:
-                chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
-            }}
-            className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
-          >
-            <PublicChat
-              key={theKey + 800}
-              isModelOffline={isModelOffline}
-              modelWelcomeMessage={props.modelProfileData?.welcomeMessage}
-              addAtTheRate={addAtTheRate}
-              scrollOnChat={scrollOnChat}
-              chatWindowRef={chatWindowRef}
-              containerRef={publicChatContainerRef}
-              modelUsername={props.modelProfileData?.rootUser?.username}
-            />
-          </div>
+          <div className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-flex-shrink-0 tw-relative tw-z-[110]">
+            {/* PUBLIC CHATS */}
+            <div
+              id="public-chat-container"
+              ref={publicChatContainerRef}
+              style={{
+                zIndex: chatWindow === chatWindowOptions.PUBLIC ? 120 : 111,
+                visibility:
+                  chatWindow === chatWindowOptions.PUBLIC
+                    ? "visible"
+                    : "hidden",
+              }}
+              className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
+            >
+              <PublicChat
+                key={theKey + 800}
+                isModelOffline={isModelOffline}
+                modelWelcomeMessage={props.modelProfileData?.welcomeMessage}
+                addAtTheRate={addAtTheRate}
+                scrollOnChat={scrollOnChat}
+                chatWindowRef={chatWindowRef}
+                containerRef={publicChatContainerRef}
+                modelUsername={props.modelProfileData?.rootUser?.username}
+              />
+            </div>
 
-          {/*  */}
-          <div
-            ref={privateChatContainerRef}
-            style={{
-              display:
-                chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
-            }}
-            className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
-          >
-            <PrivateChat
-              key={theKey + 1000}
-              hasActivePlan={isChatPlanActive}
-              scrollOnChat={scrollOnChat}
-              setIsChatPlanActive={setIsChatPlanActive}
-              modalCtx={!isChatPlanActive && modalCtx}
-              chatWindowRef={chatWindowRef}
-              containerRef={privateChatContainerRef}
-              modelUsername={props.modelProfileData?.rootUser.username}
-            />
-          </div>
+            {/* PRIVATE CHATS */}
+            <div
+              ref={privateChatContainerRef}
+              id="private-chat-container"
+              style={{
+                zIndex: chatWindow === chatWindowOptions.PRIVATE ? 120 : 113,
+                visibility:
+                  chatWindow === chatWindowOptions.PRIVATE
+                    ? "visible"
+                    : "hidden",
+              }}
+              className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
+            >
+              <PrivateChat
+                key={theKey + 1000}
+                hasActivePlan={isChatPlanActive}
+                scrollOnChat={scrollOnChat}
+                setIsChatPlanActive={setIsChatPlanActive}
+                modalCtx={!isChatPlanActive && modalCtx}
+                chatWindowRef={chatWindowRef}
+                containerRef={privateChatContainerRef}
+                modelUsername={props.modelProfileData?.rootUser.username}
+              />
+            </div>
 
-          {/*  */}
-          <div
-            style={{
-              display:
-                chatWindow === chatWindowOptions.TIP_MENU ? "block" : "none",
-            }}
-            className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
-          >
-            <TipMenuActions
-              key={theKey + 1200}
-              tipMenuActions={tipMenuActions}
-              setTipMenuActions={setTipMenuActions}
-              onClickSendTipMenu={onClickSendTipMenu}
-            />
-          </div>
+            {/* TIP MENU */}
+            <div
+              style={{
+                zIndex: chatWindow === chatWindowOptions.TIP_MENU ? 120 : 115,
+                visibility:
+                  chatWindow === chatWindowOptions.TIP_MENU
+                    ? "visible"
+                    : "hidden",
+              }}
+              className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
+            >
+              <TipMenuActions
+                key={theKey + 1200}
+                tipMenuActions={tipMenuActions}
+                setTipMenuActions={setTipMenuActions}
+                onClickSendTipMenu={onClickSendTipMenu}
+              />
+            </div>
 
-          <div
-            style={{
-              display:
-                chatWindow === chatWindowOptions.USERS ? "block" : "none",
-            }}
-            className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
-          >
-            <ViewerSideViewersListContainer
-              key={theKey + 1400}
-              callOnGoing={callOnGoing}
-              addAtTheRate={viewerListAddAtTheRate}
-              modelId={props.modelProfileData?._id}
-              king={king}
-            />
+            {/* VIEWER SIDE LIST */}
+            <div
+              style={{
+                zIndex: chatWindow === chatWindowOptions.USERS ? 120 : 117,
+                visibility:
+                  chatWindow === chatWindowOptions.USERS ? "visible" : "hidden",
+              }}
+              className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
+            >
+              <ViewerSideViewersListContainer
+                key={theKey + 1400}
+                callOnGoing={callOnGoing}
+                addAtTheRate={viewerListAddAtTheRate}
+                modelId={props.modelProfileData?._id}
+                king={king}
+              />
+            </div>
           </div>
 
           {/* MESSAGE INPUT PANE */}

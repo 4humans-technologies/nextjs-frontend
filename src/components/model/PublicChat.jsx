@@ -176,10 +176,16 @@ function PublicChatBox(props) {
       fetch(`${url}${e.detail.streamId}/chats.json`)
         .then((res) => res.json())
         .then((chats) => {
-          scrollOnChat("public")
           if (chats) {
             setPrevChats(Object.values(chats))
           }
+          setTimeout(() => {
+            document.getElementById("public-chat-container").scrollBy({
+              top: document.getElementById("public-chat-container")
+                .scrollHeight,
+              behavior: "smooth",
+            })
+          }, [100])
         })
     }
     document.addEventListener("fetch-firebase-chats", fetchChats, {

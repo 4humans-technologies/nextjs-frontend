@@ -1406,53 +1406,64 @@ function Live() {
               ) : null}
             </div>
 
-            {/* PUBLIC CHAT */}
-            <div
-              ref={publicChatContainerRef}
-              style={{
-                display:
-                  chatWindow === chatWindowOptions.PUBLIC ? "block" : "none",
-              }}
-              className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
-            >
-              <PublicChat
-                scrollOnChat={scrollOnChat}
-                addAtTheRate={addAtTheRate}
-                chatWindowRef={chatWindowRef}
-              />
-            </div>
-
-            {/* PRIVATE CHAT */}
-            <div
-              ref={privateChatContainerRef}
-              style={{
-                display:
-                  chatWindow === chatWindowOptions.PRIVATE ? "block" : "none",
-              }}
-              className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
-            >
-              <PrivateChatWrapper
-                scrollOnChat={scrollOnChat}
-                chatWindowRef={chatWindowRef}
-                newChatNotifierDotRef={newChatNotifierDotRef}
-              />
-            </div>
-
-            {/* VIEWERS LIST */}
-            <div
-              style={{
-                display:
-                  chatWindow === chatWindowOptions.USERS ? "block" : "none",
-              }}
-              className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-overflow-y-scroll"
-            >
-              <ViewersListContainer
-                callOnGoing={callOnGoing}
-                addAtTheRate={(username) => {
-                  addAtTheRate(username)
-                  setChatWindow(chatWindowOptions.PUBLIC)
+            <div className="tw-flex-grow tw-max-w-[100vw] lg:tw-max-w-[49vw] tw-flex-shrink-0 tw-relative tw-z-[110]">
+              {/* PUBLIC CHAT */}
+              <div
+                ref={publicChatContainerRef}
+                style={{
+                  zIndex: chatWindow === chatWindowOptions.PUBLIC ? 120 : 111,
+                  visibility:
+                    chatWindow === chatWindowOptions.PUBLIC
+                      ? "visible"
+                      : "hidden",
                 }}
-              />
+                className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
+              >
+                <PublicChat
+                  scrollOnChat={scrollOnChat}
+                  addAtTheRate={addAtTheRate}
+                  chatWindowRef={chatWindowRef}
+                />
+              </div>
+
+              {/* PRIVATE CHAT */}
+              <div
+                ref={privateChatContainerRef}
+                style={{
+                  zIndex: chatWindow === chatWindowOptions.PRIVATE ? 120 : 113,
+                  visibility:
+                    chatWindow === chatWindowOptions.PRIVATE
+                      ? "visible"
+                      : "hidden",
+                }}
+                className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
+              >
+                <PrivateChatWrapper
+                  scrollOnChat={scrollOnChat}
+                  chatWindowRef={chatWindowRef}
+                  newChatNotifierDotRef={newChatNotifierDotRef}
+                />
+              </div>
+
+              {/* VIEWERS LIST */}
+              <div
+                style={{
+                  zIndex: chatWindow === chatWindowOptions.USERS ? 120 : 117,
+                  visibility:
+                    chatWindow === chatWindowOptions.USERS
+                      ? "visible"
+                      : "hidden",
+                }}
+                className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
+              >
+                <ViewersListContainer
+                  callOnGoing={callOnGoing}
+                  addAtTheRate={(username) => {
+                    addAtTheRate(username)
+                    setChatWindow(chatWindowOptions.PUBLIC)
+                  }}
+                />
+              </div>
             </div>
 
             {/* MESSAGE INPUT */}
