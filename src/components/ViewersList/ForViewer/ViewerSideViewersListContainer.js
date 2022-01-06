@@ -21,7 +21,7 @@ function ViewerSideViewersListContainer(props) {
     if (props?.king) {
       setKing({
         ...props.king,
-        whileKingSpentTimes: 0,
+        whileKingSpentTimes: 1 /* 1 because he is king from before, he is not new king */,
       })
     }
   }, [props?.king])
