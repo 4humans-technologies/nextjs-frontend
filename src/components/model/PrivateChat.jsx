@@ -139,11 +139,19 @@ function PrivateChat(props) {
               }
             })
             sessionStorage.setItem("privateChatDbId", data.privateChat._id)
-            document.getElementById("private-chat-container").scrollBy({
-              top: document.getElementById("private-chat-container")
-                .scrollHeight,
-              behavior: "auto",
-            })
+            try {
+              document.getElementById("private-chat-container").scrollBy({
+                top: document.getElementById("private-chat-container")
+                  .scrollHeight,
+                behavior: "auto",
+              })
+            } catch (err) {
+              console.error(
+                "scroll error : ",
+                "private-chat-container ",
+                "in private chat"
+              )
+            }
           } else {
             setPrivateChatDbId(false)
           }

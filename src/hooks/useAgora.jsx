@@ -4,6 +4,7 @@ import useSpinnerContext from "../app/Loading/SpinnerContext"
 import { toast } from "react-toastify"
 
 const appId = "ee68eb6fcb93426e81c89f5ad6b0401f"
+AgoraRTC.setLogLevel(4)
 function useAgora(client, role, callType) {
   const [localVideoTrack, setLocalVideoTrack] = useState(null)
   const [localAudioTrack, setLocalAudioTrack] = useState(null)
@@ -11,6 +12,7 @@ function useAgora(client, role, callType) {
   const [remoteUsers, setRemoteUsers] = useState([])
   const localAudioTrackRef = useRef()
   const localVideoTrackRef = useRef()
+
   /**
    * for saving some meta data about the current state
    * ex: is is call on-going
@@ -39,56 +41,53 @@ function useAgora(client, role, callType) {
     if (role === "host") {
       if (callType === "audioCall" || callType === "videoCall") {
         if (!localAudioTrack) {
-          let microphoneTrack
           try {
-            microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+            const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+            tracks.push(microphoneTrack)
+            setLocalAudioTrack(microphoneTrack)
           } catch (err) {
             toast.error(
               "Was not able to capture camera track, please try reloading"
             )
           }
-          tracks.push(microphoneTrack)
-          setLocalAudioTrack(microphoneTrack)
         }
       }
       if (callType === "videoCall") {
-        if (!localAudioTrack) {
-          let microphoneTrack
-          try {
-            microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
-          } catch (err) {
-            toast.error(
-              "Was not able to capture camera track, please try reloading"
-            )
-          }
-          tracks.push(microphoneTrack)
-          setLocalAudioTrack(microphoneTrack)
-        }
+        // if (!localAudioTrack) {
+        //   try {
+        //     const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
+        //     tracks.push(microphoneTrack)
+        //     setLocalAudioTrack(microphoneTrack)
+        //   } catch (err) {
+        //     toast.error(
+        //       "Was not able to capture camera track, please try reloading"
+        //     )
+        //   }
+        // }
         if (!localVideoTrack) {
-          let cameraTrack
           try {
-            cameraTrack = await AgoraRTC.createCameraVideoTrack({
+            const cameraTrack = await AgoraRTC.createCameraVideoTrack({
               optimizationMode: "detail",
               encoderConfig: {
-                frameRate: 20,
+                frameRate: 23,
                 height: 580,
                 width: 720,
                 bitrateMin: 600,
               },
             })
+            tracks.push(cameraTrack)
+            setLocalVideoTrack(cameraTrack)
           } catch (err) {
             toast.error(
               "Was not able to capture camera track, please try reloading"
             )
           }
-          tracks.push(cameraTrack)
-          setLocalVideoTrack(cameraTrack)
         }
       }
       return tracks
     }
     // if client, no local track
-    return null
+    return
   }
 
   async function join(channel, token, uid) {
@@ -100,14 +99,15 @@ function useAgora(client, role, callType) {
         return await createLocalTracks("videoCall", {
           optimizationMode: "detail",
           facingMode: "user",
-          encoderConfig: { height: 400, width: 400, frameRate: 20 },
+          encoderConfig: { height: 580, width: 720, frameRate: 23 },
         })
       } else {
         await localVideoTrack.setEnabled(true)
-        await localAudioTrack.setEnabled(true)
+        // await localAudioTrack.setEnabled(true)
         return [localAudioTrack, localVideoTrack]
       }
     }
+
     if (role === "host") {
       spinnerCtx.setShowSpinner(true, "Going Live...")
       const track = await createMyTrack()
@@ -117,7 +117,6 @@ function useAgora(client, role, callType) {
         spinnerCtx.setShowSpinner(false, "Please wait...")
         return setJoinState(true)
       } else {
-        /* if no track */
         const newTrack = await createMyTrack()
         if (
           client.connectionState !== "CONNECTED" ||
@@ -129,13 +128,14 @@ function useAgora(client, role, callType) {
         spinnerCtx.setShowSpinner(false, "Please wait...")
         return setJoinState(true)
       }
+    } else {
+      // if client
+      /* there is some error occurring even after completion of joining of the channel spinner is not showing */
+      // spinnerCtx.setShowSpinner(true, "Connecting...")
+      await client.join(appId, channel, token, uid)
+      setJoinState(true)
+      // spinnerCtx.setShowSpinner(false, "Please wait...")
     }
-    // if client
-    /* there is some error occurring even after completion of joining of the channel spinner is not showing */
-    // spinnerCtx.setShowSpinner(true, "Connecting...")
-    await client.join(appId, channel, token, uid)
-    setJoinState(true)
-    // spinnerCtx.setShowSpinner(false, "Please wait...")
   }
 
   useEffect(async () => {
@@ -172,7 +172,6 @@ function useAgora(client, role, callType) {
 
       await client.renewToken(rtcToken)
 
-      /* ========== */
       if (callType === "audioCall" || callType === "videoCall") {
         microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack()
         setLocalAudioTrack(microphoneTrack)
@@ -182,7 +181,6 @@ function useAgora(client, role, callType) {
         }
       }
 
-      /* ========== */
       if (callType === "videoCall") {
         cameraTrack = await AgoraRTC.createCameraVideoTrack()
         setLocalVideoTrack(cameraTrack)
@@ -194,20 +192,21 @@ function useAgora(client, role, callType) {
     [client]
   )
 
-  useEffect(() => {
-    return async () => {
-      await client.leave()
-      if (localAudioTrackRef.current) {
-        await localAudioTrackRef.current.stop()
-        await localAudioTrackRef.current.close()
-      }
+  // useEffect(() => {
+  //   return async () => {
+  //     // await client.leave()
+  //     if (localAudioTrackRef.current) {
+  //       await localAudioTrackRef.current.stop()
+  //       await localAudioTrackRef.current.close()
+  //     }
 
-      if (localVideoTrackRef.current) {
-        await localVideoTrackRef.current.stop()
-        await localVideoTrackRef.current.close()
-      }
-    }
-  }, [client])
+  //     if (localVideoTrackRef.current) {
+  //       await localVideoTrackRef.current.stop()
+  //       await localVideoTrackRef.current.close()
+  //     }
+  //   }
+  //   // }, [client])
+  // }, [])
 
   const modelUnPublishVideoTrack = async () => {
     await localVideoTrack.setEnabled(false)
@@ -348,7 +347,7 @@ function useAgora(client, role, callType) {
       client.off("token-privilege-did-expire", handleTokenExpire)
       // client.off("exception", agoraExceptionHandler)
     }
-  }, [client, leave, customDataRef])
+  }, [client])
 
   return {
     localAudioTrack,

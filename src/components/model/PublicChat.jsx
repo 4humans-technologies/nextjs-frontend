@@ -180,11 +180,19 @@ function PublicChatBox(props) {
             setPrevChats(Object.values(chats))
           }
           setTimeout(() => {
-            document.getElementById("public-chat-container").scrollBy({
-              top: document.getElementById("public-chat-container")
-                .scrollHeight,
-              behavior: "smooth",
-            })
+            try {
+              document.getElementById("public-chat-container").scrollBy({
+                top: document.getElementById("public-chat-container")
+                  .scrollHeight,
+                behavior: "smooth",
+              })
+            } catch (err) {
+              console.error(
+                "scroll error : ",
+                "private-chat-container",
+                " in public chat"
+              )
+            }
           }, [100])
         })
     }

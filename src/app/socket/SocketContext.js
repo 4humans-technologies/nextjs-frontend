@@ -37,18 +37,25 @@ export const SocketContextProvider = ({ children }) => {
         })
       }
       localStorage.setItem("socketId", socket.id)
-      const socketRooms =
-        JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      let socketRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      /**
+       * filtering private room because even if reconnection happens
+       * proper handshake is done with all the auth details and requests
+       * do pass through middelware, hence any way on reconnection
+       * private room will be joined if all the cred's are valid automatically
+       */
+      socketRooms = socketRooms.filter((room) => !room.endsWith("-private"))
       if (socketRooms.length > 0) {
         socket.emit("putting-me-in-these-rooms", socketRooms, (response) => {
           if (response.status === "ok") {
-            // setIsConnected(true)
+            /**
+             * any way response will be persisted in the sessionStorage
+             */
           }
         })
       } else {
         /* if no rooms join beforehand, directly connect */
         sessionStorage.setItem("socket-rooms", "[]")
-        // setIsConnected(true)
       }
     })
 
