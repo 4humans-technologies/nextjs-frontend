@@ -192,21 +192,20 @@ function useAgora(client, role, callType) {
     [client]
   )
 
-  // useEffect(() => {
-  //   return async () => {
-  //     // await client.leave()
-  //     if (localAudioTrackRef.current) {
-  //       await localAudioTrackRef.current.stop()
-  //       await localAudioTrackRef.current.close()
-  //     }
+  useEffect(() => {
+    return async () => {
+      await client.leave()
+      if (localAudioTrackRef.current) {
+        await localAudioTrackRef.current.stop()
+        await localAudioTrackRef.current.close()
+      }
 
-  //     if (localVideoTrackRef.current) {
-  //       await localVideoTrackRef.current.stop()
-  //       await localVideoTrackRef.current.close()
-  //     }
-  //   }
-  //   // }, [client])
-  // }, [])
+      if (localVideoTrackRef.current) {
+        await localVideoTrackRef.current.stop()
+        await localVideoTrackRef.current.close()
+      }
+    }
+  }, [client])
 
   const modelUnPublishVideoTrack = async () => {
     await localVideoTrack.setEnabled(false)
