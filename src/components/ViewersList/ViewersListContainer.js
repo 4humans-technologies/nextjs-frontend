@@ -89,9 +89,19 @@ function ViewersListContainer(props) {
 
       const cleanForCall = (data) => {
         /* clear all other user details except the caller one's details */
-        setViewers((prev) => {
-          return [prev.find((viewer) => viewer._id === data.detail.viewerId)]
-        })
+        if (!data.detail?.viewerId) {
+          return
+        }
+
+        const caller = viewers.find(
+          (viewer) => viewer._id === data.detail.viewerId
+        )
+
+        if (!caller) {
+          return
+        }
+
+        setViewers([caller])
         setKing(null)
       }
       const clearForCallEnd = () => {

@@ -764,6 +764,7 @@ function Live() {
         return { ...prev }
       })
     } else {
+      /* ACCEPTED */
       const socket = io.getSocket()
       fetch("/api/website/stream/accepted-call-request", {
         method: "POST",
@@ -909,13 +910,14 @@ function Live() {
             startCallTimer(startCallTimerAfter)
           } else {
             if (data?.notStreaming) {
+              /* model is not streaming from the stand point of server */
               /* clear all pending call requests */
               setPendingCallRequest({ pending: false, callRequests: [] })
             }
           }
         })
         .catch((err) => {
-          toast.error(err.message)
+          toast.error(err.message, "CODE: ", err?.code)
         })
     }
   }
