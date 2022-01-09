@@ -256,10 +256,10 @@ function PrivateChatWrapper(props) {
             if (
               currentChatScreenStateRef.current === chatScreens.VIEWERS_LIST &&
               currentViewerRef.current !== data.viewerId &&
-              !props.chatWindowRef.current
+              props.chatWindowRef.current !== "private"
             ) {
               /* in background add new chat message to new chats */
-              newChatNotifierDotRef.current.display = "inline"
+              newChatNotifierDotRef.current.visibility = "visible"
               setChatState((prev) => {
                 return prev.map((chatData) => {
                   if (chatData.viewerId === data.viewerId) {

@@ -582,7 +582,7 @@ function Live() {
     }
   }
 
-  const addAtTheRate = (username) => {
+  const addAtTheRate = useCallback((username) => {
     if (chatInputRef.current.value.trim() !== "") {
       chatInputRef.current.value = `${chatInputRef.current.value} @${username}`
     } else {
@@ -591,7 +591,15 @@ function Live() {
     document.getElementById("message-input").scrollIntoView({
       block: "center",
     })
-  }
+  }, [])
+
+  const viewersListAddAtTheRate = useCallback(
+    (username) => {
+      addAtTheRate(username)
+      setChatWindow(chatWindowOptions.PUBLIC)
+    },
+    [addAtTheRate]
+  )
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -1349,7 +1357,7 @@ function Live() {
                 }`}
                 onClick={() => {
                   setChatWindow(chatWindowOptions.PRIVATE)
-                  newChatNotifierDotRef.current.display = "none"
+                  newChatNotifierDotRef.current.visibility = "hidden"
                 }}
               >
                 <MarkChatReadIcon
@@ -1361,7 +1369,7 @@ function Live() {
                 </span>
                 <span
                   ref={newChatNotifierDotRef}
-                  className="tw-absolute tw-top-0 tw-left-0 tw-w-2 tw-h-2 tw-bg-dreamgirl-red tw-rounded-full tw-hidden"
+                  className="tw-absolute tw-top-0 tw-left-0 tw-w-2 tw-h-2 tw-bg-dreamgirl-red tw-rounded-full tw-invisible"
                 ></span>
               </button>
               {ctx.user.userType !== "Model" && (
@@ -1460,10 +1468,7 @@ function Live() {
               >
                 <ViewersListContainer
                   callOnGoing={callOnGoing}
-                  addAtTheRate={(username) => {
-                    addAtTheRate(username)
-                    setChatWindow(chatWindowOptions.PUBLIC)
-                  }}
+                  addAtTheRate={viewersListAddAtTheRate}
                 />
               </div>
             </div>

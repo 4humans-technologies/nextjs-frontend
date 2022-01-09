@@ -173,6 +173,12 @@ function LiveScreen(props) {
       /* can have private room */
       let finalRoom
       if (chatWindow === chatWindowOptions.PRIVATE) {
+        if (chatInputRef.current.value.length > 256) {
+          toast.error(
+            "Your chat messages too big, please keep it below 256 letters"
+          )
+          return
+        }
         if (isModelOffline) {
           return toast.error(
             "Live chat with model is only available when model is streaming/live. 📴 😘😘"
@@ -201,6 +207,12 @@ function LiveScreen(props) {
           document.dispatchEvent(customEvent)
         }
       } else if (chatWindow === chatWindowOptions.PUBLIC) {
+        if (chatInputRef.current.value.length > 128) {
+          toast.error(
+            "Your chat messages too big, please keep it below 128 letters"
+          )
+          return
+        }
         if (isModelOffline) {
           return toast.error(
             "chat is only available when model is streaming/live. 📴 😘😘"
@@ -209,11 +221,10 @@ function LiveScreen(props) {
         /**
          * fetch the public rom
          */
-        JSON.parse(sessionStorage.getItem("socket-rooms")).forEach((room) => {
-          if (room.includes("-public")) {
-            finalRoom = room
-          }
-        })
+        finalRoom = (
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        ).find((room) => room.endsWith("-public"))
+
         if (finalRoom) {
           payLoad = {
             room: finalRoom,
@@ -266,7 +277,7 @@ function LiveScreen(props) {
       }
       /* un-authed user, no private room*/
       const toRoom = JSON.parse(sessionStorage.getItem("socket-rooms"))?.[0]
-      if (!toRoom) {
+      if (toRoom) {
         payLoad = {
           room: JSON.parse(sessionStorage.getItem("socket-rooms"))[0],
           message: message,
