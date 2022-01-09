@@ -5,6 +5,8 @@ import { toast } from "react-toastify"
 
 const appId = "ee68eb6fcb93426e81c89f5ad6b0401f"
 AgoraRTC.setLogLevel(4)
+let audioChangeCount = 0
+let videoChangeCount = 0
 function useAgora(client, role, callType) {
   const [localVideoTrack, setLocalVideoTrack] = useState(null)
   const [localAudioTrack, setLocalAudioTrack] = useState(null)
@@ -28,10 +30,14 @@ function useAgora(client, role, callType) {
 
   useEffect(() => {
     localAudioTrackRef.current = localAudioTrack
+    audioChangeCount++
+    console.log("audio: ", audioChangeCount)
   }, [localAudioTrack])
 
   useEffect(() => {
     localVideoTrackRef.current = localVideoTrack
+    videoChangeCount++
+    console.log("video: ", videoChangeCount)
   }, [localVideoTrack])
 
   const spinnerCtx = useSpinnerContext()
@@ -104,7 +110,7 @@ function useAgora(client, role, callType) {
       } else {
         await localVideoTrack.setEnabled(true)
         await localAudioTrack.setEnabled(true)
-        return [localAudioTrack, localVideoTrack]
+        return [localAudioTrackRef.current, localVideoTrackRef.current]
       }
     }
 
@@ -117,16 +123,9 @@ function useAgora(client, role, callType) {
         spinnerCtx.setShowSpinner(false, "Please wait...")
         return setJoinState(true)
       } else {
-        const newTrack = await createMyTrack()
-        if (
-          client.connectionState !== "CONNECTED" ||
-          client.connectionState !== "RECONNECTING"
-        ) {
-          await client.join(appId, channel, token, uid)
-        }
-        await client.publish(newTrack)
-        spinnerCtx.setShowSpinner(false, "Please wait...")
-        return setJoinState(true)
+        toast.error(
+          "Audio or Video track was not captured, please try reloading if problem resolve contact the admin!"
+        )
       }
     } else {
       // if client
