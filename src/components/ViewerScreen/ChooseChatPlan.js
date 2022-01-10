@@ -58,7 +58,7 @@ function ChooseChatPlan(props) {
         }
       })
       .catch((err) => {
-        toast.error(err.messag, {
+        toast.error(err.message, {
           autoClose: 2800,
           icon: <span className="tw-text-xl">😥</span>,
         })

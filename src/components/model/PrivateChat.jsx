@@ -276,7 +276,12 @@ function PrivateChat(props) {
                 className="tw-pl-2"
                 onClick={() =>
                   props.modalCtx.showModalWithContent(
-                    <ChooseChatPlan setIsChatPlanActive={hasActivePlan} />
+                    <ChooseChatPlan setIsChatPlanActive={hasActivePlan} />,
+                    {
+                      contentStyles: {
+                        minWidth: "min(700px, 90%)",
+                      },
+                    }
                   )
                 }
               >
