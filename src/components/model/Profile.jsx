@@ -16,6 +16,7 @@ import FsLightbox from "fslightbox-react"
 import { DropdownButton, Dropdown, Button } from "react-bootstrap"
 import { toast } from "react-toastify"
 import EditIcon from "@material-ui/icons/Edit"
+import router from "next/router"
 // ========================================================
 
 function Profile() {
@@ -1136,9 +1137,20 @@ function Profile() {
           {/* Scroll */}
         </div>
         <div className="md:tw-col-span-3 tw-col-span-1 tw-bg-dark-background  tw-text-white tw-py-8">
-          <div className="tw-flex tw-justify-between tw-ml-4 ">
-            <h1>My Photos</h1>
+          <div className="tw-flex tw-justify-between tw-ml-4 "></div>
+          <div className="tw-flex tw-items-center tw-justify-between tw-mb-2">
+            <h1 className="">My Photos</h1>
+            {!authContext.user.user.relatedUser.documents?.createdAt && (
+              <button
+                onClick={() => router.push("/document")}
+                className="tw-rounded-full tw-px-4 hover:tw-border-1 tw-border-1 tw-border-white-color tw-font-medium"
+              >
+                {" "}
+                📄 Upload Documents
+              </button>
+            )}
           </div>
+
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
             {/* <div className="tw-flex">

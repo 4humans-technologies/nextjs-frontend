@@ -8,9 +8,14 @@ function Recommendation(props) {
 
   useEffect(() => {
     if (ctx.loadedFromLocalStorage) {
+      let mounted = true
+
       fetch("/api/website/compose-ui/get-ranking-online-models")
         .then((res) => res.json())
         .then((data) => {
+          if (!mounted) {
+            return
+          }
           const transformedData = data.resultDocs.map((model) => {
             return {
               ...model,
@@ -26,9 +31,10 @@ function Recommendation(props) {
             ]
           })
         })
-        .catch((error) => {
-          alert(error)
-        })
+        .catch((error) => {})
+      return () => {
+        mounted = false
+      }
     }
   }, [ctx.loadedFromLocalStorage])
   return (

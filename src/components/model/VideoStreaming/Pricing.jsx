@@ -80,10 +80,10 @@ function Pricing() {
           className="tw-flex-shrink tw-flex-grow-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-2 tw-py-1 tw-w-full sm:tw-w-1/2 tw-ml-2"
           onChange={(e) => callChangeHandler(e)}
         />
-        <p className="tw-ml-1">(min/sec)</p>
+        <p className="tw-ml-1">(coins/min)</p>
       </div>
       <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
-        <p className="tw-flex-shrink-0 tw-flex-grow">Private Audio Call</p>
+        <p className="tw-flex-shrink-0 tw-flex-grow">Private Video Call</p>
         <input
           type="number"
           name="video"
@@ -92,7 +92,7 @@ function Pricing() {
           className="tw-flex-shrink tw-flex-grow-0 tw-rounded-full tw-bg-dark-black tw-border-none tw-outline-none tw-px-2 tw-py-1 tw-w-full sm:tw-w-1/2 tw-ml-2"
           onChange={(e) => callChangeHandler(e)}
         />
-        <p className="tw-ml-1">(min/sec)</p>
+        <p className="tw-ml-1">(coins/min)</p>
       </div>
       {priceEdit && (
         <Button

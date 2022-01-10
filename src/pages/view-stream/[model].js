@@ -13,12 +13,16 @@ function ViewModelStream() {
 
   const [theKey, setTheKey] = useState(0)
   useEffect(() => {
-    const handleRouteChange = () => {
-      console.log("handling url change")
-      setTheKey((prev) => prev + 1)
+    let mounted = true
+    const handleRouteChange = (url) => {
+      console.log("changed url", url)
+      if (mounted) {
+        setTheKey((prev) => prev + 1)
+      }
     }
     router.events.on("routeChangeComplete", handleRouteChange)
     return () => {
+      mounted = false
       router.events.off("routeChangeComplete", handleRouteChange)
     }
   }, [])

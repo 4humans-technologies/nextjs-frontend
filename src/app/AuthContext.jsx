@@ -123,6 +123,45 @@ export const AuthContextProvider = ({ children }) => {
   const logout = useCallback(() => {
     router.replace("/")
 
+    // io.getSocket().disconnect().connect()
+
+    // updateViewer({
+    //   isLoggedIn: false,
+    //   user: { userType: "UnAuthedViewer" },
+    //   jwtExpiresIn: null,
+    //   rtcTokenExpireIn: null,
+    //   rootUserId: "",
+    //   relatedUserId: "",
+    //   jwtToken: "",
+    //   rtcToken: "",
+    // })
+
+    // localStorage.removeItem("jwtToken")
+    // localStorage.removeItem("jwtExpiresIn")
+    // localStorage.removeItem("rootUserId")
+    // localStorage.removeItem("relatedUserId")
+    // localStorage.setItem("userType", "UnAuthedViewer")
+    // localStorage.setItem(
+    //   "authContext",
+    //   JSON.stringify({
+    //     isLoggedIn: null,
+    //     jwtToken: null,
+    //     userType: "UnAuthedViewer",
+    //   })
+    // )
+    // localStorage.removeItem("user")
+    // toast.success(`Logged Out successfully!`, {
+    //   hideProgressBar: true,
+    //   closeOnClick: true,
+    //   pauseOnHover: false,
+    // })
+
+    /**
+     * 👇👇 this implementation is causing some bug on the server,
+     * causing two server emit of public message, will came when
+     * time to debug this
+     */
+
     io.getSocket().emit(
       "update-client-info",
       {
@@ -225,7 +264,6 @@ export const AuthContextProvider = ({ children }) => {
   }
 
   if (!authState.loadedFromLocalStorage && typeof window !== "undefined") {
-    //
     readFromLocalStorage()
   }
 
@@ -245,10 +283,6 @@ export const AuthContextProvider = ({ children }) => {
     authState.user.userType,
     authState.unAuthedUserId,
   ])
-
-  useEffect(() => {
-    /* get the latest user data */
-  }, [])
 
   return (
     <AuthContext.Provider value={authState}>

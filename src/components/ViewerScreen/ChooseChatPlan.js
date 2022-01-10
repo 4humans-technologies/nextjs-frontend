@@ -4,32 +4,10 @@ import React, { useEffect, useState } from "react"
 import { useAuthUpdateContext } from "../../app/AuthContext"
 import useModalContext from "../../app/ModalContext"
 import ThePlanCard from "./ThePlanCard"
-
-const initialData = [
-  {
-    id: "sfd098",
-    name: "Basic Plan",
-    price: 40,
-    validityDays: 30,
-  },
-  {
-    id: "sfd0sda98",
-    name: "Pro Plan",
-    price: 70,
-    validityDays: 60,
-  },
-  {
-    id: "sfd032498",
-    name: "Knight Plan",
-    price: 100,
-    validityDays: 90,
-  },
-]
+import { toast } from "react-toastify"
 
 function ChooseChatPlan(props) {
   const [chatPlans, setChatPlans] = useState([])
-  const { setIsChatPlanActive } = props
-  const authUpdateCtx = useAuthUpdateContext()
   const modalCtx = useModalContext()
 
   useEffect(() => {
@@ -80,15 +58,20 @@ function ChooseChatPlan(props) {
         }
       })
       .catch((err) => {
-        if (err.reasonCode === "low-balance") {
-          modalCtx.hideModal()
-          const res = window.confirm(
-            err.message + " Do you want to buy new coins ?"
-          )
-          if (res) {
-            return router.push("/user/payment")
-          }
-        }
+        toast.error(err.messag, {
+          autoClose: 2800,
+          icon: <span className="tw-text-xl">😥</span>,
+        })
+        setTimeout(() => {
+          toast.success("Click on this pop-up to buy coins", {
+            onClick: () => {
+              router.push("/user/payment")
+            },
+            position: "top-center",
+            autoClose: false,
+            icon: <span className="tw-text-xl">💰</span>,
+          })
+        }, [3000])
         return modalCtx.hideModal()
       })
   }

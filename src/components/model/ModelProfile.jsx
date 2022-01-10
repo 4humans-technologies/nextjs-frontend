@@ -49,8 +49,8 @@ function ModelProfile(props) {
 
   const [theKey, setTheKey] = useState(0)
   useEffect(() => {
-    const handleRouteChange = () => {
-      console.log("handling url change")
+    const handleRouteChange = (url) => {
+      console.log("changed url", url)
       setTheKey((prev) => prev + 1)
     }
     router.events.on("routeChangeComplete", handleRouteChange)

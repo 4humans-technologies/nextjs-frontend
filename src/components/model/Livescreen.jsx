@@ -65,8 +65,8 @@ function LiveScreen(props) {
   const [theKey, setTheKey] = useState(0)
 
   useEffect(() => {
-    const handleRouteChange = () => {
-      console.log("handling url change")
+    const handleRouteChange = (url) => {
+      console.log("changed url", url)
       setTheKey((prev) => prev + 1)
     }
     router.events.on("routeChangeComplete", handleRouteChange)
@@ -262,18 +262,47 @@ function LiveScreen(props) {
        * if un-authed
        */
       if (chatWindow === chatWindowOptions.PRIVATE) {
-        if (isModelOffline) {
-          return toast.error(
-            "Live chat with model is only available when model is streaming/live. 📴 😘😘"
-          )
-        }
+        return toast.error(
+          "Please login to chat privately with the model. 📴 😘😘"
+        )
       }
+
       if (chatWindow === chatWindowOptions.PUBLIC) {
         if (isModelOffline) {
           return toast.error(
             "Chat is only available when model is streaming/live. 📴 😘😘"
           )
         }
+      }
+      /*     
+      {
+        "modelId":"count"
+      } 
+    */
+      const chatCountRecord = localStorage.getItem("chatCountRecord")
+      const modelId = window.location.pathname.split("/").reverse()[0]
+      if (chatCountRecord) {
+        try {
+          const record = JSON.parse(chatCountRecord)
+          if (!record[modelId]) {
+            record[modelId] = 0
+          }
+          record[modelId] += 1
+          if (record[modelId] > 5) {
+            chatInputRef.current.value = ""
+            return toast.error(
+              "Only 5 chat messages are allowed for non-login users, please login/register to chat more!"
+            )
+          }
+          localStorage.setItem("chatCountRecord", JSON.stringify(record))
+        } catch (err) {
+          console.error(err)
+        }
+      } else {
+        return localStorage.setItem(
+          "chatCountRecord",
+          JSON.stringify({ [modelId]: 0 })
+        )
       }
       /* un-authed user, no private room*/
       const toRoom = JSON.parse(sessionStorage.getItem("socket-rooms"))?.[0]
@@ -305,6 +334,7 @@ function LiveScreen(props) {
         )
       }
     }
+
     chatInputRef.current.value = ""
   }
 
@@ -444,7 +474,7 @@ function LiveScreen(props) {
             ></div>
           ) : null}
           <ViewerScreen
-            key={theKey + 200}
+            // key={theKey + 200}
             setIsChatPlanActive={setIsChatPlanActive}
             setCallOnGoing={setCallOnGoing}
             setCallType={setCallType}
@@ -655,7 +685,7 @@ function LiveScreen(props) {
               className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
             >
               <PublicChat
-                key={theKey + 800}
+                // key={theKey + 800}
                 isModelOffline={isModelOffline}
                 modelWelcomeMessage={props.modelProfileData?.welcomeMessage}
                 addAtTheRate={addAtTheRate}
@@ -680,7 +710,7 @@ function LiveScreen(props) {
               className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
             >
               <PrivateChat
-                key={theKey + 1000}
+                // key={theKey + 1000}
                 hasActivePlan={isChatPlanActive}
                 scrollOnChat={scrollOnChat}
                 setIsChatPlanActive={setIsChatPlanActive}
@@ -703,7 +733,7 @@ function LiveScreen(props) {
               className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
             >
               <TipMenuActions
-                key={theKey + 1200}
+                // key={theKey + 1200}
                 tipMenuActions={tipMenuActions}
                 setTipMenuActions={setTipMenuActions}
                 onClickSendTipMenu={onClickSendTipMenu}
@@ -720,7 +750,7 @@ function LiveScreen(props) {
               className="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-overflow-y-scroll tw-bg-second-color"
             >
               <ViewerSideViewersListContainer
-                key={theKey + 1400}
+                // key={theKey + 1400}
                 callOnGoing={callOnGoing}
                 addAtTheRate={viewerListAddAtTheRate}
                 modelId={props.modelProfileData?._id}
