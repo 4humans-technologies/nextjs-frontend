@@ -14,10 +14,8 @@ const Home = () => {
   const [boxGroupsData, setBoxGroupData] = useState([])
 
   useEffect(() => {
-    // fetch all live streams
-    //
     if (ctx.loadedFromLocalStorage) {
-      fetch("/api/website/compose-ui/get-ranking-online-models")
+      fetch("/api/website/compose-ui/get-all-models")
         .then((res) => res.json())
         .then((data) => {
           const renderLiveModels = (data) => {
@@ -123,55 +121,77 @@ const Home = () => {
 
         if (ctx?.relatedUserId !== socketData.modelId) {
           setBoxGroupData((prev) => {
-            if (
-              prev[prev.length - 1].data
-                .map((stream) => stream.relatedUserId)
-                .includes(socketData.modelId)
-            ) {
-              return prev
-            }
-
-            const prevLastPopped = prev.pop()
-            return [
-              ...prev,
-              {
-                ...prevLastPopped,
-                data: [
-                  ...prevLastPopped.data,
-                  {
+            prev[prev.length - 1].data = prev[prev.length - 1].data
+              .map((model) => {
+                if (model.relatedUserId === socketData.modelId) {
+                  return {
+                    _id: socketData.modelId,
                     relatedUserId: socketData.modelId,
-                    profileImage: socketData.profileImage,
-                    isStreaming: true,
-                  },
-                ],
-              },
-            ]
+                    profileImage: model.profileImage,
+                    isStreaming: socketData.isStreaming,
+                    onCall: socketData?.onCall,
+                  }
+                } else {
+                  return model
+                }
+              })
+              .sort((a, b) => {
+                let aScore = 0
+                let bScore = 0
+                if (a.isStreaming) {
+                  aScore += 2
+                } else if (a.onCall) {
+                  aScore += 1
+                }
+                if (b.isStreaming) {
+                  bScore += 2
+                } else if (b.onCall) {
+                  bScore += 1
+                }
+                aScore - bScore
+              })
+
+            return [...prev]
           })
         }
       }
       socket.on("new-model-started-stream", newModelHandler)
       let modelDeleteHandler = (socketData) => {
         setBoxGroupData((prev) => {
-          const prevLastPopped = prev.pop()
-          /**
-           * prevLastPopped.data is the array of actual array of live streaming/onCall model
-           */
-          if (prevLastPopped) {
-            const poppedModelDataList = prevLastPopped?.data?.filter(
-              (stream) => stream.relatedUserId !== socketData.modelId
-            )
-            return [
-              ...prev,
-              {
-                ...prevLastPopped,
-                data: [...poppedModelDataList],
-              },
-            ]
-          } else {
-            return []
-          }
+          prev[prev.length - 1].data = prev[prev.length - 1].data
+            .map((model) => {
+              if (model.relatedUserId === socketData.modelId) {
+                return {
+                  _id: socketData.modelId,
+                  relatedUserId: socketData.modelId,
+                  profileImage: model.profileImage,
+                  isStreaming: socketData.isStreaming,
+                  onCall: socketData?.onCall,
+                }
+              } else {
+                return model
+              }
+            })
+            .sort((a, b) => {
+              let aScore = 0
+              let bScore = 0
+              if (a.isStreaming) {
+                aScore += 2
+              } else if (a.onCall) {
+                aScore += 1
+              }
+              if (b.isStreaming) {
+                bScore += 2
+              } else if (b.onCall) {
+                bScore += 1
+              }
+              aScore - bScore
+            })
+
+          return [...prev]
         })
       }
+
       socket.on("delete-stream-room", modelDeleteHandler)
       return () => {
         if (socket.hasListeners("delete-stream-room") && modelDeleteHandler) {

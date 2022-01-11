@@ -12,6 +12,9 @@ function Token() {
   const [isExcess, setIsExess] = useState(false)
 
   const handleBuyToken = () => {
+    if (token < 1) {
+      return toast.error("Please tip at least one coin")
+    }
     if (!JSON.parse(sessionStorage.getItem("socket-rooms"))) {
       alert(
         "Please reload your connection to the server was closed, due to in-activity"
@@ -198,7 +201,8 @@ function Token() {
             </label>
           </div>
           <input
-            type="text"
+            type="number"
+            min="1"
             className="tw-rounded tw-h-8 tw-outline-none tw-px-2 tw-flex-grow tw-bg-second-color tw-ml-4 tw-w-full"
             onChange={(e) => handleAmountInput(e.target.value)}
           />

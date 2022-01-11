@@ -176,8 +176,19 @@ function Registration() {
         <div className="tw-grid sm:tw-grid-cols-2 tw-grid-cols-1 tw-grid-rows-1 sm:tw-w-full  tw-h-full tw-w-[100vw] ">
           <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-10 tw-pb-10 tw-rounded-md">
             <h1 className="tw-text-3xl tw-font-medium tw-text-white-color tw-mb-4 tw-text-center tw-ml-3 tw-z-20">
-              Registration Model
+              Model Registration
             </h1>
+            <p className="tw-text-sm tw-text-white tw-my-2 tw-w-60 tw-text-center tw-mx-auto">
+              This page is for model registration only, if you are a{" "}
+              <Link
+                href="/auth/viewerRegistration"
+                className=" hover:tw-text-white hover:tw-underline"
+              >
+                <a className=" hover:tw-text-white">
+                  viewer click <span className="tw-underline">HERE</span>
+                </a>
+              </Link>
+            </p>
             <form
               onSubmit={handleSubmit}
               className="tw-mb-4"
@@ -309,11 +320,11 @@ function Registration() {
                 <div className="tw-border-t tw-border-second-color tw-my-3 tw-w-full"></div>
                 <p>Already Register ?</p>
                 <Link href="/auth/login">
-                  <p className="tw-text-white tw-text-lg tw-font-bold tw-cursor-pointer">
+                  <a className="tw-text-white tw-text-lg tw-font-bold tw-cursor-pointer">
                     <span className="tw-flex tw-mt-4 ">
                       <LockOpenIcon /> <p className="tw-ml-4">Login</p>
                     </span>
-                  </p>
+                  </a>
                 </Link>
 
                 <div
@@ -338,13 +349,19 @@ function Registration() {
                 <div className="tw-flex tw-items-center tw-mt-2">
                   <VerifiedUser className="tw-text-white-color" />
                   <p className="tw-text-white-color tw-font-semibold tw-capitalize tw-pl-2">
-                    20+ users worldwide
+                    20+ Models available 24/7
                   </p>
                 </div>
                 <div className="tw-flex tw-items-center tw-mt-2">
                   <Money className="tw-text-white-color" />
                   <p className="tw-text-white-color tw-font-semibold tw-capitalize tw-pl-2">
-                    earn 24K+ per month
+                    Earn as per your performance
+                  </p>
+                </div>
+                <div className="tw-flex tw-items-center tw-mt-2">
+                  <Money className="tw-text-white-color" />
+                  <p className="tw-text-white-color tw-font-semibold tw-capitalize tw-pl-2">
+                    Highly secure channels
                   </p>
                 </div>
               </div>

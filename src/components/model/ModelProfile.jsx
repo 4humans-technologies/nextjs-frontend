@@ -104,7 +104,7 @@ function ModelProfile(props) {
                 data={props.modelProfileData.ethnicity}
               />
               <ProfileRow
-                title="Coutry: "
+                title="Country: "
                 data={props.modelProfileData.country}
               />
               {props.modelProfileData.dynamicFields?.map((field, index) => {

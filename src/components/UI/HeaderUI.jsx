@@ -29,7 +29,7 @@ function Headerui(props) {
           <div className="tw-flex tw-items-center">
             <div className="tw-rounded-full tw-bg-green-400 tw-h-2 tw-w-2 tw-flex tw-items-center tw-justify-center"></div>
             <p className="tw-pl-1 tw-pr-2">
-              {props.liveModels ? props.liveModels : 0}
+              {props?.liveModels ? props.liveModels : 0}
             </p>
             <p>LIVE </p>
           </div>

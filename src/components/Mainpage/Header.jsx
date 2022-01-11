@@ -360,10 +360,7 @@ function Header(props) {
                     authContext.user.userType == "Viewer" ? (
                       <div>
                         {menu && (
-                          <Headerui
-                            manu={setMenu}
-                            liveModels={props.liveModels}
-                          />
+                          <Headerui manu={setMenu} liveModels={liveModels} />
                         )}
                         <div className="tw-flex tw-items-center tw-flex-shrink-0 tw-flex-nowrap">
                           {/* <span className="tw-relative">
@@ -405,10 +402,7 @@ function Header(props) {
                       // login at smaller screen and model
                       <div>
                         {menu && (
-                          <Headerui
-                            manu={setMenu}
-                            liveModels={props.liveModels}
-                          />
+                          <Headerui manu={setMenu} liveModels={liveModels} />
                         )}
                         <div className="tw-flex tw-self-center">
                           {!hide && (
@@ -610,7 +604,9 @@ function Header(props) {
           : // if not sign in is below
             [
               screenWidth < 600 ? (
-                <div>{menu && <Headerui manu={setMenu} />}</div>
+                <div>
+                  {menu && <Headerui liveModels={liveModels} manu={setMenu} />}
+                </div>
               ) : (
                 <div className="sm:tw-flex tw-items-center sm:tw-flex-row tw-flex-col sm:tw-static tw-absolute sm:tw-top-0 tw-top-12 tw-right-1 tw-bg-dark-black tw-shadow-lg">
                   <button
@@ -636,7 +632,7 @@ function Header(props) {
       </div>
       {/* VIEWER EMAIL PROMPT */}
       <div className="">
-        {authContext.isLoggedIn &&
+        {/* {authContext.isLoggedIn &&
           !authContext.user.user?.inProcessDetails?.emailVerified &&
           emailPrompt &&
           authContext.user.userType === "Viewer" && (
@@ -656,9 +652,9 @@ function Header(props) {
                 x
               </button>
             </div>
-          )}
+          )} */}
         {/* MODEL EMAIL PROMPT */}
-        {authContext.isLoggedIn &&
+        {/* {authContext.isLoggedIn &&
           !authContext.user.user?.inProcessDetails?.emailVerified &&
           emailPrompt &&
           authContext.user.userType === "Model" && (
@@ -673,7 +669,7 @@ function Header(props) {
                 x
               </button>
             </div>
-          )}
+          )} */}
       </div>
       {showSecondHeader ? null : ( // <SecondHeader />
         <ModelDetailHeader data={modelData} />

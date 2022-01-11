@@ -11,7 +11,7 @@ function Boxgroup(props) {
         {/* show more wala button,then this will */}
         {props.data.length === 0 ? (
           <div className="tw-px-4 tw-py-3 tw-rounded tw-bg-second-color">
-            <p className="tw-text-base tw-font-semibold tw-text-text-black tw-text-center">
+            <p className="tw-text-base tw-font-medium tw-text-text-black tw-text-center">
               No Model is Currently Live 🥺!
             </p>
           </div>
