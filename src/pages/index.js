@@ -121,6 +121,9 @@ const Home = () => {
 
         if (ctx?.relatedUserId !== socketData.modelId) {
           setBoxGroupData((prev) => {
+            if (prev.length < 1) {
+              return prev
+            }
             prev[prev.length - 1].data = prev[prev.length - 1].data
               .map((model) => {
                 if (model.relatedUserId === socketData.modelId) {
@@ -158,6 +161,9 @@ const Home = () => {
       socket.on("new-model-started-stream", newModelHandler)
       let modelDeleteHandler = (socketData) => {
         setBoxGroupData((prev) => {
+          if (prev.length < 1) {
+            return prev
+          }
           prev[prev.length - 1].data = prev[prev.length - 1].data
             .map((model) => {
               if (model.relatedUserId === socketData.modelId) {

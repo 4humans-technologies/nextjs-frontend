@@ -109,7 +109,7 @@ function useAgora(client, role, callType) {
         })
       } else {
         await localVideoTrack.setEnabled(true)
-        await localAudioTrack.setEnabled(true)
+        // await localAudioTrack.setEnabled(true)
         return [localAudioTrackRef.current, localVideoTrackRef.current]
       }
     }
