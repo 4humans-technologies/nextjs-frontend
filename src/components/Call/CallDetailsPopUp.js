@@ -9,8 +9,7 @@ import {
   FlashOn,
   Cancel,
 } from "@material-ui/icons"
-import Image from "next/image"
-import neeraj from "../../../public/brandikaran.jpg"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import useAgora from "../../hooks/useAgora"
 import AgoraRTC from "agora-rtc-sdk-ng"
@@ -223,6 +222,16 @@ function CallDetailsPopUp(props) {
               attention. Nobody can see your chat. Booth you and the model can
               end the show at any time
             </p>
+            <div className="tw-flex tw-text-white  ">
+              <div className="tw-mx-auto tw-flex">
+                <p className="tw-mr-1 tw-my-auto">Need Coins ?</p>
+                <Link href="https://dreamgirllive.com/user/payment">
+                  <button className=" tw-mx-1 tw-bg-dreamgirl-red tw-rounded-full tw-px-2 tw-py-1">
+                    Buy Coins Now
+                  </button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
         <button

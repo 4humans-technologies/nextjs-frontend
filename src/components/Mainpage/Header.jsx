@@ -121,12 +121,28 @@ function Header(props) {
   const [emailPrompt, setEmailConfirmPrompt] = useState(
     !authContext.user.user?.inProcessDetails?.emailVerified && sessionVal
   )
+  const [shownToken, setShownToken] = useState(true)
+  // Make sure that the show token created once the fronend load
+  const tokenSession =
+    typeof window !== "undefined"
+      ? authContext.isLoggedIn
+        ? sessionStorage.getItem("showToken")
+          ? false
+          : true
+        : false
+      : null
 
   const hideEmailPrompt = useCallback(() => {
     setEmailConfirmPrompt(false)
     sessionStorage.setItem("emailPromptShown", "true")
   }, [])
+
   /* conditionally show go live button based on the page */
+
+  const hideBuyToken = () => {
+    setShownToken(false)
+    sessionStorage.setItem("showToken", false)
+  }
 
   useEffect(() => {
     if (window.location.pathname.includes("/goLive")) {
@@ -653,7 +669,39 @@ function Header(props) {
               </button>
             </div>
           )} */}
-        {/* MODEL EMAIL PROMPT */}
+        {/* This is for the Buy coin */}
+        {tokenSession && shownToken
+          ? authContext.user.userType === "Viewer" && (
+              <div className=" tw-items-center tw-justify-between tw-px-4 tw-py-1  tw-font-medium tw-text-sm tw-bg-white tw-flex ">
+                <span>
+                  <span className="tw-text-red-500"> No coins ?</span>{" "}
+                  <span className="tw-text-green-600 tw-hidden md:tw-inline">
+                    Buy Instantly using
+                  </span>
+                  <span className="tw-font-mono tw-font-semibold tw-mx-1 tw-text-base">
+                    Gpay,<span className="tw-text-purple-500">PhonPay</span>,
+                    <span className="tw-text-blue-600">paytm</span> or{" "}
+                    <span className="tw-text-green-600">UPI</span>
+                  </span>
+                  <span className="tw-text-red-600">
+                    Get upto 10% off your.
+                  </span>
+                  <button className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-green-400 tw-ml-2">
+                    <Link href="https://dreamgirllive.com/user/payment">
+                      Buy coins
+                    </Link>
+                  </button>
+                </span>
+                <button
+                  onClick={() => hideBuyToken()}
+                  className="tw-text-black tw-text-lg tw-ml-3 tw-font-mono"
+                >
+                  x
+                </button>
+              </div>
+            )
+          : null}
+        ){/* MODEL EMAIL PROMPT */}
         {/* {authContext.isLoggedIn &&
           !authContext.user.user?.inProcessDetails?.emailVerified &&
           emailPrompt &&

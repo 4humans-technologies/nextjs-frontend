@@ -18,9 +18,10 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useRouter } from "next/router"
 import io from "../../socket/socket"
 import TipMenuActions from "../ViewerScreen/TipMenuActions"
-import { toast } from "react-toastify"
+import { ToastContainer, toast } from "react-toastify"
 import ViewerSideViewersListContainer from "../ViewersList/ForViewer/ViewerSideViewersListContainer"
 import { useSocketContext } from "../../app/socket/SocketContext"
+import Link from "next/link"
 
 const CallDetailsPopUp = dynamic(() => import("../Call/CallDetailsPopUp"), {
   ssr: false,
@@ -215,8 +216,22 @@ function LiveScreen(props) {
         }
         if (isModelOffline) {
           return toast.error(
-            "chat is only available when model is streaming/live. 📴 😘😘"
+            <p>
+              You have reached guest message limit.Please{" "}
+              <Link href="https://dreamgirllive.com/auth/login">
+                <a className="tw-underline tw-text-blue-500  tw-mx-2">Login</a>
+              </Link>
+              <br />
+              <Link href="https://dreamgirllive.com/auth/viewerRegistration">
+                <a className="tw-underline tw-text-blue-500 tw-mr-2">sign up</a>
+              </Link>
+              to send unlimited message
+            </p>
           )
+
+          // return toast.error(
+          //   "chat is only available when model is streaming/live. 📴 😘😘"
+          // )
         }
         /**
          * fetch the public rom
@@ -270,8 +285,21 @@ function LiveScreen(props) {
       if (chatWindow === chatWindowOptions.PUBLIC) {
         if (isModelOffline) {
           return toast.error(
-            "Chat is only available when model is streaming/live. 📴 😘😘"
+            <p>
+              You have reached guest message limit.Please{" "}
+              <Link href="https://dreamgirllive.com/auth/login">
+                <a className="tw-underline tw-text-blue-500  tw-mx-2">Login</a>
+              </Link>
+              <br />
+              <Link href="https://dreamgirllive.com/auth/viewerRegistration">
+                <a className="tw-underline tw-text-blue-500 tw-mr-2">sign up</a>
+              </Link>
+              to send unlimited message
+            </p>
           )
+          // return toast.error(
+          //   "Chat is only available when model is streaming/live. 📴 😘😘"
+          // )
         }
       }
       /*     
@@ -291,7 +319,7 @@ function LiveScreen(props) {
           if (record[modelId] > 5) {
             chatInputRef.current.value = ""
             return toast.error(
-              "Only 5 chat messages are allowed for non-login users, please login/register to chat more!"
+              "You have reached guest message limit.Please Login or Sign Up to send unlimited message "
             )
           }
           localStorage.setItem("chatCountRecord", JSON.stringify(record))

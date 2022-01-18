@@ -63,7 +63,7 @@ function Headerui(props) {
           >
             {authContext.isLoggedIn ? "Profile" : "Login"}
           </button>
-          {authContext.isLoggedIn && authContext.user.userType === "Model" && (
+          {authContext.isLoggedIn && (
             <button className="tw-ml-2" onClick={settingsRouter}>
               <SettingsIcon />
             </button>
