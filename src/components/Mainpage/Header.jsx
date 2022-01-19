@@ -673,28 +673,30 @@ function Header(props) {
         {tokenSession && shownToken
           ? authContext.user.userType === "Viewer" && (
               <div className="tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-font-medium tw-text-sm tw-bg-white tw-flex">
-                <span>
-                  <span className="tw-text-red-500"> No coins ?</span>{" "}
-                  <span className="tw-text-green-600 tw-hidden md:tw-inline">
-                    Buy Instantly using
-                  </span>
-                  <span className="tw-font-mono tw-font-semibold tw-mx-1 tw-text-base">
-                    Gpay,<span className="tw-text-purple-500">PhonPay</span>,
-                    <span className="tw-text-blue-600">paytm</span> or{" "}
-                    <span className="tw-text-green-600">UPI</span>
-                  </span>
-                  <span className="tw-text-red-600">
-                    Get upto 10% off your.
-                  </span>
-                  <button className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-green-400 tw-ml-2">
-                    <Link href="https://dreamgirllive.com/user/payment">
-                      Buy coins
-                    </Link>
-                  </button>
-                </span>
+                <Link href="/user/payment">
+                  <a className="tw-block tw-w-full">
+                    <span className="tw-text-red-500"> No coins ?</span>{" "}
+                    <span className="tw-text-green-600 tw-hidden md:tw-inline">
+                      Buy Instantly using
+                    </span>
+                    <span className="tw-font-mono tw-font-semibold tw-mx-1 tw-text-base">
+                      Gpay,<span className="tw-text-purple-500">PhonPay</span>,
+                      <span className="tw-text-blue-600">paytm</span> or{" "}
+                      <span className="tw-text-green-600">UPI</span>
+                    </span>
+                    <span className="tw-text-red-600">
+                      Get upto 10% off your.
+                    </span>
+                    <button className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-green-400 tw-ml-2">
+                      <Link href="/user/payment">
+                        <a>Buy coins</a>
+                      </Link>
+                    </button>
+                  </a>
+                </Link>
                 <button
                   onClick={() => hideBuyToken()}
-                  className="tw-text-black tw-text-lg tw-ml-3 tw-font-mono"
+                  className="tw-text-black tw-text-lg tw-ml-3 tw-font-mono tw-px-2"
                 >
                   x
                 </button>
