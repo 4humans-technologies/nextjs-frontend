@@ -127,7 +127,7 @@ function SignUp() {
           <div className="tw-grid sm:tw-grid-cols-2 tw-grid-cols-1  tw-grid-rows-1 sm:tw-w-full   tw-h-full tw-w-[100vw]  ">
             <div className="tw-relative tw-z-0 tw-col-span-1 tw-row-span-1 tw-text-center red-gray-gradient tw-pl-14 tw-pr-14 tw-pt-10 tw-pb-10 tw-rounded-md  ">
               <h1 className="tw-text-3xl tw-font-medium tw-text-white-color tw-mb-4 tw-text-center tw-ml-3 tw-z-20">
-                Registration user
+                User Registration
               </h1>
               <form onSubmit={handleSubmit} className="tw-mb-4 viewer-form">
                 <div className="tw-flex tw-py-2 tw-px-2 tw-justify-between tw-mx-auto">
