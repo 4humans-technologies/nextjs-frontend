@@ -680,7 +680,7 @@ function Header(props) {
                       Buy Instantly using
                     </span>
                     <span className="tw-font-semibold tw-mx-1">
-                      Gpay,<span className="tw-text-purple-500">PhonPay</span>,
+                      Gpay, <span className="tw-text-purple-500">PhonPay</span>,{" "}
                       <span className="tw-text-blue-600">paytm</span> or{" "}
                       <span className="tw-text-green-600">UPI</span>
                     </span>
