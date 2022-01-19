@@ -685,7 +685,7 @@ function Header(props) {
                       <span className="tw-text-green-600">UPI</span>
                     </span>
                     <span className="tw-text-red-600">
-                      Get upto 30% off your.
+                      Get upto 30% off.
                     </span>
                     <button className="tw-text-white hover:tw-text-white-color tw-font-semibold tw-rounded-full tw-px-2 tw-py-1 tw-bg-green-400 tw-ml-2 tw-text-xs">
                       <Link href="/user/payment">
