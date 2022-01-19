@@ -49,7 +49,7 @@ function Headerui(props) {
                   props.manu((prev) => !prev))
             }
           >
-            {authContext.isLoggedIn ? "Logout" : "Sign Up"}
+            {authContext.isLoggedIn ? "Logout" : "Register"}
           </button>
 
           <button

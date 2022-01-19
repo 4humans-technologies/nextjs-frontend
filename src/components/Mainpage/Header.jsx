@@ -629,7 +629,7 @@ function Header(props) {
                     className="tw-rounded-full  tw-py-2 tw-px-4 md:tw-px-6 tw-bg-second-color sm:tw-mr-2 tw-m-2 tw-text-sm md:tw-text-base"
                     onClick={() => router.push("/auth/viewerRegistration")}
                   >
-                    Sign Up
+                    Register
                   </button>
 
                   <button
@@ -647,7 +647,7 @@ function Header(props) {
         </div>
       </div>
       {/* VIEWER EMAIL PROMPT */}
-      <div className="">
+      <div className="tw-py-0 tw-my-0">
         {/* {authContext.isLoggedIn &&
           !authContext.user.user?.inProcessDetails?.emailVerified &&
           emailPrompt &&
@@ -672,7 +672,7 @@ function Header(props) {
         {/* This is for the Buy coin */}
         {tokenSession && shownToken
           ? authContext.user.userType === "Viewer" && (
-              <div className=" tw-items-center tw-justify-between tw-px-4 tw-py-1  tw-font-medium tw-text-sm tw-bg-white tw-flex ">
+              <div className="tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-font-medium tw-text-sm tw-bg-white tw-flex">
                 <span>
                   <span className="tw-text-red-500"> No coins ?</span>{" "}
                   <span className="tw-text-green-600 tw-hidden md:tw-inline">
@@ -701,7 +701,7 @@ function Header(props) {
               </div>
             )
           : null}
-        ){/* MODEL EMAIL PROMPT */}
+        {/* MODEL EMAIL PROMPT */}
         {/* {authContext.isLoggedIn &&
           !authContext.user.user?.inProcessDetails?.emailVerified &&
           emailPrompt &&
@@ -719,9 +719,7 @@ function Header(props) {
             </div>
           )} */}
       </div>
-      {showSecondHeader ? null : ( // <SecondHeader />
-        <ModelDetailHeader data={modelData} />
-      )}
+      {showSecondHeader ? null : <ModelDetailHeader data={modelData} />}
     </div>
   )
 }
