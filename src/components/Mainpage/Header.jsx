@@ -672,22 +672,22 @@ function Header(props) {
         {/* This is for the Buy coin */}
         {tokenSession && shownToken
           ? authContext.user.userType === "Viewer" && (
-              <div className="tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-font-medium tw-text-sm tw-bg-white tw-flex">
+              <div className="tw-capitalize tw-font-semibold tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-text-sm tw-bg-white tw-flex">
                 <Link href="/user/payment">
-                  <a className="tw-block tw-w-full">
+                  <a className="tw-block tw-w-full tw-text-xs sm:tw-text-sm">
                     <span className="tw-text-red-500"> No coins ?</span>{" "}
-                    <span className="tw-text-green-600 tw-hidden md:tw-inline">
+                    <span className="tw-text-green-600">
                       Buy Instantly using
                     </span>
-                    <span className="tw-font-mono tw-font-semibold tw-mx-1 tw-text-base">
+                    <span className="tw-font-semibold tw-mx-1">
                       Gpay,<span className="tw-text-purple-500">PhonPay</span>,
                       <span className="tw-text-blue-600">paytm</span> or{" "}
                       <span className="tw-text-green-600">UPI</span>
                     </span>
                     <span className="tw-text-red-600">
-                      Get upto 10% off your.
+                      Get upto 30% off your.
                     </span>
-                    <button className="tw-rounded-full tw-px-2 tw-py-1 tw-bg-green-400 tw-ml-2">
+                    <button className="tw-text-white hover:tw-text-white-color tw-font-semibold tw-rounded-full tw-px-2 tw-py-1 tw-bg-green-400 tw-ml-2 tw-text-xs">
                       <Link href="/user/payment">
                         <a>Buy coins</a>
                       </Link>
