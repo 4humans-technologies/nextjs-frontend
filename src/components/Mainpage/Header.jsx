@@ -126,11 +126,13 @@ function Header(props) {
   const tokenSession =
     typeof window !== "undefined"
       ? authContext.isLoggedIn
-        ? sessionStorage.getItem("showToken")
-          ? false
-          : true
-        : false
-      : null
+        ? authContext.user.userType === "Viewer"
+          ? sessionStorage.getItem("showToken")
+            ? false
+            : true
+          : false
+        : true
+      : false
 
   const hideEmailPrompt = useCallback(() => {
     setEmailConfirmPrompt(false)
@@ -670,37 +672,33 @@ function Header(props) {
             </div>
           )} */}
         {/* This is for the Buy coin */}
-        {tokenSession && shownToken
-          ? authContext.user.userType === "Viewer" && (
-              <div className="tw-capitalize tw-font-semibold tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-text-sm tw-bg-white tw-flex">
-                <Link href="/user/payment">
-                  <a className="tw-block tw-w-full tw-text-xs sm:tw-text-sm">
-                    <span className="tw-text-red-500"> No coins ?</span>{" "}
-                    <span className="tw-text-green-600">
-                      Buy Instantly using
-                    </span>
-                    <span className="tw-font-semibold tw-mx-1">
-                      Gpay, <span className="tw-text-purple-500">PhonPay</span>,{" "}
-                      <span className="tw-text-blue-600">paytm</span> or{" "}
-                      <span className="tw-text-green-600">UPI</span>
-                    </span>
-                    <span className="tw-text-red-600">Get upto 30% off.</span>
-                    <button className="tw-text-white hover:tw-text-white-color tw-font-semibold tw-rounded-full tw-px-2 tw-py-1 tw-bg-green-400 tw-ml-2 tw-text-xs">
-                      <Link href="/user/payment">
-                        <a>Buy Now</a>
-                      </Link>
-                    </button>
-                  </a>
-                </Link>
-                <button
-                  onClick={() => hideBuyToken()}
-                  className="tw-text-black tw-text-lg tw-ml-3 tw-font-mono tw-px-2"
-                >
-                  x
+        {tokenSession && shownToken && (
+          <div className="tw-capitalize tw-font-semibold tw-items-center tw-justify-between tw-px-4 tw-py-1 tw-text-sm tw-bg-white tw-flex">
+            <Link href="/user/payment">
+              <a className="tw-block tw-w-full tw-text-xs sm:tw-text-sm">
+                <span className="tw-text-red-500"> No coins ?</span>{" "}
+                <span className="tw-text-green-600">Buy Instantly using</span>
+                <span className="tw-font-semibold tw-mx-1">
+                  Gpay, <span className="tw-text-purple-500">PhonPay</span>,{" "}
+                  <span className="tw-text-blue-600">paytm</span> or{" "}
+                  <span className="tw-text-green-600">UPI</span>
+                </span>
+                <span className="tw-text-red-600">Get upto 30% off.</span>
+                <button className="tw-text-white hover:tw-text-white-color tw-font-semibold tw-rounded-full tw-px-2 tw-py-1 tw-bg-green-400 tw-ml-2 tw-text-xs">
+                  <Link href="/user/payment">
+                    <a>Buy Now</a>
+                  </Link>
                 </button>
-              </div>
-            )
-          : null}
+              </a>
+            </Link>
+            <button
+              onClick={() => hideBuyToken()}
+              className="tw-text-black tw-text-lg tw-ml-3 tw-font-mono tw-px-2"
+            >
+              x
+            </button>
+          </div>
+        )}
         {/* MODEL EMAIL PROMPT */}
         {/* {authContext.isLoggedIn &&
           !authContext.user.user?.inProcessDetails?.emailVerified &&

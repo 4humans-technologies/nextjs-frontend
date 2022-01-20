@@ -3,6 +3,7 @@ import CancelIcon from "@material-ui/icons/Cancel"
 import useModalContext from "../../app/ModalContext"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { toast } from "react-toastify"
+import Link from "next/link"
 
 function Token() {
   const [token, setToken] = useState("")
@@ -221,9 +222,11 @@ function Token() {
           >
             Send Coins
           </button>
-          <button className="tw-rounded-full tw-bg-dreamgirl-red tw-px-4 tw-inline-block tw-ml-3">
-            Buy Coins
-          </button>
+          <Link href="/user/payment">
+            <a className="tw-rounded-full tw-bg-dreamgirl-red tw-px-4 tw-inline-block tw-ml-3 hover:tw-text-white">
+              Buy Coins
+            </a>
+          </Link>
         </div>
       </section>
     </div>
