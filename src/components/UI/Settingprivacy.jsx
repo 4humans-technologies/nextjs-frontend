@@ -21,7 +21,6 @@ let act = {
 }
 function Settingprivacy() {
   const authContext = useAuthContext()
-  const modalCtx = useModalContext()
   const [tokenData, setTokenData] = useState(allHistory)
   const [filterDate, setFilterDate] = useState({
     start: 0,
@@ -216,7 +215,7 @@ function Settingprivacy() {
                       {item.time.split("T")[1].split(".")[0]}
                     </div>
                     <div>{act[item.givenFor]}</div>
-                    <div>{item.by.name}</div>
+                    <div>{item.by?.name}</div>
                     <div>
                       {item.sharePercent
                         ? item.tokenAmount * (item.sharePercent / 100)

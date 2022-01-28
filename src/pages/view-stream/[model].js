@@ -48,7 +48,7 @@ function ViewModelStream() {
             privateVideos: modelProfileData.privateVideos,
             tags:
               modelProfileData.tags.length > 0
-                ? elProfileData.tags
+                ? modelProfileData.tags
                 : [
                     "Black",
                     "White",

@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { useAuthUpdateContext, useAuthContext } from "../../app/AuthContext"
-import Header from "../Mainpage/Header"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import Link from "next/link"
+import useModalContext from "../../app/ModalContext"
 function ViewerToken() {
   const [buyStatus, setBuyStatus] = useState({
     message: null,
@@ -11,6 +11,11 @@ function ViewerToken() {
   })
   const authUpdateCtx = useAuthUpdateContext()
   const authCtx = useAuthContext()
+  const modalCtx = useModalContext()
+
+  if (modalCtx.isOpen) {
+    modalCtx.hideModal()
+  }
 
   const handleRedeemRequest = () => {
     if (!authCtx.isLoggedIn || authCtx.user.userType !== "Viewer") {

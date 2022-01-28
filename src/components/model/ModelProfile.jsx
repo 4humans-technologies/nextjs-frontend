@@ -76,13 +76,27 @@ function ModelProfile(props) {
         >
           <div className="tw-col-span-1">
             <div
-              className="tw-w-44 tw-h-44 tw-rounded-full tw-border-second-color tw-border-4"
+              className="tw-w-44 tw-h-44 tw-rounded-full tw-border-second-color tw-border-4 tw-mb-6"
               style={{
                 backgroundImage: `url(${profileImage})`,
                 backgroundSize: "cover",
               }}
             ></div>
-            <div className="tw-mt-5">
+
+            <ProfileRow title="Name: " data={<p>{name}</p>} />
+            <ProfileRow title="Age: " data={<p>{age}</p>} />
+            <ProfileRow title="Tags: " data={tags} />
+            <ProfileRow title="My Hobbies: " data={tags} />
+            <ProfileRow
+              title="Bio: "
+              // there need to add model profile data and Images
+              data={
+                <p className="tw-col-span-3">{props.modelProfileData.bio}</p>
+              }
+            />
+          </div>
+          <div className="tw-col-span-1 tw-self-end">
+            <div className="tw-mt-4">
               <ProfileRow
                 title="Body Type: "
                 data={props.modelProfileData.bodyType}
@@ -123,19 +137,6 @@ function ModelProfile(props) {
                 )
               })}
             </div>
-          </div>
-          <div className="tw-col-span-1 tw-self-end">
-            <ProfileRow title="Name: " data={<p>{name}</p>} />
-            <ProfileRow title="Age: " data={<p>{age}</p>} />
-            <ProfileRow title="Tags: " data={tags} />
-            <ProfileRow title="My Hobbies: " data={tags} />
-            <ProfileRow
-              title="Bio: "
-              // there need to add model profile data and Images
-              data={
-                <p className="tw-col-span-3">{props.modelProfileData.bio}</p>
-              }
-            />
           </div>
         </div>
       </>

@@ -334,7 +334,7 @@ function Live() {
 
             const channelJoin = join(
               ctx.relatedUserId,
-              token,
+              data.rtcToken,
               ctx.relatedUserId
             ).catch((err) => {
               /* toast is handing it's rejection */

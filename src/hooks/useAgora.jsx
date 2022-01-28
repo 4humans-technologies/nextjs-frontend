@@ -108,7 +108,9 @@ function useAgora(client, role, callType) {
           encoderConfig: { height: 580, width: 720, frameRate: 23 },
         })
       } else {
-        await localVideoTrack.setEnabled(true)
+        if (!localVideoTrack.enabled) {
+          await localVideoTrack.setEnabled(true)
+        }
         // await localAudioTrack.setEnabled(true)
         return [localAudioTrackRef.current, localVideoTrackRef.current]
       }

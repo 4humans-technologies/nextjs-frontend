@@ -17,10 +17,9 @@ import LockOpenIcon from "@material-ui/icons/LockOpen"
 import { toast } from "react-toastify"
 
 function SignUp() {
-  const modalCtx = useModalContext()
-  const [email, setEmail] = useState()
-  const [password, setPassword] = useState()
-  const [username, setUsername] = useState()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("")
   const [gender, setGender] = useState("Female")
   const [name, setName] = useState("")
   const [profile, setProfile] = useState("")
@@ -33,6 +32,24 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     // DATA uplode to aws
+    if (username) {
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        return setFormError(
+          "Username should not contain spaces or special letters"
+        )
+      }
+    } else {
+      return setFormError("Username is required")
+    }
+
+    if (password) {
+      if (password.length < 8) {
+        return setFormError("Password should be at least 8 letters long!")
+      }
+    } else {
+      return setFormError("Username is required")
+    }
+
     const res = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + profile.type
     )
@@ -45,7 +62,6 @@ function SignUp() {
     })
     const imageUrl = profile_url.split("?")[0]
 
-    console.log(email, password, username)
     fetch("/api/website/register/viewer", {
       method: "POST",
       cors: "include",
