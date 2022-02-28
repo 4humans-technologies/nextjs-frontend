@@ -25,6 +25,8 @@ function Boxgroup(props) {
                 photo={model.profileImage}
                 onCall={model.onCall}
                 isStreaming={model.isStreaming}
+                // To get all the details
+              
               />
             )
           })

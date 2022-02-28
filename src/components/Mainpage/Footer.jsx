@@ -8,15 +8,24 @@ function Footer() {
     <div className="tw-pt-10 tw-bg-dark-black tw-w-full">
       <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 lg:tw-grid-cols-6  tw-auto-rows-auto tw-px-2 tw-gap-y-4 tw-gap-x-3 md:tw-px-6 tw-py-6 sm:tw-gap-x-3 tw-tracking-wide">
         <div className="tw-col-span-1 md:tw-col-span-3 lg:tw-col-span-2 flex tw-flex-col tw-items-center tw-justify-between">
-          <div className="flex tw-items-center tw-justify-start tw-mb-10">
+          <div className=" tw-justify-start tw-mb-10">
             <Image src={logo} width={134} height={68} objectFit="cover" />
+            <br />
+            <span className="tw-text-text-black ">
+              &copy; Kaizen International HK Limited
+            </span>
           </div>
+
           <div className="mt-2 tw-text-text-black">
             <p className="tw-text-sm tw-font-light tw-mb-1.5">
-              Deamgirl is a great way to meet new friends, even while practicing
-              social distancing. Is your life boring? Want to make friends
-              worldwide? Need something funny and meaningful? Dreamgirl is what
-              you are looking for!
+              Dreamgirl is a product of
+              <span className="tw-font-bold">
+                Kaizen International HK Limited
+              </span>
+              ,it is designed to make new friends and talk to strangers from
+              distance. Is your life boring? Want to make friends worldwide?
+              Need something funny and meaningful? Dreamgirl is what you are
+              looking for!
             </p>
             <p className="tw-text-sm tw-font-light">
               Dreamgirl is a 1-on-1 online video and voice chat app with Live

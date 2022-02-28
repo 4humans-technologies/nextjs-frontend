@@ -7,15 +7,11 @@ import ClearIcon from "@material-ui/icons/Clear"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import logo from "../../../public/logo.png"
-import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive"
-import NotificationsIcon from "@material-ui/icons/Notifications"
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
-
 import Link from "next/link"
 import { useAuthContext } from "../../app/AuthContext"
 import Headerprofile from "./Header/Headerprofile"
-import SecondHeader from "./SecondHeader"
 import Headerui from "../UI/HeaderUI"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
@@ -300,6 +296,13 @@ function Header(props) {
       .catch((err) => alert(err.message))
   }, [])
 
+  // Search implementation karna hai
+  useEffect(() => {
+    fetch("/api/website/compose-ui/get-all-models")
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+  }, [])
+
   return (
     <div className="tw-min-w-full tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[400]">
       {/* HEADER */}
@@ -324,7 +327,8 @@ function Header(props) {
             </div>
           ) : null}
 
-          <div className="lg:tw-flex tw-items-center tw-pl-4 tw-hidden">
+          {/* this has been made transparent */}
+          <div className="lg:tw-flex tw-items-center tw-pl-4 tw-hidden tw-text-transparent">
             <BarChartIcon />
             <p>Top Models</p>
           </div>
@@ -399,6 +403,15 @@ function Header(props) {
                                notifications={notifications}
                              />
                            </span> */}
+                          {/* Here i have to add the buy now button  */}
+                          <button
+                            className="tw-bg-red-500 tw-rounded-full tw-font-bold tw-capitalize tw-px-2 tw-mx-2 tw-py-1"
+                            onClick={() => router.push("/user/payment")}
+                          >
+                            Buy Now
+                          </button>
+                          {/* Here i have to add the buy now button  */}
+
                           <div
                             className="tw-flex tw-self-center"
                             onClick={() => router.push(`/user/payment`)}
@@ -451,6 +464,7 @@ function Header(props) {
                                  notifications={notifications}
                                />
                              </span> */}
+
                             <img
                               src="/coins.png"
                               alt=""
@@ -494,6 +508,14 @@ function Header(props) {
                                notifications={notifications}
                              />
                            </span> */}
+                          {/* HERE To add the buy now button  */}
+                          <button
+                            className="tw-bg-red-500 tw-rounded-full tw-font-bold tw-capitalize tw-px-2 tw-mr-4 tw-py-1"
+                            onClick={() => router.push("/user/payment")}
+                          >
+                            Buy Now
+                          </button>
+                          {/* HERE To add the buy now button  */}
                           <img
                             src="/coins.png"
                             alt=""

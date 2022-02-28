@@ -41,7 +41,7 @@ function Sidebar(props) {
       </div>
 
       {/* register as model */}
-      {/* <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
+      <div className="tw-flex tw-text-white tw-pt-4 tw-pb-2 tw-pr-2 tw-pl-2 sidebar_item tw-align-middle  ">
         <ExitToAppIcon className="tw-mr-4" />
         <p
           id="sidebar_item_name"
@@ -51,9 +51,9 @@ function Sidebar(props) {
           }}
           className="tw-cursor-pointer"
         >
-          Model Sign Up
+          Model SignUp
         </p>
-      </div> */}
+      </div>
 
       {/* forgot password */}
       {!authContext.isLoggedIn && (
