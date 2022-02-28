@@ -23,6 +23,7 @@ function Profile() {
   const modalCtx = modalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
+  
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
@@ -1690,7 +1691,6 @@ function Profile() {
             </div>
           </div>
           {/* Testing dummy videos */}
-
           {/* ---------------------------------------------------- */}
           {/* Bro in this call table and history has been removed,so you have to check all the thing carefully before procedure */}
         </div>
@@ -1698,5 +1698,4 @@ function Profile() {
     </div>
   ) : null
 }
-
 export default Profile
