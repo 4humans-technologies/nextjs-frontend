@@ -27,50 +27,50 @@ function Mainbox(props) {
             }
           />
           {props.isStreaming ? (
-            <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
-              <ul className=" tw-opacity-0 tw-text-white " id="model-status">
-                <li>Name:Neeraj Rai</li>
-                <li>Hello</li>
-                <li>Hello</li>
-                <li>Hello</li>
-              </ul>
-              <p
-                id="model-status"
-                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
-              >
-                Streaming
-              </p>
-            </div>
-          ) : props.onCall ? (
-            <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
-              <ul className=" tw-opacity-0 tw-text-white " id="model-status">
-                <li>Name</li>
-                <li>Hello</li>
-                <li>Hello</li>
-                <li>Hello</li>
-              </ul>
-              <p
-                id="model-status"
-                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-indigo-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
-              >
-                On Call
-              </p>
-            </div>
+            // <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
+            //   <ul className=" tw-opacity-0 tw-text-white " id="model-status">
+            //     <li>Name:Neeraj Rai</li>
+            //     <li>Hello</li>
+            //     <li>Hello</li>
+            //     <li>Hello</li>
+            //   </ul>
+            <p
+              id="model-status"
+              className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
+            >
+              Streaming
+            </p>
+          ) : // </div>
+          props.onCall ? (
+            // <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
+            //   <ul className=" tw-opacity-0 tw-text-white " id="model-status">
+            //     <li>Name</li>
+            //     <li>Hello</li>
+            //     <li>Hello</li>
+            //     <li>Hello</li>
+            //   </ul>
+            <p
+              id="model-status"
+              className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-indigo-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
+            >
+              On Call
+            </p>
           ) : (
-            <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
-              <ul className=" tw-opacity-0 tw-text-white " id="model-status">
-                <li>Name:Neeraj Rai</li>
-                <li>Age:33</li>
-                <li>Audio rate: 32 coins/minute</li>
-                <li>Video rate: 32 coins/minute</li>
-              </ul>
-              <p
-                id="model-status"
-                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-red-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
-              >
-                Offline
-              </p>
-            </div>
+            // </div>
+            // <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
+            //   <ul className=" tw-opacity-0 tw-text-white " id="model-status">
+            //     <li>Name:Neeraj Rai</li>
+            //     <li>Age:33</li>
+            //     <li>Audio rate: 32 coins/minute</li>
+            //     <li>Video rate: 32 coins/minute</li>
+            //   </ul>
+            <p
+              id="model-status"
+              className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-red-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
+            >
+              Offline
+            </p>
+            // </div>
           )}
         </a>
       </Link>
