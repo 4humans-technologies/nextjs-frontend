@@ -18,8 +18,8 @@ function Footer() {
 
           <div className="mt-2 tw-text-text-black">
             <p className="tw-text-sm tw-font-light tw-mb-1.5">
-              Dreamgirl is a product of
-              <span className="tw-font-bold">
+              Dreamgirl is a product of{" "}
+              <span className="tw-font-bold tw-underline">
                 Kaizen International HK Limited
               </span>
               ,it is designed to make new friends and talk to strangers from
