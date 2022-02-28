@@ -223,7 +223,10 @@ function Token() {
             Send Coins
           </button>
           <Link href="/user/payment">
-            <a className="tw-rounded-full tw-bg-dreamgirl-red tw-px-4 tw-inline-block tw-ml-3 hover:tw-text-white">
+            <a
+              className="tw-rounded-full tw-bg-dreamgirl-red tw-px-4 tw-inline-block tw-ml-3 hover:tw-text-white"
+              onClick={() => modalCtx.clearModalWithContent()}
+            >
               Buy Coins
             </a>
           </Link>

@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import CreateIcon from "@material-ui/icons/Create"
 import Card from "../UI/Card"
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
+import DeleteIcon from "@material-ui/icons/Delete"
 import modalContext from "../../app/ModalContext"
 import NextImage from "next/image"
 import ClearIcon from "@material-ui/icons/Clear"
@@ -49,6 +50,7 @@ function Profile() {
     skinColor: authContext?.user.user.relatedUser.skinColor,
     hairColor: authContext?.user.user.relatedUser.hairColor,
     eyeColor: authContext?.user.user.relatedUser.eyeColor,
+    hobbies: authContext?.user.user.relatedUser.hobbies,
     bio: authContext?.user.user.relatedUser.bio,
   })
 
@@ -623,9 +625,10 @@ function Profile() {
     if (!image) {
       return alert("no Image Selected")
     }
-    if (!albumNow._id) {
-      return toast.error("Please select album first")
-    }
+    // there is the error that is not letting video uplode
+    // if (!albumNow._id) {
+    //   return toast.error("Please select album first")
+    // }
     const url = await fetch(
       "/api/website/aws/get-s3-upload-url?type=" + image.type
     )
@@ -712,8 +715,18 @@ function Profile() {
   let today = new Date()
   let thisYear = today.getFullYear()
 
+  // This is to delete the Public Images Individual photo one at time
   const deletPublicImage = () => {
     const deleteImage = document.querySelectorAll(".publicImage")
+    // console.log(deleteImage)
+    Object.keys(deleteImage).forEach((key) => {
+      if (deleteImage[key].checked == true) {
+        console.log(key, deleteImage[key].name)
+      }
+    })
+  }
+  const deletPublicVideos = () => {
+    const deleteImage = document.querySelectorAll(".publicVideos")
     // console.log(deleteImage)
     Object.keys(deleteImage).forEach((key) => {
       if (deleteImage[key].checked == true) {
@@ -804,6 +817,7 @@ function Profile() {
                 <p>Body Type :</p>
                 <p>Hair :</p>
                 <p>Eye color :</p>
+                <p>Hobbies :</p>
                 <p>About me :</p>
               </div>
               <div className="md:tw-col-span-5 tw-col-span-4 ">
@@ -832,7 +846,8 @@ function Profile() {
                   suppressContentEditableWarning={true}
                   contentEditable="true"
                 >
-                  {authContext.user.user.relatedUser.languages}
+                  {/* this Join is opposite to the split in  */}
+                  {authContext.user.user.relatedUser.languages.join(",")}
                 </p>
                 <p>
                   {authContext.user.user
@@ -901,6 +916,22 @@ function Profile() {
                 >
                   {authContext.user.user.relatedUser.eyeColor}
                 </p>
+                {/* hobbies */}
+                <p
+                  onInput={(e) => {
+                    setProfileEdit((prev) => ({
+                      ...prev,
+                      hobbies: e.target.textContent.split(","),
+                    })),
+                      setInfoedited(true)
+                  }}
+                  suppressContentEditableWarning={true}
+                  contentEditable="true"
+                >
+                  {/* this Join is opposite to the split in  */}
+                  {authContext.user.user.relatedUser.hobbies.join(",")}
+                </p>
+                {/* hobbies */}
                 <p
                   onInput={(e) => {
                     setProfileEdit((prev) => ({
@@ -1154,7 +1185,7 @@ function Profile() {
 
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
-            {/* <div className="tw-flex">
+            <div className="tw-flex">
               {edit.publicImages && (
                 <button
                   className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full tw-capitalize tw-px-4"
@@ -1173,8 +1204,8 @@ function Profile() {
                   }))
                 }
               />
-              <p className="tw-my-auto tw-cursor-pointer">Edit</p>
-            </div> */}
+              <p className="tw-my-auto tw-cursor-pointer tw-pr-4">Edit</p>
+            </div>
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
@@ -1252,19 +1283,29 @@ function Profile() {
             <h1>My videos</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            {/* <div className="tw-flex">
+            {/* This is to make the edit button to delete the element */}
+            <div className="tw-flex">
+              {edit.publicVideos && (
+                <button
+                  className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full tw-capitalize tw-px-4"
+                  onClick={deletPublicVideos}
+                >
+                  Delete
+                </button>
+              )}
+
               <EditIcon
                 fontSize="large"
                 className="tw-ml-auto tw-underline tw-cursor-pointer"
                 onClick={() =>
                   setEdit((prev) => ({
                     ...prev,
-                    publicVideos: true,
+                    publicVideos: !edit.publicVideos,
                   }))
                 }
               />
-              <p className="tw-my-auto tw-cursor-pointer">Edit</p>
-            </div> */}
+              <p className="tw-my-auto tw-cursor-pointer tw-pr-4">Edit</p>
+            </div>
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
                 {/* file */}
@@ -1317,15 +1358,26 @@ function Profile() {
               {authContext.user.user.relatedUser
                 ? authContext.user.user.relatedUser.publicVideos.map(
                     (image, index) => (
-                      <div
-                        className=" tw-mb-4 tw-cursor-pointer"
-                        key={index}
-                        onClick={() => openVideoboxOnSlide(index + 1)}
-                      >
-                        <video
-                          src={image}
-                          className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2"
-                        ></video>
+                      <div>
+                        {edit.publicVideos && (
+                          <input
+                            type="checkbox"
+                            name={image}
+                            id={image}
+                            value={image}
+                            className="publicVideos"
+                          />
+                        )}
+                        <div
+                          className=" tw-mb-4 tw-cursor-pointer"
+                          key={index}
+                          onClick={() => openVideoboxOnSlide(index + 1)}
+                        >
+                          <video
+                            src={image}
+                            className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2"
+                          ></video>
+                        </div>
                       </div>
                     )
                   )
@@ -1437,8 +1489,11 @@ function Profile() {
                 </Dropdown.Item>
               </DropdownButton>
 
-              <p className="tw-font-bold tw-text-lg md:tw-mr-8 tw-mr-4 tw-capitalize tw-align-middle tw-px-2 tw-my-auto">
+              <p className="tw-font-bold tw-text-lg md:tw-mr-4 tw-mr-4 tw-capitalize tw-align-middle tw-px-2 tw-my-auto">
                 Folder Name: {videoAlbumNow?.name}
+                {videoAlbumNow && (
+                  <DeleteIcon className="tw-ml-2 tw-cursor-pointer" />
+                )}
               </p>
             </div>
             {/* Privete video Input field */}
@@ -1614,8 +1669,11 @@ function Profile() {
                 </Dropdown.Item>
               </DropdownButton>
 
-              <p className="tw-font-bold tw-text-lg md:tw-mr-8 tw-mr-4 tw-capitalize tw-align-middle tw-px-2 tw-my-auto">
+              <p className="tw-font-bold tw-text-lg md:tw-mr-4 tw-mr-4 tw-capitalize tw-align-middle tw-px-2 tw-my-auto">
                 Folder Name: {albumNow?.name}
+                {albumNow && (
+                  <DeleteIcon className="tw-ml-2 tw-cursor-pointer" />
+                )}
               </p>
             </div>
             <div className=" tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2">
