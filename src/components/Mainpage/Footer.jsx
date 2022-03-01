@@ -15,7 +15,6 @@ function Footer() {
               &copy; Kaizen International HK Limited
             </span>
           </div>
-
           <div className="mt-2 tw-text-text-black">
             <p className="tw-text-sm tw-font-light tw-mb-1.5">
               Dreamgirl is a product of{" "}

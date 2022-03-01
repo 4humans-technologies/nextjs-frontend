@@ -172,15 +172,13 @@ const PasswordChange = (props) => {
 // Cover update and Profile update
 
 const CoverUpdate = () => {
-  const [coverImage, setCoverImage] = useState(null)
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
   const modelCtx = useModalContext()
 
   const changeCover = async (e) => {
+    const prevCoverImage = authContext.user.user.relatedUser.coverImage
     const image_1 = await e.target.files[0]
-    const image_2 = await URL.createObjectURL(e.target.files[0])
-    setCoverImage(image_2)
 
     // THis get url for send the image to the aws server
     const res = await fetch(
@@ -212,6 +210,7 @@ const CoverUpdate = () => {
         updatedData: {
           coverImage: coverUrl,
         },
+        deleteObjects: [prevCoverImage],
       }),
     })
 
@@ -267,15 +266,14 @@ const CoverUpdate = () => {
 }
 
 const ProfileUpdate = () => {
-  const [showImage, setshowImage] = useState()
   const modelCtx = useModalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
 
   const changeCover = async (e) => {
+    const prevProfileImage = authContext.user.user.relatedUser.profileImage
     const image_1 = await e.target.files[0]
     const image_2 = await URL.createObjectURL(e.target.files[0])
-    setshowImage(image_2)
     // this is ton get the url for the aws server to image uplode
 
     const res = await fetch(
@@ -303,6 +301,7 @@ const ProfileUpdate = () => {
         updatedData: {
           profileImage: profileUrl,
         },
+        deleteObjects: [prevProfileImage],
       }),
     })
 

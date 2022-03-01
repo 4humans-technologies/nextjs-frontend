@@ -17,6 +17,7 @@ function Coverpage() {
   }, [authContext.user.user.relatedUser?.backGroundImage])
 
   const changeCover = async (e) => {
+    const oldBg = authContext.user.user.relatedUser?.backGroundImage || null
     const image_1 = await e.target.files[0]
     const image_2 = await URL.createObjectURL(e.target.files[0])
     setCoverImage(image_2)
@@ -34,12 +35,18 @@ function Coverpage() {
     })
 
     const coverUrl = cover_url.split("?")[0]
+
+    const reqDataObject = { field: "backGroundImage", value: coverUrl }
+    if (oldBg) {
+      reqDataObject["deleteUrl"] = oldBg
+    }
+
     fetch("/api/website/profile/update-info-fields", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify([{ field: "backGroundImage", value: coverUrl }]),
+      body: JSON.stringify([reqDataObject]),
     })
       .then((res) => res.json())
       .then(() => {

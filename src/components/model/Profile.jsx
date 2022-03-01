@@ -17,6 +17,7 @@ import FsLightbox from "fslightbox-react"
 import { DropdownButton, Dropdown, Button } from "react-bootstrap"
 import { toast } from "react-toastify"
 import EditIcon from "@material-ui/icons/Edit"
+import CloseIcon from "@material-ui/icons/Close"
 import router from "next/router"
 // ========================================================
 
@@ -24,7 +25,7 @@ function Profile() {
   const modalCtx = modalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
-  
+
   const [audioVideoPrice, setAudioVideoPrice] = useState({
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
@@ -716,23 +717,95 @@ function Profile() {
   let thisYear = today.getFullYear()
 
   // This is to delete the Public Images Individual photo one at time
-  const deletPublicImage = () => {
+  const deletePublicImage = () => {
     const deleteImage = document.querySelectorAll(".publicImage")
     // console.log(deleteImage)
-    Object.keys(deleteImage).forEach((key) => {
-      if (deleteImage[key].checked == true) {
-        console.log(key, deleteImage[key].name)
-      }
+    fetch("/api/website/profile/delete-public-content", {
+      method: "POST",
+      body: JSON.stringify({
+        urls: Object.values(deleteImage)
+          .filter((el) => el.checked)
+          .map((i) => i.value),
+        type: "Images",
+      }),
+      headers: {
+        "Content-type": "application/json",
+      },
     })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.actionStatus === "success") {
+          toast.success(
+            `${data.DeletedContent.length} Images were deleted successfully!`
+          )
+        }
+        let lcUser = JSON.parse(localStorage.getItem("user"))
+        lcUser.relatedUser.publicImages =
+          lcUser.relatedUser.publicImages.filter((url) => {
+            const key = url.substr(60)
+            return !data.DeletedContent.includes(key)
+          })
+        authUpdateContext.setAuthState((prev) => ({
+          ...prev,
+          user: {
+            ...prev.user,
+            user: lcUser,
+          },
+        }))
+        setEdit((prev) => {
+          prev.publicImages = false
+          return { ...prev }
+        })
+        localStorage.setItem("user", JSON.stringify(lcUser))
+      })
+      .catch((err) => {
+        toast.error(err?.message || err)
+      })
   }
-  const deletPublicVideos = () => {
-    const deleteImage = document.querySelectorAll(".publicVideos")
-    // console.log(deleteImage)
-    Object.keys(deleteImage).forEach((key) => {
-      if (deleteImage[key].checked == true) {
-        console.log(key, deleteImage[key].name)
-      }
+  const deletePublicVideos = () => {
+    const videosToDelete = document.querySelectorAll(".publicVideos")
+    // console.log(videosToDelete)
+    fetch("/api/website/profile/delete-public-content", {
+      method: "POST",
+      body: JSON.stringify({
+        urls: Object.values(videosToDelete)
+          .filter((el) => el.checked)
+          .map((i) => i.value),
+        type: "Videos",
+      }),
+      headers: {
+        "Content-type": "application/json",
+      },
     })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.actionStatus === "success") {
+          toast.success(
+            `${data.DeletedContent.length} Videos were deleted successfully!`
+          )
+        }
+        let lcUser = JSON.parse(localStorage.getItem("user"))
+        lcUser.relatedUser.publicVideos =
+          lcUser.relatedUser.publicVideos.filter((url) => {
+            const key = url.substr(60)
+            return !data.DeletedContent.includes(key)
+          })
+        authUpdateContext.setAuthState((prev) => ({
+          ...prev,
+          user: {
+            ...prev.user,
+            user: lcUser,
+          },
+        }))
+        setEdit((prev) => {
+          prev.publicVideos = false
+          return { ...prev }
+        })
+        localStorage.setItem("user", JSON.stringify(lcUser))
+      })
+      .catch((err) => {
+        toast.error(err?.message || err)
+      })
   }
 
   return authContext.user.user ? (
@@ -1185,26 +1258,37 @@ function Profile() {
 
           <div className="tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl">
             {/* Make Model Clickeble in model */}
-            <div className="tw-flex">
+            <div className="tw-flex tw-items-center tw-justify-between tw-px-3 tw-mb-3">
               {edit.publicImages && (
                 <button
                   className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full tw-capitalize tw-px-4"
-                  onClick={deletPublicImage}
+                  onClick={deletePublicImage}
                 >
                   Delete
                 </button>
               )}
-              <EditIcon
-                fontSize="large"
-                className="tw-ml-auto tw-underline tw-cursor-pointer"
+              <button
                 onClick={() =>
                   setEdit((prev) => ({
                     ...prev,
                     publicImages: !edit.publicImages,
                   }))
                 }
-              />
-              <p className="tw-my-auto tw-cursor-pointer tw-pr-4">Edit</p>
+                className="tw-flex tw-items-center tw-justify-between tw-space-x-2 tw-ml-auto"
+              >
+                {edit.publicImages ? (
+                  <CloseIcon
+                    fontSize="small"
+                    className="tw-ml-auto tw-underline tw-cursor-pointer tw-mr-1"
+                  />
+                ) : (
+                  <EditIcon
+                    fontSize="small"
+                    className="tw-ml-auto tw-underline tw-cursor-pointer tw-mr-1"
+                  />
+                )}
+                {edit.publicImages ? "Cancel" : "Delete Images"}
+              </button>
             </div>
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-36 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
@@ -1240,34 +1324,34 @@ function Profile() {
                 {/* file */}
                 <FsLightbox
                   toggler={lightboxController.toggler}
-                  sources={authContext.user.user.relatedUser.publicImages.map(
-                    (url) => {
-                      return <img src={url} />
-                    }
-                  )}
+                  sources={authContext.user.user.relatedUser.publicImages}
                   slide={lightboxController.slide}
                 />
               </div>
               {authContext.user.user.relatedUser
                 ? authContext.user.user.relatedUser.publicImages.map(
                     (image, index) => (
-                      <div>
+                      <div
+                        className="tw-mb-4 tw-cursor-pointer tw-relative tw-z-0"
+                        key={index}
+                      >
                         {edit.publicImages && (
-                          <input
-                            type="checkbox"
-                            name={image}
-                            id={image}
-                            value={image}
-                            className="publicImage"
-                          />
+                          <>
+                            <input
+                              type="checkbox"
+                              name={image}
+                              id={image}
+                              value={image}
+                              className="publicImage tw-absolute tw-top-[-6px] tw-left-[0] tw-cursor-pointer tw-p-1 tw-z-20"
+                            />
+                            <div className="tw-z-10 tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-bottom-0"></div>
+                          </>
                         )}
-                        <div
-                          className=" tw-mb-4 tw-cursor-pointer"
-                          key={index}
+                        <img
+                          src={image}
+                          className="tw-w-32 tw-h-32 tw-ml-4"
                           onClick={() => openLightboxOnSlide(index + 1)}
-                        >
-                          <img src={image} className="tw-w-32 tw-h-32" />
-                        </div>
+                        />
                       </div>
                     )
                   )
@@ -1284,27 +1368,37 @@ function Profile() {
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
             {/* This is to make the edit button to delete the element */}
-            <div className="tw-flex">
+            <div className="tw-flex tw-items-center tw-justify-between tw-px-3 tw-mb-3">
               {edit.publicVideos && (
                 <button
                   className="tw-bg-dreamgirl-red hover:tw-bg-dreamgirl-red tw-border-none tw-rounded-full tw-capitalize tw-px-4"
-                  onClick={deletPublicVideos}
+                  onClick={deletePublicVideos}
                 >
                   Delete
                 </button>
               )}
-
-              <EditIcon
-                fontSize="large"
-                className="tw-ml-auto tw-underline tw-cursor-pointer"
+              <button
                 onClick={() =>
                   setEdit((prev) => ({
                     ...prev,
                     publicVideos: !edit.publicVideos,
                   }))
                 }
-              />
-              <p className="tw-my-auto tw-cursor-pointer tw-pr-4">Edit</p>
+                className="tw-flex tw-items-center tw-justify-between tw-space-x-2 tw-ml-auto"
+              >
+                {edit.publicVideos ? (
+                  <CloseIcon
+                    fontSize="small"
+                    className="tw-ml-auto tw-underline tw-cursor-pointer tw-mr-1"
+                  />
+                ) : (
+                  <EditIcon
+                    fontSize="small"
+                    className="tw-ml-auto tw-underline tw-cursor-pointer tw-mr-1"
+                  />
+                )}
+                {edit.publicVideos ? "Cancel" : "Delete Videos"}
+              </button>
             </div>
             <div className="tw-grid md:tw-grid-cols-3 tw-col-span-1 tw-justify-start tw-py-4 tw-grid-cols-2 ">
               <div className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2 tw-mb-4">
@@ -1347,9 +1441,12 @@ function Profile() {
                 sources={authContext.user.user.relatedUser.publicVideos.map(
                   (url) => {
                     return (
-                      <div>
-                        <video src={url} controls></video>
-                      </div>
+                      <video
+                        src={url}
+                        controls
+                        //     className="tw-w-[90%] tw-h-[90%] sm:tw-w-[70%] sm:tw-h-[70%] lg:tw-w-[50%]
+                        // lg:tw-h-[50%]"
+                      ></video>
                     )
                   }
                 )}
@@ -1358,26 +1455,27 @@ function Profile() {
               {authContext.user.user.relatedUser
                 ? authContext.user.user.relatedUser.publicVideos.map(
                     (image, index) => (
-                      <div>
+                      <div
+                        className=" tw-mb-4 tw-cursor-pointer tw-relative tw-z-0"
+                        key={index}
+                      >
                         {edit.publicVideos && (
-                          <input
-                            type="checkbox"
-                            name={image}
-                            id={image}
-                            value={image}
-                            className="publicVideos"
-                          />
+                          <>
+                            <input
+                              type="checkbox"
+                              name={image}
+                              id={image}
+                              value={image}
+                              className="publicVideos tw-absolute tw-top-[-6px] tw-left-[0] tw-cursor-pointer tw-p-1 tw-z-20"
+                            />
+                            <div className="tw-z-10 tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-bottom-0"></div>
+                          </>
                         )}
-                        <div
-                          className=" tw-mb-4 tw-cursor-pointer"
-                          key={index}
+                        <video
+                          src={image}
                           onClick={() => openVideoboxOnSlide(index + 1)}
-                        >
-                          <video
-                            src={image}
-                            className="tw-w-32 tw-h-32 tw-border-dashed tw-border-gray-400 tw-border-2"
-                          ></video>
-                        </div>
+                          className="tw-w-32 tw-h-32 tw-object-cover tw-z-0 tw-ml-4"
+                        ></video>
                       </div>
                     )
                   )

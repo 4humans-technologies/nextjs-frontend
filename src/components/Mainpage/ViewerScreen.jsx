@@ -9,13 +9,11 @@ import io from "../../socket/socket"
 import FullscreenIcon from "@material-ui/icons/Fullscreen"
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit"
 import MicIcon from "@material-ui/icons/Mic"
-import VolumeUpIcon from "@material-ui/icons/VolumeUp"
 import CallEndIcon from "@material-ui/icons/CallEnd"
 import MicOffIcon from "@material-ui/icons/MicOff"
 import LocalAtmIcon from "@material-ui/icons/LocalAtm"
 import useSpinnerContext from "../../app/Loading/SpinnerContext"
 import { toast } from "react-toastify"
-import socket from "../../socket/socket"
 
 /**
  * If this screen is being mounted then it is understood by default that,
@@ -43,7 +41,6 @@ const unAuthedUserEmojis = [
   "⚽",
   "💎",
   "🥇",
-  "♥",
   "🎵",
   "🧲",
   "💰",
@@ -51,12 +48,17 @@ const unAuthedUserEmojis = [
   "🥂",
   "🍎",
   "🌼",
-  "🚩",
   "🌞",
   "🌈",
   "⚡",
   "🐬",
   "🦄",
+  "🐢",
+  "🍓",
+  "🍒",
+  "🌶",
+  "🍏",
+  "🍇",
 ]
 const callTimer = {
   value: 0,
@@ -72,6 +74,7 @@ function ViewerScreen(props) {
   const spinnerCtx = useSpinnerContext()
   const isLiveNowRef = useRef("not-init")
   const [fullScreen, setFullScreen] = useState(false)
+  const [isAlreadyOnCall, setIsAlreadyOnCall] = useState(false)
 
   const [othersCall, setOthersCall] = useState({
     rejectedMyCall: false,
@@ -492,6 +495,7 @@ function ViewerScreen(props) {
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
               setKing(data.king)
+              setIsAlreadyOnCall(Boolean(data.theModel.onCall))
               /* set header details for the viewer */
               const modelDataEvent = new CustomEvent(
                 "model-profile-data-fetched",
@@ -507,7 +511,6 @@ function ViewerScreen(props) {
                 }
               )
               document.dispatchEvent(modelDataEvent)
-
               /**
                * viewers list fetched
                */
@@ -593,7 +596,11 @@ function ViewerScreen(props) {
           localStorage.setItem(
             "unAuthed-user-chat-name",
             `Guest-${nanoid(8)} ${
-              unAuthedUserEmojis[Math.floor((Math.random() * 100) % 25)]
+              unAuthedUserEmojis[
+                Math.floor(
+                  (Math.random() * 100) % (unAuthedUserEmojis.length - 1)
+                )
+              ]
             }`
           )
         }
@@ -623,7 +630,7 @@ function ViewerScreen(props) {
               props.setModelProfileData(data.theModel)
               props.setIsChatPlanActive(data.isChatPlanActive)
               setKing(data.king)
-
+              setIsAlreadyOnCall(Boolean(data.theModel.onCall))
               /* set header details for the viewer */
               const modelDataEvent = new CustomEvent(
                 "model-profile-data-fetched",
@@ -1389,6 +1396,7 @@ function ViewerScreen(props) {
 
       {/* on audioCall with model */}
       {callOnGoing &&
+      !isAlreadyOnCall &&
       callType === "audioCall" &&
       !isModelOffline &&
       remoteUsers[0] ? (
@@ -1396,6 +1404,23 @@ function ViewerScreen(props) {
           <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-300 tw-rounded-full">
             <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-400 tw-rounded-full">
               <div className="tw-w-full tw-h-full tw-border-8 tw-border-red-500 tw-rounded-full">
+                <img
+                  src={modelProfileData.profileImage}
+                  alt=""
+                  className="tw-h-[120px] tw-w-[120px] md:tw-h-[180px] md:tw-w-[180px] lg:tw-h-[230px] lg:tw-w-[230px] tw-object-cover tw-rounded-full"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* WHEN MODEL IS ALREADY ON CALL */}
+      {!callOnGoing && isModelOffline && isAlreadyOnCall && !remoteUsers[0] ? (
+        <div className="tw-border-8 tw-border-purple-200 tw-rounded-full tw-translate-y-[-24px]">
+          <div className="tw-w-full tw-h-full tw-border-8 tw-border-purple-300 tw-rounded-full">
+            <div className="tw-w-full tw-h-full tw-border-8 tw-border-purple-400 tw-rounded-full">
+              <div className="tw-w-full tw-h-full tw-border-8 tw-border-purple-500 tw-rounded-full">
                 <img
                   src={modelProfileData.profileImage}
                   alt=""
@@ -1416,9 +1441,15 @@ function ViewerScreen(props) {
       remoteUsers?.length === 0 &&
       !othersCall.acceptedOthersCall ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-top-6  sm:tw-top-10 tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px]">
-          <p className="tw-text-white-color tw-font-medium tw-text-center">
-            The model is currently offline 😞😞
-          </p>
+          {isAlreadyOnCall ? (
+            <p className="tw-text-purple-300 tw-font-medium tw-text-center tw-text-sm">
+              Model is on call 📞 🤙 with a special viewer
+            </p>
+          ) : (
+            <p className="tw-text-white-color tw-font-medium tw-text-center">
+              The model is currently offline 😞😞
+            </p>
+          )}
         </div>
       ) : null}
 
@@ -1453,6 +1484,7 @@ function ViewerScreen(props) {
       {/* model image */}
 
       {isModelOffline &&
+        !isAlreadyOnCall &&
         modelProfileData &&
         !callOnGoing &&
         remoteUsers?.length === 0 &&
@@ -1518,9 +1550,16 @@ function ViewerScreen(props) {
       remoteUsers?.length === 0 &&
       !othersCall.acceptedOthersCall ? (
         <div className="tw-text-sm tw-absolute tw-left-[50%] tw-translate-x-[-50%] tw-bottom-32 sm:tw-bottom-20 tw-backdrop-blur tw-px-4 tw-py-2 tw-rounded tw-bg-[rgba(112,112,112,0.25)] tw-min-w-[288px] tw-backdrop-opacity-50">
-          <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
-            {modelProfileData.offlineStatus}
-          </p>
+          {isAlreadyOnCall ? (
+            <p className="tw-text-purple-300 tw-text-sm tw-font-medium tw-text-center tw-capitalize">
+              {"You will be auto joined to the stream when call is finished"}
+              {/*  then you can also be that special viewer whose on call with the model */}
+            </p>
+          ) : (
+            <p className="tw-text-white-color tw-font-medium tw-text-center tw-capitalize">
+              {modelProfileData.offlineStatus}
+            </p>
+          )}
         </div>
       ) : null}
 
