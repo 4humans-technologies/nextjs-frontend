@@ -208,6 +208,10 @@ function Profile() {
           value: profileEdit.hairColor,
         },
         {
+          field: "hobbies",
+          value: profileEdit.hobbies,
+        },
+        {
           field: "bio",
           value: profileEdit.bio,
         },
@@ -230,6 +234,7 @@ function Profile() {
             bodyType: profileEdit.bodyType,
             eyeColor: profileEdit.eyeColor,
             hairColor: profileEdit.hairColor,
+            hobbies: profileEdit.hobbies,
             bio: profileEdit.bio,
           },
         },
@@ -242,6 +247,7 @@ function Profile() {
     store["relatedUser"]["languages"] = profileEdit.languages
     store["relatedUser"]["bodyType"] = profileEdit.bodyType
     store["relatedUser"]["hairColor"] = profileEdit.hairColor
+    store["relatedUser"]["hobbies"] = profileEdit.hobbies
     store["relatedUser"]["eyeColor"] = profileEdit.eyeColor
 
     // save the data json stringyfy
@@ -806,6 +812,29 @@ function Profile() {
       .catch((err) => {
         toast.error(err?.message || err)
       })
+  }
+
+  // Delete private video  folder
+  const videoAlbumDelete = (data) => {
+    console.log(data._id, data.name)
+    fetch().then((resp) => resp.json())
+  }
+
+  // delete private image folder
+  const imageAlbumDelete = (data) => {
+    console.log(data._id, data.name)
+    fetch("/api/website/profile/delete-albums", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        albumId: data._id,
+        type: "ImageAlbum",
+      }),
+    })
+      .then((resp) => resp.json())
+      .then((data) => console.log(data))
   }
 
   return authContext.user.user ? (
@@ -1488,20 +1517,6 @@ function Profile() {
             <h1>Private videos</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            {/* Private video Input field */}
-            {/* <div className="tw-flex">
-              <EditIcon
-                fontSize="large"
-                className="tw-ml-auto tw-underline tw-cursor-pointer"
-                onClick={() =>
-                  setEdit((prev) => ({
-                    ...prev,
-                    privateVideos: true,
-                  }))
-                }
-              />
-              <p className="tw-my-auto tw-cursor-pointer">Edit</p>
-            </div> */}
             <div className="tw-my-4">
               {showVideoInput && (
                 <div className="tw-flex tw-justify-between">
@@ -1590,7 +1605,10 @@ function Profile() {
               <p className="tw-font-bold tw-text-lg md:tw-mr-4 tw-mr-4 tw-capitalize tw-align-middle tw-px-2 tw-my-auto">
                 Folder Name: {videoAlbumNow?.name}
                 {videoAlbumNow && (
-                  <DeleteIcon className="tw-ml-2 tw-cursor-pointer" />
+                  <DeleteIcon
+                    className="tw-ml-2 tw-cursor-pointer"
+                    onClick={() => videoAlbumDelete(videoAlbumNow)}
+                  />
                 )}
               </p>
             </div>
@@ -1770,7 +1788,10 @@ function Profile() {
               <p className="tw-font-bold tw-text-lg md:tw-mr-4 tw-mr-4 tw-capitalize tw-align-middle tw-px-2 tw-my-auto">
                 Folder Name: {albumNow?.name}
                 {albumNow && (
-                  <DeleteIcon className="tw-ml-2 tw-cursor-pointer" />
+                  <DeleteIcon
+                    className="tw-ml-2 tw-cursor-pointer"
+                    onClick={() => imageAlbumDelete(albumNow)}
+                  />
                 )}
               </p>
             </div>
@@ -1835,12 +1856,7 @@ function Profile() {
                       onClick={() => openLightboxOnSlidePrivate(index + 1)}
                     >
                       {/* <img src={image} className="tw-w-32 tw-h-32" /> */}
-                      <NextImage
-                        src={image}
-                        width={128}
-                        height={128}
-                        quality="100"
-                      />
+                      <img src={image} height="128" width="128" />
                     </div>
                   ))}
               {/* That item show */}
