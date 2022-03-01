@@ -296,12 +296,7 @@ function Header(props) {
       .catch((err) => alert(err.message))
   }, [])
 
-  // Search implementation karna hai
-  useEffect(() => {
-    fetch("/api/website/compose-ui/get-all-models")
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-  }, [])
+
 
   return (
     <div className="tw-min-w-full tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[400]">

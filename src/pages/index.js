@@ -12,6 +12,7 @@ const Home = () => {
   const socketContext = useSocketContext()
 
   const [boxGroupsData, setBoxGroupData] = useState([])
+  const [searchData, setSearchData] = useState([])
 
   useEffect(() => {
     if (ctx.loadedFromLocalStorage) {
