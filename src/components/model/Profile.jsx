@@ -4,7 +4,7 @@ import Card from "../UI/Card"
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
 import DeleteIcon from "@material-ui/icons/Delete"
 import modalContext from "../../app/ModalContext"
-import NextImage from "next/image"
+
 import ClearIcon from "@material-ui/icons/Clear"
 import {
   EmailChange,
@@ -19,6 +19,7 @@ import { toast } from "react-toastify"
 import EditIcon from "@material-ui/icons/Edit"
 import CloseIcon from "@material-ui/icons/Close"
 import router from "next/router"
+import { useRef } from "react"
 // ========================================================
 
 function Profile() {
@@ -30,6 +31,9 @@ function Profile() {
     audio: authContext.user.user.relatedUser.charges.audioCall,
     video: authContext.user.user.relatedUser.charges.videoCall,
   })
+
+  var imageFolderDelete = false
+  var videoFolderDelete = false
 
   const [edit, setEdit] = useState({
     publicImages: false,
@@ -331,7 +335,6 @@ function Profile() {
   // Create folder for private photo handle
   const createFolderHandler = async () => {
     // creating folder
-
     const album = await fetch("/api/website/profile/create-album", {
       method: "POST",
       headers: {
@@ -365,6 +368,7 @@ function Profile() {
     })
 
     const store = JSON.parse(localStorage.getItem("user"))
+    console.log(resp.album)
     store.relatedUser.privateImages.push(resp.album)
     localStorage.setItem("user", JSON.stringify(store))
     toast.success("Album create Successfully", {
@@ -373,6 +377,7 @@ function Profile() {
       autoClose: 3000,
     })
     setShowInput(false)
+
     setAlbumNow(resp.album)
   }
 
@@ -815,26 +820,92 @@ function Profile() {
   }
 
   // Delete private video  folder
-  const videoAlbumDelete = (data) => {
-    console.log(data._id, data.name)
-    fetch().then((resp) => resp.json())
-  }
-
-  // delete private image folder
-  const imageAlbumDelete = (data) => {
-    console.log(data._id, data.name)
+  const videoAlbumDelete = (deletingFolder) => {
+    // console.log(deletingFolder._id, deletingFolder.name)
     fetch("/api/website/profile/delete-albums", {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        albumId: data._id,
+        albumId: deletingFolder._id,
+        type: "VideosAlbum",
+      }),
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        // if action is success then
+        if (data.actionStatus === "success") {
+          let lcUser = JSON.parse(localStorage.getItem("user"))
+          lcUser.relatedUser.privateVideos =
+            lcUser.relatedUser.privateVideos.filter(
+              (e) => e._id !== deletingFolder._id
+            )
+
+          if (lcUser.relatedUser.privateVideos.length == 0) {
+            setVideoAlbumNow()
+          } else {
+            setVideoAlbumNow([...lcUser.relatedUser.privateVideos][0])
+          }
+
+          authUpdateContext.updateNestedPaths((prev) => ({
+            ...prev,
+            user: {
+              ...prev.user,
+              user: {
+                ...lcUser,
+              },
+            },
+          }))
+          localStorage.setItem("user", JSON.stringify(lcUser))
+        }
+      })
+  }
+
+  // delete private image folder
+  const imageAlbumDelete = (deletingFolder) => {
+    // console.log(deletingFolder._id, deletingFolder.name, deletingFolder)
+    fetch("/api/website/profile/delete-albums", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        albumId: deletingFolder._id,
         type: "ImageAlbum",
       }),
     })
       .then((resp) => resp.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        // if action is success then
+        if (data.actionStatus === "success") {
+          imageFolderDelete = true
+
+          let lcUser = JSON.parse(localStorage.getItem("user"))
+          lcUser.relatedUser.privateImages =
+            lcUser.relatedUser.privateImages.filter(
+              (e) => e._id !== deletingFolder._id
+            )
+
+          if (lcUser.relatedUser.privateImages.length == 0) {
+            setAlbumNow()
+          } else {
+            setAlbumNow([...lcUser.relatedUser.privateImages][0])
+          }
+
+          authUpdateContext.updateNestedPaths((prev) => ({
+            ...prev,
+            user: {
+              ...prev.user,
+              user: {
+                ...lcUser,
+              },
+            },
+          }))
+
+          localStorage.setItem("user", JSON.stringify(lcUser))
+        }
+      })
   }
 
   return authContext.user.user ? (
@@ -1279,7 +1350,6 @@ function Profile() {
                 onClick={() => router.push("/document")}
                 className="tw-rounded-full tw-px-4 hover:tw-border-1 tw-border-1 tw-border-white-color tw-font-medium"
               >
-                {" "}
                 📄 Upload Documents
               </button>
             )}
@@ -1387,10 +1457,6 @@ function Profile() {
                 : null}
             </div>
           </div>
-
-          {/*Private Image  */}
-
-          {/*Private Image  */}
 
           <div className="tw-flex tw-justify-between tw--mb-4 tw-mt-4 tw-ml-4">
             <h1>My videos</h1>
@@ -1524,7 +1590,6 @@ function Profile() {
                     <input
                       type="text"
                       name="fileName"
-                      // value={input.name}
                       required={true}
                       className="tw-outline-none tw-text-black tw-rounded-full tw-px-2 tw-py-1"
                       placeholder="Name of folder"
@@ -1689,19 +1754,6 @@ function Profile() {
             <h1>Private photo</h1>
           </div>
           <div className=" tw-bg-first-color tw-py-2 tw-pl-4 hover:tw-shadow-lg tw-rounded-t-xl tw-rounded-b-xl tw-mt-6">
-            {/* <div className="tw-flex">
-              <EditIcon
-                fontSize="large"
-                className="tw-ml-auto tw-underline tw-cursor-pointer"
-                onClick={() =>
-                  setEdit((prev) => ({
-                    ...prev,
-                    publicVideos: true,
-                  }))
-                }
-              />
-              <p className="tw-my-auto tw-cursor-pointer">Edit</p>
-            </div> */}
             <div className="tw-my-4">
               {showInput && (
                 <div className="tw-flex tw-justify-between">
@@ -1768,15 +1820,7 @@ function Profile() {
                       className="tw-flex tw-justify-between"
                     >
                       <div>{item.name}</div>
-                      <div>
-                        {item.price}
-                        {/* <ClearIcon
-                      className="tw-text-black tw-my-auto"
-                      onClick={() => {
-                        document.getElementById(index).remove()
-                      }}
-                    /> */}
-                      </div>
+                      <div>{item.price}</div>
                     </Dropdown.Item>
                   )
                 )}
@@ -1832,10 +1876,22 @@ function Profile() {
 
                 {/* file */}
                 {albumNow && (
+                  // authContext.user.user.relatedUser.privateImages?.map(
+                  //   (item) => {
+                  //     if (item._id == albumNow._id) {
+                  //       return item
+                  //     }
+                  //     return []
+                  //   }
+                  // ),
                   <FsLightbox
                     toggler={lightboxControllerPrivate.toggler}
                     sources={authContext.user.user.relatedUser.privateImages
-                      .find((e) => e._id == albumNow._id)
+                      ?.find((e) => {
+                        if (e._id == albumNow?._id) {
+                          return albumNow
+                        }
+                      })
                       .originalImages?.map((url, index) => {
                         return <img src={url} />
                       })}
@@ -1848,18 +1904,23 @@ function Profile() {
 
               {albumNow &&
                 authContext.user.user.relatedUser.privateImages
-                  .find((e) => e._id == albumNow._id)
+                  ?.find((e) => {
+                    if (e._id == albumNow?._id) {
+                      return e
+                    }
+                  })
                   .originalImages?.map((image, index) => (
                     <div
                       className=" tw-mb-4 tw-cursor-pointer  "
                       key={index}
                       onClick={() => openLightboxOnSlidePrivate(index + 1)}
                     >
-                      {/* <img src={image} className="tw-w-32 tw-h-32" /> */}
                       <img src={image} height="128" width="128" />
                     </div>
                   ))}
               {/* That item show */}
+              {/* Now make delete false */}
+              {(imageFolderDelete = false)}
             </div>
           </div>
           {/* Testing dummy videos */}
