@@ -118,10 +118,22 @@ function useAgora(client, role, callType) {
 
     if (role === "host") {
       spinnerCtx.setShowSpinner(true, "Going Live...")
-      const track = await createMyTrack()
-      await client.join(appId, channel, token, uid)
+      try {
+        var track = await createMyTrack()
+      } catch (error) {
+        console.error(error)
+      }
+      try {
+        await client.join(appId, channel, token, uid)
+      } catch (error) {
+        console.error(error)
+      }
       if (track) {
-        await client.publish(track)
+        try {
+          await client.publish(track)
+        } catch (error) {
+          console.error(error)
+        }
         spinnerCtx.setShowSpinner(false, "Please wait...")
         return setJoinState(true)
       } else {
@@ -133,8 +145,12 @@ function useAgora(client, role, callType) {
       // if client
       /* there is some error occurring even after completion of joining of the channel spinner is not showing */
       // spinnerCtx.setShowSpinner(true, "Connecting...")
-      await client.join(appId, channel, token, uid)
-      setJoinState(true)
+      try {
+        await client.join(appId, channel, token, uid)
+      } catch (error) {
+        console.error(error)
+      }
+      return setJoinState(true)
       // spinnerCtx.setShowSpinner(false, "Please wait...")
     }
   }

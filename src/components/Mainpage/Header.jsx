@@ -289,14 +289,14 @@ function Header(props) {
     }
   }, [socketCtx.socketSetupDone])
 
-  useEffect(() => {
-    fetch("/api/website/compose-ui/get-live-models-count")
-      .then((res) => res.json())
-      .then((data) => {
-        setLiveModels(+data.liveNow)
-      })
-      .catch((err) => alert(err.message))
-  }, [])
+  // useEffect(() => {
+  //   fetch("/api/website/compose-ui/get-live-models-count")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setLiveModels(+data.liveNow)
+  //     })
+  //     .catch((err) => alert(err.message))
+  // }, [])
 
   useEffect(() => {
     setSearchData([...modelList])

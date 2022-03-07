@@ -356,6 +356,7 @@ function Live() {
     ctx.relatedUserId,
     ctx.loadedFromLocalStorage,
     goneLiveOnce,
+    join,
   ])
 
   useEffect(() => {
