@@ -7,14 +7,15 @@ import ClearIcon from "@material-ui/icons/Clear"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import logo from "../../../public/logo.png"
+import Link from "next/link"
 import { useWidth } from "../../app/Context"
 import { useSidebarStatus, useSidebarUpdate } from "../../app/Sidebarcontext"
-import Link from "next/link"
 import { useAuthContext } from "../../app/AuthContext"
+import { useSocketContext } from "../../app/socket/SocketContext"
+import { useModelList } from "../../app/modelDetails/ModelContext"
 import Headerprofile from "./Header/Headerprofile"
 import Headerui from "../UI/HeaderUI"
 import io from "../../socket/socket"
-import { useSocketContext } from "../../app/socket/SocketContext"
 import ModelDetailHeader from "../ViewerScreen/ModelDetailHeader"
 import Notifications from "./Header/Notifications"
 import AdjustIcon from "@material-ui/icons/Adjust"
@@ -66,13 +67,14 @@ const initialNotifications = [
 ]
 
 function Header(props) {
+  const docRef = useRef()
   const [menu, setMenu] = useState(false)
   const [searchShow, setSearchShow] = useState(false)
-  const [headerProfileShow, setHeaderProfileShow] = useState(false)
   const [query, setQuery] = useState("")
   const [searchData, setSearchData] = useState([])
   const [liveModels, setLiveModels] = useState(0)
   const [notifications, setNotification] = useState(initialNotifications)
+  const [headerProfileShow, setHeaderProfileShow] = useState()
 
   /* 
     notification schema 
@@ -93,7 +95,7 @@ function Header(props) {
   const sidebarUpdate = useSidebarUpdate()
   const authContext = useAuthContext()
   const socketCtx = useSocketContext()
-
+  const modelList = useModelList() || []
   // This to the hide the header UI to the click to  the outside of ref
 
   const [hide, setHide] =
@@ -296,7 +298,20 @@ function Header(props) {
       .catch((err) => alert(err.message))
   }, [])
 
+  useEffect(() => {
+    setSearchData([...modelList])
+  }, [searchShow])
 
+  // This use effect to hide the search for the
+  useEffect(() => {
+    setSearchShow(false), setQuery([])
+  }, [router.asPath])
+
+  const clickDetails = (e) => {
+    if (docRef.current.className.includes("search")) {
+      setSearchShow(true)
+    }
+  }
 
   return (
     <div className="tw-min-w-full tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-[400]">
@@ -329,7 +344,12 @@ function Header(props) {
           </div>
         </div>
         {/* --------------search text---------- */}
-        <span className="tw-hidden sm:tw-inline-block tw-relative">
+        <span
+          className="tw-hidden sm:tw-inline-block tw-relative search"
+          onClick={clickDetails}
+          onFocus={() => setSearchShow(true)}
+          ref={docRef}
+        >
           <div className="tw-rounded-full tw-p-0 tw-relative ">
             <button className="tw-absolute tw-right-4 tw-top-[50%] tw-translate-y-[-50%]">
               <SearchIcon className="tw-text-text-black" />
@@ -337,9 +357,9 @@ function Header(props) {
             <input
               className="tw-rounded-full tw-bg-second-color tw-border-transparent tw-outline-none tw-py-2 tw-pl-6 tw-pr-12 tw-capitalize xl:tw-w-96 lg:tw-w-[300px]"
               type="text"
+              onKeyPress={() => setSearchShow(true)}
               placeholder="Search Models"
-              onFocus={() => setSearchShow(true)}
-              onBlur={() => setSearchShow(false)}
+              // onBlur={() => setSearchShow(false)}
               value={query.toString().trim().toLowerCase()}
               onChange={(event) => setQuery(event.target.value)}
             />
@@ -348,6 +368,9 @@ function Header(props) {
             className={`tw-absolute tw-z-[120] tw-bg-gray-400 tw-h-96 tw-w-96 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white  ${
               searchShow ? "" : "tw-hidden"
             }`}
+            // onBlur={() => setSearchShow(false)}
+            onMouseLeave={() => setSearchShow(false)}
+            // onMouseDown={() => setSearchShow(true)}
           >
             <ul>
               {searchData
@@ -357,11 +380,16 @@ function Header(props) {
                   } else if (
                     val.name.toLowerCase().includes(query.toLowerCase())
                   ) {
+                    console.log(val.name)
                     return val
                   }
                 })
                 .map((product) => (
-                  <li key={product.id}>{product.name}</li>
+                  <li key={product._id} className="tw-cursor-pointer">
+                    <Link href={`/view-stream/${product._id}`}>
+                      <a>{product.name}</a>
+                    </Link>
+                  </li>
                 ))}
             </ul>
           </div>

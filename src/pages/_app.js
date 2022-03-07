@@ -6,6 +6,7 @@ import { ModalContextProvider } from "../app/ModalContext"
 import { ErrorContextProvider } from "../app/Error/ErrorContext"
 import { SpinnerContextProvider } from "../app/Loading/SpinnerContext"
 import { SocketContextProvider } from "../app/socket/SocketContext"
+import { ModelListContextProvider } from "../app/modelDetails/ModelContext"
 import TestComponent from "./text"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "react-toastify/dist/ReactToastify.css"
@@ -50,9 +51,11 @@ const MyApp = ({ Component, pageProps }) => {
                     pauseOnHover
                     theme="dark"
                   />
-                  <Mainlayout>
-                    <Component {...pageProps} />
-                  </Mainlayout>
+                  <ModelListContextProvider>
+                    <Mainlayout>
+                      <Component {...pageProps} />
+                    </Mainlayout>
+                  </ModelListContextProvider>
                 </SocketContextProvider>
               </SpinnerContextProvider>
             </ErrorContextProvider>

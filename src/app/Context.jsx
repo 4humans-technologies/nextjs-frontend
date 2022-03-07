@@ -1,7 +1,6 @@
 import React, { createContext, useEffect, useState, useContext } from "react"
 
 const Widthcontext = React.createContext()
-const updateContext = createContext()
 
 export const ContextProvider = ({ children }) => {
   const [innerWidth, setInnerWidth] = useState(745)

@@ -1,16 +1,16 @@
 import Head from "next/head"
-import Sidebar from "../components/Mainpage/Sidebar"
 import Boxgroup from "../components/Mainpage/Boxgroup"
 import { useState, useEffect } from "react"
-import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
 import io from "../socket/socket"
+import { useAuthContext, useAuthUpdateContext } from "../app/AuthContext"
 import { useSocketContext } from "../app/socket/SocketContext"
+import { useUpdateModelList } from "../app/modelDetails/ModelContext"
 
 const Home = () => {
   console.log("rendering home")
   const ctx = useAuthContext()
   const socketContext = useSocketContext()
-
+  const modelListContext = useUpdateModelList()
   const [boxGroupsData, setBoxGroupData] = useState([])
   const [searchData, setSearchData] = useState([])
 
@@ -19,6 +19,7 @@ const Home = () => {
       fetch("/api/website/compose-ui/get-all-models")
         .then((res) => res.json())
         .then((data) => {
+          modelListContext.handelModelListUpdate({ data })
           const renderLiveModels = (data) => {
             setBoxGroupData((prev) => {
               if (ctx.user.userType !== "Model") {

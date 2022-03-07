@@ -2,8 +2,105 @@ import React, { useState } from "react"
 import useModalContext from "../../../app/ModalContext"
 import CancelIcon from "@material-ui/icons/Cancel"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
-import { useRouter } from "next/router"
 
+const CoverUpdate = () => {
+  const [coverImage, setCoverImage] = useState(null)
+  const authContext = useAuthContext()
+  const authUpdateContext = useAuthUpdateContext()
+  const modelCtx = useModalContext()
+
+  const changeCover = async (e) => {
+    const prevCoverImage = authContext.user.user.relatedUser?.backgroundImage
+    const image_1 = await e.target.files[0]
+    const image_2 = await URL.createObjectURL(e.target.files[0])
+    setCoverImage(image_2)
+
+    // THis get url for send the image to the aws server
+    const res = await fetch(
+      "/api/website/aws/get-s3-upload-url?type=" + image_1.type
+    )
+    const data_2 = await res.json()
+    const cover_url = await data_2.uploadUrl
+    // Now change coverImage to url
+
+    // Then this uplode uplode the Image in the S3 bucket
+    const resp = await fetch(cover_url, {
+      method: "PUT",
+      body: image_1,
+    })
+
+    // if response is 200 then send the data to your own server
+    if (!resp.ok) {
+      return alert("What is this Bakloli")
+    }
+
+    const coverUrl = cover_url.split("?")[0]
+
+    fetch("/api/website/profile/viewer/update-profile-info", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        updatedData: {
+          backgroundImage: coverUrl,
+        },
+        deleteObjects: [prevCoverImage],
+      }),
+    })
+
+    // below is context update for backgroundImage
+    authUpdateContext.updateNestedPaths((prevState) => ({
+      ...prevState,
+      user: {
+        ...prevState.user,
+        user: {
+          ...prevState.user.user,
+          relatedUser: {
+            ...prevState.user.user.relatedUser,
+            backgroundImage: coverUrl,
+          },
+        },
+      },
+    }))
+
+    // Below is local storage update for covwerImage
+    let store = JSON.parse(localStorage.getItem("user"))
+    store["relatedUser"]["backgroundImage"] = coverUrl
+    localStorage.setItem("user", JSON.stringify(store))
+
+    // const jsonResp = await re.json()
+  }
+
+  // Now use this url to uploade to serve using url
+
+  return (
+    <div className="md:tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color md:tw-border-2 md:tw-border-white-color tw-border-transparent">
+      <CancelIcon
+        className="tw-text-white-color tw-ml-[90%]"
+        fontSize="medium"
+        onClick={modelCtx.hideModal}
+      />
+      <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
+        Update cover Image
+      </h2>
+      <img
+        src={authContext.user.user.relatedUser.backgroundImage}
+        className="tw-w-full tw-h-48 tw-my-4"
+      />
+      <label className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium">
+        <input
+          type="file"
+          onChange={(e) => changeCover(e)}
+          className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color"
+        />
+        Update Cover Page
+      </label>
+    </div>
+  )
+}
+
+// user Email Change
 const EmailChange = () => {
   const authUpdateContext = useAuthUpdateContext()
   const modalCtx = useModalContext()
@@ -15,7 +112,7 @@ const EmailChange = () => {
   // Check type to change url according to change
   const changeHandler = (e) => {
     if (email.oldEmail != email.newEmail) {
-      fetch("/api/website/profile/update-model-basic-details", {
+      fetch("/api/website/profile/viewer/update-profile-info", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -80,6 +177,7 @@ const EmailChange = () => {
   )
 }
 
+// User password change
 const PasswordChange = (props) => {
   const modalCtx = useModalContext()
   const [password, setPassword] = useState({
@@ -95,7 +193,7 @@ const PasswordChange = (props) => {
   }
 
   const submitHandler = () => {
-    fetch("/api/website/profile/update-password", {
+    fetch("/api/website/profile/viewer/update-profile-info", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -168,109 +266,13 @@ const PasswordChange = (props) => {
   )
 }
 
-// We do not use defult wen we export two function
-// Cover update and Profile update
-
-const CoverUpdate = () => {
-  const [coverImage, setCoverImage] = useState(null)
-  const authContext = useAuthContext()
-  const authUpdateContext = useAuthUpdateContext()
-  const modelCtx = useModalContext()
-
-  const changeCover = async (e) => {
-    const image_1 = await e.target.files[0]
-    const image_2 = await URL.createObjectURL(e.target.files[0])
-    setCoverImage(image_2)
-
-    // THis get url for send the image to the aws server
-    const res = await fetch(
-      "/api/website/aws/get-s3-upload-url?type=" + image_1.type
-    )
-    const data_2 = await res.json()
-    const cover_url = await data_2.uploadUrl
-    // Now change coverImage to url
-
-    // Then this uplode uplode the Image in the S3 bucket
-    const resp = await fetch(cover_url, {
-      method: "PUT",
-      body: image_1,
-    })
-
-    // if response is 200 then send the data to your own server
-    if (!resp.ok) {
-      return alert("What is this Bakloli")
-    }
-
-    const coverUrl = cover_url.split("?")[0]
-
-    fetch("/api/website/profile/update-model-basic-details", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        updatedData: {
-          coverImage: coverUrl,
-        },
-      }),
-    })
-
-    // below is context update for coverImage
-    authUpdateContext.updateNestedPaths((prevState) => ({
-      ...prevState,
-      user: {
-        ...prevState.user,
-        user: {
-          ...prevState.user.user,
-          relatedUser: {
-            ...prevState.user.user.relatedUser,
-            coverImage: coverUrl,
-          },
-        },
-      },
-    }))
-
-    // Below is local storage update for covwerImage
-    let store = JSON.parse(localStorage.getItem("user"))
-    store["relatedUser"]["coverImage"] = coverUrl
-    localStorage.setItem("user", JSON.stringify(store))
-
-    // const jsonResp = await re.json()
-  }
-
-  // Now use this url to uploade to serve using url
-
-  return (
-    <div className="md:tw-mx-auto tw-w-full tw-my-6 tw-rounded  tw-py-5 tw-text-center tw-text-white-color md:tw-border-2 md:tw-border-white-color tw-border-transparent">
-      <CancelIcon
-        className="tw-text-white-color tw-ml-[90%]"
-        fontSize="medium"
-        onClick={modelCtx.hideModal}
-      />
-      <h2 className="tw-text-white-color tw-mx-auto tw-text-lg tw-font-semibold tw-mb-4">
-        Update cover Image
-      </h2>
-      <img
-        src={authContext.user.user.relatedUser.coverImage}
-        className="tw-w-full tw-h-48 tw-my-4"
-      />
-      <label className="tw-rounded-full tw-px-6 tw-py-1 tw-border-2 tw-border-white-color tw-font-medium">
-        <input
-          type="file"
-          onChange={(e) => changeCover(e)}
-          className=" tw-opacity-0 tw-absolute tw-hidden tw-z-[10] tw-outline-none tw-bg-first-color"
-        />
-        Update Cover Page
-      </label>
-    </div>
-  )
-}
-
+// Profile change of user
 const ProfileUpdate = () => {
   const [showImage, setshowImage] = useState()
   const modelCtx = useModalContext()
   const authContext = useAuthContext()
   const authUpdateContext = useAuthUpdateContext()
+  const prevCoverImage = authContext.user.user.relatedUser?.profileImage
 
   const changeCover = async (e) => {
     const image_1 = await e.target.files[0]
@@ -294,8 +296,8 @@ const ProfileUpdate = () => {
     }
     const profileUrl = profile_url.split("?")[0]
     // take this url from the aws and send it to your serve to access it in the future
-    const re = await fetch("/api/website/profile/update-model-basic-details", {
-      method: "POST",
+    fetch("/api/website/profile/viewer/update-profile-info", {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -303,6 +305,7 @@ const ProfileUpdate = () => {
         updatedData: {
           profileImage: profileUrl,
         },
+        deleteObjects: [prevCoverImage],
       }),
     })
 
@@ -325,7 +328,7 @@ const ProfileUpdate = () => {
     store["relatedUser"]["profileImage"] = profileUrl
     localStorage.setItem("user", JSON.stringify(store))
 
-    const jsonRe = await re.json()
+    // const jsonRe = await re.json()
   }
   // Profile pic to aws
 
@@ -354,7 +357,5 @@ const ProfileUpdate = () => {
     </div>
   )
 }
-
-// Cover update and Profile update
 
 export { EmailChange, PasswordChange, CoverUpdate, ProfileUpdate }

@@ -1619,15 +1619,19 @@ function Profile() {
               {videoAlbumNow && (
                 <FsLightbox
                   toggler={videoboxControllerPrivate.toggler}
-                  sources={authContext.user.user.relatedUser.privateVideos.map(
-                    (url) => {
+                  sources={authContext.user.user.relatedUser.privateVideos
+                    ?.find((e) => {
+                      if (e._id == videoAlbumNow?._id) {
+                        return videoAlbumNow
+                      }
+                    })
+                    .originalVideos?.map((url, index) => {
                       return (
                         <div>
                           <video src={url} controls></video>
                         </div>
                       )
-                    }
-                  )}
+                    })}
                   slide={videoboxControllerPrivate.slide}
                 />
               )}
@@ -1662,7 +1666,6 @@ function Profile() {
                     <input
                       type="text"
                       name="fileName"
-                      // value={input.name}
                       required={true}
                       className="tw-outline-none tw-text-black tw-rounded-full tw-px-2 tw-py-1"
                       placeholder="Name of folder"
@@ -1677,7 +1680,6 @@ function Profile() {
                       type="number"
                       name="price"
                       required={true}
-                      // value={input.price}
                       placeholder="Coins for folder "
                       className="tw-outline-none tw-text-black tw-rounded-full tw-px-2 tw-py-1 tw-ml-2"
                       onInput={(e) =>

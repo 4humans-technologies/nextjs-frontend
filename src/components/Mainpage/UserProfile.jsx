@@ -8,7 +8,7 @@ import {
   PasswordChange,
   CoverUpdate,
   ProfileUpdate,
-} from "../UI/Profile/Emailpassword"
+} from "../UI/Profile/UserProfileUpdate"
 
 function UserProfile() {
   const [followerData, setFollowerData] = useState([])
@@ -31,10 +31,10 @@ function UserProfile() {
   }, [])
 
   let profileImage = ""
-  let coverImage = ""
+  let backgroundImage = ""
   if (authContext.user.user) {
     profileImage = authContext.user.user?.relatedUser?.profileImage
-    coverImage = authContext.user.user?.relatedUser?.coverImage
+    backgroundImage = authContext.user.user?.relatedUser?.backgroundImage
   }
 
   const profileEditHandler = async () => {
@@ -90,8 +90,8 @@ function UserProfile() {
       <div className="tw-w-full tw-relative  tw-bg-dark-background tw-mt-[4.5rem]">
         <img
           src={
-            authContext.user.user.relatedUser?.coverImage
-              ? `${authContext.user.user.relatedUser.coverImage}`
+            authContext.user.user.relatedUser?.backgroundImage
+              ? `${authContext.user.user.relatedUser.backgroundImage}`
               : "/cover-photo.png"
           }
           className="tw-w-full md:tw-h-80 tw-object-cover tw-object-center"
@@ -235,7 +235,7 @@ function UserProfile() {
         {/* Password */}
 
         <div className="tw-bg-first-color md:tw-col-span-3 tw-col-span-1 md:tw-my-0 tw-my-4 tw-rounded-t-lg tw-rounded-b-lg tw-justify-items-start tw-mx-2">
-          <h1 className="tw-pl-4 tw-pt-4">Freinds</h1>
+          <h1 className="tw-pl-4 tw-pt-4">Friends</h1>
           {/* Problem with useEffect and useState is that it is update after all data loaded that you have to remmembember */}
           <div className="tw-max-h-96   tw-text-white tw-overflow-y-auto">
             {followerData ? (
