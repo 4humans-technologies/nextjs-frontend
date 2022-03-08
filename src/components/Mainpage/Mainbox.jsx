@@ -1,9 +1,5 @@
 import React, { useState } from "react"
-import Image from "next/image"
-import { Button } from "react-bootstrap"
-import router, { useRouter } from "next/router"
-import dynamic from "next/dynamic"
-import StarIcon from "@material-ui/icons/Star"
+
 import Link from "next/link"
 
 function Mainbox(props) {
@@ -27,7 +23,7 @@ function Mainbox(props) {
             <>
               <p
                 id="model-status"
-                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-blue-500 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full tw-mb-1"
+                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-sm tw-capitalize tw-tracking-wider tw-bg-dark-black tw-py-0.5  tw-relative tw-bottom-0 tw-w-full tw-mb-1"
               >
                 {props.modelName}
               </p>
@@ -43,7 +39,7 @@ function Mainbox(props) {
             <>
               <p
                 id="model-status"
-                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-blue-500 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full tw-mb-1"
+                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-sm tw-capitalize tw-tracking-wider tw-bg-dark-black tw-py-0.5  tw-relative tw-bottom-0 tw-w-full tw-mb-1"
               >
                 {props.modelName}
               </p>
@@ -58,7 +54,7 @@ function Mainbox(props) {
             <>
               <p
                 id="model-status"
-                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-blue-500 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full tw-mb-1"
+                className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-sm tw-capitalize tw-tracking-wider tw-bg-dark-black tw-py-0.5  tw-relative tw-bottom-0 tw-w-full tw-mb-1"
               >
                 {props.modelName}
               </p>

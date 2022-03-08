@@ -365,7 +365,7 @@ function Header(props) {
             />
           </div>
           <div
-            className={`tw-absolute tw-z-[120] tw-bg-gray-400 tw-h-96 tw-w-96 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white  ${
+            className={`tw-absolute tw-z-[120] tw-bg-dark-black tw-h-96 tw-w-96 tw-mt-2 tw-rounded-t-xl tw-rounded-b-xl tw-text-white  ${
               searchShow ? "" : "tw-hidden"
             }`}
             // onBlur={() => setSearchShow(false)}
@@ -385,9 +385,12 @@ function Header(props) {
                   }
                 })
                 .map((product) => (
-                  <li key={product._id} className="tw-cursor-pointer">
+                  <li
+                    key={product._id}
+                    className="tw-cursor-pointer tw-capitalize tw-mb-1 hover:tw-bg-white hover:tw-text-black "
+                  >
                     <Link href={`/view-stream/${product._id}`}>
-                      <a>{product.name}</a>
+                      <a className="tw-ml-2 ">{product.name}</a>
                     </Link>
                   </li>
                 ))}
