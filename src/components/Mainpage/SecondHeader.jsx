@@ -9,6 +9,7 @@ import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 // 1) Search list
 
 function SecondHeader() {
+  let screenWidth = useWidth()
   const [search, setSearch] = useState(false)
   const [isStream, setIsstream] = useState(false)
   const router = useRouter()
@@ -26,13 +27,12 @@ function SecondHeader() {
     }
   }, [])
 
-  let screenWidth = useWidth()
-
   const scrollDown = () => {
+    console.log(`This is screen width -------------${screenWidth}`)
     if (typeof window == "undefined") {
     } else {
       if (screenWidth > 768) {
-        window.scroll(0, 600)
+        window.scroll(0, 400)
       } else {
         window.scroll(0, 1000)
       }

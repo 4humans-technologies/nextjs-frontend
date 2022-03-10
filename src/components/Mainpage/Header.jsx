@@ -68,6 +68,7 @@ const initialNotifications = [
 
 function Header(props) {
   const docRef = useRef()
+  const sidebarRef = useRef()
   const [menu, setMenu] = useState(false)
   const [searchShow, setSearchShow] = useState(false)
   const [query, setQuery] = useState("")
@@ -319,8 +320,17 @@ function Header(props) {
       <div className="tw-relative tw-flex tw-items-center tw-justify-between tw-bg-dark-black tw-text-white  tw-py-1 sm:tw-pr-4 tw-pl-4 tw-z-[410] tw-pt-2">
         {/* ------------------------ */}
         <div className="tw-flex tw-text-center">
-          <div onClick={sidebarUpdate} className="tw-self-center tw-mr-4">
-            {sidebarStatus ? <ClearIcon /> : <MenuIcon />}
+          <div
+            onClick={sidebarUpdate}
+            className="tw-self-center tw-mr-4"
+            id="burger"
+            ref={sidebarRef}
+          >
+            {sidebarStatus ? (
+              <ClearIcon className="clearIcon" />
+            ) : (
+              <MenuIcon className="menuIcon" />
+            )}
           </div>
           <Link href="/">
             <a className="tw-z-50 tw-cursor-pointer">

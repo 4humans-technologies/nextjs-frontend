@@ -43,7 +43,7 @@ const AuthUpdateContext = createContext({
 
 let numberOfInits = 0
 export const AuthContextProvider = ({ children }) => {
-  console.log("Again initializing AUTHCONTEXT => ", ++numberOfInits)
+  // console.log("Again initializing AUTHCONTEXT => ", ++numberOfInits)
   const [authState, setAuthState] = useState(initialState)
   const router = useRouter()
 

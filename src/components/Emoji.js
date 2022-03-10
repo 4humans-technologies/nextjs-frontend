@@ -12,19 +12,19 @@ function Emoji(props) {
     emojiRef.current.contains(e.target)
   }
 
-  const handleClick = () => {
-    document.getElementById("message-input").scrollIntoView({
-      block: "end",
-    })
-    // if (!showEmoji) {
-    //   window.addEventListener("click", clickAwayListener)
-    // } else {
-    //   window.removeEventListener("click", clickAwayListener)
-    // }
-    setShowEmoji((prev) => {
-      return !prev
-    })
-  }
+  // const handleClick = () => {
+  //   document.getElementById("message-input").scrollIntoView({
+  //     block: "end",
+  //   })
+  //   // if (!showEmoji) {
+  //   //   window.addEventListener("click", clickAwayListener)
+  //   // } else {
+  //   //   window.removeEventListener("click", clickAwayListener)
+  //   // }
+  //   setShowEmoji((prev) => {
+  //     return !prev
+  //   })
+  // }
 
   const handleSelect = useCallback(
     (emoji) => {
@@ -35,13 +35,14 @@ function Emoji(props) {
   return (
     <span className="tw-relative">
       <button
-        onClick={handleClick}
+        // onClick={handleClick}
         className="tw-px-1 tw-text-xl tw-font-semibold"
+        id="emoji"
       >
         😀
       </button>
       <span
-        style={{ display: showEmoji ? "inline" : "none" }}
+        style={{ display: props.showEmoji ? "inline" : "none" }}
         className="tw-absolute tw-bottom-11 tw-right-[-3rem] tw-z-[390]"
       >
         <span className="" ref={emojiRef}>

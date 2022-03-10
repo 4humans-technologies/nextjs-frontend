@@ -1,10 +1,30 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useWidth } from "../../app/Context"
 
 function ModelDetailHeader(props) {
   const { profileImage, username, isStreaming, onCall } = props.data
+  const screenWidth = useWidth()
+  const [yDown, setYdown] = useState(0)
+
+  const handelScroll = () => {
+    setYdown(window.scrollY)
+  }
+
+  useEffect(() => {
+    window.addEventListener("scroll", handelScroll, { passive: true })
+    // console.log(`Down by y-------- ${yDown}`)
+
+    return () => {
+      window.removeEventListener("scroll", handelScroll)
+    }
+  }, [])
+
   return (
-    <div className="tw-flex tw-justify-start tw-items-center tw-py-1.5 tw-px-4 tw-overflow-x-auto tw-flex-nowrap tw-bg-first-color tw-text-white-color tw-shadow-md tw-sticky">
+    <div
+      className={`tw-flex tw-justify-start tw-items-center tw-py-1.5 tw-px-4 tw-overflow-x-auto tw-flex-nowrap tw-bg-first-color tw-text-white-color tw-shadow-md tw-sticky ${
+        yDown > 300 && "tw-hidden"
+      }`}
+    >
       <a
         href="#model-profile-area"
         className="tw-w-10 tw-h-10 tw-ring-2 tw-ring-dreamgirl-red tw-mr-4 tw-rounded-full tw-overflow-hidden tw-flex-shrink-0"

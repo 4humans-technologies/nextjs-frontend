@@ -64,10 +64,11 @@ function LiveScreen(props) {
   const [pendingCallRequest, setPendingCallRequest] = useState(false)
   const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
   const [theKey, setTheKey] = useState(0)
+  const [showEmoji, setShowEmoji] = useState(false)
 
   useEffect(() => {
     const handleRouteChange = (url) => {
-      console.log("changed url", url)
+      // console.log("changed url", url)
       setTheKey((prev) => prev + 1)
     }
     router.events.on("routeChangeComplete", handleRouteChange)
@@ -472,6 +473,23 @@ function LiveScreen(props) {
     }
   }, [authCtx.isLoggedIn, modalCtx.showModalWithContent, theKey])
 
+  useEffect(() => {
+    let findClick = (e) => {
+      console.log(e.target.getAttribute("id"))
+      if (e.target.getAttribute("id") == "emoji") {
+        console.log("emogi clicked")
+        setShowEmoji((prev) => !prev)
+      } else {
+        console.log("emogi closed")
+        setShowEmoji(false)
+      }
+    }
+    document.addEventListener("mousedown", findClick)
+    return () => {
+      document.removeEventListener("mousedown", findClick)
+    }
+  }, [showEmoji])
+
   return (
     <>
       <div className="md:tw-flex md:tw-flex-1 tw-w-full tw-bg-dark-black tw-font-sans md:tw-pt-12 tw-pt-16">
@@ -805,7 +823,11 @@ function LiveScreen(props) {
               placeholder="Start Chatting..."
               ref={chatInputRef}
             ></input>
-            <Emoji chatInputRef={chatInputRef} />
+            <Emoji
+              chatInputRef={chatInputRef}
+              className="emoji"
+              showEmoji={showEmoji}
+            />
             <button
               onClick={sendChatMessage}
               className="tw-rounded-full tw-flex tw-self-center tw-text-sm tw-bg-dreamgirl-red tw-px-4 tw-py-2 md:tw-mr-4 tw-mr-2"
