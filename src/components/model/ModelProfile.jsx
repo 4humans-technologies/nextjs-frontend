@@ -663,7 +663,9 @@ function ModelProfile(props) {
           </section>
           <section
             style={{ display: state === "PrivateVideos" ? "block" : "none" }}
-          ></section>
+          >
+            {<PrivateVideos key={theKey + 800} />}
+          </section>
         </div>
       </div>
     </div>
