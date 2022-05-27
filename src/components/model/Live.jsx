@@ -175,7 +175,7 @@ function Live() {
           }
           if (isLiveNowRef.current) {
             const myStreamId = sessionStorage.getItem("streamId")
-            console.log("Live and checking")
+            // console.log("Live and checking")
             const socketRooms =
               JSON.parse(sessionStorage.getItem("socket-rooms")) || []
             const myRelatedUserId = localStorage.getItem("relatedUserId")

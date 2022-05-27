@@ -63,11 +63,11 @@ function LiveScreen(props) {
   const [callType, setCallType] = useState("videoCall")
   const [pendingCallRequest, setPendingCallRequest] = useState(false)
   const [pendingCallEndRequest, setPendingCallEndRequest] = useState(false)
-  const [theKey, setTheKey] = useState(0)
 
+  // FOR RECREATING THE COMPONENT WHEN CLICKED ON MODEL FROM RECOMMENDATIONS
+  const [theKey, setTheKey] = useState(0)
   useEffect(() => {
     const handleRouteChange = (url) => {
-      console.log("changed url", url)
       setTheKey((prev) => prev + 1)
     }
     router.events.on("routeChangeComplete", handleRouteChange)
@@ -510,6 +510,7 @@ function LiveScreen(props) {
             setIsModelOffline={setIsModelOffline}
             setTipMenuActions={setTipMenuActions}
             setKing={setKing}
+            setChatWindow={setChatWindow}
             setModelProfileData={props.setModelProfileData}
             callOnGoing={callOnGoing}
             pendingCallRequest={pendingCallRequest}
@@ -792,14 +793,12 @@ function LiveScreen(props) {
             id="message-input"
             className="tw-flex tw-items-center tw-bg-second-color tw-text-white tw-w-full tw-z-[300] tw-pb-2 tw-pt-2.5"
           >
-            <span className="circle-shadow  tw-h-10 tw-w-[15] tw-inline-flex tw-flex-shrink-0 tw-p-1  tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]">
-              <img
-                src="/tips.png"
-                className="tw-w-6 tw-h-6"
-                onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
-              />
-              <span className=" tw-font-semibold tw-ml-1">TIP</span>
-            </span>
+            <button
+              onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
+              className="circle-shadow  tw-h-10 tw-w-[15] tw-inline-flex tw-flex-shrink-0 tw-p-1  tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]"
+            >
+              <span className="tw-text-sm tw-font-medium">TIP</span>
+            </button>
             <input
               className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow md:tw-ml-2 "
               placeholder="Start Chatting..."

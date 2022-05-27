@@ -65,6 +65,13 @@ const callTimer = {
   timerElement: null,
 }
 
+const chatWindowOptions = {
+  PRIVATE: "private",
+  PUBLIC: "public",
+  USERS: "users",
+  TIP_MENU: "TIP_MENU",
+}
+
 function ViewerScreen(props) {
   const container = useRef()
 
@@ -534,6 +541,7 @@ function ViewerScreen(props) {
                 return setIsModelOffline(true)
               } else {
                 /* if model is streaming */
+                setChatWindow(chatWindowOptions.PUBLIC)
                 setIsModelOffline(false)
                 if (!data.socketUpdated) {
                   socket.emit("update-client-info", {
@@ -670,6 +678,7 @@ function ViewerScreen(props) {
                 return setIsModelOffline(true)
               } else {
                 /* if model is streaming */
+                setChatWindow(chatWindowOptions.PUBLIC)
                 setIsModelOffline(false)
                 if (!data.socketUpdated) {
                   socket.emit("update-client-info", {
@@ -947,7 +956,7 @@ function ViewerScreen(props) {
                                   if (data.callType === "videoCall") {
                                     if (!hasVideoDevices && !hasAudioDevices) {
                                       toast.info(
-                                        " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
+                                        " ↖↖ Please ALLOW MICROPHONE and CAMERA permissions.",
                                         {
                                           position:
                                             document.body.clientHeight /
@@ -963,7 +972,7 @@ function ViewerScreen(props) {
                                       !hasAudioDevices
                                     ) {
                                       toast.info(
-                                        " 👈👈 Please ALLOW CAMERA permissions.",
+                                        " ↖↖ Please ALLOW CAMERA permissions.",
                                         {
                                           position:
                                             document.body.clientHeight /
@@ -979,7 +988,7 @@ function ViewerScreen(props) {
                                     /* if audio call */
                                     if (!hasAudioDevices) {
                                       toast.info(
-                                        " 👈👈 Please ALLOW MICROPHONE permissions.",
+                                        " ↖↖ Please ALLOW MICROPHONE permissions.",
                                         {
                                           position:
                                             document.body.clientHeight /
@@ -1059,7 +1068,7 @@ function ViewerScreen(props) {
                             if (data.callType === "videoCall") {
                               if (!hasVideoDevices && !hasAudioDevices) {
                                 toast.info(
-                                  " 👈👈 Please ALLOW MICROPHONE and CAMERA permissions.",
+                                  " ↖↖ Please ALLOW MICROPHONE and CAMERA permissions.",
                                   {
                                     position:
                                       document.body.clientHeight /
@@ -1072,7 +1081,7 @@ function ViewerScreen(props) {
                                 )
                               } else if (hasVideoDevices && !hasAudioDevices) {
                                 toast.info(
-                                  " 👈👈 Please ALLOW CAMERA permissions.",
+                                  " ↖↖ Please ALLOW CAMERA permissions.",
                                   {
                                     position:
                                       document.body.clientHeight /
@@ -1088,7 +1097,7 @@ function ViewerScreen(props) {
                               /* if audio call */
                               if (!hasAudioDevices) {
                                 toast.info(
-                                  " 👈👈 Please ALLOW MICROPHONE permissions.",
+                                  " ↖↖ Please ALLOW MICROPHONE permissions.",
                                   {
                                     position:
                                       document.body.clientHeight /
