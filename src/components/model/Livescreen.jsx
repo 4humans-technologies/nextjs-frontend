@@ -797,7 +797,7 @@ function LiveScreen(props) {
               onClick={() => setChatWindow(chatWindowOptions.TIP_MENU)}
               className="circle-shadow  tw-h-10 tw-w-[15] tw-inline-flex tw-flex-shrink-0 tw-p-1  tw-bg-second-color tw-ring-1 tw-shadow-inner tw-ring-gray-500 tw-place-items-center tw-rounded-full tw-cursor-pointer hover:tw-transform hover:tw-scale-[1.1]"
             >
-              <span className="tw-text-sm tw-font-medium">TIP</span>
+              <img src="/tips.png" className="tw-w-6 tw-h-6" />
             </button>
             <input
               className="tw-rounded-full tw-py-2 tw-px-6 tw-bg-dark-black tw-border-0 tw-outline-none tw-flex-grow md:tw-ml-2 "
