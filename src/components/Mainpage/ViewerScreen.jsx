@@ -102,7 +102,7 @@ function ViewerScreen(props) {
     pendingCallEndRequest,
     setPendingCallEndRequest,
     setKing,
-    setChatWindow
+    setChatWindow,
   } = props
 
   const {
