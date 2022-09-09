@@ -1,5 +1,3 @@
-// import { store } from "../app/store";
-// import { Provider } from 'react-redux'
 import React, { useEffect } from "react"
 import { ContextProvider } from "../app/Context"
 import { SidebarContextProvider } from "../app/Sidebarcontext"
@@ -10,10 +8,10 @@ import { SpinnerContextProvider } from "../app/Loading/SpinnerContext"
 import { SocketContextProvider } from "../app/socket/SocketContext"
 import TestComponent from "./text"
 import "bootstrap/dist/css/bootstrap.min.css"
-import "../styles/globals.css"
-// import dynamic from "next/dynamic";
-// const io = dynamic(() => import("../socket/socket"), { ssr: false })
-
+import "react-toastify/dist/ReactToastify.css"
+import "../styles/global.css"
+import Mainlayout from "../components/UI/Mainlayout"
+import { ToastContainer } from "react-toastify"
 /**
  * RULES OF HOOKS
  * react hooks must be called in the same order in every render
@@ -30,6 +28,7 @@ const MyApp = ({ Component, pageProps }) => {
       sessionStorage.clear()
     }
   }, [])
+
   return (
     // <Provider store={store}>
     <AuthContextProvider>
@@ -40,7 +39,20 @@ const MyApp = ({ Component, pageProps }) => {
               <SpinnerContextProvider>
                 <SocketContextProvider>
                   <TestComponent />
-                  <Component {...pageProps} />
+                  <ToastContainer
+                    position="bottom-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    rtl={false}
+                    closeOnClick
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                  />
+                  <Mainlayout>
+                    <Component {...pageProps} />
+                  </Mainlayout>
                 </SocketContextProvider>
               </SpinnerContextProvider>
             </ErrorContextProvider>

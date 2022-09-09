@@ -3,8 +3,7 @@ import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
 import { useEffect } from "react"
-import Videoshowcontroller from "../../components/model/VideoStreaming/Videoshowcontroller"
-import Showcontroler from "../../components/model/VideoStreaming/Showcontroler"
+
 
 const LiveComponent = dynamic(() => import("../../components/model/Live"), {
   ssr: false,
@@ -16,7 +15,7 @@ function GoLive() {
   const router = useRouter()
 
   useEffect(() => {
-    //debugger
+    //
     if (ctx.loadedFromLocalStorage) {
       if (ctx.isLoggedIn === false && ctx.user.userType !== "Model") {
         updateCtx.updateViewer({ loginSuccessUrl: window.location.pathname })
@@ -25,13 +24,13 @@ function GoLive() {
     }
   }, [ctx.loadedFromLocalStorage, ctx.isLoggedIn, ctx.user.userType])
   return ctx.isLoggedIn === true && ctx.user.userType === "Model" ? (
-    <div>
+    <div className="tw-min-h-screen tw-bg-first-color">
       <LiveComponent />
     </div>
   ) : (
     <div className="tw-grid tw-place-items-center tw-min-h-screen">
-      <h1 className="tw-text-lg tw-font-medium tw-font-mono">
-        You Not LoggedIn As Model, Redirecting To The Login Screen...
+      <h1 className="tw-text-lg tw-font-medium text-center">
+        You Are Not LoggedIn As Model, Redirecting To The Login Screen...
       </h1>
     </div>
   )

@@ -1,0 +1,47 @@
+Progress: resolved 1, reused 0, downloaded 0, added 0
+ WARN  deprecated babel-eslint@10.1.0: babel-eslint is now @babel/eslint-parser. This package will no longer receive updates.
+ WARN  deprecated @material-ui/core@4.12.3: You can now upgrade to @mui/material. See the guide: https://mui.com/guides/migration-v4/
+ WARN  deprecated @material-ui/icons@4.11.2: You can now upgrade to @mui/icons. See the guide: https://mui.com/guides/migration-v4/
+Progress: resolved 32, reused 32, downloaded 0, added 0
+ WARN  deprecated @material-ui/styles@4.11.4: You can now upgrade to @mui/styles. See the guide: https://mui.com/guides/migration-v4/
+ WARN  deprecated @material-ui/system@4.12.1: You can now upgrade to @mui/system. See the guide: https://mui.com/guides/migration-v4/
+Progress: resolved 288, reused 237, downloaded 0, added 0
+ WARN  deprecated querystring@0.2.1: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
+ WARN  deprecated core-js-pure@3.19.1: core-js-pure@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js-pure.
+ WARN  deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
+Progress: resolved 898, reused 567, downloaded 1, added 0
+Progress: resolved 922, reused 580, downloaded 3, added 0
+Progress: resolved 926, reused 585, downloaded 5, added 0
+Progress: resolved 933, reused 589, downloaded 5, added 0
+Progress: resolved 938, reused 593, downloaded 7, added 0
+Progress: resolved 945, reused 595, downloaded 8, added 0
+Packages: +52 -6
+++++++++++++++++++++++++++++++++++++++++++++++++++++------
+Progress: resolved 946, reused 595, downloaded 10, added 50
+.../node_modules/styled-components postinstall$ node ./postinstall.js
+.../node_modules/styled-components postinstall: Done
+
+dependencies:
++ @babel/core 7.18.6
++ @popperjs/core 2.10.2 (2.11.5 is available)
+- babel-plugin-styled-components 1.13.2
++ babel-plugin-styled-components 1.13.2
+- bootstrap 5.1.3
++ bootstrap 5.1.3
+- next 11.1.2
++ next 11.1.2
++ prettier 2.7.1
++ styled-components 5.3.5
+
+devDependencies:
+- eslint-plugin-prettier 4.0.0
++ eslint-plugin-prettier 4.0.0
+
+ WARN  Issues with peer dependencies found
+.
+└─┬ styled-components
+  └── ✕ missing peer react-is@">= 16.8.0"
+Peer dependencies that should be installed:
+  react-is@">= 16.8.0"
+
+Progress: resolved 946, reused 595, downloaded 10, added 52, done

@@ -1,28 +1,29 @@
-import Modal from "react-modal";
-import useModalContext from "../../app/ModalContext";
-import PropTypes from "prop-types";
+import Modal from "react-modal"
+import useModalContext from "../../app/ModalContext"
+import PropTypes from "prop-types"
 
 function ContentModal(props) {
-  const ctx = useModalContext();
   const modalStyles = {
     content: {
-      ...props.contentStyles,
+      ...(props?.contentStyles || {}),
       top: "50%",
       left: "50%",
       right: "auto",
       bottom: "auto",
       transform: "translate(-50%, -50%)",
-      width: "90%",
-      backgroundColor: "#232323",
+      // minWidth: "400px",
+      // maxWidth: "92%",
+      width: "min(400px,60%)",
+      backgroundColor: "rgba(25,25,25,0.7)",
       borderWidth: 0,
       borderRadius: 4,
       overflowY: "auto",
-      maxHeight: "92vh",
+      maxHeight: "92vh", //Height has also been changed to make good
       paddingTop: "2rem",
       paddingBottom: "2rem",
     },
     overlay: {
-      ...props.overlayStyles,
+      ...(props?.overlayStyles || {}),
       position: "fixed",
       zIndex: 500,
       top: 0,
@@ -30,12 +31,12 @@ function ContentModal(props) {
       left: 0,
       right: 0,
       backgroundColor: "rgba(0,0,0,0.6)",
+      // filter:"blur(5px)"
+      backdropFilter: "blur(8px)",
     },
-  };
+  }
   const appElement =
-    typeof window === undefined
-      ? document.getElementById("modal-portal")
-      : null;
+    typeof window === undefined ? document.getElementById("modal-portal") : null
   return (
     <>
       <div>
@@ -51,7 +52,7 @@ function ContentModal(props) {
         </Modal>
       </div>
     </>
-  );
+  )
 }
 
 ContentModal.prototypes = {
@@ -60,6 +61,6 @@ ContentModal.prototypes = {
   onRequestClose: PropTypes.func.isRequired,
   contentStyles: PropTypes.object,
   overlay: PropTypes.object,
-};
+}
 
-export default ContentModal;
+export default ContentModal

@@ -1,20 +1,28 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
+  "extends": [
+    "next",
+    "prettier",
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:jsx-a11y/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 12,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react-hooks"
-    ],
-    "rules": {
-        // "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
-        // "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies
-    }
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["react-hooks"],
+  "rules": {
+    "react-hooks/rules-of-hooks": "error" // Checks rules of Hooks
+    // "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies
+  }
 }

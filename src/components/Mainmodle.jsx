@@ -1,11 +1,11 @@
-import React from "react";
-import Header from "../components/Mainpage/Header";
-import SecondHeader from "../components/Mainpage/SecondHeader";
-import Image from "next/dist/client/image";
-import { useSidebarUpdate, useSidebarStatus } from "../app/Sidebarcontext";
-import Sidebar from "./Mainpage/Sidebar";
-import photo from "../../public/ravi.jpg";
-import neeraj from "../../public/brandikaran.jpg";
+import React from "react"
+import Header from "../components/Mainpage/Header"
+import SecondHeader from "../components/Mainpage/SecondHeader"
+import Image from "next/dist/client/image"
+import { useSidebarUpdate, useSidebarStatus } from "../app/Sidebarcontext"
+import Sidebar from "./Mainpage/Sidebar"
+import photo from "../../public/ravi.jpg"
+import neeraj from "../../public/brandikaran.jpg"
 
 const data = [
   {
@@ -24,19 +24,18 @@ const data = [
     eyes: "Blue",
     Subculture: "Indian",
   },
-];
+]
 
 function Mainmodle() {
-  const sidebarStatus = useSidebarStatus();
+  const sidebarStatus = useSidebarStatus()
   return (
     <div>
       <Header />
       <SecondHeader />
-      {sidebarStatus && <Sidebar />}
       <Image src={data[0].photo} className="tw-w-screen" />
 
       <div className="tw-bg-gray-600 tw-w-full sm:tw-h-36 tw-h-28 tw-relative tw-shadow-lg">
-        <div class="rounded-full h-32 w-32 flex items-center justify-center bg-green-700 absolute top-[-50%] shadow-lg">
+        <div className="rounded-full h-32 w-32 flex items-center justify-center bg-green-700 absolute top-[-50%] shadow-lg">
           {/* <Image src={data.image} /> */}
         </div>
         <h2 className="tw-text-white tw-shadow-lg sm:tw-mt-10 sm:tw-ml-32 tw-mt-12 tw-ml-28 tw-absolute tw-text-2xl">
@@ -108,7 +107,7 @@ function Mainmodle() {
       <h2>Main Modle</h2>
       <p>{data.title}</p>
     </div>
-  );
+  )
 }
 
-export default Mainmodle;
+export default Mainmodle

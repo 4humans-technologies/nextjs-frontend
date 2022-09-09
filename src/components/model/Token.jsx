@@ -2,18 +2,20 @@ import React, { useCallback, useEffect, useState } from "react"
 import CancelIcon from "@material-ui/icons/Cancel"
 import useModalContext from "../../app/ModalContext"
 import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
-import io from "../../socket/socket"
-import { useSocketContext } from "../../app/socket/SocketContext"
+import { toast } from "react-toastify"
+import Link from "next/link"
 
 function Token() {
   const [token, setToken] = useState("")
-  const ctx = useSocketContext()
   const modalCtx = useModalContext()
   const authContext = useAuthContext()
   const authUpdateCtx = useAuthUpdateContext()
   const [isExcess, setIsExess] = useState(false)
 
   const handleBuyToken = () => {
+    if (token < 1) {
+      return toast.error("Please tip at least one coin")
+    }
     if (!JSON.parse(sessionStorage.getItem("socket-rooms"))) {
       alert(
         "Please reload your connection to the server was closed, due to in-activity"
@@ -33,7 +35,7 @@ function Token() {
             (room) => room.includes("-public")
           )[0],
           amountGiven: token,
-          username: `${authContext.user.user.username} 👑`,
+          username: `${authContext.user.user.username}`,
           walletCoins: authContext.user.user.relatedUser.wallet.currentAmount,
           message: `${authContext.user.user.username} 👑 gifted ${token} coins`,
         },
@@ -41,32 +43,14 @@ function Token() {
     })
       .then((resp) => resp.json())
       .then((data) => {
-        debugger
-        // alert(data.message)
-        // update the authCtx & localstorage with new wallet amount
         modalCtx.hideModal()
-        authUpdateCtx.updateNestedPaths((prevState) => {
-          return {
-            ...prevState,
-            user: {
-              ...prevState.user,
-              user: {
-                ...prevState.user.user,
-                relatedUser: {
-                  ...prevState.user.user.relatedUser,
-                  wallet: {
-                    ...prevState.user.user.relatedUser.wallet,
-                    currentAmount:
-                      prevState.user.user.relatedUser.wallet.currentAmount -
-                      token,
-                  },
-                },
-              },
-            },
-          }
-        })
+        if (data?.viewerNewWalletAmount) {
+          authUpdateCtx.updateWallet(data.viewerNewWalletAmount, "set")
+        }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        toast.error(err.message)
+      })
   }
 
   const handleAmountInput = (amount) => {
@@ -82,7 +66,7 @@ function Token() {
   }
 
   return (
-    <div className="tw-w-96 tw-place-items-center tw-text-white tw-mx-auto">
+    <div className="md:tw-w-96  tw-w-full tw-place-items-center tw-text-white md:tw-mx-auto">
       <div className="tw-flex tw-justify-between ">
         <div className="tw-mx-2 tw-text-lg tw-mb-4"> Tip to Model Name</div>
         <CancelIcon
@@ -90,16 +74,16 @@ function Token() {
           className="tw-cursor-pointer"
         />
       </div>
-      <form className="tw-bg-second-color tw-justify-items-center tw-self-center tw-px-4 tw-leading-10 tw-py-4 ">
-        <div className="tw-font-extrabold tw-text-xl tw-mb-">
-          How many token would you like to tip
+      <section className="tw-bg-first-color tw-justify-items-center tw-self-center tw-px-8 tw-leading-10 tw-py-4 tw-rounded">
+        <div className="tw-font-medium tw-text-xl tw-mb-4">
+          Enter the amount you want to tip
         </div>
         <div
-          className={`tw-flex tw-justify-between tw-my-2 ${
+          className={`tw-flex tw-justify-between tw-my-2 tw-flex-1 ${
             token == "20" ? "tw-text-green-400" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-items-center tw-flex-grow">
             <input
               type="radio"
               name="selected_token"
@@ -107,16 +91,17 @@ function Token() {
               value="50"
               onClick={() => handleAmountInput(20)}
             />
-            <label htmlFor="Twenty" className="tw-ml-2 ">
-              20 <span>Tokens</span>
+            <label htmlFor="Twenty" className="tw-ml-2 tw-flex">
+              20 <span className="tw-ml-1">Coins</span>
             </label>
           </div>
           <div
-            className={`tw-px-2 tw-border-2 ${
+            className={`tw-px-2 tw-border-2 tw-flex-grow ${
               token == "20" ? "tw-border-green-400" : null
             }`}
           >
-            Tip the model 20 token
+            <p className="tw-hidden md:tw-block">Tip the model 20 coins</p>
+            <p className="md:tw-hidden tw-block">Tip 20 coins</p>
           </div>
         </div>
         {/*  */}
@@ -125,7 +110,7 @@ function Token() {
             token == 50 ? "tw-text-green-400" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-place-items-center tw-flex-grow">
             <input
               type="radio"
               name="selected_token"
@@ -134,15 +119,16 @@ function Token() {
               onClick={() => handleAmountInput(50)}
             />
             <label htmlFor="fifty" className="tw-ml-2 ">
-              50 <span>Tokens</span>
+              50 <span>Coins</span>
             </label>
           </div>
           <div
-            className={`tw-px-2 tw-border-2 ${
+            className={`tw-px-2 tw-border-2 tw-flex-grow ${
               token == "50" ? "tw-border-green-400" : null
             }`}
           >
-            Tip the model 50 token
+            <p className="tw-hidden md:tw-block">Tip the model 50 coins</p>
+            <p className="md:tw-hidden tw-block">Tip 50 coins</p>
           </div>
         </div>
         {/*  */}
@@ -151,7 +137,7 @@ function Token() {
             token == 100 ? "tw-text-green-400" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-place-items-center tw-flex-grow">
             <input
               type="radio"
               name="selected_token"
@@ -160,24 +146,25 @@ function Token() {
               onClick={() => handleAmountInput(100)}
             />
             <label htmlFor="hundred" className="tw-ml-2 ">
-              100 <span>Tokens</span>
+              100 <span>Coins</span>
             </label>
           </div>
           <div
-            className={`tw-px-2 tw-border-2 ${
+            className={`tw-px-2 tw-border-2 tw-flex-grow ${
               token == "100" ? "tw-border-green-400" : null
             }`}
           >
-            Tip the model 100 token
+            <p className="tw-hidden md:tw-block"> Tip the model 100 coins</p>
+            <p className="md:tw-hidden tw-block">Tip 100 coins</p>
           </div>
         </div>
         {/*  */}
         <div
-          className={`tw-flex tw-justify-between tw-my-2 ${
+          className={`tw-flex tw-justify-between tw-my-2  ${
             token == 200 ? "tw-text-green-400" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-place-items-center tw-flex-grow">
             <input
               type="radio"
               name="selected_token"
@@ -186,23 +173,24 @@ function Token() {
               onClick={() => handleAmountInput(200)}
             />
             <label htmlFor="twohundred" className="tw-ml-2 ">
-              200 <span>Tokens</span>
+              200 <span>Coins</span>
             </label>
           </div>
           <div
-            className={`tw-px-2 tw-border-2 ${
+            className={`tw-px-2 tw-border-2 tw-flex-grow ${
               token == "200" ? "tw-border-green-400" : null
             }`}
           >
-            Tip the model 200 token
+            <p className="tw-hidden md:tw-block"> Tip the model 200 coins</p>
+            <p className="md:tw-hidden tw-block">Tip 200 coins</p>
           </div>
         </div>
         <div
-          className={`tw-flex tw-justify-between tw-my-2 ${
-            token > 200 ? "tw-text-green-400" : null
+          className={`tw-flex tw-justify-between tw-mt-4 tw-mb-2 ${
+            token > 200 ? "tw-text-green-500" : null
           }`}
         >
-          <div className="tw-flex tw-place-items-center">
+          <div className="tw-flex tw-place-items-center tw-flex-grow tw-items-center">
             <input
               type="radio"
               name="selected_token"
@@ -214,28 +202,36 @@ function Token() {
             </label>
           </div>
           <input
-            type="text"
-            className="tw-rounded-full tw-w-48 tw-h-8 tw-bg-black tw-outline-none tw-px-2"
+            type="number"
+            min="1"
+            className="tw-rounded tw-h-8 tw-outline-none tw-px-2 tw-flex-grow tw-bg-second-color tw-ml-4 tw-w-full"
             onChange={(e) => handleAmountInput(e.target.value)}
           />
         </div>
         {isExcess && (
           <div className="">
             <p className="tw-text-left tw-text-red-400 tw-text-sm">
-              {`Oh Bhai !!!!! Tere Wallet Me Sirf ${authContext.user.user.relatedUser.wallet.currentAmount} coins in your wallet!`}
+              {`You have only ${authContext.user.user.relatedUser.wallet.currentAmount} coins in your wallet, Please enter an amount which is less than it 😀`}
             </p>
           </div>
         )}
-      </form>
-      <div className="tw-mx-auto tw-mt-4">
-        <button
-          type="submit"
-          className="tw-rounded-full tw-bg-green-color tw-px-4 tw-py-2"
-          onClick={() => handleBuyToken()}
-        >
-          Buy Token
-        </button>
-      </div>
+        <div className="tw-mx-auto tw-mt-4">
+          <button
+            className="tw-rounded-full tw-bg-green-color tw-px-4 tw-inline-block tw-mr-3"
+            onClick={() => handleBuyToken()}
+          >
+            Send Coins
+          </button>
+          <Link href="/user/payment">
+            <a
+              className="tw-rounded-full tw-bg-dreamgirl-red tw-px-4 tw-inline-block tw-ml-3 hover:tw-text-white"
+              onClick={() => modalCtx.clearModalWithContent()}
+            >
+              Buy Coins
+            </a>
+          </Link>
+        </div>
+      </section>
     </div>
   )
 }

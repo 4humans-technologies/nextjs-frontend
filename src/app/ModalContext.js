@@ -1,10 +1,6 @@
 import React, { useContext, createContext, useState, useCallback } from "react"
 import Modal from "../components/Call/Modal"
 
-import GlobalModalContent, {
-  SetGlobalModalContent,
-} from "../app/GlobalModalContent"
-
 const ModalContext = createContext({
   isOpen: false,
   modalContent: <></>,
@@ -19,16 +15,27 @@ export function ModalContextProvider(props) {
   const [modalContent, setModalContent] = useState(
     <h1>Modal Content Not Set</h1>
   )
+  const [modalStyles, setModalStyles] = useState({})
 
   const showModal = useCallback(() => {
     setIsOpen(true)
   }, [])
 
-  const showModalWithContent = useCallback((content) => {
+  const showModalWithContent = useCallback((content, styles) => {
     /**
      * set content and show modal
      */
-    // //debugger
+    if (styles) {
+      setModalStyles((prev) => {
+        if (styles.contentStyles) {
+          prev.contentStyles = styles.contentStyles
+        }
+        if (styles.overlayStyles) {
+          prev.overlayStyles = styles.overlayStyles
+        }
+        return { ...prev }
+      })
+    }
     setModalContent(content)
     setIsOpen(true)
   }, [])
@@ -44,7 +51,7 @@ export function ModalContextProvider(props) {
   }, [])
 
   const hideModal = useCallback(() => {
-    //debugger
+    //
     setIsOpen(false)
   }, [])
 
@@ -59,7 +66,16 @@ export function ModalContextProvider(props) {
       }}
     >
       {isOpen && (
-        <Modal isOpen={isOpen} onRequestClose={() => setIsOpen(false)}>
+        <Modal
+          isOpen={isOpen}
+          contentStyles={
+            modalStyles?.contentStyles ? modalStyles.contentStyles : {}
+          }
+          overlayStyles={
+            modalStyles?.overlayStyles ? modalStyles.overlayStyles : {}
+          }
+          onRequestClose={() => setIsOpen(false)}
+        >
           {modalContent}
         </Modal>
       )}

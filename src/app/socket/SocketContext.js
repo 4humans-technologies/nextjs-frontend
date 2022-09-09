@@ -1,78 +1,114 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useRef } from "react"
 import io from "../../socket/socket"
-import { imageDomainURL } from "../../../dreamgirl.config"
+import { toast } from "react-toastify"
 
 const SocketContext = createContext({
   socketInstance: null,
   isConnected: false,
-  setSocketInstance: () => { },
-  setIsConnected: () => { },
+  setSocketInstance: () => {},
+  setIsConnected: () => {},
   socketSetupDone: false,
-  setSocketSetupDone: () => { },
+  setSocketSetupDone: () => {},
 })
 
 let socketSetup = false
 export const SocketContextProvider = ({ children }) => {
   const [socketInstance, setSocketInstance] = useState(null)
+  /**
+   * realtime knowledge of is socket connected or not will come when,
+   * when i will need to stock message to send when reconnection happens
+   */
   const [isConnected, setIsConnected] = useState(false)
   const [socketSetupDone, setSocketSetupDone] = useState(false)
+  const networkErrorRef = useRef(null)
 
   const initSocket = () => {
-    //debugger
-    const url = imageDomainURL
-    const socket = io.connect(url)
-    console.log("Initial socket id 🔴🔴", socket.id)
-    if (!socketSetupDone) {
-      setSocketSetupDone(true)
-    }
+    const socket = io.connect(process.env.NEXT_PUBLIC_BACKEND_URL)
 
     socket.on("connect", () => {
+      if (!socketSetupDone) {
+        setSocketSetupDone(true)
+      }
+      if (networkErrorRef.current) {
+        networkErrorRef.current = toast.success("reconnection successful!", {
+          autoClose: 2000,
+          pauseOnFocusLoss: false,
+          hideProgressBar: true,
+        })
+      }
       localStorage.setItem("socketId", socket.id)
-      const socketRooms =
-        JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      let socketRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      /**
+       * filtering private room because even if reconnection happens
+       * proper handshake is done with all the auth details and requests
+       * do pass through middelware, hence any way on reconnection
+       * private room will be joined if all the cred's are valid automatically
+       */
+      socketRooms = socketRooms.filter((room) => !room.endsWith("-private"))
       if (socketRooms.length > 0) {
-        // alert("put me in room")
         socket.emit("putting-me-in-these-rooms", socketRooms, (response) => {
           if (response.status === "ok") {
-            setIsConnected(true)
+            /**
+             * any way response will be persisted in the sessionStorage
+             */
           }
         })
       } else {
-        /* if no rooms join beforehand */
-        setIsConnected(true)
+        /* if no rooms join beforehand, directly connect */
+        sessionStorage.setItem("socket-rooms", "[]")
       }
     })
 
-    socket.on("disconnect", (reason) => {
-      console.log("socket disconnected! due to >>>", reason)
-      localStorage.removeItem("socketId")
-      setIsConnected(false)
+    socket.on("reconnect", (attempt) => {
+      /* connect event is also fired when reconnect is fired hance
+       *  getting my work done from the connect event.
+       */
+      console.log(`reconnect attempt number ${attempt}`)
     })
 
-    socket.on("connect_failed", () => {
-      console.log("socket connected!")
+    socket.on("disconnect", (reason) => {
+      if (process.env.RUN_ENV === "local") {
+        networkErrorRef.current = toast.error(
+          `Socket disconnected Reason : ${reason}`,
+          {
+            autoClose: false,
+            pauseOnFocusLoss: false,
+            hideProgressBar: true,
+          }
+        )
+      } else {
+        networkErrorRef.current = toast.error(
+          `Something is not right a network error has occurred`,
+          {
+            autoClose: 2000,
+            pauseOnFocusLoss: false,
+            hideProgressBar: true,
+          }
+        )
+      }
+      localStorage.removeItem("socketId")
+      if (reason === "io server disconnect") {
+        /* if server manually disconnected */
+        io.connect()
+      }
     })
 
     socket.on("connect_error ", (err) => {
-      alert("Error! from server " + err.message)
+      if (err?.message === "Invalid Jwt") {
+        networkErrorRef.current = toast.error(
+          "Invalid or Expired Credential, Please try re-login",
+          {
+            autoClose: 2000,
+          }
+        )
+      }
+      setTimeout(() => {
+        io.connect()
+      }, 2500)
     })
 
     /* Global Listeners */
     io.globalListeners(socket)
-
-    /* 👇👇 the localstorage is not read from hence no authContext is available hence have to move listners somewhere else
-    if (JSON.parse(localStorage.getItem("authContext")).userType === "Model") {
-      // io.modelListners
-    } else if (
-      JSON.parse(localStorage.getItem("authContext")).userType === "Viewer"
-    ) {
-      // io.viewerListners()
-    } else if (
-      JSON.parse(localStorage.getItem("authContext")).userType ===
-      ("UnAuthedViewer" || "unAuthedViewer")
-    ) {
-      // io.unAuthedViewerListners()
-    } */
   }
 
   if (!socketSetup && typeof window !== "undefined") {

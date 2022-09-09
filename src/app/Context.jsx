@@ -1,25 +1,25 @@
-import React, { createContext, useEffect, useState, useContext } from "react";
+import React, { createContext, useEffect, useState, useContext } from "react"
 
-const Widthcontext = React.createContext();
-const updateContext = createContext();
+const Widthcontext = React.createContext()
+const updateContext = createContext()
 
 export const ContextProvider = ({ children }) => {
-  const [innerWidth, setInnerWidth] = useState(745);
-  const handleResize = () => setInnerWidth(window.innerWidth);
+  const [innerWidth, setInnerWidth] = useState(745)
+  const handleResize = () => setInnerWidth(window.innerWidth)
 
   useEffect(() => {
-    setInnerWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
+    setInnerWidth(window.innerWidth)
+    window.addEventListener("resize", handleResize, { passive: true })
     return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [handleResize]);
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
 
   return (
     <Widthcontext.Provider value={innerWidth}>{children}</Widthcontext.Provider>
-  );
-};
+  )
+}
 
 export function useWidth() {
-  return useContext(Widthcontext);
+  return useContext(Widthcontext)
 }

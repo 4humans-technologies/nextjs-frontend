@@ -1,33 +1,46 @@
 import React, { useState } from "react"
 import { Tabs, Tab } from "react-bootstrap"
+import { useAuthContext } from "../../../app/AuthContext"
 import Details from "./Details"
 import Showcontroler from "./Showcontroler"
 
-function Videoshowcontroller() {
-  const [key, setKey] = useState("home")
+function TabTitle(props) {
   return (
-    <div className="tw-bg-second-color tw-pt-4 tw-text-sm md:tw-text-base tw-font-normal sm:-font-medium">
-      <Tabs
-        id="controlled-tab-example"
-        activeKey={key}
-        onSelect={(k) => setKey(k)}
-        className="mb-3  tw-border-none active:tw-border-b-4 tw-border-red-500"
-      >
-        <Tab
-          eventKey="home"
-          title="My Details"
-          className="active:tw-border-b-2 tw-border-red-500"
+    // <span className="tw-px-4 tw-py-2 tw-text-text-black tw-bg-first-color active:tw-bg-second-color hover:tw-text-white-color tw-text-base tw-rounded-t tw-border-0 hover:tw-border-0">
+    <span className="">{props.title}</span>
+  )
+}
+
+function Videoshowcontroller() {
+  const authCtx = useAuthContext()
+  const [key, setKey] = useState("tab-1")
+  return (
+    authCtx.loadedFromLocalStorage && (
+      <div className="tw-bg-first-color tw-mt-12 tw-text-sm md:tw-text-base">
+        <Tabs
+          id="controlled-tab-example"
+          activeKey={key}
+          onSelect={(eventKey) => setKey(eventKey)}
+          defaultActiveKey="tab-1"
+          className="tw-bg-first-color my-custom-style tw-px-4"
         >
-          <Showcontroler />
-        </Tab>
-        <Tab eventKey="profile" title="My Show Controls">
-          <Details />
-        </Tab>
-        {/* <Tab eventKey="contact" title="Contact">
-          <h1>Sona bau</h1>
-        </Tab> */}
-      </Tabs>
-    </div>
+          <Tab
+            eventKey="tab-1"
+            title={<TabTitle title="My Details" />}
+            tabClassName="hover:tw-text-white-color tw-text-text-black tw-border-0 hover:tw-border-0"
+          >
+            <Showcontroler />
+          </Tab>
+          <Tab
+            eventKey="tab-2"
+            title={<TabTitle title="My Settings" />}
+            tabClassName="hover:tw-text-white-color tw-text-text-black tw-border-0 hover:tw-border-0"
+          >
+            <Details />
+          </Tab>
+        </Tabs>
+      </div>
+    )
   )
 }
 

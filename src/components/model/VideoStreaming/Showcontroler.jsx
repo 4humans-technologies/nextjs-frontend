@@ -1,25 +1,22 @@
-import React, { useCallback, useState } from "react"
+import React from "react"
 import Tip from "./Tip"
 import Topic from "./Topic"
+import InCallActivities from "./InCallActivity"
+import WelcomeMessage from "./WelcomeMessage"
 
 function Showcontroler() {
-  const [topic, setTopic] = useState([])
-
-  const topicSet = useCallback(
-    (val) => {
-      setTopic(val)
-    },
-    [topic]
-  )
-
   return (
-    <div className="tw-bg-second-color">
-      <div className="tw-grid md:tw-grid-cols-2 tw-pb-8  tw-grid-cols-1">
-        <div>
-          <Topic topicSetter={topicSet} />
+    <div className="tw-bg-first-color tw-px-4">
+      <div className="tw-grid md:tw-grid-cols-3 tw-grid-cols-1 tw-pb-8  tw-py-4 tw-gap-4">
+        <div className="">
+          <WelcomeMessage />
+          <Topic />
         </div>
         <div>
           <Tip />
+        </div>
+        <div>
+          <InCallActivities />
         </div>
       </div>
     </div>

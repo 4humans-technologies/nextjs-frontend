@@ -1,7 +1,7 @@
 import React from "react";
 import Signup from "../../components/Mainpage/Signup";
 
-function registration() {
+function Registration() {
   return (
     <div>
       <Signup />
@@ -9,4 +9,4 @@ function registration() {
   );
 }
 
-export default registration;
+export default Registration;

@@ -1,57 +1,76 @@
-import { useRouter } from "next/router"
-import React, { useState } from "react"
-import Footer from "../../components/Mainpage/Footer"
-import Header from "../../components/Mainpage/Header"
-import SecondHeader from "../../components/Mainpage/SecondHeader"
-import Sidebar from "../../components/Mainpage/Sidebar"
-import LiveScreen from "../../components/model/LiveScreen"
+import React, { useState, useEffect } from "react"
+
 import ModelProfile from "../../components/model/ModelProfile"
 import Recommendation from "../../components/ViewerScreen/Recommendation"
+import LiveScreen from "../../components/model/Livescreen"
+import { useRouter } from "next/router"
+
 function ViewModelStream() {
   // 👇👇👇 store the models profile value in a state here
   const [modelProfileData, setModelProfileData] = useState(null)
 
+  const router = useRouter()
+
+  const [theKey, setTheKey] = useState(0)
+  useEffect(() => {
+    let mounted = true
+    const handleRouteChange = (url) => {
+      console.log("changed url", url)
+      if (mounted) {
+        setTheKey((prev) => prev + 1)
+      }
+    }
+    router.events.on("routeChangeComplete", handleRouteChange)
+    return () => {
+      mounted = false
+      router.events.off("routeChangeComplete", handleRouteChange)
+    }
+  }, [])
+
   return (
     <>
-      <Header />
-      {/* <SecondHeader /> */}
-      <Sidebar />
-      <LiveScreen setModelProfileData={setModelProfileData} />
+      <LiveScreen
+        key={theKey}
+        setModelProfileData={setModelProfileData}
+        modelProfileData={modelProfileData}
+      />
       {modelProfileData && (
         <ModelProfile
+          key={theKey + 200}
+          modelProfileData={modelProfileData}
           profileData={{
             name: modelProfileData.name,
             age: new Date().getFullYear() - modelProfileData.dob,
             profileImage: modelProfileData.profileImage,
-            tags: [
-              "Black",
-              "White",
-              "Artist",
-              "Intelligent",
-              "Black",
-              "White",
-              "Artist",
-              "Black",
-              "White",
-              "Artist",
-            ],
-            categories: ["America", "India", "Bhutan", "USA"],
+            publicImages: modelProfileData.publicImages,
+            publicVideos: modelProfileData.publicVideos,
+            privateImages: modelProfileData.privateImages,
+            privateVideos: modelProfileData.privateVideos,
+            tags:
+              modelProfileData.tags.length > 0
+                ? modelProfileData.tags
+                : [
+                    "Black",
+                    "White",
+                    "Artist",
+                    "Intelligent",
+                    "Black",
+                    "White",
+                    "Artist",
+                    "Black",
+                    "White",
+                    "Artist",
+                  ],
           }}
-          dynamicFields={[
-            { title: "Language", value: modelProfileData.languages.join(", ") },
-            { title: "body type", value: "curvy" },
-            { title: "ethnicity", value: "American" },
-            { title: "hair", value: "black" },
-            { title: "eye color", value: "black" },
-            { title: "social links", value: "What to do ?" },
-            { title: "features", value: ["nice", "artist", "fast"] },
-          ]}
         />
       )}
-      <Recommendation parent={"viewerScreen"} />
-      <Footer />
+      <Recommendation
+        key={theKey + 400}
+        parent={"viewerScreen"}
+        setTheKey={setTheKey}
+      />
     </>
   )
 }
 
-export default ViewModelStream
+export default React.memo(ViewModelStream)

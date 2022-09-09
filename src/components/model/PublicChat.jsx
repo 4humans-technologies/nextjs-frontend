@@ -1,124 +1,63 @@
-import React, { useState, useEffect } from "react"
-import Image from "next/image"
-import flowerImage from "../../../public/flower-rose-png.jpg"
-import coinsImage from "../../../public/coins.png"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import io from "../../socket/socket"
 import { useSocketContext } from "../../app/socket/SocketContext"
-import { useAuthContext, useAuthUpdateContext } from "../../app/AuthContext"
+import { useAuthContext } from "../../app/AuthContext"
 import NormalChatMessage from "../ChatMessageTypes/NormalChat"
 import ModelChatMessage from "../ChatMessageTypes/ModelChatMessage"
+import CoinSuperChat from "../ChatMessageTypes/TokenGift"
+import TipMenuActivityRequest from "../ChatMessageTypes/TipMenuActivity"
+import CallRequestChat from "../ChatMessageTypes/CallRequest"
+import GiftSuperChat from "../ChatMessageTypes/GiftSuperChat"
 
-function GiftSuperChat(props) {
-  return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 gift-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
-      <div className="tw-flex-grow-0 tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-bg-second-color tw-mr-auto">
-        <Image
-          src={props.giftImageUrl}
-          width={90}
-          height={90}
-          objectFit="contain"
-          objectPosition="center"
-          className="tw-rounded tw-mr-auto"
-        />
-      </div>
-      <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
-        <div className="tw-flex-grow tw-pr-2">
-          <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
-            {props.displayName}:
-          </span>
-          <span className="user-message tw-text-sm tw-font-normal">
-            {props.message}
-          </span>
-        </div>
-        <p className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2 tw-text-yellow-400 tw-font-medium">
-          {props.walletCoins}
-        </p>
-      </div>
-    </div>
-  )
+let messageShowed = false
+const chatWindowOptions = {
+  PUBLIC: "public",
 }
-
-function CoinSuperChat(props) {
-  return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-between tw-my-0.5 tw-px-3 tw-py-1.5 tw-ml-2 coin-superchat-bg tw-text-white-color tw-flex-grow tw-flex-shrink-0 tw-w-full">
-      <div className="tw-flex-grow-0 tw-mb-2 tw-px-1.5 tw-pt-1.5 tw-rounded tw-mr-auto">
-        <Image
-          src={coinsImage}
-          width={25}
-          height={25}
-          objectFit="contain"
-          objectPosition="center"
-          className="tw-rounded tw-mr-auto"
-        />
-        {/* <p className="tw-mt-1 tw-font-semibold tw-text-yellow-400">
-          <span className="display-name tw-font-semibold tw-capitalize tw-inline-block tw-pr-3">
-            {props.displayName}:
-          </span>
-          {props.amountGiven}
-        </p> */}
-      </div>
-      <div className="tw-flex tw-px-2 tw-justify-between tw-w-full tw-flex-grow">
-        <div className="tw-flex-grow tw-pr-2">
-          <span className="user-message tw-text-sm tw-font-normal">
-            {props.message}
-          </span>
-        </div>
-        {props.showWallet && (
-          <p className="tw-flex-shrink-0 tw-flex-grow-0 tw-pl-2 tw-text-yellow-400">
-            {props.walletCoins}
-          </p>
-        )}
-      </div>
-    </div>
-  )
+let UnAuthedViewerChatName
+if (typeof window !== "undefined") {
+  UnAuthedViewerChatName = localStorage.getItem("unAuthed-user-chat-name")
 }
-
-const initialMessages = [
-  {
-    type: "normal-public-message",
-    index: 1,
-    username: "ravi",
-    message: "Hello how is every one, feel very good here",
-    walletCoins: 100,
-  },
-  {
-    type: "model-public-message",
-    index: 2,
-    message: "Hello how is every one, feel very good here",
-  },
-  {
-    type: "gift-superchat-public",
-    index: 3,
-    username: "Neeraj rai",
-    giftImageUrl: flowerImage,
-    message: "Hello how is every one, feel very good here",
-    walletCoins: 100,
-  },
-  {
-    type: "coin-superchat-public",
-    username: "Vikas kumawat",
-    index: 6,
-    amountGiven: 100,
-    message: "Hello how is every one, feel very good here",
-    walletCoins: 50,
-  },
-]
-
-let chatIndex = 0
 function PublicChatBox(props) {
-  let pageUrl
-  if (typeof window !== "undefined") {
-    pageUrl = window.location.pathname
-  }
   const [chatMessages, setChatMessages] = useState([])
+  const [prevChats, setPrevChats] = useState([])
+  const [welcomeMsg, setWelcomeMsg] = useState("")
   const ctx = useSocketContext()
   const authCtx = useAuthContext()
-  const authUpdateCtx = useAuthUpdateContext()
+  const { isModelOffline, modelWelcomeMessage, scrollOnChat } = props
 
   useEffect(() => {
-    //debugger
+    if (
+      !isModelOffline &&
+      authCtx.isLoggedIn &&
+      authCtx.user.userType === "Viewer" &&
+      modelWelcomeMessage
+    ) {
+      if (!messageShowed) {
+        messageShowed = true
+        if (modelWelcomeMessage) {
+          // setTimeout(() => {
+          setWelcomeMsg(
+            modelWelcomeMessage.replaceAll(
+              "__name__",
+              authCtx.user.user.relatedUser.name
+            )
+          )
+          // }, [8000])
+        }
+      }
+      return () => {
+        messageShowed = false
+      }
+    }
+  }, [
+    isModelOffline,
+    authCtx.isLoggedIn,
+    modelWelcomeMessage,
+    authCtx.user.userType,
+  ])
+
+  useEffect(() => {
     if (ctx.socketSetupDone) {
-      //debugger
       /* 🟥 will it cause problem if i click on recommendation list */
       const socket = io.getSocket()
       if (!socket.hasListeners("viewer_super_message_pubic-received")) {
@@ -128,7 +67,6 @@ function PublicChatBox(props) {
           if (data.chatType === "gift-superchat-public") {
             chat = {
               type: data.chatType,
-              index: chatIndex,
               username: data.username,
               giftImageUrl: data.gift.giftImageUrl,
               message: data.message,
@@ -137,37 +75,49 @@ function PublicChatBox(props) {
           } else if (data.chatType === "coin-superchat-public") {
             chat = {
               type: data.chatType,
-              index: chatIndex,
               username: data.username,
               amountGiven: data.amountGiven,
               message: data.message,
               walletCoins: data.walletCoins,
+            }
+            if (authCtx.user.userType !== "Model") {
+              document.getElementById("superchat-audio").play()
+            }
+          } else if (data.chatType === "tipmenu-activity-superchat-public") {
+            chat = {
+              type: data.chatType,
+              username: data.username,
+              activity: {
+                action: data.activity.action,
+                price: data.activity.price,
+              },
+              walletCoins: data.walletCoins,
+            }
+            if (authCtx.user.userType !== "Model") {
+              document.getElementById("superchat-audio").play()
             }
           }
           setChatMessages((prevChats) => {
             // document.dispatchEvent(chatScrollEvent)
             return [...prevChats, chat]
           })
-          props.scrollOnChat()
+          scrollOnChat("public")
           // document.dispatchEvent(chatEvent)
         })
       }
       if (!socket.hasListeners("model-message-public-received")) {
         socket.on("model-message-public-received", (data) => {
           setChatMessages((prevChats) => {
-            // document.dispatchEvent(chatScrollEvent)
             const newChats = [
               ...prevChats,
               {
                 type: "model-public-message",
-                index: chatIndex,
                 message: data.message,
               },
             ]
-            chatIndex++
             return newChats
           })
-          props.scrollOnChat()
+          scrollOnChat("public")
           // document.dispatchEvent(chatEvent)
         })
       }
@@ -178,34 +128,30 @@ function PublicChatBox(props) {
               ...prevChats,
               {
                 type: "normal-public-message",
-                index: chatIndex,
                 username: data.username,
                 message: data.message,
                 walletCoins: data.walletCoins,
               },
             ]
-            chatIndex++
             return newChats
           })
-          props.scrollOnChat()
+          scrollOnChat("public")
           // document.dispatchEvent(chatEvent)
         })
       }
-    }
-  }, [ctx.socketSetupDone, io.getSocket()])
 
-  useEffect(() => {
-    /* checks for page url changes */
-  }, [pageUrl])
-
-  useEffect(() => {
-    /* why you have to remove the event listners any way */
-    //debugger
-    if (ctx.socketSetupDone) {
       return () => {
-        // alert("removing listners")
-        const socket = io.getSocket()
-        //debugger
+        /**
+         * get out of the public room
+         */
+        const socketRooms =
+          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+        if (socketRooms.find((room) => room.endsWith("-public"))) {
+          socket.emit("take-me-out-of-these-rooms", [
+            socketRooms.find((room) => room.endsWith("-public")),
+          ])
+        }
+
         if (socket.hasListeners("viewer-message-public-received")) {
           socket.off("viewer-message-public-received")
         }
@@ -215,112 +161,165 @@ function PublicChatBox(props) {
         if (socket.hasListeners("viewer_super_message_pubic-received")) {
           socket.off("viewer_super_message_pubic-received")
         }
+        if (socket.hasListeners("viewer-requested-for-call-emitted")) {
+          socket.off("viewer-requested-for-call-emitted")
+        }
       }
     }
-  }, [ctx.socketSetupDone, io.getSocket()])
+  }, [ctx.socketSetupDone])
 
+  /* fetch public chats from firebase */
   useEffect(() => {
-    /* when the viwerscreen component un-mounts leave the public/private stream specific rooms */
-    //debugger
-    if (ctx.socketSetupDone) {
-      return () => {
-        //debugger
-        // alert("getting out of rooms")
-        const socket = io.getSocket()
-        const socketRooms =
-          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-        const roomsToLeave = []
-        socketRooms.forEach((room) => {
-          if (room.includes("-public") || room.includes("-private")) {
-            roomsToLeave.push(room)
+    const url =
+      "https://dreamgirl-dep1-default-rtdb.asia-southeast1.firebasedatabase.app/publicChats/"
+    const fetchChats = (e) => {
+      fetch(`${url}${e.detail.streamId}/chats.json`)
+        .then((res) => res.json())
+        .then((chats) => {
+          if (chats) {
+            setPrevChats(Object.values(chats))
           }
-        })
-        socket.emit(
-          "take-me-out-of-these-rooms",
-          [...roomsToLeave],
-          (response) => {
-            if (response.status === "ok") {
-              /* remove this room from session storage also */
-
-              sessionStorage.setItem(
-                "socket-rooms",
-                JSON.stringify(
-                  socketRooms.filter((room) => !roomsToLeave.includes(room))
-                )
+          setTimeout(() => {
+            try {
+              document.getElementById("public-chat-container").scrollBy({
+                top: document.getElementById("public-chat-container")
+                  .scrollHeight,
+                behavior: "smooth",
+              })
+            } catch (err) {
+              console.error(
+                "scroll error : ",
+                "private-chat-container",
+                " in public chat"
               )
-              authUpdateCtx.updateViewer({ streamRoom: null })
             }
-          }
-        )
-      }
+          }, [100])
+        })
     }
-  }, [ctx.socketSetupDone, io.getSocket()])
+    document.addEventListener("fetch-firebase-chats", fetchChats, {
+      passive: true,
+    })
+    return () => {
+      document.removeEventListener("fetch-firebase-chats", fetchChats)
+    }
+  }, [])
+
+  const shouldHighLight = useCallback(
+    (message) => {
+      if (
+        authCtx.user.userType === "Viewer" ||
+        authCtx.user.userType === "Model"
+      ) {
+        if (message.includes(`@${authCtx.user.user.username}`)) {
+          return true
+        }
+        return false
+      } else if (authCtx.user.userType === "UnAuthedViewer") {
+        if (message.includes(`@${UnAuthedViewerChatName}`)) {
+          return true
+        }
+        return false
+      }
+    },
+    [authCtx.user.userType, authCtx.user.user?.username]
+  )
+
+  const renderChats = (chat, index, prefix) => {
+    switch (chat?.type || chat?.chatType) {
+      case "normal-public-message":
+        return (
+          <NormalChatMessage
+            key={prefix + "current_chat" + index}
+            displayName={chat.username}
+            message={chat.message}
+            walletCoins={
+              authCtx.user.userType === "Model" ? chat.walletCoins : null
+            }
+            highlight={shouldHighLight(chat.message)}
+            addAtTheRate={() => props.addAtTheRate(chat?.username)}
+          />
+        )
+      case "model-public-message":
+        return (
+          <ModelChatMessage
+            key={prefix + "model_chat" + index}
+            message={chat.message}
+            highlight={shouldHighLight(chat.message)}
+            addAtTheRate={() =>
+              props.addAtTheRate(
+                authCtx.user.userType === "Model"
+                  ? authCtx.user.user.username
+                  : props.modelUsername
+              )
+            }
+            modelUsername={
+              authCtx.user.userType === "Model" ? " you" : props.modelUsername
+            }
+          />
+        )
+      case "gift-superchat-public":
+        return (
+          <GiftSuperChat
+            key={prefix + "gift_super" + index}
+            displayName={chat.username}
+            message={chat.message}
+            giftImageUrl={chat.giftImageUrl}
+            walletCoins={chat.walletCoins}
+            showWallet={authCtx.user.userType === "Model"}
+            addAtTheRate={() => props.addAtTheRate(chat?.username)}
+          />
+        )
+      case "coin-superchat-public":
+        return (
+          <CoinSuperChat
+            key={prefix + "coins_gift" + index}
+            displayName={chat.username}
+            message={chat.message}
+            amountGiven={chat.amountGiven}
+            walletCoins={chat.walletCoins}
+            showWallet={authCtx.user.userType === "Model"}
+            addAtTheRate={() => props.addAtTheRate(chat?.username)}
+          />
+        )
+      case "viewer-call-request":
+        return (
+          <CallRequestChat username={chat.username} callType={chat.callType} />
+        )
+      case "tipmenu-activity-superchat-public":
+        return (
+          <TipMenuActivityRequest
+            key={prefix + "activity" + index}
+            username={chat.username}
+            callType={chat.callType}
+            // activityName={chat?.activityName || chat?.activity?.action}
+            // activityPrice={chat?.activityPrice || chat?.activity?.price}
+            activityName={chat.activity.action}
+            activityPrice={chat.activity.price}
+            walletCoins={chat.walletCoins}
+            message={`${chat.username} requested activity`}
+            addAtTheRate={() => props.addAtTheRate(chat?.username)}
+          />
+        )
+      default:
+        break
+    }
+  }
 
   return (
-    <div className="chat-box tw-flex tw-flex-col tw-items-center tw-mb-14 max-w-[100vw] md:tw-max-w-[49vw]">
-      {authCtx.user.userType === "Model" ? (
-        <NormalChatMessage
-          index={0}
-          displayName={"Model"}
-          message={"Click on Go Live Button To Go "}
-          walletCoins={"Not live"}
+    <div className="tw-h-full">
+      {prevChats.map((chat, index) => renderChats(chat, index, "prev_"))}
+      {welcomeMsg && authCtx.user.userType === "Viewer" ? (
+        <ModelChatMessage
+          key={"model_welcome_message"}
+          message={welcomeMsg}
+          highlight={false}
+          addAtTheRate={() => props.addAtTheRate(props?.modelUsername)}
+          modelUsername={props?.modelUsername}
         />
-      ) : (
-        <NormalChatMessage
-          index={0}
-          displayName={"Model"}
-          message={"Start chatting with  me 💌💌🥰"}
-          walletCoins={"You are live"}
-        />
-      )}
-      {chatMessages.map((chat, index) => {
-        switch (chat.type) {
-          case "normal-public-message":
-            return (
-              <NormalChatMessage
-                key={"dsfsdf324" + chat.index}
-                index={chat.index}
-                displayName={chat.username}
-                message={chat.message}
-                walletCoins={chat.walletCoins}
-              />
-            )
-          case "model-public-message":
-            return (
-              <ModelChatMessage
-                key={"*(78jhk7" + chat.index}
-                index={chat.index}
-                message={chat.message}
-              />
-            )
-          case "gift-superchat-public":
-            return (
-              <GiftSuperChat
-                index={chat.index}
-                displayName={chat.username}
-                message={chat.message}
-                giftImageUrl={chat.giftImageUrl}
-                walletCoins={chat.walletCoins}
-                showWallet={authCtx.user.userType === "Model"}
-              />
-            )
-          case "coin-superchat-public":
-            return (
-              <CoinSuperChat
-                index={chat.index}
-                displayName={chat.username}
-                message={chat.message}
-                amountGiven={chat.amountGiven}
-                walletCoins={chat.walletCoins}
-                showWallet={authCtx.user.userType === "Model"}
-              />
-            )
-          default:
-            break
-        }
-      })}
+      ) : null}
+      {chatMessages.map((chat, index) => renderChats(chat, index))}
     </div>
   )
 }
 
-export default PublicChatBox
+export default React.memo(PublicChatBox)

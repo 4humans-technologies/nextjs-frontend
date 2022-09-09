@@ -5,51 +5,75 @@ import router, { useRouter } from "next/router"
 import dynamic from "next/dynamic"
 import StarIcon from "@material-ui/icons/Star"
 import Link from "next/link"
-import { imageDomainURL } from "../../../dreamgirl.config"
 
 function Mainbox(props) {
-  const watch = () => {
-    console.log("pass dynamic ")
-    router.push("/ravi?streaming=true")
-  }
-
-  // FOR RENDERING STARS
-  // let star = [];
-  // for (let index = 0; index < Rating; index++) {
-  //   star.push(<StarIcon className="tw-text-yellow-300 " />);
-  // }
-
-  let imageUrl
-  if (props.photo.startsWith("http")) {
-    imageUrl = props.photo
-  } else {
-    imageUrl = `${imageDomainURL}${props.photo}`
-  }
-
   return (
-    <div className="tw-font-sans tw-col-span-1 tw-row-span-1 tw-w-full">
-      <div className="tw-relative tw-font-sans parent_transition tw-m-0">
-        <Link
-          href={
-            props.parent === "index" ? `/view-stream/${props.modelId}` : "/"
-          }
-          className="tw-cursor-pointer"
-        >
-          <span className="tw-cursor-pointer">
-            <img
-              src={imageUrl}
-              className="tw-object-cover tw-object-center tw-rounded-t"
-              alt=""
-            />
-            <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-purple-600">
-              Busy
-            </p>
-            {/* <p className="tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color">
+    <div className="live-model-box tw-mb-2">
+      <Link
+        // href={props.parent === "index" ? `/view-stream/${props.modelId}` : "/"}
+        href={`/view-stream/${props.modelId}`}
+      >
+        <a className="tw-cursor-pointer tw-relative">
+          <img
+            style={{
+              opacity: props.isStreaming ? 1 : props.onCall ? 1 : 0.3,
+            }}
+            src={props.photo}
+            className="tw-object-cover tw-object-center tw-rounded hover:tw-rounded-t tw-w-[211px]  tw-h-[211px]"
+            alt={
+              props.onCall
+                ? "This model is busy on a call"
+                : "This model is live streaming"
+            }
+          />
+          {props.isStreaming ? (
+            // <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
+            //   <ul className=" tw-opacity-0 tw-text-white " id="model-status">
+            //     <li>Name:Neeraj Rai</li>
+            //     <li>Hello</li>
+            //     <li>Hello</li>
+            //     <li>Hello</li>
+            //   </ul>
+            <p
+              id="model-status"
+              className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-green-color tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
+            >
               Streaming
-            </p> */}
-          </span>
-        </Link>
-      </div>
+            </p>
+          ) : // </div>
+          props.onCall ? (
+            // <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
+            //   <ul className=" tw-opacity-0 tw-text-white " id="model-status">
+            //     <li>Name</li>
+            //     <li>Hello</li>
+            //     <li>Hello</li>
+            //     <li>Hello</li>
+            //   </ul>
+            <p
+              id="model-status"
+              className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-indigo-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
+            >
+              On Call
+            </p>
+          ) : (
+            // </div>
+            // <div className="tw-absolute tw-top-2 tw-min-w-[211px]">
+            //   <ul className=" tw-opacity-0 tw-text-white " id="model-status">
+            //     <li>Name:Neeraj Rai</li>
+            //     <li>Age:33</li>
+            //     <li>Audio rate: 32 coins/minute</li>
+            //     <li>Video rate: 32 coins/minute</li>
+            //   </ul>
+            <p
+              id="model-status"
+              className="tw-opacity-0 tw-text-center tw-font-light tw-text-white tw-rounded-b tw-text-xs tw-tracking-wider tw-bg-red-600 tw-py-0.5  tw-relative tw-bottom-0 tw-w-full"
+            >
+              Offline
+            </p>
+            // </div>
+          )}
+        </a>
+      </Link>
     </div>
   )
 }

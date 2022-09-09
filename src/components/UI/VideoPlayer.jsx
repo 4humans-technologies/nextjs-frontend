@@ -1,11 +1,20 @@
-import React, { useRef, useEffect, useState } from "react"
+import React, { useRef, useEffect } from "react"
 
-function VideoPlayer({ videoTrack, audioTrack, uid, playAudio }) {
+function VideoPlayer({
+  videoTrack,
+  audioTrack,
+  playAudio,
+  config = "stream",
+  fit = "cover",
+}) {
   const container = useRef()
-  const [full, setFull] = useState(false)
+  /* 
+    config = "audioCall" || "videoCall" || "stream"
+  */
+
   useEffect(() => {
-    if (!container.current) return
-    videoTrack?.play(container.current)
+    videoTrack?.play(container.current, { fit: fit })
+
     if (playAudio) {
       audioTrack?.play()
     }
@@ -14,12 +23,12 @@ function VideoPlayer({ videoTrack, audioTrack, uid, playAudio }) {
       videoTrack?.stop()
       audioTrack?.stop()
     }
-  }, [videoTrack, container, audioTrack])
+  }, [videoTrack, audioTrack, config])
 
   return (
     <div
       ref={container}
-      className="video-player tw-absolute tw-pointer-events-none tw-top-0 tw-bottom-0 tw-left-0 tw-right-0"
+      className="video-player tw-absolute tw-pointer-events-none tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-z-10"
     ></div>
   )
 }

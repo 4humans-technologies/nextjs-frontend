@@ -1,21 +1,25 @@
 import React from "react"
 import PersonIcon from "@material-ui/icons/Person"
-import PeopleIcon from "@material-ui/icons/People"
 import SettingsIcon from "@material-ui/icons/Settings"
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew"
 import { useRouter } from "next/router"
 import { useAuthContext, useAuthUpdateContext } from "../../../app/AuthContext"
 
 function Headerprofile(props) {
-  const ctx = useAuthUpdateContext()
+  const updateAuthContext = useAuthUpdateContext()
+  const authContext = useAuthContext()
 
   const router = useRouter()
-  const profileRouter = (props) => {
-    if (props.type == "Model") {
-      router.push("/name/profile")
+  const profileRouter = () => {
+    if (authContext.user.userType == "Model") {
+      router.push(`/${authContext.user.user.username}/profile`)
+    } else {
+      router.push(`/user/${authContext.user.user.username}`)
     }
-    router.push("/user/ravi")
   }
+
+  // first data will be get by the context
+
   return (
     <div>
       <ul>
@@ -23,17 +27,22 @@ function Headerprofile(props) {
           <PersonIcon />
           <p className="tw-ml-4">My Profile</p>
         </div>
-        <div className="tw-flex tw-my-2 tw-px-2">
-          <PeopleIcon />
-          <p className="tw-ml-4">My Follower</p>
-        </div>
-        <div className="tw-flex tw-my-2 tw-px-2 tw-border-t-[1px] tw-border-gray-600">
+        <div
+          className="tw-flex tw-my-2 tw-px-2 tw-border-t-[1px] tw-border-gray-600"
+          onClick={() =>
+            router.push(`/${authContext.user.user.username}/settingToken`)
+          }
+        >
           <SettingsIcon />
-          <p className="tw-ml-4">Setting and Privacy</p>
+          <p className="tw-ml-4">Setting and Earning</p>
         </div>
+        {/* Profile edit */}
+
+        {/* Profile edit */}
+
         <div
           className="tw-flex tw-my-4 tw-px-2 tw-border-t-[1px] tw-border-gray-600"
-          onClick={ctx.logout}
+          onClick={updateAuthContext.logout}
         >
           <PowerSettingsNewIcon />
           <p className="tw-ml-4">Logout</p>

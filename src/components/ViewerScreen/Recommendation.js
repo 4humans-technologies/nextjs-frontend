@@ -8,18 +8,18 @@ function Recommendation(props) {
 
   useEffect(() => {
     if (ctx.loadedFromLocalStorage) {
+      let mounted = true
+
       fetch("/api/website/compose-ui/get-ranking-online-models")
         .then((res) => res.json())
         .then((data) => {
+          if (!mounted) {
+            return
+          }
           const transformedData = data.resultDocs.map((model) => {
             return {
               ...model,
-              age: new Date().getFullYear() - new Date(model.dob).getFullYear(),
-              languages: model.languages.join(","),
-              rootUserId: model.rootUser._id,
-              userName: model.rootUser.username,
-              userType: model.rootUser.userType,
-              // currentStream: model.rootUser.currentStream || 1 /*🤔🤔 why did i put currentStream??  */
+              relatedUserId: model._id,
             }
           })
           setBoxGroupData((prev) => {
@@ -31,9 +31,10 @@ function Recommendation(props) {
             ]
           })
         })
-        .catch((error) => {
-          alert(error)
-        })
+        .catch((error) => {})
+      return () => {
+        mounted = false
+      }
     }
   }, [ctx.loadedFromLocalStorage])
   return (

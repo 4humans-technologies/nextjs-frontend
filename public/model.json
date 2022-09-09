@@ -8,6 +8,16 @@
 ],
 "Charges":[
     {"Audio":45,"Video":45,"Photo":45,"Text":45,"Call":45,"Rate":45,"Time":45}
+],
+"Follower":[
+    {"userName":"sachin","profileImage":"/ilma.jpg"},
+    {"userName":"rohit","profileImage":"/ilma.jpg"},
+    {"userName":"Dhone","profileImage":"/ilma.jpg"},
+    {"userName":"kohali","profileImage":"/ilma.jpg"},
+    {"userName":"krishana","profileImage":"/ilma.jpg"},
+    {"userName":"ram","profileImage":"/ilma.jpg"},
+    {"userName":"Taddy bear","profileImage":"/ilma.jpg"},
+    {"userName":"romesh","profileImage":"/ilma.jpg"}
 ]
 
 } 

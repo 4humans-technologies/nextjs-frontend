@@ -1,41 +1,20 @@
 import io from "socket.io-client"
 let socketConnectionInstance
-let pendingCalls
+import { toast } from "react-toastify"
+
 export default {
   connect: (url) => {
-    /**
-     * should the implementation differ for viewer and model
-     */
-    if (localStorage.getItem("pendingCalls")) {
-      pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
-    } else {
-      localStorage.setItem(
-        "pendingCalls",
-        JSON.stringify({ audioCall: {}, videoCall: {} })
-      )
-      pendingCalls = JSON.parse(localStorage.getItem("pendingCalls"))
+    if (!url) {
+      url = process.env.NEXT_PUBLIC_BACKEND_URL
     }
-    //debugger
-    socketConnectionInstance = io(url || "http://localhost:8080", {
+    socketConnectionInstance = io(url, {
       auth: {
-        // token will be fetched from local storage
-        token: localStorage.getItem("jwtToken") || "",
+        token: localStorage.getItem("jwtToken") || undefined,
       },
-      query: {
-        // will get userType from localStorage
-        // if nothing in local storage default to UnAuthedViewer
-        // no worries if user provides wrong info, we have token we can validate
-        userType:
-          localStorage.getItem("userType") ||
-          JSON.parse(localStorage.getItem("authContext"))?.userType ||
-          "UnAuthedViewer",
-        hasAudioCall:
-          Object.keys(pendingCalls.audioCall).length > 0 ? true : false,
-        hasVideoCall:
-          Object.keys(pendingCalls.videoCall).length > 0 ? true : false,
-        audioCall: JSON.stringify(pendingCalls.audioCall),
-        videoCall: JSON.stringify(pendingCalls.videoCall),
-      },
+      transports: ["websocket"],
+      upgrade: false,
+      reconnection: true,
+      autoConnect: true,
     })
     return socketConnectionInstance
   },
@@ -53,77 +32,57 @@ export default {
     }
     return socketConnectionInstance.id
   },
+
   globalListeners: (socket) => {
-
-    // socket.onAny((eventName, ...args) => {
-    //   alert(`${eventName} is fired`)
-    // });
-
     socket.on("you-joined-a-room", (room) => {
-      if (
-        room.includes("-public") ||
-        room.includes("-socket-room") ||
-        room.includes("-private")
-      ) {
-        /* dont't join the self rooms 😎😎 */
-        const prevRooms =
-          JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      /* dont't join the self rooms 😎😎 */
+      let prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
+      if (room.endsWith("-public")) {
+        /* remove previous public room before joining new public room */
+        prevRooms = prevRooms.filter((room) => !room.endsWith("-public"))
+
+        /* add unique rooms only */
         if (!prevRooms.includes(room)) {
-          /* add unique rooms only */
           sessionStorage.setItem(
             "socket-rooms",
             JSON.stringify([...prevRooms, room])
           )
+          console.log("added in session room >> ", room)
+        }
+      } else if (room.endsWith("-private")) {
+        /* remove previous private room */
+        prevRooms = prevRooms.filter((room) => !room.endsWith("-private"))
+
+        /* add unique rooms only */
+        if (!prevRooms.includes(room)) {
+          sessionStorage.setItem(
+            "socket-rooms",
+            JSON.stringify([...prevRooms, room])
+          )
+          console.log("added in session room >> ", room)
         }
       }
     })
 
     socket.on("you-left-a-room", (roomToLeave) => {
       const prevRooms = JSON.parse(sessionStorage.getItem("socket-rooms")) || []
-      const newRooms = prevRooms.filter((room) => room !== roomToLeave) || []
-      sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
-    })
-
-    socket.on("viewer-left", (data) => {
-      alert("Viewer left")
-      console.log(data.roomSize)
-    })
-
-    socket.on("viewer-joined", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-    // "model-public-message"
-  },
-  modelListners: (socket) => { },
-  viewerListners: (socket) => {
-    socket.on("model-audio-calling", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-
-    socket.on("model-video-calling", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-
-    socket.on("model-accepted-video-call", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-
-    socket.on("model-accepted-audio-call", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-    socket.on("model-declined-video-call", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
-    })
-    socket.on("model-declined-audio-call", (data) => {
-      alert(data.message)
-      console.log(data.roomSize)
+      if (process.env.RUN_ENV === "local") {
+        toast.warn(`left a room : ${roomToLeave}`, {
+          autoClose: 2000,
+        })
+      }
+      if (roomToLeave.endsWith("-public")) {
+        const newRooms = prevRooms.filter((room) => room !== roomToLeave)
+        sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
+      } else if (roomToLeave.endsWith("-private")) {
+        const newRooms = prevRooms.filter((room) => room !== roomToLeave)
+        sessionStorage.setItem("socket-rooms", JSON.stringify(newRooms))
+      }
+      console.log("left room >> ", roomToLeave)
     })
   },
-  unAuthedViewerListners: (socket) => { },
+  modelListners: (socket) => {},
+
+  viewerListners: (socket) => {},
+  unAuthedViewerListners: (socket) => {},
 }

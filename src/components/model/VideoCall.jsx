@@ -5,7 +5,6 @@ import useAgora from "../../hooks/useAgora"
 import AgoraRTC from "agora-rtc-sdk-ng"
 import { Button } from "react-bootstrap"
 
-
 let client
 const createClient = (role) => {
   const clientOptions = { codec: "h264", mode: "live" }
@@ -32,12 +31,11 @@ function VideoCall(props) {
     leave,
     join,
     remoteUsers,
-    startLocalCameraPreview,
   } = useAgora(client, "host", "videoCall")
 
-  useEffect(() => {
-    startLocalCameraPreview()
-  }, [])
+  // useEffect(() => {
+  //   startLocalCameraPreview()
+  // }, [])
   const changeScreen = (e) => {
     e.preventDefault()
     setImageChange(!imageChange)
