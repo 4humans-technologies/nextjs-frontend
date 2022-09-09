@@ -70,7 +70,7 @@ function TermOfUse() {
             Please review these terms and conditions of use carefully before
             using's websites, including, without limitation, the following
             websites: <br />
-            Dreamgirllive.com <br />
+            Tuktuklive.com <br />
             This document states the terms and conditions (“Terms”) upon which,
             Cyprus company registration Number HE349515, of (“we” or “us”) will
             provide service to you on its websites, including, without
@@ -328,12 +328,12 @@ function TermOfUse() {
             for no reason at all, with or without notice. <br />
             By uploading content on the Website (including content uploaded by
             models), you are freely consent and grant a non-revocable license
-            to Dreamgirllive.com, its affiliates and agents, to use the
+            to Tuktuklive.com, its affiliates and agents, to use the
             username, videos, pictures, and voice uploaded on the Website as
             they see fit. You further understand and consent that the content
-            will appear publicly as part of Dreamgirllive.com’s website as well
+            will appear publicly as part of Tuktuklive.com’s website as well
             as third party websites and/or other marketing materials. The
-            content will be subject to Dreamgirllive.com’s privacy policy and
+            content will be subject to Tuktuklive.com’s privacy policy and
             terms of use as well as the terms of use of the third-party
             websites.
           </p>
@@ -618,11 +618,11 @@ function TermOfUse() {
             Models to check whether that feature is enabled before each and
             every time they broadcast. By enabling that feature, Models consent
             to audio recording and video recording of their shows by Users
-            and Dreamgirllive.com and their release, publication, exhibition, or
+            and Tuktuklive.com and their release, publication, exhibition, or
             reproduction to be used for news, promotional purposes, advertising,
             inclusion on web sites, or for any other purpose(s)
-            that Dreamgirllive.com, its vendors, partners, affiliates and/or
-            representatives deems fit to use. Models release Dreamgirllive.com,
+            that Tuktuklive.com, its vendors, partners, affiliates and/or
+            representatives deems fit to use. Models release Tuktuklive.com,
             its officers and employees, and each and all persons involved from
             any liability connected with the taking, recording, or publication
             of photographs, video and/or or sound recordings. <br />
@@ -634,7 +634,7 @@ function TermOfUse() {
             broadcasting or other publication irrespective of whether a fee for
             admission is charged. Models also waive any right to inspect or
             approve any photo, video, or audio recording taken
-            by Dreamgirllive.com or the User. <br />
+            by Tuktuklive.com or the User. <br />
             Users may record Model’s show for personal use only. Any recorded
             shows cannot be used for commercial or any other purpose. The
             release, publication, exhibition, or reproduction of the recorded
@@ -937,11 +937,11 @@ function TermOfUse() {
           </ul>
           <div className="tw-border-t tw-border-text-black tw-my-4 tw-mx-auto"></div>
           <p className="my-4">
-            English Welcome to Dreamgirllive.com! We're a free online community
+            English Welcome to Tuktuklive.com! We're a free online community
             where you can come and watch our amazing amateur models perform live
             interactive shows. <br />
             <br />
-            Dreamgirllive.com is 100% free and access is instant. Browse through
+            Tuktuklive.com is 100% free and access is instant. Browse through
             hundreds of models from Women, Men, Couples, and Transsexuals
             performing live sex shows 24/7. Besides watching free live cam
             shows, you also have the option for Private shows, spying, Cam to

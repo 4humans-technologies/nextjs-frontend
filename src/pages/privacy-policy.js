@@ -44,7 +44,7 @@ function Privacy() {
         <main className="tw-w-full">
           <p className="">
             is the publisher and operator (referred to as the “Company”, “we”,
-            “our” or “us”) of the DreamGirllive.com website, namely (referred to
+            “our” or “us”) of the Tuktuklive.com website, namely (referred to
             as the “Website”).
             <br />
             <br />
@@ -117,7 +117,7 @@ function Privacy() {
             its registered office at . If you have any questions, comments
             and/or requests regarding this privacy policy or wish to obtain more
             details in relation to the personal data we process about you,
-            please contact us by sending an email to help@DreamGirllive.com.
+            please contact us by sending an email to help@Tuktuklive.com.
           </p>
           {/* ===================================== */}
           <h2 className="tw-text-xl tw-font-semibold tw-capitalize tw-my-7 tw-underline">
@@ -772,7 +772,7 @@ function Privacy() {
             and/or programs.
             <br /> You have the right to object at any time to the processing of
             your personal data for marketing purposes, by sending us an email
-            at help@ DreamGirllive.com or by clicking at the opt-out link at the
+            at help@ Tuktuklive.com or by clicking at the opt-out link at the
             bottom of any marketing emails we send you. <br /> We can only use
             your personal data to promote our services to you if we have your
             explicit consent to do so, or in certain cases such as for example
@@ -819,7 +819,7 @@ function Privacy() {
             <br />
             If you have questions about our data retention practices, please
             contact us electronically by sending as an email at help@
-            DreamGirllive.com.
+            Tuktuklive.com.
           </p>
           <h2 className="tw-text-xl tw-font-semibold tw-capitalize tw-my-7 tw-underline">
             16. Your data protection rights
@@ -944,7 +944,7 @@ function Privacy() {
             <br />
             To exercise any of your rights, or if you have any other questions
             about our use of your personal data, please contact us
-            electronically by sending us an email at help@ DreamGirllive.com or
+            electronically by sending us an email at help@ Tuktuklive.com or
             by post at .
             <br />
             We endeavor to address all your requests promptly.
@@ -1054,7 +1054,7 @@ function Privacy() {
           <p className="tw-my-4">
             If you have any questions about this privacy policy or our
             information-handling practices, please contact us electronically
-            at help@ DreamGirllive.com or by post at .
+            at help@ Tuktuklive.com or by post at .
           </p>
           <h2 className="tw-text-xl tw-font-semibold tw-capitalize tw-my-7 tw-underline">
             20. Right to complain
@@ -1062,7 +1062,7 @@ function Privacy() {
           <p className="tw-my-4">
             If you wish to lodge a complaint about how your personal data is
             used by the Company, you may contact us electronically at the email
-            address help@ DreamGirllive.com or by post at . <br />
+            address help@ Tuktuklive.com or by post at . <br />
             Upon receipt of your complaint, we will investigate it and respond
             to you within a reasonable time. <br />
             We will cooperate with the appropriate regulatory authorities,
@@ -1083,7 +1083,7 @@ function Privacy() {
             which the Website is accessed and we do not knowingly collect
             personal data from minors. If you become aware that your child has
             provided us with personal data, please contact us electronically
-            at help@ DreamGirllive.com. If we become aware that a minor has
+            at help@ Tuktuklive.com. If we become aware that a minor has
             provided us with personal data, we will take steps to remove such
             information and terminate that person’s account immediately.
           </p>
@@ -1163,7 +1163,7 @@ function Privacy() {
             personal information from such sharing arrangements and to thereby
             opt-out of any future sale of their personal information. If the
             CCPA is applicable to you and you would like to record such
-            preference, please send us an email at help@ DreamGirllive.com.
+            preference, please send us an email at help@ Tuktuklive.com.
           </p>
           <h2 className="tw-text-xl tw-font-semibold tw-capitalize tw-my-7 tw-underline">
             25. Changes to this privacy policy

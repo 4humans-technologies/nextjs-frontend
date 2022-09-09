@@ -218,11 +218,11 @@ function LiveScreen(props) {
           return toast.error(
             <p>
               You have reached guest message limit.Please{" "}
-              <Link href="https://dreamgirllive.com/auth/login">
+              <Link href="https://tuktuklive.com/auth/login">
                 <a className="tw-underline tw-text-blue-500  tw-mx-2">Login</a>
               </Link>
               <br />
-              <Link href="https://dreamgirllive.com/auth/viewerRegistration">
+              <Link href="https://tuktuklive.com/auth/viewerRegistration">
                 <a className="tw-underline tw-text-blue-500 tw-mr-2">sign up</a>
               </Link>
               to send unlimited message
@@ -287,11 +287,11 @@ function LiveScreen(props) {
           return toast.error(
             <p>
               You have reached guest message limit.Please{" "}
-              <Link href="https://dreamgirllive.com/auth/login">
+              <Link href="https://tuktuklive.com/auth/login">
                 <a className="tw-underline tw-text-blue-500  tw-mx-2">Login</a>
               </Link>
               <br />
-              <Link href="https://dreamgirllive.com/auth/viewerRegistration">
+              <Link href="https://tuktuklive.com/auth/viewerRegistration">
                 <a className="tw-underline tw-text-blue-500 tw-mr-2">sign up</a>
               </Link>
               to send unlimited message

@@ -8,7 +8,7 @@ export default function Privacypolicy() {
       <br />
       Effective date: November 30st, 2021 Last modified: Dec 1, 2021  is the
       publisher and operator (referred to as the “Company”, “we”, “our” or “us”)
-      of the DreamGirllive.com website, namely (referred to as the “Website”).
+      of the Tuktuklive.com website, namely (referred to as the “Website”).
       The Company is committed to protecting your privacy and handling your
       personal data in an open and transparent manner. The personal data that we
       collect and process will vary depending on how you use the Website. This
@@ -74,7 +74,7 @@ export default function Privacypolicy() {
       registered office at . If you have any questions, comments and/or requests
       regarding this privacy policy or wish to obtain more details in relation
       to the personal data we process about you, please contact us by sending an
-      email to help@DreamGirllive.com.
+      email to help@Tuktuklive.com.
       <br />
       2. How we collect your personal data We obtain your personal data mainly
       through any information you provide directly to us through our Website.
@@ -370,7 +370,7 @@ export default function Privacypolicy() {
       personal information. Once you have submitted and or posted information,
       you may not be able to edit or delete such information. To request removal
       of your personal information which you have posted or submitted in the
-      manner stated above, send us an e-mail at help@ DreamGirl.com. In some
+      manner stated above, send us an e-mail at help@tuktuklive.com. In some
       cases, we may not be able to remove your personal information, in which
       case we will let you know if we are unable to do so and why. 12. Security
       of your personal data We take appropriate security measures (including
@@ -409,7 +409,7 @@ export default function Privacypolicy() {
       to you by sending you periodic announcements with details on existing
       and/or new services and/or programs. You have the right to object at any
       time to the processing of your personal data for marketing purposes, by
-      sending us an email at help@ DreamGirllive.com or by clicking at the
+      sending us an email at help@ Tuktuklive.com or by clicking at the
       opt-out link at the bottom of any marketing emails we send you. We can
       only use your personal data to promote our services to you if we have your
       explicit consent to do so, or in certain cases such as for example when
@@ -443,7 +443,7 @@ export default function Privacypolicy() {
       make a deletion request can be found under the paragraph “Your data
       protection rights” below. If you have questions about our data retention
       practices, please contact us electronically by sending as an email
-      at help@ DreamGirllive.com. 16. Your data protection rights Subject to
+      at help@ Tuktuklive.com. 16. Your data protection rights Subject to
       local law, you have certain rights regarding the personal data we collect,
       use or disclose and that is related to you. We want to make sure you are
       aware of your rights in relation to the personal data we process about
@@ -504,7 +504,7 @@ export default function Privacypolicy() {
       authorization to make the request and to honor your request. To exercise
       any of your rights, or if you have any other questions about our use of
       your personal data, please contact us electronically by sending us an
-      email at help@ DreamGirllive.com or by post at . We endeavor to address
+      email at help@ Tuktuklive.com or by post at . We endeavor to address
       all your requests promptly. 17. How to access or modify your personal data
       We remain dedicated to the protection of your data and we want to be clear
       about the type of information collected, helping you make choices about
@@ -559,10 +559,10 @@ export default function Privacypolicy() {
       information you previously provided or saved within your account will have
       been saved. 19. Our communication with you If you have any questions about
       this privacy policy or our information-handling practices, please contact
-      us electronically at help@ DreamGirllive.com or by post at . 20. Right to
+      us electronically at help@ Tuktuklive.com or by post at . 20. Right to
       complain If you wish to lodge a complaint about how your personal data is
       used by the Company, you may contact us electronically at the email
-      address help@ DreamGirllive.com or by post at . Upon receipt of your
+      address help@ Tuktuklive.com or by post at . Upon receipt of your
       complaint, we will investigate it and respond to you within a reasonable
       time. We will cooperate with the appropriate regulatory authorities,
       including local data protection authorities, to resolve any complaints
@@ -575,7 +575,7 @@ export default function Privacypolicy() {
       applicable age of majority in the jurisdiction from which the Website is
       accessed and we do not knowingly collect personal data from minors. If you
       become aware that your child has provided us with personal data, please
-      contact us electronically at help@ DreamGirllive.com. If we become aware
+      contact us electronically at help@ Tuktuklive.com. If we become aware
       that a minor has provided us with personal data, we will take steps to
       remove such information and terminate that person’s account immediately.
       22. Third-party links Our Website may include links to third-party
@@ -629,7 +629,7 @@ export default function Privacypolicy() {
       exclude personal information from such sharing arrangements and to thereby
       opt-out of any future sale of their personal information. If the CCPA is
       applicable to you and you would like to record such preference, please
-      send us an email at help@ DreamGirllive.com. 25. Changes to this privacy
+      send us an email at help@ Tuktuklive.com. 25. Changes to this privacy
       policy We reserve the right to update, revise, amend and/or modify this
       privacy policy at any time in order to reflect any changes to the way in
       which we process your personal data or changing legal requirements.

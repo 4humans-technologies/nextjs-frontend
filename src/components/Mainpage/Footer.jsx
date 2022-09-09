@@ -17,17 +17,17 @@ function Footer() {
           </div>
           <div className="mt-2 tw-text-text-black">
             <p className="tw-text-sm tw-font-light tw-mb-1.5">
-              Dreamgirl is a product of{" "}
+              Tuktuklive is a product of{" "}
               <span className="tw-font-bold tw-underline">
-                Kaizen International HK Limited
+                Than Tara Entertainment
               </span>
               ,it is designed to make new friends and talk to strangers from
               distance. Is your life boring? Want to make friends worldwide?
-              Need something funny and meaningful? Dreamgirl is what you are
+              Need something funny and meaningful? Tuktuklive is what you are
               looking for!
             </p>
             <p className="tw-text-sm tw-font-light">
-              Dreamgirl is a 1-on-1 online video and voice chat app with Live
+              Tuktuklive is a 1-on-1 online video and voice chat app with Live
               Streaming and Group chat, which opens up possibility to make
               friends from all over the world. With video Chat and Voice Chat,
               you can communicate with strangers like face to face anytime and

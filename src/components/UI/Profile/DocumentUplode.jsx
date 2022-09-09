@@ -18,7 +18,7 @@ function DocumentUplode() {
         />
       </div>
       <h1 className="tw-text-white tw-text-center">
-        <span className="tw-text-lg">{`Thanks  ${authContext.user.user.relatedUser.name}, for registering  With dreamgirl, we will soon contact you for verification purposes, Have a nice day!`}</span>
+        <span className="tw-text-lg">{`Thanks  ${authContext.user.user.relatedUser.name}, for registering  With Tuktuklive, we will soon contact you for verification purposes, Have a nice day!`}</span>
       </h1>
       <div className="tw-flex  tw-justify-center">
         <button

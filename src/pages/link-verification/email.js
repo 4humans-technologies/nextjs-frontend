@@ -90,7 +90,7 @@ function EmailVerification() {
         <p className="tw-my-8 tw-text-center lg:tw-w-6/12 tw-mx-auto">
           Hooray! your E-mail was conformed successFully. we have added{" "}
           {coinsAdded} coins in your wallet now login and explore
-          dreamgirllive.com, we can't wait to see what you gone do... cheers!🍺
+          tuktuklive.com, we can't wait to see what you gone do... cheers!🍺
         </p>
       )}
       <div className="tw-my-6 tw-text-center">

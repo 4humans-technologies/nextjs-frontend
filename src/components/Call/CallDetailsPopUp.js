@@ -225,7 +225,7 @@ function CallDetailsPopUp(props) {
             <div className="tw-flex tw-text-white  ">
               <div className="tw-mx-auto tw-flex">
                 <p className="tw-mr-1 tw-my-auto">Need Coins ?</p>
-                <Link href="https://dreamgirllive.com/user/payment">
+                <Link href="https://tuktuklive.com/user/payment">
                   <button className=" tw-mx-1 tw-bg-dreamgirl-red tw-rounded-full tw-px-2 tw-py-1">
                     Buy Coins Now
                   </button>
