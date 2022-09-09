@@ -93,18 +93,16 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                   ...config,
                   headers: {
                     ...config.headers,
-                    Authorization: `Bearer ${
-                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
-                    }`,
+                    Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                      }`,
                   },
                 }
               } else {
                 finalConfig = {
                   ...config,
                   headers: {
-                    Authorization: `Bearer ${
-                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
-                    }`,
+                    Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                      }`,
                   },
                 }
               }

@@ -218,7 +218,7 @@ const Home = () => {
     <div className="tw-min-h-screen tw-bg-first-color ">
       <Head>
         <title>DreamGirl Live Online Video Chat</title>
-        <link rel="icon" href="/DG_icon.jpg" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <div className="tw-flex ">
         <div className="">

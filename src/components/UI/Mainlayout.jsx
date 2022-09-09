@@ -11,7 +11,7 @@ function MainLayout(props) {
     <div>
       <Head>
         <title>DreamGirl Live Online Video Chat</title>
-        <link rel="icon" href="/DG_icon.jpg" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <div className="tw-w-full ">
         <Header />

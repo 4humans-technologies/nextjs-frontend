@@ -64,7 +64,6 @@ function SignUp() {
 
     fetch("/api/website/register/viewer", {
       method: "POST",
-      cors: "include",
       headers: {
         "Content-Type": "application/json",
       },
