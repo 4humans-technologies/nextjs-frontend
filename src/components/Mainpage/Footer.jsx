@@ -12,7 +12,7 @@ function Footer() {
             <Image src={logo} width={134} height={68} objectFit="cover" />
             <br />
             <span className="tw-text-text-black ">
-              &copy; Kaizen International HK Limited
+              &copy; Than Tara Entertainment Limited
             </span>
           </div>
           <div className="mt-2 tw-text-text-black">
