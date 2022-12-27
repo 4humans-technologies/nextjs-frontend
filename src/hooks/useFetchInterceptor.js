@@ -33,6 +33,7 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
               "/api/website/token-builder/global-renew-token",
               "/api/website/stream/private-chat/find-or-create-private-chat",
               "/api/website/stream/get-live-viewers/",
+              // "/api/website/paymentGateway/astropay/deposit",
               "api/website/stream/private-chat/get-my-private-cht-by-id",
             ]
             let canShowSpinner = true
@@ -93,16 +94,18 @@ const useFetchInterceptor = (isAlreadyIntercepted) => {
                   ...config,
                   headers: {
                     ...config.headers,
-                    Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")
-                      }`,
+                    Authorization: `Bearer ${
+                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                    }`,
                   },
                 }
               } else {
                 finalConfig = {
                   ...config,
                   headers: {
-                    Authorization: `Bearer ${latestCtx.jwtToken || localStorage.getItem("jwtToken")
-                      }`,
+                    Authorization: `Bearer ${
+                      latestCtx.jwtToken || localStorage.getItem("jwtToken")
+                    }`,
                   },
                 }
               }
